@@ -1,0 +1,35 @@
+{
+  "name": "klay",
+  "version": "0.0.0",
+  "description": "Isomorphic and extensible validation library for JavaScript.",
+  "main": "./lib/index.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha --reporter spec --require test/bootstrap test/*.test.js test/**/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/patrickhulce/klay.git"
+  },
+  "keywords": [
+    "validation"
+  ],
+  "author": "Patrick Hulce <patrick.hulce@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/patrickhulce/klay/issues"
+  },
+  "homepage": "https://github.com/patrickhulce/klay#readme",
+  "dependencies": {
+    "lodash": "^4.13.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3",
+    "sinon": "^1.17.4",
+    "sinon-chai": "^2.8.0"
+  }
+}
