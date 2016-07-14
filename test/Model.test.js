@@ -1,3 +1,11 @@
+var assert = require('assert');
+var ValidationError = relativeRequire('ValidationError');
+var ValidationResult = relativeRequire('ValidationResult');
+
+ValidationResult.prototype.asObject = function () {
+  return JSON.parse(JSON.stringify(this));
+};
+
 defineTest('Model.js', function (Model) {
   describe('#constructor', function () {
     afterEach(function () { Model.reset(); });
@@ -404,6 +412,188 @@ defineTest('Model.js', function (Model) {
   });
 
   describe('#validate', function () {
+    it('should fail when type is not set', function () {
+      (function () {
+        new Model().validate('test');
+      }).should.throw(/defined/);
+    });
+
+    context('when required', function () {
+      it('should conform when present', function () {
+        var model = new Model({type: 'string', required: true});
+        model.validate('foobar').asObject().should.eql({
+          conforms: true,
+          value: 'foobar',
+          errors: [],
+        });
+      });
+
+      it('should conform when present', function () {
+        var model = new Model({type: 'string', required: true});
+        model.validate(null).asObject().should.eql({
+          conforms: true,
+          value: null,
+          errors: [],
+        });
+      });
+
+      it('should not conform when absent', function () {
+        var model = new Model({type: 'string', required: true});
+        model.validate(undefined).asObject().should.eql({
+          conforms: false,
+          errors: [{message: 'expected value to be defined'}],
+        });
+      });
+    });
+
+    context('when not nullable', function () {
+      it('should not conform when null', function () {
+        var model = new Model({type: 'string', nullable: false});
+        model.validate(null).asObject().should.eql({
+          conforms: false,
+          value: null,
+          errors: [{message: 'expected value to be non-null'}],
+        });
+      });
+
+      it('should conform even when required', function () {
+        var model = new Model({type: 'string', required: true, nullable: true});
+        model.validate(null).asObject().should.eql({
+          conforms: true,
+          value: null,
+          errors: [],
+        });
+      });
+    });
+
+    context('when default is set', function () {
+      it('should fill in when undefined', function () {
+        var model = new Model({type: 'string', default: 'hello world'});
+        model.validate(undefined).asObject().should.eql({
+          conforms: true,
+          value: 'hello world',
+          errors: [],
+        });
+      });
+
+      it('should fill in when undefined and value is required', function () {
+        var model = new Model({type: 'number', default: 123, required: true});
+        model.validate(undefined).asObject().should.eql({
+          conforms: true,
+          value: 123,
+          errors: [],
+        });
+      });
+
+      it('should not fill in when null', function () {
+        var model = new Model({type: 'string', default: 'hello world'});
+        model.validate(null).asObject().should.eql({
+          conforms: true,
+          value: null,
+          errors: [],
+        });
+      });
+
+      it('should still validate', function () {
+        var model = new Model({
+          type: 'string',
+          default: 'hello world',
+          validations: function () { assert.ok(false, 'oops'); },
+        });
+
+        model.validate(undefined).asObject().should.eql({
+          conforms: false,
+          value: 'hello world',
+          errors: [{message: 'oops'}],
+        });
+      });
+    });
+
+    context('when parse is set', function () {
+      it('should use parse before checking definedness', function () {
+        var parser = function (value) { return 'something'; };
+        var model = new Model({type: 'string', parse: parser, required: true});
+        model.validate(undefined).asObject().should.eql({
+          conforms: true,
+          value: 'something',
+          errors: [],
+        });
+      });
+
+      it('should still check definedness', function () {
+        var parser = function (value) { return; };
+        var model = new Model({type: 'string', parse: parser, required: true});
+        model.validate('something').asObject().should.eql({
+          conforms: false,
+          errors: [{message: 'expected value to be defined'}],
+        });
+      });
+
+      it('should short-circuit when returning ValidationResult', function () {
+        var parser = function (value) { return new ValidationResult('foo', true); };
+        var validations = function () { assert.ok(false, 'yikes'); };
+        var model = new Model({
+          type: 'string',
+          parse: parser,
+          validations: validations,
+        });
+
+        model.validate('something').asObject().should.eql({
+          conforms: true,
+          value: 'foo',
+          errors: [],
+        });
+      });
+    });
+
+
+
+    context('when transform is set', function () {
+      it('should transform the value', function () {
+        var transform = function (value) { return Number(value); };
+        var model = new Model({type: 'number', transform: transform});
+        model.validate('123').asObject().should.eql({
+          conforms: true,
+          value: 123,
+          errors: [],
+        });
+      });
+
+      it('should short-circuit when returning failed validation result', function () {
+        var transform = function (value) {
+          return new ValidationResult(10, false, ['message']);
+        };
+
+        var model = new Model({type: 'number', transform: transform});
+        model.validate('foo').asObject().should.eql({
+          value: 10,
+          conforms: false,
+          errors: ['message'],
+        });
+      });
+
+      it('should not short-circuit when returning successful validation result', function () {
+        var transform = function (value) {
+          return new ValidationResult(10, true);
+        };
+
+        var validate = function () {
+          assert.ok(false, 'done');
+        };
+
+        var model = new Model({
+          type: 'number',
+          transform: transform,
+          validations: validate,
+        });
+
+        model.validate(123).asObject().should.eql({
+          value: 10,
+          conforms: false,
+          errors: [{message: 'done'}],
+        });
+      });
+    });
 
   });
 });
