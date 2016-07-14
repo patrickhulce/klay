@@ -8,8 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "xo ./lib/**.js && mocha --reporter spec --require test/bootstrap test/*.test.js test/**/*.test.js",
-    "test-watch": "mocha --watch --reporter spec --require test/bootstrap test/*.test.js test/**/*.test.js"
+    "test": "xo ./lib/**/*.js && mocha --reporter spec --require test/bootstrap test/**/*.test.js",
+    "test-watch": "mocha --watch --reporter spec --require test/bootstrap test/**/*.test.js"
   },
   "repository": {
     "type": "git",
