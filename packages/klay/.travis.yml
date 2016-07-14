@@ -3,3 +3,8 @@ node_js:
   - "6"
   - "5"
   - "4"
+before_install:
+  - npm install -g istanbul coveralls
+script:
+  - xo ./lib/**/*.js
+  - istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap test/**/*.test.js && cat ./coverage/lcov.info | coveralls
