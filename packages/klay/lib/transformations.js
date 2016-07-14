@@ -1,5 +1,6 @@
 var _ = require('lodash');
-var assert = require('assert');
+var assert = require('./assert');
+var Model = require('./Model');
 var ValidationResult = require('./ValidationResult');
 
 module.exports = {
@@ -21,7 +22,7 @@ module.exports = {
       if (typeof value === 'number') {
         return value;
       } else if (value === 'string') {
-        
+        return Number(value);
       }
     }
   },
@@ -49,8 +50,8 @@ module.exports = {
       if (!this.spec.children) { return value; }
       var pathPrefix = path ? path + '.' : '';
 
-      assert.ok(_.isArray(value), 'isArray');
-      assert.ok(this.spec.children instanceof Model, 'isModel:children');
+      assert.isArray(value);
+      assert.instanceof(this.spec.children, Model, 'children');
 
       var validationResults = _.map(value, function (value, index) {
         return {
