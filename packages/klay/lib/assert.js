@@ -2,6 +2,7 @@ var assert = require('assert');
 var _ = require('lodash');
 
 var fail = assert.fail;
+var AssertionError = assert.AssertionError;
 // eslint-disable-next-line max-params
 assert.fail = function (actual, expected, message, operator, name) {
   try {
@@ -17,31 +18,32 @@ var operators = [
   'typeof', 'not oneOf', 'does not match'
 ];
 
-assert.AssertionError.prototype.toErrorObject = function () {
+AssertionError.prototype._getErrorMessage = function (operator) {
+  if (operator === 'undefined') {
+    return 'expected value to be defined';
+  } else if (operator === 'nonnull') {
+    return 'expected value to be non-null';
+  } else if (operator === 'typeof') {
+    return `expected ${this.actual} to have typeof ${this.expected}`;
+  } else if (operator === 'not oneOf') {
+    return `expected ${this.actual} to be one of ${JSON.stringify(this.expected)}]`;
+  } else if (operator === 'does not match') {
+    return `expected ${this.actual} to match ${this.expected}`;
+  }
+};
+
+AssertionError.prototype.toErrorObject = function () {
   if (operators.indexOf(this.operator) === -1) {
     return {path: this.path, message: this.message};
   }
 
-  var message = '';
   var path = this.path;
   var operator = this.operator;
   if (this.subject) {
     path = path + '[' + this.subject + ']';
   }
 
-  if (operator === 'undefined') {
-    message = 'expected value to be defined';
-  } else if (operator === 'nonnull') {
-    message = 'expected value to be non-null';
-  } else if (operator === 'typeof') {
-    message = `expected ${this.actual} to have typeof ${this.expected}`;
-  } else if (operator === 'not oneOf') {
-    message = `expected ${this.actual} to be one of ${JSON.stringify(this.expected)}]`;
-  } else if (operator === 'does not match') {
-    message = `expected ${this.actual} to match ${this.expected}`;
-  }
-
-  return {path: path, message: message};
+  return {path: path, message: this._getErrorMessage(operator)};
 };
 
 assert.defined = function (actual, name) {

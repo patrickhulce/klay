@@ -49,6 +49,11 @@ Model.prototype._with = function (spec) {
   }
 };
 
+Model.prototype._getPropByType = function (prop, useFormat) {
+  var format = this.spec.format || '__none';
+  return _.get(Model, [prop, this.spec.type, useFormat ? format : '__default']);
+};
+
 Model.prototype._getOrThrow = function (name) {
   var value = this.spec[name];
   assert.notEqual(typeof value, 'undefined', 'isUndefined:' + name);
@@ -164,7 +169,19 @@ Model.prototype.validations = function (validations) {
   return this._with({validations: validations});
 };
 
+Model.prototype._parse = function (value, root, path) {
+  if (this.spec.parse) {
+    return this.spec.parse(value, root, path);
+  } else {
+    return value;
+  }
+};
+
 Model.prototype._validateDefinedness = function (value) {
+  if (value instanceof ValidationResult) {
+    return value;
+  }
+
   var defaultValue = this.spec.default;
   var hasDefault = typeof defaultValue !== 'undefined';
 
@@ -191,10 +208,14 @@ Model.prototype._validateDefinedness = function (value) {
 };
 
 Model.prototype._transform = function (value, root, path) {
+  if (value instanceof ValidationResult) {
+    return value;
+  }
+
   var transformations = [
     this.spec.transform,
-    _.get(Model, ['transformations', this.spec.type, this.spec.format || '__none']),
-    _.get(Model, ['transformations', this.spec.type, '__default']),
+    this._getPropByType('transformations', true),
+    this._getPropByType('transformations'),
   ];
 
   var transform = _.find(transformations, Boolean) || _.identity;
@@ -208,10 +229,14 @@ Model.prototype._transform = function (value, root, path) {
 };
 
 Model.prototype._validateValue = function (value) {
+  if (value instanceof ValidationResult) {
+    return value;
+  }
+
   var validations = [
     this.spec.validations,
-    _.get(Model, ['validations', this.spec.type, this.spec.format || '__none']),
-    _.get(Model, ['validations', this.spec.type, '__default']),
+    this._getPropByType('validations', true),
+    this._getPropByType('validations'),
   ];
 
   var validate = _.find(validations, Boolean) || _.noop;
@@ -231,44 +256,29 @@ Model.prototype._validateValue = function (value) {
   return validate.call(this, value);
 };
 
+Model.prototype._throwIfNotAssertion = function (err, path) {
+  if (err.name === 'AssertionError') { return; }
+
+  if (!err.valuePath) {
+    err.valuePath = path;
+  }
+
+  throw err;
+};
+
 Model.prototype._validate = function (value, root, path) {
   try {
     if (!this.spec.type) {
       throw new ModelError('model type must be defined');
     }
 
-    if (this.spec.parse) {
-      value = this.spec.parse(value, root, path);
-    }
-
-    if (value instanceof ValidationResult) {
-      return value;
-    }
-
+    value = this._parse(value, root, path);
     value = this._validateDefinedness(value, path);
-    if (value instanceof ValidationResult) {
-      return value;
-    }
-
     value = this._transform(value, root, path);
-    if (value instanceof ValidationResult) {
-      return value;
-    }
-
     var validationResult = this._validateValue(value, path);
-    if (validationResult instanceof ValidationResult) {
-      return validationResult;
-    } else {
-      return new ValidationResult(value, true);
-    }
+    return new ValidationResult(validationResult || value, true);
   } catch (err) {
-    if (err.name !== 'AssertionError') {
-      if (!err.valuePath) {
-        err.valuePath = path;
-      }
-
-      throw err;
-    }
+    this._throwIfNotAssertion(err, path);
 
     err.valuePath = path;
     return new ValidationResult(value, false, err);

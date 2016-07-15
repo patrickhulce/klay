@@ -42,6 +42,7 @@
     ],
     "space": 2,
     "rules": {
+      "complexity": ["warn", 10],
       "xo/filename-case": 0,
       "no-else-return": 0,
       "max-statements-per-line": ["error", {"max": 2}],

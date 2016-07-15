@@ -4,12 +4,10 @@ engines:
     enabled: true
     config:
       languages:
-      - javascript
+        javascript:
+          mass_threshold: 70
   eslint:
     enabled: true
-    checks:
-      comma-dangle:
-        enabled: false
   fixme:
     enabled: true
 ratings:
