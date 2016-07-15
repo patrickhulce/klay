@@ -7,6 +7,11 @@ module.exports = {
       assert.typeof(value, 'boolean');
     }
   },
+  number: {
+    __default: function (value) {
+      assert.typeof(value, 'number');
+    }
+  },
   conditional: {
     __default: function (value, root, path) {
       var options = this._getOrThrow('options');
