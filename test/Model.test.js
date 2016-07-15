@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var assert = require('assert');
 var ValidationError = relativeRequire('ValidationError');
 var ValidationResult = relativeRequire('ValidationResult');
@@ -197,6 +198,12 @@ defineTest('Model.js', function (Model) {
       model.spec.should.have.property('default', 'foobar');
     });
 
+    it('should set spec.default as array', function () {
+      var arr = [1, 2, 3];
+      var model = new Model().type('array').default(arr);
+      model.spec.should.have.property('default', arr);
+    });
+
     it('should unset spec.default', function () {
       var model = new Model({type: 'number', default: 1}).default();
       model.spec.should.have.property('default', undefined);
@@ -211,6 +218,12 @@ defineTest('Model.js', function (Model) {
     it('should fail when default is not the same type as model', function () {
       (function () {
         new Model().type('number').default('12');
+      }).should.throw();
+    });
+
+    it('should fail when default is not array but type is', function () {
+      (function () {
+        new Model().type('array').default({'0': 1});
       }).should.throw();
     });
   });
@@ -404,6 +417,12 @@ defineTest('Model.js', function (Model) {
       }).should.throw();
     });
 
+    it('should fail when given a regexp and type is not string', function () {
+      (function () {
+        new Model().validations(/foo/);
+      }).should.throw();
+    });
+
     it('should fail when given an array with invalid values', function () {
       (function () {
         new Model().validations([function () {}, 'other']);
@@ -416,6 +435,12 @@ defineTest('Model.js', function (Model) {
       (function () {
         new Model().validate('test');
       }).should.throw(/defined/);
+    });
+
+    it('should fail loudly when told to', function () {
+      (function () {
+        new Model({type: 'number'}).validate({}, true);
+      }).should.throw();
     });
 
     context('when required', function () {
@@ -546,8 +571,6 @@ defineTest('Model.js', function (Model) {
       });
     });
 
-
-
     context('when transform is set', function () {
       it('should transform the value', function () {
         var transform = function (value) { return Number(value); };
@@ -595,5 +618,77 @@ defineTest('Model.js', function (Model) {
       });
     });
 
+    context('when validations is a RegExp', function () {
+      it('should pass a valid match', function () {
+        var model = new Model({type: 'string', validations: /^foo.*bar$/});
+        model.validate('fooANYTHINGbar').asObject().should.eql({
+          value: 'fooANYTHINGbar',
+          conforms: true,
+          errors: [],
+        });
+      });
+
+      it('should fail an invalid match', function () {
+        var model = new Model({type: 'string', validations: /^foo.*bar$/});
+        model.validate('somethingElsebar').asObject().should.eql({
+          value: 'somethingElsebar',
+          conforms: false,
+          errors: [{message: 'expected somethingElsebar to match /^foo.*bar$/'}],
+        });
+      });
+
+      it('should fail a non-string', function () {
+        var model = new Model({type: 'string', validations: /\d+/});
+        model.validate(12312).asObject().should.eql({
+          value: 12312,
+          conforms: false,
+          errors: [{message: 'expected 12312 to have typeof string'}],
+        });
+      });
+    });
+
+    context('when validations is an array', function () {
+      it('should pass a valid match', function () {
+        var model = new Model({type: 'string', validations: [_.noop, _.noop]});
+        model.validate('a string').asObject().should.eql({
+          value: 'a string',
+          conforms: true,
+          errors: [],
+        });
+      });
+
+      it('should fail when one element fails', function () {
+        var fail = function () { assert.ok(false, 'oops'); };
+        var model = new Model({type: 'number', validations: [_.noop, fail, _.noop]});
+        model.validate(123).asObject().should.eql({
+          value: 123,
+          conforms: false,
+          errors: [{message: 'oops'}],
+        });
+      });
+    });
+
+    context('when validations returns a ValidationResult', function () {
+      it('should short-circuit when does conform', function () {
+        var myFunc = function () { return new ValidationResult('x', true); };
+        var model = new Model({type: 'string', validations: myFunc});
+        model.validate('a string').asObject().should.eql({
+          value: 'x',
+          conforms: true,
+          errors: [],
+        });
+      });
+
+      it('should short-circuit when does not conform', function () {
+        var error = {message: 'y no work?'};
+        var myFunc = function () { return new ValidationResult('z', false, [error]); };
+        var model = new Model({type: 'string', validations: myFunc});
+        model.validate('a string').asObject().should.eql({
+          value: 'z',
+          conforms: false,
+          errors: [error],
+        });
+      });
+    });
   });
 });
