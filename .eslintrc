@@ -1,0 +1,6 @@
+{
+  "rules": {
+    "comma-dangle": 0,
+    "complexity": [2, 10]
+  }
+}
