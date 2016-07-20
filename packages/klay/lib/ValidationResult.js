@@ -30,9 +30,15 @@ function ValidationResult(value, conforms, errors) {
 
 ValidationResult.prototype.merge = function (other, name) {
   if (other instanceof ValidationResult) {
-    this.value[name] = other.value;
-    this.conforms = this.conforms && other.conforms;
-    this.errors = this.errors.concat(other.errors);
+    var value = typeof name === 'undefined' ?
+      this.value || other.value :
+      _.set(_.clone(this.value), name, other.value);
+
+    return new ValidationResult(
+      value,
+      this.conforms && other.conforms,
+      this.errors.concat(other.errors)
+    );
   } else {
     throw new Error('cannot merge ValidationResult with non-ValidationResult');
   }
@@ -40,7 +46,9 @@ ValidationResult.prototype.merge = function (other, name) {
 
 ValidationResult.coalesce = function (validationResults, base) {
   return validationResults.reduce(function (cumulative, result) {
-    return cumulative.merge(result.validation, result.name);
+    return result instanceof ValidationResult ?
+      cumulative.merge(result) :
+      cumulative.merge(result.validation, result.name);
   }, new ValidationResult(base, true));
 };
 

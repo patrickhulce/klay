@@ -355,7 +355,10 @@ defineTest('Model.js', function (Model) {
       };
 
       var model = new Model().type('object').children(childModel);
-      model.spec.should.have.property('children').eql(childModel);
+      model.spec.should.have.property('children').eql([
+        {name: 'first', model: childModel.first},
+        {name: 'second', model: childModel.second},
+      ]);
     });
 
     it('should set spec.children when array', function () {
@@ -386,6 +389,12 @@ defineTest('Model.js', function (Model) {
     it('should fail when given a non-spec conforming object', function () {
       (function () {
         new Model().type('object').children({unknown: 'foobar'});
+      }).should.throw();
+    });
+
+    it('should fail when type is object and is given a model', function () {
+      (function () {
+        new Model().type('object').children(new Model());
       }).should.throw();
     });
   });
@@ -532,6 +541,20 @@ defineTest('Model.js', function (Model) {
           errors: [{message: 'oops'}],
         });
       });
+
+      it('should still validate except when Nil', function () {
+        var model = new Model({
+          type: 'string',
+          default: null,
+          validations: function () { assert.ok(false, 'oops'); },
+        });
+
+        model.validate(undefined).asObject().should.eql({
+          conforms: true,
+          value: null,
+          errors: [],
+        });
+      });
     });
 
     context('when parse is set', function () {
@@ -664,29 +687,6 @@ defineTest('Model.js', function (Model) {
           value: 123,
           conforms: false,
           errors: [{message: 'oops'}],
-        });
-      });
-    });
-
-    context('when validations returns a ValidationResult', function () {
-      it('should short-circuit when does conform', function () {
-        var myFunc = function () { return new ValidationResult('x', true); };
-        var model = new Model({type: 'string', validations: myFunc});
-        model.validate('a string').asObject().should.eql({
-          value: 'x',
-          conforms: true,
-          errors: [],
-        });
-      });
-
-      it('should short-circuit when does not conform', function () {
-        var error = {message: 'y no work?'};
-        var myFunc = function () { return new ValidationResult('z', false, [error]); };
-        var model = new Model({type: 'string', validations: myFunc});
-        model.validate('a string').asObject().should.eql({
-          value: 'z',
-          conforms: false,
-          errors: [error],
         });
       });
     });

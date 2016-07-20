@@ -27,7 +27,10 @@ function Model(spec) {
 
   this.spec = {};
 
-  if (spec.type) { this.type(spec.type); }
+  if (spec.type) {
+    this.type(spec.type);
+  }
+
   var assignments = Object.assign({}, Model.defaults, spec);
   _.forEach(assignments, function (value, name) {
     if (typeof Model.prototype[name] !== 'function') {
@@ -91,7 +94,7 @@ Model.prototype.default = function (value) {
   assert.ok(this.spec.type, 'type must be set before setting default');
 
   var msg = 'type of default must equal type of model';
-  if (typeof value === 'undefined') {
+  if (_.isNil(value)) {
     // do nothing
   } else if (_.includes(['string', 'number', 'boolean', 'object'], this.spec.type)) {
     assert.equal(typeof value, this.spec.type, msg);
@@ -149,10 +152,22 @@ Model.prototype.children = function (children) {
   assert.equal(typeof children, 'object', 'children must be an object');
   assert.ok(_.includes(['object', 'array'], this.spec.type), 'children can only be set on object or array');
 
-  if (this.spec.type === 'array') {
+  if (_.isArray(children)) {
+    children.forEach(function (item) {
+      assert.equal(typeof item.name, 'string', 'item must have a name');
+      assert.ok(item.model instanceof Model, 'item must have a model');
+    });
+
+    return this._with({children: children});
+  } else if (this.spec.type === 'array') {
     return this._with({children: Model.construct(children)});
   } else {
-    return this._with({children: _.mapValues(children, v => Model.construct(v))});
+    assert.equal(children instanceof Model, false, 'children cannot be a model');
+    var kvToChild = (v, k) => {
+      return {name: k, model: Model.construct(v)};
+    };
+
+    return this._with({children: _.map(children, kvToChild)});
   }
 };
 
@@ -185,7 +200,6 @@ Model.prototype._validateDefinedness = function (value) {
   var defaultValue = this.spec.default;
   var hasDefault = typeof defaultValue !== 'undefined';
 
-  var isNull = value === null;
   var isUndefined = typeof value === 'undefined';
   var isRequired = Boolean(this.spec.required);
   var isNullable = Boolean(this.spec.nullable);
@@ -199,12 +213,12 @@ Model.prototype._validateDefinedness = function (value) {
   }
 
   if (isUndefined && hasDefault) {
-    return defaultValue;
-  } else if (isUndefined || isNull) {
-    return new ValidationResult(value, true);
-  } else {
-    return value;
+    value = defaultValue;
   }
+
+  return _.isNil(value) ?
+    new ValidationResult(value, true) :
+    value;
 };
 
 Model.prototype._transform = function (value, root, path) {
@@ -219,7 +233,7 @@ Model.prototype._transform = function (value, root, path) {
   ];
 
   var transform = _.find(transformations, Boolean) || _.identity;
-  var transformed = transform(value, root, path);
+  var transformed = transform.call(this, value, root, path);
 
   if (transformed instanceof ValidationResult && transformed.conforms) {
     return transformed.value;
@@ -239,21 +253,18 @@ Model.prototype._validateValue = function (value) {
     this._getPropByType('validations'),
   ];
 
-  var validate = _.find(validations, Boolean) || _.noop;
-  if (validate instanceof RegExp) {
-    var regexp = validate;
-    validate = function (value) {
-      assert.typeof(value, 'string');
-      assert.match(value, regexp);
-    };
-  } else if (_.isArray(validate)) {
-    var validateFuncs = validate;
-    validate = function (value) {
-      _.forEach(validateFuncs, validateFunc => validateFunc.call(this, value));
-    };
-  }
-
-  return validate.call(this, value);
+  _(validations).
+    filter(Boolean).
+    flatten().
+    forEach(validate => {
+      if (validate instanceof RegExp) {
+        assert.typeof(value, 'string');
+        assert.match(value, validate);
+      } else {
+        assert.equal(typeof validate, 'function', 'validate must be a function');
+        validate.call(this, value);
+      }
+    });
 };
 
 Model.prototype._throwIfNotAssertion = function (err, path) {
@@ -296,7 +307,12 @@ Model.prototype.validate = function (value, loudly) {
 
 Model.reset = function () {
   Model.construct = function (spec) { return new Model(spec); };
-  Model.types = ['boolean', 'number', 'string', 'array', 'object', 'conditional', 'undefined'];
+  Model.types = [
+    'undefined', 'any',
+    'boolean', 'number', 'string',
+    'date', 'array', 'object', 'conditional',
+  ];
+
   Model.validations = _.cloneDeep(validations);
   Model.transformations = _.cloneDeep(transformations);
 
