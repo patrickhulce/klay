@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var assert = require('assert');
+var ValueRef = relativeRequire('ValueRef');
 var ValidationError = relativeRequire('ValidationError');
 var ValidationResult = relativeRequire('ValidationResult');
 
@@ -308,9 +309,27 @@ defineTest('Model.js', function (Model) {
     context('when type is conditional', function () {
       it('should set spec.options first element with condition', function () {
         var sModel = new Model({type: 'string'});
+        var sRef = new ValueRef('foobar');
         var sCondition = s => typeof s === 'string';
-        var model = new Model().type('conditional').option(sModel, sCondition);
-        model.spec.should.have.property('options').eql([{model: sModel, condition: sCondition}]);
+        var model = new Model().type('conditional').option(sModel, sRef, sCondition);
+        model.spec.should.have.property('options').eql([{model: sModel, ref: sRef, condition: sCondition}]);
+      });
+
+      it('should set spec.options first element with string condition', function () {
+        var sModel = new Model({type: 'string'});
+        var model = new Model().type('conditional').option(sModel, 'path', 'value');
+        model.spec.should.have.deep.property('options.0.model', sModel);
+        model.spec.should.have.deep.property('options.0.ref.path', 'path');
+        model.spec.should.have.deep.property('options.0.condition').is.a('function');
+      });
+
+      it('should set spec.options first element with array condition', function () {
+        var sModel = new Model({type: 'string'});
+        var model = new Model().type('conditional').option(sModel, ['path1', 'path2'], [0, 1]);
+        model.spec.should.have.deep.property('options.0.model', sModel);
+        model.spec.should.have.deep.property('options.0.ref.0.path', 'path1');
+        model.spec.should.have.deep.property('options.0.ref.1.path', 'path2');
+        model.spec.should.have.deep.property('options.0.condition').is.a('function');
       });
 
       it('should set spec.options first element without condition', function () {
@@ -322,14 +341,15 @@ defineTest('Model.js', function (Model) {
       it('should set spec.options second element without condition', function () {
         var sModel = new Model({type: 'string'});
         var iModel = new Model({type: 'number'});
+        var iRef = new ValueRef('foobar');
         var iCondition = s => typeof s === 'number';
         var model = new Model().
           type('conditional').
           option(sModel).
-          option(iModel, iCondition);
+          option(iModel, iRef, iCondition);
         model.spec.should.have.property('options').eql([
           {model: sModel},
-          {model: iModel, condition: iCondition}
+          {model: iModel, ref: iRef, condition: iCondition}
         ]);
       });
 
@@ -339,9 +359,15 @@ defineTest('Model.js', function (Model) {
         }).should.throw();
       });
 
-      it('should fail when second argument is not a function', function () {
+      it('should fail when second argument is not a path', function () {
         (function () {
-          new Model().type('conditional').option(new Model(), 'foobar');
+          new Model().type('conditional').option(new Model(), {}, _.noop);
+        }).should.throw();
+      });
+
+      it('should fail when third argument is missing', function () {
+        (function () {
+          new Model().type('conditional').option(new Model(), 'path');
         }).should.throw();
       });
     });
@@ -687,6 +713,140 @@ defineTest('Model.js', function (Model) {
           value: 123,
           conforms: false,
           errors: [{message: 'oops'}],
+        });
+      });
+    });
+
+    context('when type is conditional', function () {
+      var model, topLevelModel;
+
+      beforeEach(function () {
+        model = new Model({type: 'conditional'}).
+          option(new Model({type: 'string'}), value => value === 'special').
+          option(new Model({type: 'array'}), 'length', 5).
+          option(new Model({type: 'boolean'}), 'id', value => value > 10).
+          option(new Model({type: 'number'}), ['id', 'type'], [42, 'special']);
+
+        topLevelModel = () => new Model({type: 'object'}).
+          children({
+            id: new Model({type: 'number'}),
+            type: new Model({type: 'string'}),
+            conditional: model,
+          });
+      });
+
+      context('when no options apply', function () {
+        it('should immediately conform when strict is false', function () {
+          model.validate({}).asObject().should.eql({
+            value: {},
+            conforms: true,
+            errors: [],
+          });
+        });
+
+        it('should fail when strict is true', function () {
+          model.strict().validate({}).asObject().should.eql({
+            value: {},
+            conforms: false,
+            errors: [{message: 'no applicable models for strict conditional'}],
+          });
+        });
+      });
+
+      context('when a single option applies', function () {
+        beforeEach(function () {
+          model = model.strict();
+        });
+
+        it('should conform when simple model conforms', function () {
+          model.validate('special').asObject().should.eql({
+            value: 'special',
+            conforms: true,
+            errors: [],
+          });
+        });
+
+        it('should conform when complex model conforms', function () {
+          topLevelModel().validate({id: 12, conditional: 'true'}).asObject().should.eql({
+            value: {id: 12, conditional: true},
+            conforms: true,
+            errors: [],
+          });
+        });
+
+        it('should conform when complex refs conform', function () {
+          topLevelModel().validate({
+            id: 42, type: 'special',
+            conditional: '500'
+          }).asObject().should.eql({
+            value: {id: 42, type: 'special', conditional: 500},
+            conforms: true,
+            errors: [],
+          });
+        });
+
+        it('should fail when simple model fails', function () {
+          model.validate('12345').asObject().should.eql({
+            value: '12345',
+            conforms: false,
+            errors: [{message: 'expected "12345" to have typeof array'}],
+          });
+        });
+
+        it('should fail when complex model fails', function () {
+          topLevelModel().validate({id: 12, conditional: 1234}).asObject().should.eql({
+            value: {id: 12, conditional: 1234},
+            conforms: false,
+            errors: [
+              {path: 'conditional', message: 'expected 1234 to have typeof boolean'},
+            ],
+          });
+        });
+      });
+
+      context('when multiple options apply', function () {
+        beforeEach(function () {
+          model = new Model({type: 'conditional'}).
+            option(new Model({type: 'number'})).
+            option(new Model({type: 'boolean'})).
+            option(new Model({type: 'string'})).
+            option(new Model({type: 'array'}), 'id', 15);
+        });
+
+        it('should pass when the first option passes', function () {
+          model.validate('1234').asObject().should.eql({
+            value: 1234,
+            conforms: true,
+            errors: [],
+          });
+        });
+
+        it('should pass when the second option passes', function () {
+          model.validate('false').asObject().should.eql({
+            value: false,
+            conforms: true,
+            errors: [],
+          });
+        });
+
+        it('should pass when the third option passes', function () {
+          model.validate('foobar').asObject().should.eql({
+            value: 'foobar',
+            conforms: true,
+            errors: [],
+          });
+        });
+
+        it('should fail when no option passes', function () {
+          topLevelModel().validate({id: 1, conditional: []}).asObject().should.eql({
+            value: {id: 1, conditional: []},
+            conforms: false,
+            errors: [
+              {path: 'conditional', message: 'expected [] to have typeof number'},
+              {path: 'conditional', message: 'expected [] to have typeof boolean'},
+              {path: 'conditional', message: 'expected [] to have typeof string'},
+            ],
+          });
         });
       });
     });
