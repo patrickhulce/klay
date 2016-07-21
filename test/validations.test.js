@@ -91,12 +91,42 @@ defineTest('validations.js', function (validations) {
   describe('#object', function () {
     var validate = validations.object.__default;
 
-    it('should pass when object', function () {
-      testPassingValues([new Date(), {foo: 'bar'}, null, []], validate);
+    context('when not strict', function () {
+      var model;
+      beforeEach(function () {
+        model = new Model({type: 'object'});
+      });
+
+      it('should pass when object', function () {
+        testPassingValues([new Date(), {foo: 'bar'}, null, []], validate, model);
+      });
+
+      it('should fail when not object', function () {
+        testFailingValues([true, 12, '2011-01-01'], validate, model);
+      });
     });
 
-    it('should fail when not object', function () {
-      testFailingValues([true, 12, '2011-01-01'], validate);
+    context('when strict', function () {
+      var model;
+      beforeEach(function () {
+        model = new Model({
+          type: 'object',
+          strict: true,
+          children: {id: new Model({type: 'number'})}
+        });
+      });
+
+      it('should pass when object', function () {
+        testPassingValues([{}, {id: 1}], validate, model);
+      });
+
+      it('should fail when not object', function () {
+        testFailingValues([true, 12, '2011-01-01'], validate, model);
+      });
+
+      it('should fail when object has unknown keys', function () {
+        testFailingValues([[1], {foo: 1}, {id: 1, other: ''}], validate, model);
+      });
     });
   });
 
