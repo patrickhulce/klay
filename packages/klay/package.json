@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "xo ./lib/**/*.js && mocha --reporter spec --require test/bootstrap test/**/*.test.js",
-    "test-watch": "mocha --watch --reporter spec --require test/bootstrap test/**/*.test.js"
+    "test-coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap test/**/*.test.js",
+    "test-watch": "mocha --watch --reporter dot --require test/bootstrap test/**/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "istanbul": "^0.4.4",
     "mocha": "^2.5.3",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
@@ -42,10 +44,18 @@
     ],
     "space": 2,
     "rules": {
-      "complexity": ["warn", 10],
+      "complexity": [
+        "warn",
+        10
+      ],
       "xo/filename-case": 0,
       "no-else-return": 0,
-      "max-statements-per-line": ["error", {"max": 2}],
+      "max-statements-per-line": [
+        "error",
+        {
+          "max": 2
+        }
+      ],
       "brace-style": [
         "error",
         "1tbs",
