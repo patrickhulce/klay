@@ -182,13 +182,105 @@ defineTest('transformations.js', function (transformations) {
         }).asObject().should.eql({
           conforms: false,
           errors: [
-            {path: 'id', message: 'expected id to have typeof number'},
+            {path: 'id', message: 'expected "id" to have typeof number'},
             {path: 'name', message: 'expected nonconform to match /^ABC/'},
           ],
           value: {
             id: 'id',
             name: 'nonconform',
             isAdmin: false,
+          },
+        });
+      });
+    });
+
+    context('when validating nested children', function () {
+      var model;
+
+      beforeEach(function () {
+        var nestedObject = new Model({
+          type: 'object',
+          children: {type: new Model({type: 'number'})}
+        });
+
+        var nestedConditional = new Model({type: 'conditional'}).
+          option(new Model({type: 'number'}), 'source.type', 2).
+          option(new Model({type: 'boolean'}), 'source.type', 3);
+
+        var children = {
+          id: new Model({type: 'number'}),
+          meta: nestedConditional,
+          name: new Model({type: 'string'}),
+          source: nestedObject,
+        };
+
+        model = new Model({type: 'object', children: children});
+      });
+
+      it('should succeed', function () {
+        transform.call(model, {
+          id: 123,
+          name: 'cool name',
+          source: {type: 2},
+          meta: 123,
+        }).asObject().should.eql({
+          conforms: true,
+          errors: [],
+          value: {
+            id: 123,
+            name: 'cool name',
+            source: {type: 2},
+            meta: 123,
+          },
+        });
+      });
+
+      it('should transform children', function () {
+        transform.call(model, {
+          id: 123,
+          name: 'cool name',
+          source: {type: '3'},
+          meta: 'true',
+        }).asObject().should.eql({
+          conforms: true,
+          errors: [],
+          value: {
+            id: 123,
+            name: 'cool name',
+            source: {type: 3},
+            meta: true,
+          },
+        });
+      });
+
+      it('should not fail when children are missing', function () {
+        transform.call(model, {
+          id: 123,
+          name: 'still works',
+        }).asObject().should.eql({
+          conforms: true,
+          errors: [],
+          value: {
+            id: 123,
+            name: 'still works',
+          },
+        });
+      });
+
+      it('should fail when children fail', function () {
+        transform.call(model, {
+          id: 123,
+          name: 'other name',
+          source: {type: 'other'},
+          meta: 'true',
+        }).asObject().should.eql({
+          conforms: false,
+          errors: [{path: 'source.type', message: 'expected "other" to have typeof number'}],
+          value: {
+            id: 123,
+            name: 'other name',
+            source: {type: 'other'},
+            meta: 'true',
           },
         });
       });
@@ -248,7 +340,7 @@ defineTest('transformations.js', function (transformations) {
       it('should fail when a child fails', function () {
         transform.call(model, [1, 'foo', 2]).asObject().should.eql({
           conforms: false,
-          errors: [{path: '1', message: 'expected foo to have typeof number'}],
+          errors: [{path: '1', message: 'expected "foo" to have typeof number'}],
           value: [1, 'foo', 2],
         });
       });
@@ -257,8 +349,8 @@ defineTest('transformations.js', function (transformations) {
         transform.call(model, [1, 'foo', 'bar']).asObject().should.eql({
           conforms: false,
           errors: [
-            {path: '1', message: 'expected foo to have typeof number'},
-            {path: '2', message: 'expected bar to have typeof number'},
+            {path: '1', message: 'expected "foo" to have typeof number'},
+            {path: '2', message: 'expected "bar" to have typeof number'},
           ],
           value: [1, 'foo', 'bar'],
         });
