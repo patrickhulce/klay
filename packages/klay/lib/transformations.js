@@ -44,16 +44,24 @@ module.exports = {
   },
   object: {
     __default: function (value, root, path) {
-      if (!this.spec.children) { return value; }
+      var children = this.spec.children;
+      if (!children) { return value; }
       var pathPrefix = path ? path + '.' : '';
 
       assert.typeof(value, 'object');
 
-      var validationResults = _.map(this.spec.children, function (item) {
-        return {
-          name: item.name,
-          validation: item.model._validate(value[item.name], root, pathPrefix + item.name),
-        };
+      var transformedRoot = {};
+      var priorityByType = {object: 1, conditional: 2};
+      var orderedChildren = _.sortBy(children, item => priorityByType[item.model.spec.type] || 0);
+      var validationResults = _.map(orderedChildren, function (item) {
+        var validation = item.model._validate(
+          value[item.name],
+          transformedRoot,
+          pathPrefix + item.name
+        );
+
+        _.set(transformedRoot, item.name, validation.value);
+        return {name: item.name, validation: validation};
       });
 
       return ValidationResult.coalesce(validationResults, {});
@@ -75,5 +83,5 @@ module.exports = {
 
       return ValidationResult.coalesce(validationResults, []);
     }
-  }
+  },
 };
