@@ -50,17 +50,11 @@ defineTest('validations.js', function (validations) {
     it('should fail when not number', function () {
       testFailingValues([null, true, '', 'true', new Date()], validate);
     });
-  });
 
-  describe('#number', function () {
-    var validate = validations.number.__default;
-
-    it('should pass when number', function () {
-      testPassingValues([0, 1.232, 1253252, -9988723], validate);
-    });
-
-    it('should fail when not number', function () {
-      testFailingValues([null, true, '', 'true', new Date()], validate);
+    it('should respect options', function () {
+      var model = new Model({type: 'number', options: [1, 15, 56]});
+      testPassingValues([1, 15, 56], validate, model);
+      testFailingValues([23, 53, 'other'], validate, model);
     });
   });
 
@@ -73,6 +67,12 @@ defineTest('validations.js', function (validations) {
 
     it('should fail when not string', function () {
       testFailingValues([null, true, 12, 0, {}, new Date()], validate);
+    });
+
+    it('should respect options', function () {
+      var model = new Model({type: 'string', options: ['blue', 'red', 'yellow']});
+      testPassingValues(['blue', 'red', 'yellow'], validate, model);
+      testFailingValues(['green', 'purple', 76, {}], validate, model);
     });
   });
 
