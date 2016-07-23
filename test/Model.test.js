@@ -90,7 +90,7 @@ defineTest('Model.js', function (Model) {
 
   describe('#format', function () {
     beforeEach(function () {
-      Model.formats = {string: ['name', 'phone'], number: ['integer']};
+      Model.formats = {string: ['name', 'address', 'zip'], number: ['integer']};
     });
 
     afterEach(function () {
@@ -100,6 +100,17 @@ defineTest('Model.js', function (Model) {
     it('should set spec.format', function () {
       var model = new Model().type('string').format('name');
       model.spec.should.have.property('format', 'name');
+    });
+
+    it('should default spec.formatOptions to empty', function () {
+      var model = new Model().type('string').format('address');
+      model.spec.should.have.property('formatOptions').eql({});
+    });
+
+    it('should set spec.formatOptions', function () {
+      var options = {extended: true};
+      var model = new Model().type('string').format('zip', options);
+      model.spec.should.have.property('formatOptions', options);
     });
 
     it('should fail when type is not set yet', function () {
