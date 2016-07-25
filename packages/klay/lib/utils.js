@@ -16,11 +16,13 @@ var utils = {
     });
   },
   builderFromFormat: function (type, format, extra) {
-    return options => (extra || _.identity)(Model.construct({
-      type: type,
-      format: format,
-      formatOptions: options
-    }));
+    return function (options) {
+      return (extra || _.identity)(Model.construct({
+        type: type,
+        format: format,
+        formatOptions: options
+      }));
+    };
   },
   buildersFromFormats: function (formats, extras) {
     if (!extras) { extras = {}; }
