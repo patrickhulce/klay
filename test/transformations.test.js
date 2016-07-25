@@ -84,7 +84,7 @@ defineTest('transformations.js', function (transformations) {
       beforeEach(function () {
         children = {
           id: new Model({type: 'number'}),
-          name: new Model({type: 'string', validations: /^ABC/}),
+          name: new Model({type: 'string', validations: [/^ABC/]}),
           isAdmin: new Model({type: 'boolean'}),
         };
 
