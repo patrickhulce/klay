@@ -54,38 +54,6 @@ defineTest('transformations.js', function (transformations) {
     });
   });
 
-  describe('#date', function () {
-    var transform = transformations.date.__default;
-
-    it('should transform string values', function () {
-      transform('2016-01-04').should.eql(new Date('2016-01-04T00:00:00.000Z'));
-      transform('1993-02-14T08:00:00.000Z').should.eql(new Date('1993-02-14T08:00:00.000Z'));
-    });
-
-    it('should transform number values', function () {
-      transform(86400 * 1000).should.eql(new Date('1970-01-02T00:00:00.000Z'));
-      transform(86400 * 366 * 1000).should.eql(new Date('1971-01-02T00:00:00.000Z'));
-    });
-
-    it('should directly return a date value', function () {
-      var d1 = new Date(2016, 04, 03);
-      var d2 = new Date(1985, 02, 01);
-      transform(d1).should.equal(d1);
-      transform(d2).should.equal(d2);
-    });
-
-    it('should directly return all other values', function () {
-      var obj = {};
-      var arr = [];
-
-      transform('foobar').should.equal('foobar');
-      transform(obj).should.equal(obj);
-      transform(arr).should.equal(arr);
-      should.equal(transform(null), null);
-      should.equal(transform(undefined), undefined);
-    });
-  });
-
   describe('#object', function () {
     var transform = transformations.object.__default;
 
