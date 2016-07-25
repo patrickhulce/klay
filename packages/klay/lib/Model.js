@@ -185,16 +185,21 @@ Model.prototype.children = function (children) {
 };
 
 Model.prototype.validations = function (validations) {
-  var msg = 'validations must be a regex, function, or array of functions';
-  if (_.isArray(validations)) {
-    validations.forEach(item => assert.ok(typeof item === 'function', msg));
-  } else if (validations instanceof RegExp) {
+  assert.ok(_.isArray(validations), 'validations must be an array');
+  return validations.reduce(function (model, validation) {
+    return model.validation(validation);
+  }, this);
+};
+
+Model.prototype.validation = function (validation) {
+  if (validation instanceof RegExp) {
     assert.equal(this.spec.type, 'string', 'model must be of type string');
   } else {
-    assert.ok(typeof validations === 'function', msg);
+    assert.ok(typeof validation === 'function', 'validation must be a regex or function');
   }
 
-  return this._with({validations: validations});
+  var validations = this.spec.validations || [];
+  return this._with({validations: validations.concat([validation])})
 };
 
 Model.prototype._getApplicableOptions = function (value, root, path) {
