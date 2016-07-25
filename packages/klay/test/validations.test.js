@@ -76,18 +76,6 @@ defineTest('validations.js', function (validations) {
     });
   });
 
-  describe('#date', function () {
-    var validate = validations.date.__default;
-
-    it('should pass when date', function () {
-      testPassingValues([new Date(), new Date('2016-01-12')], validate);
-    });
-
-    it('should fail when not date', function () {
-      testFailingValues([null, true, 12, 0, {}, '2011-01-01', new Date('foo')], validate);
-    });
-  });
-
   describe('#object', function () {
     var validate = validations.object.__default;
 

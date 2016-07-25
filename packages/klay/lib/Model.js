@@ -355,7 +355,7 @@ Model.reset = function () {
   Model.types = [
     'undefined', 'any',
     'boolean', 'number', 'string',
-    'date', 'array', 'object', 'conditional',
+    'array', 'object', 'conditional',
   ];
 
   Model.validations = _.cloneDeep(validations);
