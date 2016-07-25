@@ -439,14 +439,14 @@ defineTest('Model.js', function (Model) {
   describe('#validations', function () {
     it('should set spec.validations when regex', function () {
       var regex = /^something|else$/;
-      var model = new Model().type('string').validations(regex);
-      model.spec.should.have.property('validations', regex);
+      var model = new Model().type('string').validations([regex]);
+      model.spec.should.have.property('validations').eql([regex]);
     });
 
     it('should set spec.validations when function', function () {
       var validate = function () { };
-      var model = new Model().type('number').validations(validate);
-      model.spec.should.have.property('validations', validate);
+      var model = new Model().type('number').validations([validate]);
+      model.spec.should.have.property('validations').eql([validate]);
     });
 
     it('should set spec.validations when array of functions', function () {
@@ -454,10 +454,10 @@ defineTest('Model.js', function (Model) {
       var validateB = function () { };
       var validate = [validateA, validateB];
       var model = new Model().validations(validate);
-      model.spec.should.have.property('validations', validate);
+      model.spec.should.have.property('validations').eql(validate);
     });
 
-    it('should fail when given a non-function', function () {
+    it('should fail when given a non-array', function () {
       (function () {
         new Model().validations('random');
       }).should.throw();
@@ -465,7 +465,7 @@ defineTest('Model.js', function (Model) {
 
     it('should fail when given a regexp and type is not string', function () {
       (function () {
-        new Model().validations(/foo/);
+        new Model().validations([/foo/]);
       }).should.throw();
     });
 
@@ -569,7 +569,7 @@ defineTest('Model.js', function (Model) {
         var model = new Model({
           type: 'string',
           default: 'hello world',
-          validations: function () { assert.ok(false, 'oops'); },
+          validations: [function () { assert.ok(false, 'oops'); }],
         });
 
         model.validate(undefined).asObject().should.eql({
@@ -583,7 +583,7 @@ defineTest('Model.js', function (Model) {
         var model = new Model({
           type: 'string',
           default: null,
-          validations: function () { assert.ok(false, 'oops'); },
+          validations: [function () { assert.ok(false, 'oops'); }],
         });
 
         model.validate(undefined).asObject().should.eql({
@@ -620,7 +620,7 @@ defineTest('Model.js', function (Model) {
         var model = new Model({
           type: 'string',
           parse: parser,
-          validations: validations,
+          validations: [validations],
         });
 
         model.validate('something').asObject().should.eql({
@@ -667,7 +667,7 @@ defineTest('Model.js', function (Model) {
         var model = new Model({
           type: 'number',
           transform: transform,
-          validations: validate,
+          validations: [validate],
         });
 
         model.validate(123).asObject().should.eql({
@@ -680,7 +680,7 @@ defineTest('Model.js', function (Model) {
 
     context('when validations is a RegExp', function () {
       it('should pass a valid match', function () {
-        var model = new Model({type: 'string', validations: /^foo.*bar$/});
+        var model = new Model({type: 'string', validations: [/^foo.*bar$/]});
         model.validate('fooANYTHINGbar').asObject().should.eql({
           value: 'fooANYTHINGbar',
           conforms: true,
@@ -689,7 +689,7 @@ defineTest('Model.js', function (Model) {
       });
 
       it('should fail an invalid match', function () {
-        var model = new Model({type: 'string', validations: /^foo.*bar$/});
+        var model = new Model({type: 'string', validations: [/^foo.*bar$/]});
         model.validate('somethingElsebar').asObject().should.eql({
           value: 'somethingElsebar',
           conforms: false,
@@ -698,7 +698,7 @@ defineTest('Model.js', function (Model) {
       });
 
       it('should fail a non-string', function () {
-        var model = new Model({type: 'string', validations: /\d+/});
+        var model = new Model({type: 'string', validations: [/\d+/]});
         model.validate(12312).asObject().should.eql({
           value: 12312,
           conforms: false,
