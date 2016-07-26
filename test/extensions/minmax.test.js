@@ -159,5 +159,20 @@ defineTest('extensions/minmax.js', function (minmaxFactory) {
         }).should.throw();
       });
     });
+
+    describe('length', function () {
+      it('should set spec.min and spec.max', function () {
+        var model = new inst.Model({type: 'string'}).length(10);
+        model.should.have.deep.property('spec.min', 10);
+        model.should.have.deep.property('spec.max', 10);
+        model.validate('0123456789').should.have.property('conforms', true);
+      });
+
+      it('should fail for non-numeric types', function () {
+        (function () {
+          new Model({type: 'array'}).length('foo');
+        }).should.throw();
+      });
+    });
   });
 });

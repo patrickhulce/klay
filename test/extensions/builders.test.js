@@ -16,6 +16,24 @@ defineTest('extensions/builders.js', function (buildersFactory) {
         model.should.be.instanceof(Model);
         model.spec.should.have.property('type', type);
       });
+
+      if (type === 'object' || type === 'array') {
+        it('should set spec.children', function () {
+          var modelSpec = type === 'object' ?
+            {id: builders.string()} :
+            {type: 'string'};
+
+          var model = builders[type](modelSpec);
+          model.should.be.instanceof(Model);
+          model.spec.should.have.property('type', type);
+          if (type === 'array') {
+            model.spec.should.have.property('children').an('object');
+          } else {
+            model.spec.should.have.property('children').
+              with.deep.property('0.model').instanceof(Model);
+          }
+        });
+      }
     });
   });
 

@@ -4,18 +4,6 @@ var should = require('chai').should();
 var Model = relativeRequire('Model');
 
 defineTest('validations.js', function (validations) {
-  var mapIntoFunctions = function (values, validate, model) {
-    return values.map(value => () => validate.call(model, value));
-  };
-
-  var testPassingValues = function () {
-    mapIntoFunctions.apply(null, arguments).forEach(f => f.should.not.throw());
-  };
-
-  var testFailingValues = function () {
-    mapIntoFunctions.apply(null, arguments).forEach(f => f.should.throw());
-  };
-
   describe('#undefined', function () {
     var validate = validations.undefined.__default;
 
