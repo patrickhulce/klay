@@ -10,6 +10,16 @@ module.exports = function (construct) {
 
   return {
     builders: _.assign(typeBuilders, {
+      object: function (childModel) {
+        return childModel ?
+          construct({type: 'object', children: childModel}) :
+          construct({type: 'object'});
+      },
+      array: function (childModel) {
+        return childModel ?
+          construct({type: 'array', children: childModel}) :
+          construct({type: 'array'});
+      },
       enum: function (options) {
         if (!_.isArray(options)) {
           options = _.slice(arguments);
