@@ -32,9 +32,11 @@ module.exports = {
 
       assert.typeof(value, 'object');
 
-      var transformedRoot = {};
       var priorityByType = {object: 1, conditional: 2};
+      var leftovers = _.omit(value, _.map(children, 'name'));
       var orderedChildren = _.sortBy(children, item => priorityByType[item.model.spec.type] || 0);
+
+      var transformedRoot = _.assign({}, leftovers);
       var validationResults = _.map(orderedChildren, function (item) {
         var validation = item.model._validate(
           value[item.name],
@@ -46,7 +48,9 @@ module.exports = {
         return {name: item.name, validation: validation};
       });
 
-      return ValidationResult.coalesce(validationResults, {});
+      return ValidationResult.
+        coalesce(validationResults, {}).
+        merge(leftovers);
     }
   },
   array: {

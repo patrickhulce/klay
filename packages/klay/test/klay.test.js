@@ -37,7 +37,7 @@ defineTest('klay.js', function (klay) {
     var inst;
 
     beforeEach(function () {
-      inst = klay();
+      inst = klay({extensions: ['builders']});
     });
 
     it('should merge types', function () {
