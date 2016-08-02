@@ -126,6 +126,24 @@ defineTest('transformations.js', function (transformations) {
         });
       });
 
+      it('should pass along unknown children', function () {
+        transform.call(model, {
+          id: '1234',
+          name: 'ABC4ME',
+          isAdmin: 'false',
+          unknown: 'value',
+        }).asObject().should.eql({
+          conforms: true,
+          errors: [],
+          value: {
+            id: 1234,
+            name: 'ABC4ME',
+            isAdmin: false,
+            unknown: 'value',
+          },
+        });
+      });
+
       it('should fail when a child fails', function () {
         transform.call(model, {
           id: '1234',
