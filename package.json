@@ -10,11 +10,12 @@
   "scripts": {
     "test": "xo ./lib/**/*.js && mocha --reporter spec --require test/bootstrap test/*.test.js test/**/*.test.js",
     "test-coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap test/*.test.js test/**/*.test.js",
-    "test-watch": "mocha --watch --reporter dot --require test/bootstrap test/*.test.js test/**/*.test.js"
+    "test-watch": "mocha --watch --reporter dot --require test/bootstrap test/*.test.js test/**/*.test.js",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/patrickhulce/klay.git"
+    "url": "https://github.com/patrickhulce/klay.git"
   },
   "keywords": [
     "validation"
@@ -30,8 +31,10 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "cz-conventional-changelog": "^1.1.6",
     "istanbul": "^0.4.4",
     "mocha": "^2.5.3",
+    "semantic-release": "^4.3.5",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
     "xo": "^0.16.0"
@@ -71,6 +74,11 @@
         "error",
         "object"
       ]
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
     }
   }
 }

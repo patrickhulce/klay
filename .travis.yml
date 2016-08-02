@@ -1,12 +1,21 @@
 language: node_js
+cache:
+  directories:
+    - node_modules
+notifications:
+  email: false
 node_js:
   - "6"
   - "5"
   - "4"
 before_install:
   - npm install -g coveralls codeclimate-test-reporter
+before_script:
+  - npm prune
 script:
   - xo ./lib/**/*.js
   - istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap test/*.test.js test/**/*.test.js
   - cat ./coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
   - codeclimate-test-reporter < ./coverage/lcov.info || echo 'Failed to upload to codeclimate...'
+after_success:
+  - npm run semantic-release
