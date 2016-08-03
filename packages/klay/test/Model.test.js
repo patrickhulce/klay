@@ -19,6 +19,12 @@ defineTest('Model.js', function (Model) {
       model.should.have.deep.property('spec.format', 'name');
     });
 
+    it('should set unknown spec properties', function () {
+      var model = new Model({foobar: null, bazbam: 123});
+      model.should.have.deep.property('spec.foobar', null);
+      model.should.have.deep.property('spec.bazbam', 123);
+    });
+
     it('should return the argument when it is already a model', function () {
       var modelA = new Model({type: 'string'});
       var modelB = new Model(modelA);
@@ -29,12 +35,6 @@ defineTest('Model.js', function (Model) {
       (function () {
         new Model(1234);
       }).should.throw(Error);
-    });
-
-    it('should fail when unknown spec property is used', function () {
-      (function () {
-        new Model({foobar: null});
-      }).should.throw(Error, /unknown property/);
     });
 
     it('should validate the spec properties', function () {
