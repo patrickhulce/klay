@@ -59,7 +59,7 @@ describe('klay', function () {
         parentId: '12345678-1234-1234-1234-123412341234',
         type: 'html',
         metadata: {title: 'foo', version: 'v1', html5: true},
-        source: {raw: 'something'},
+        source: {raw: '2short'},
         createdAt: '2016-07-27T04:51:22.820Z',
         updatedAt: '2016-07-27T04:51:22.820Z',
       };
@@ -68,11 +68,12 @@ describe('klay', function () {
       validated.should.have.property('conforms', false);
       validated.should.have.property('errors').eql([
         {message: 'unexpected properties: html5', path: 'metadata'},
+        {message: 'value must have length greater than or equal to 8', path: 'source.raw'},
         {message: 'expected value to be defined', path: 'source.text'},
       ]);
 
       validated.should.have.property('value').eql(_.defaults({
-        source: {raw: 'something', text: undefined},
+        source: {raw: '2short', text: undefined},
         createdAt: new Date('2016-07-27T04:51:22.820Z'),
         updatedAt: new Date('2016-07-27T04:51:22.820Z'),
       }, obj));
