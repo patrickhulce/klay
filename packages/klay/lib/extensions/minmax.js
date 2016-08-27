@@ -2,17 +2,18 @@ var _ = require('lodash');
 var assert = require('../assert');
 
 var message = function (name, verb) {
+  var value = this.spec[name];
   var direction = name === 'min' ? 'greater' : 'less';
-  return `value must ${verb} ${direction} than or equal to ${name}`;
+  return `value must ${verb} ${direction} than or equal to ${value}`;
 };
 
 var validation = (verb, map) => function (value) {
   if (typeof this.spec.min === 'number') {
-    assert.ok(map(value) >= this.spec.min, message('min', verb));
+    assert.ok(map(value) >= this.spec.min, message.call(this, 'min', verb));
   }
 
   if (typeof this.spec.max === 'number') {
-    assert.ok(map(value) <= this.spec.max, message('max', verb));
+    assert.ok(map(value) <= this.spec.max, message.call(this, 'max', verb));
   }
 };
 

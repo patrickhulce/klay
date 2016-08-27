@@ -13,7 +13,7 @@ module.exports = function (klay) {
   });
 
   var HtmlSource = types.object({
-    raw: types.string(),
+    raw: types.string().min(8),
     text: types.string(),
   });
 
