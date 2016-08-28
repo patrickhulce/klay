@@ -63,7 +63,7 @@ defineTest('Options.js', function (Options) {
     it('should add the first constraint property', function () {
       opts = opts.constrain('id', 'primary');
       opts.spec.should.have.property('constraints').eql([{
-        properties: ['id'], type: 'primary', meta: {}
+        name: 'primary:id', properties: ['id'], type: 'primary', meta: {}
       }]);
     });
 
@@ -73,6 +73,7 @@ defineTest('Options.js', function (Options) {
         constrain(['day', 'other'], 'unique', {behavior: 'reject'});
 
       opts.spec.should.have.deep.property('constraints.1').eql({
+        name: 'unique:day,other',
         properties: ['day', 'other'],
         type: 'unique',
         meta: {behavior: 'reject'},
@@ -80,14 +81,16 @@ defineTest('Options.js', function (Options) {
     });
 
     it('should add a reference constraint property', function () {
+      var meta = {lookupTable: 'parents', name: 'reference:parent'};
       opts = opts.
         constrain('id', 'primary').
-        constrain(['parent_id', 'other'], 'reference', {lookupTable: 'parents'});
+        constrain(['parent_id', 'other'], 'reference', meta);
 
       opts.spec.should.have.deep.property('constraints.1').eql({
+        name: 'reference:parent',
         properties: ['parent_id', 'other'],
         type: 'reference',
-        meta: {lookupTable: 'parents'},
+        meta: meta,
       });
     });
 
@@ -97,6 +100,7 @@ defineTest('Options.js', function (Options) {
         constrain(['canonical_id', 'unchangeable'], 'immutable');
 
       opts.spec.should.have.deep.property('constraints.1').eql({
+        name: 'immutable:canonical_id,unchangeable',
         properties: ['canonical_id', 'unchangeable'],
         type: 'immutable',
         meta: {},
@@ -107,6 +111,7 @@ defineTest('Options.js', function (Options) {
       opts = opts.constrain(['something', 'other'], 'custom', {foo: 'bar'});
 
       opts.spec.should.have.deep.property('constraints.0').eql({
+        name: 'custom:something,other',
         properties: ['something', 'other'],
         type: 'custom',
         meta: {foo: 'bar'},
@@ -151,7 +156,7 @@ defineTest('Options.js', function (Options) {
     var checksum = item => item.id * Math.random();
 
     it('should return all of the settings', function () {
-      var meta = {lookupTable: 'parents'};
+      var meta = {lookupTable: 'parents', name: 'reference:parent'};
       var opts = new Options().
         index('type').
         index(['type', 'size', '-created_at']).
@@ -160,7 +165,7 @@ defineTest('Options.js', function (Options) {
         automanage('updated_at', 'update', now).
         constrain('id', 'primary').
         constrain(['type', 'version'], 'unique').
-        constrain(['parent_id', 'parent_type'], 'reference', meta);
+        constrain(['parent_id'], 'reference', meta);
 
       opts.spec.should.eql({
         indexes: [
@@ -179,9 +184,9 @@ defineTest('Options.js', function (Options) {
           {property: 'updated_at', on: 'update', lifecycle: 'pre-validate', supplyWith: now},
         ],
         constraints: [
-          {properties: ['id'], type: 'primary', meta: {}},
-          {properties: ['type', 'version'], type: 'unique', meta: {}},
-          {properties: ['parent_id', 'parent_type'], type: 'reference', meta},
+          {name: 'primary:id', properties: ['id'], type: 'primary', meta: {}},
+          {name: 'unique:type,version', properties: ['type', 'version'], type: 'unique', meta: {}},
+          {name: 'reference:parent', properties: ['parent_id'], type: 'reference', meta},
         ],
       });
     });

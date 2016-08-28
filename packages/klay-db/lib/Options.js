@@ -71,13 +71,15 @@ function validateConstraint(constraint) {
   var allowedTypes = ['primary', 'unique', 'reference', 'immutable', 'custom'];
   properties = constraint.properties = _.isArray(properties) ? properties : [properties];
 
-  return [
+  [
     [_.every(properties, property => typeof property === 'string'), 'properties'],
     [_.includes(allowedTypes, constraint.type), 'type'],
     [typeof constraint.meta === 'object', 'meta'],
   ].forEach(function (validation) {
     assert.ok(validation[0], `invalid constraint ${validation[1]}`);
   });
+
+  constraint.name = constraint.meta.name || `${constraint.type}:${properties.join(',')}`;
 }
 
 function validateIndexProperties(properties) {
