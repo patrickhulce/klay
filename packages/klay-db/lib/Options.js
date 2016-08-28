@@ -30,6 +30,8 @@ Options.prototype.automanage = function (property, event, lifecycle, supplyWith)
 };
 
 Options.prototype.constrain = function (properties, type, meta) {
+  meta = meta || {};
+
   var constraints = this.spec.constraints || [];
   var constraint = {properties, type, meta};
 
@@ -66,12 +68,13 @@ function validateAutomanaged(automanage) {
 
 function validateConstraint(constraint) {
   var properties = constraint.properties;
+  var allowedTypes = ['primary', 'unique', 'reference', 'immutable', 'custom'];
   properties = constraint.properties = _.isArray(properties) ? properties : [properties];
 
   return [
     [_.every(properties, property => typeof property === 'string'), 'properties'],
-    [_.includes(['primary', 'unique', 'reference', 'custom'], constraint.type), 'type'],
-    [_.isNil(constraint.meta) || typeof constraint.meta === 'object', 'meta'],
+    [_.includes(allowedTypes, constraint.type), 'type'],
+    [typeof constraint.meta === 'object', 'meta'],
   ].forEach(function (validation) {
     assert.ok(validation[0], `invalid constraint ${validation[1]}`);
   });

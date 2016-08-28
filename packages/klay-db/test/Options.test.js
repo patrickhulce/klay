@@ -63,7 +63,7 @@ defineTest('Options.js', function (Options) {
     it('should add the first constraint property', function () {
       opts = opts.constrain('id', 'primary');
       opts.spec.should.have.property('constraints').eql([{
-        properties: ['id'], type: 'primary', meta: undefined
+        properties: ['id'], type: 'primary', meta: {}
       }]);
     });
 
@@ -88,6 +88,18 @@ defineTest('Options.js', function (Options) {
         properties: ['parent_id', 'other'],
         type: 'reference',
         meta: {lookupTable: 'parents'},
+      });
+    });
+
+    it('should add an immutable constraint property', function () {
+      opts = opts.
+        constrain('id', 'primary').
+        constrain(['canonical_id', 'unchangeable'], 'immutable');
+
+      opts.spec.should.have.deep.property('constraints.1').eql({
+        properties: ['canonical_id', 'unchangeable'],
+        type: 'immutable',
+        meta: {},
       });
     });
 
@@ -167,8 +179,8 @@ defineTest('Options.js', function (Options) {
           {property: 'updated_at', on: 'update', lifecycle: 'pre-validate', supplyWith: now},
         ],
         constraints: [
-          {properties: ['id'], type: 'primary', meta: undefined},
-          {properties: ['type', 'version'], type: 'unique', meta: undefined},
+          {properties: ['id'], type: 'primary', meta: {}},
+          {properties: ['type', 'version'], type: 'unique', meta: {}},
           {properties: ['parent_id', 'parent_type'], type: 'reference', meta},
         ],
       });
