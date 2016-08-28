@@ -2,7 +2,7 @@
   "name": "klay",
   "version": "0.0.0",
   "description": "Isomorphic and extensible validation library for JavaScript.",
-  "main": "./lib/index.js",
+  "main": "./lib/klay.js",
   "directories": {
     "example": "examples",
     "test": "test"
