@@ -7,6 +7,7 @@
     "test:lint": "xo ./lib/**/*.js",
     "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap test/*.test.js test/**/*.test.js",
     "test:watch": "mocha --watch --reporter dot --require test/bootstrap test/*.test.js test/**/*.test.js",
+    "prepublish": "./node_modules/.bin/generate-export-aliases",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
@@ -57,6 +58,10 @@
     }
   },
   "config": {
+    "exportAliases": {
+      "extension": "./lib/extension.js",
+      "options": "./lib/Options.js"
+    },
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
@@ -67,6 +72,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "cz-conventional-changelog": "^1.2.0",
+    "generate-export-aliases": "^1.0.0",
     "istanbul": "^0.4.5",
     "klay": "^1.0.2",
     "mocha": "^3.0.2",

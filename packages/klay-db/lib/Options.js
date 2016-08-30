@@ -4,6 +4,8 @@ var _ = require('lodash');
 function Options(spec) {
   if (spec instanceof Options) {
     return spec;
+  } else if (!this || this.constructor !== Options) {
+    return new Options(spec);
   } else if (typeof spec === 'undefined') {
     spec = {};
   }

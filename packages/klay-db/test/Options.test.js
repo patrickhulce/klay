@@ -4,6 +4,7 @@ defineTest('Options.js', function (Options) {
   describe('#constructor', function () {
     it('should set spec properties', function () {
       var opts = new Options({indexes: [{property: 'foo', direction: 'asc'}]});
+      opts.should.be.instanceof(Options);
       opts.should.have.deep.property('spec.indexes.0.property', 'foo');
     });
 
@@ -11,6 +12,12 @@ defineTest('Options.js', function (Options) {
       var optsA = new Options({hello: 1});
       var optsB = new Options(optsA);
       optsB.should.equal(optsA);
+    });
+
+    it('should work when not using `new`', function () {
+      var opts = Options({hello: 'blasphemy'});
+      opts.should.be.instanceof(Options);
+      opts.should.have.deep.property('spec.hello', 'blasphemy');
     });
   });
 
