@@ -14,6 +14,10 @@ module.exports = function () {
     }
   }
 
+  function getExtensions(modelDef) {
+    return modelDef.extensions.concat(globalExtensions);
+  }
+
   function validateExtension(extension) {
     assert.ok(typeof extension === 'object', 'extension must be an object');
     assert.ok(typeof extension.name === 'string', 'extension must have a name');
@@ -36,7 +40,8 @@ module.exports = function () {
     var modelDef = getModelDefOrThrow(modelName);
     if (typeof extension === 'string' && typeof options === 'undefined') {
       var extensionName = extension;
-      var extensionDef = _.find(modelDef.extensions, item => item.extension.name === extensionName);
+      var extensions = getExtensions(modelDef);
+      var extensionDef = _.find(extensions, item => item.extension.name === extensionName);
       assert.ok(extensionDef, `could not find extension: ${extensionName}`);
       extension = _.get(extensionDef, 'extension');
       options = _.get(extensionDef, 'options');
@@ -98,7 +103,7 @@ module.exports = function () {
         });
       } else if (arguments.length === 1) {
         var modelDef = getModelDefOrThrow(modelName);
-        return _(modelDef.extensions).
+        return _(getExtensions(modelDef)).
           map(item => _.assign({
             name: item.extension.name,
             result: bake(modelName, item.extension, item.options),

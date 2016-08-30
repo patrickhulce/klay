@@ -99,6 +99,17 @@ defineTest('kiln.js', function (Kiln) {
       });
     });
 
+    it('should generate global extensions', function () {
+      complexKiln();
+      var extension = _.defaults({name: 'globalA'}, extensionApi);
+      sandbox.stub(extension, 'bake').returns({global: 'value'});
+      kiln.extend(extension);
+
+      var results = kiln.bake();
+      results.should.have.deep.property('user.globalA.global', 'value');
+      results.should.have.deep.property('photo.globalA.global', 'value');
+    });
+
     it('should generate for all extensions', function () {
       complexKiln();
       kiln.bake('user').should.eql({
@@ -110,6 +121,15 @@ defineTest('kiln.js', function (Kiln) {
     it('should generate for a specific model and extension', function () {
       complexKiln();
       kiln.bake('user', 'A').should.eql({resultA: 'foo'});
+    });
+
+    it('should generate for a specific model and global extension', function () {
+      complexKiln();
+      var extension = _.defaults({name: 'globalA'}, extensionApi);
+      sandbox.stub(extension, 'bake').returns({global: 'value'});
+      kiln.extend(extension);
+
+      kiln.bake('user', 'globalA').should.eql({global: 'value'});
     });
 
     it('should generate an extension without advanced configuration', function () {
