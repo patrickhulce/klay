@@ -25,14 +25,10 @@ module.exports = function () {
 
   function createDeps(listOfDependencies, modelName) {
     return listOfDependencies.map(function (item) {
-      if (typeof item === 'string') {
-        var parts = item.split(':');
-        var model = parts.length > 1 ? parts[0] : modelName;
-        var extension = parts.length > 1 ? parts[1] : parts[0];
-        return bake(model, extension);
-      } else {
-        return bake(item.model, item.extension);
-      }
+      var parts = item.split(':');
+      var model = parts.length > 1 ? parts[0] : modelName;
+      var extension = parts.length > 1 ? parts[1] : parts[0];
+      return bake(model, extension);
     });
   }
 

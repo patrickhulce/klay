@@ -76,6 +76,7 @@ defineTest('kiln.js', function (Kiln) {
       extensionABake.returns({resultA: 'foo'});
       sandbox.stub(extensionB, 'bake').returns({resultB: 'bar'});
       sandbox.stub(extensionC, 'bake').returns({resultC: 'baz'});
+      delete extensionB.determineDependencies;
 
       kiln.
         add('user', {}).
@@ -184,6 +185,64 @@ defineTest('kiln.js', function (Kiln) {
       var resultB = kiln.bake('user', 'A');
       resultA.should.equal(resultB);
       extensionABake.should.have.been.calledOnce;
+    });
+
+    it('should fail when referencing an unknown model', function () {
+      (function () {
+        complexKiln();
+        kiln.bake('foobar', 'A');
+      }).should.throw(Error);
+    });
+  });
+
+  describe('#clearCache', function () {
+    var sandbox;
+
+    beforeEach(function () { sandbox = createSandbox(); });
+
+    it('should force regeneration of new extensions', function () {
+      var extension = _.defaults({name: 'foo'}, extensionApi);
+      var kiln = Kiln().add('user', {}).extend('user', extension);
+
+      var bakeStub = sandbox.stub(extension, 'bake');
+      bakeStub.
+        onFirstCall().returns({result: 1}).
+        onSecondCall().returns({result: 2});
+
+      kiln.bake('user', 'foo');
+      var resultA = kiln.bake('user', 'foo');
+      kiln.clearCache();
+      var resultB = kiln.bake('user', 'foo');
+      resultA.should.not.equal(resultB);
+      bakeStub.should.have.been.calledTwice;
+    });
+  });
+
+  describe('#reset', function () {
+    var sandbox;
+
+    beforeEach(function () { sandbox = createSandbox(); });
+
+    it('should clear all models', function () {
+      var kiln = Kiln().add('user', {}).add('photo', {});
+      kiln.getModels().should.have.property('user');
+      kiln.reset();
+      kiln.getModels().should.eql({});
+    });
+
+    it('should clear the cache', function () {
+      var extension = _.defaults({name: 'foo'}, extensionApi);
+      var kiln = Kiln().add('user', {}).extend('user', extension);
+
+      var bakeStub = sandbox.stub(extension, 'bake');
+      bakeStub.returns({result: true});
+      kiln.bake('user', 'foo');
+      bakeStub.should.have.been.calledOnce;
+
+      kiln.reset();
+      kiln.add('user', {}).extend('user', extension);
+      kiln.bake('user', 'foo');
+      bakeStub.should.have.been.calledTwice;
     });
   });
 });
