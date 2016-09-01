@@ -1,7 +1,7 @@
 {
   "name": "klay-db",
   "description": "Extensions for klay to add generic information typically used for database interactions.",
-  "main": "./lib/index.js",
+  "main": "./lib/extension.js",
   "scripts": {
     "test": "xo ./lib/**/*.js && mocha --reporter spec --require test/bootstrap test/*.test.js test/**/*.test.js",
     "test:lint": "xo ./lib/**/*.js",
