@@ -30,8 +30,8 @@ defineTest('Options.js', function (Options) {
       var supplyWith = () => new Date();
       opts = opts.automanage('myprop', 'create', 'post-validate', supplyWith);
       opts.spec.should.have.property('automanaged').eql([{
-        property: 'myprop', on: 'create',
-        lifecycle: 'post-validate',
+        property: 'myprop', event: 'create',
+        step: 'post-validate',
         supplyWith: supplyWith,
       }]);
     });
@@ -43,18 +43,17 @@ defineTest('Options.js', function (Options) {
         automanage('mypropB', 'update', supplyWith);
 
       opts.spec.should.have.deep.property('automanaged.1').eql({
-        property: 'mypropB', on: 'update',
-        lifecycle: 'pre-validate',
+        property: 'mypropB', event: 'update',
+        step: 'pre-validate',
         supplyWith: supplyWith,
       });
     });
 
     it('should support autoincrement supplyWith', function () {
-      opts = opts.automanage('mypropA', 'create', 'post-validate', 'autoincrement');
+      opts = opts.automanage('mypropA', 'create', 'insert', 'autoincrement');
 
       opts.spec.should.have.deep.property('automanaged.0').eql({
-        property: 'mypropA', on: 'create',
-        lifecycle: 'post-validate',
+        property: 'mypropA', event: 'create', step: 'insert',
         supplyWith: 'autoincrement',
       });
     });
@@ -77,8 +76,8 @@ defineTest('Options.js', function (Options) {
         automanage('mypropC', 'create', supplyWith);
 
       opts.spec.should.have.deep.property('automanaged.2').eql({
-        property: 'mypropC', on: 'create',
-        lifecycle: 'pre-validate',
+        property: 'mypropC', event: 'create',
+        step: 'pre-validate',
         supplyWith: supplyWith,
       });
     });
@@ -95,15 +94,15 @@ defineTest('Options.js', function (Options) {
       }).should.fail;
     });
 
-    it('should fail when unknown supplyWith is given', function () {
+    it('should fail when unknown step is given', function () {
       (function () {
-        opts.automanage('mypropA', 'create', 'post-validate', 'foobar');
+        opts.automanage('mypropA', 'create', 'unknown', _.noop);
       }).should.fail;
     });
 
-    it('should fail when unknown lifecycle is given', function () {
+    it('should fail when unknown supplyWith is given', function () {
       (function () {
-        opts.automanage('mypropA', 'create', 'unknown', _.noop);
+        opts.automanage('mypropA', 'create', 'post-validate', 'foobar');
       }).should.fail;
     });
   });
@@ -232,9 +231,9 @@ defineTest('Options.js', function (Options) {
           ],
         ],
         automanaged: [
-          {property: 'checksum', on: 'update', lifecycle: 'post-validate', supplyWith: checksum},
-          {property: 'created_at', on: 'create', lifecycle: 'pre-validate', supplyWith: now},
-          {property: 'updated_at', on: 'update', lifecycle: 'pre-validate', supplyWith: now},
+          {property: 'checksum', event: 'update', step: 'post-validate', supplyWith: checksum},
+          {property: 'created_at', event: 'create', step: 'pre-validate', supplyWith: now},
+          {property: 'updated_at', event: 'update', step: 'pre-validate', supplyWith: now},
         ],
         constraints: [
           {name: 'primary:id', properties: ['id'], type: 'primary', meta: {}},

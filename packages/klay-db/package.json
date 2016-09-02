@@ -1,5 +1,6 @@
 {
   "name": "klay-db",
+  "version": "0.0.0",
   "description": "Extensions for klay to add generic information typically used for database interactions.",
   "main": "./lib/extension.js",
   "scripts": {

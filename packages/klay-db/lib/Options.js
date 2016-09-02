@@ -18,14 +18,14 @@ Options.prototype._with = function (spec) {
   return new Options(Object.assign({}, this.spec, spec));
 };
 
-Options.prototype.automanage = function (property, event, lifecycle, supplyWith) {
+Options.prototype.automanage = function (property, event, step, supplyWith) {
   if (arguments.length === 3) {
-    supplyWith = lifecycle;
-    lifecycle = 'pre-validate';
+    supplyWith = step;
+    step = 'pre-validate';
   }
 
   var automanaged = this.spec.automanaged || [];
-  var automanage = {property, on: event, lifecycle, supplyWith};
+  var automanage = {property, event, step, supplyWith};
 
   validateAutomanaged(automanage);
   return this._with({automanaged: automanaged.concat([automanage])});
@@ -74,8 +74,8 @@ function validateAutomanaged(automanage) {
 
   return [
     [typeof automanage.property === 'string', 'property'],
-    [_.includes(['create', 'update'], automanage.on), 'event'],
-    [_.includes(['pre-validate', 'post-validate'], automanage.lifecycle), 'lifecycle'],
+    [_.includes(['create', 'update'], automanage.event), 'event'],
+    [_.includes(['pre-validate', 'post-validate', 'insert'], automanage.step), 'step'],
   ].forEach(function (validation) {
     assert.ok(validation[0], `invalid automanage ${validation[1]}`);
   });
