@@ -49,6 +49,28 @@ defineTest('Options.js', function (Options) {
       });
     });
 
+    it('should support autoincrement supplyWith', function () {
+      opts = opts.automanage('mypropA', 'create', 'post-validate', 'autoincrement');
+
+      opts.spec.should.have.deep.property('automanaged.0').eql({
+        property: 'mypropA', on: 'create',
+        lifecycle: 'post-validate',
+        supplyWith: 'autoincrement',
+      });
+    });
+
+    it('should support date supplyWith', function () {
+      opts = opts.automanage('mypropA', 'create', 'post-validate', 'date');
+      opts.spec.should.have.deep.property('automanaged.0.supplyWith').a('function');
+      opts.spec.automanaged[0].supplyWith().should.be.an.instanceof(Date);
+    });
+
+    it('should support isotimestamp supplyWith', function () {
+      opts = opts.automanage('mypropA', 'create', 'post-validate', 'isotimestamp');
+      opts.spec.should.have.deep.property('automanaged.0.supplyWith').a('function');
+      opts.spec.automanaged[0].supplyWith().should.match(/^\d{4}-\d{2}-\d{2}/);
+    });
+
     it('should work with pre-existing automanaged properties', function () {
       var supplyWith = () => new Date();
       opts = new Options({automanaged: [null, null]}).
@@ -59,6 +81,30 @@ defineTest('Options.js', function (Options) {
         lifecycle: 'pre-validate',
         supplyWith: supplyWith,
       });
+    });
+
+    it('should fail when no property is given', function () {
+      (function () {
+        opts.automanage(null, 'create', _.noop);
+      }).should.fail;
+    });
+
+    it('should fail when unknown event is given', function () {
+      (function () {
+        opts.automanage('prop', 'something', _.noop);
+      }).should.fail;
+    });
+
+    it('should fail when unknown supplyWith is given', function () {
+      (function () {
+        opts.automanage('mypropA', 'create', 'post-validate', 'foobar');
+      }).should.fail;
+    });
+
+    it('should fail when unknown lifecycle is given', function () {
+      (function () {
+        opts.automanage('mypropA', 'create', 'unknown', _.noop);
+      }).should.fail;
     });
   });
 

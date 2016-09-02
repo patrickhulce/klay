@@ -57,12 +57,25 @@ Options.prototype.toObject = function () {
   return _.cloneDeep(this.spec);
 };
 
+function determineSupplyWith(supplyWith) {
+  if (typeof supplyWith === 'function' || _.includes(['autoincrement'], supplyWith)) {
+    return supplyWith;
+  } else if (supplyWith === 'date') {
+    return () => new Date();
+  } else if (supplyWith === 'isotimestamp') {
+    return () => new Date().toISOString();
+  } else {
+    assert.fail('invalid automanage supplyWith');
+  }
+}
+
 function validateAutomanaged(automanage) {
+  automanage.supplyWith = determineSupplyWith(automanage.supplyWith);
+
   return [
     [typeof automanage.property === 'string', 'property'],
     [_.includes(['create', 'update'], automanage.on), 'event'],
     [_.includes(['pre-validate', 'post-validate'], automanage.lifecycle), 'lifecycle'],
-    [typeof automanage.supplyWith === 'function', 'supplyWith'],
   ].forEach(function (validation) {
     assert.ok(validation[0], `invalid automanage ${validation[1]}`);
   });
