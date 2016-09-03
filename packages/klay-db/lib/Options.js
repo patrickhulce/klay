@@ -1,5 +1,6 @@
 var assert = require('assert');
 var _ = require('lodash');
+var uuid = require('node-uuid');
 
 function Options(spec) {
   if (spec instanceof Options) {
@@ -64,6 +65,8 @@ function determineSupplyWith(supplyWith) {
     return () => new Date();
   } else if (supplyWith === 'isotimestamp') {
     return () => new Date().toISOString();
+  } else if (supplyWith === 'uuid') {
+    return () => uuid.v4();
   } else {
     assert.fail('invalid automanage supplyWith');
   }
@@ -74,7 +77,7 @@ function validateAutomanaged(automanage) {
 
   return [
     [typeof automanage.property === 'string', 'property'],
-    [_.includes(['create', 'update'], automanage.event), 'event'],
+    [_.includes(['create', 'update', '*'], automanage.event), 'event'],
     [_.includes(['pre-validate', 'post-validate', 'insert'], automanage.step), 'step'],
   ].forEach(function (validation) {
     assert.ok(validation[0], `invalid automanage ${validation[1]}`);

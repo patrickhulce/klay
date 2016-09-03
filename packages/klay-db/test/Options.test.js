@@ -85,25 +85,25 @@ defineTest('Options.js', function (Options) {
     it('should fail when no property is given', function () {
       (function () {
         opts.automanage(null, 'create', _.noop);
-      }).should.fail;
+      }).should.throw;
     });
 
     it('should fail when unknown event is given', function () {
       (function () {
         opts.automanage('prop', 'something', _.noop);
-      }).should.fail;
+      }).should.throw;
     });
 
     it('should fail when unknown step is given', function () {
       (function () {
         opts.automanage('mypropA', 'create', 'unknown', _.noop);
-      }).should.fail;
+      }).should.throw;
     });
 
     it('should fail when unknown supplyWith is given', function () {
       (function () {
-        opts.automanage('mypropA', 'create', 'post-validate', 'foobar');
-      }).should.fail;
+        opts.automanage('mypropA', 'create', 'foobar');
+      }).should.throw(/invalid automanage supplyWith/);
     });
   });
 

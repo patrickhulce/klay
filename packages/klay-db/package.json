@@ -68,14 +68,15 @@
     }
   },
   "dependencies": {
-    "lodash": "^4.15.0"
+    "lodash": "^4.15.0",
+    "node-uuid": "^1.4.7"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "cz-conventional-changelog": "^1.2.0",
     "generate-export-aliases": "^1.0.0",
     "istanbul": "^0.4.5",
-    "klay": "^1.0.2",
+    "klay": "^1.1.0",
     "mocha": "^3.0.2",
     "semantic-release": "^4.3.5",
     "sinon": "^1.17.5",
