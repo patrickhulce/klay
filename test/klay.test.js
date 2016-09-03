@@ -61,6 +61,15 @@ defineTest('klay.js', function (klay) {
       Model.defaults.should.have.property('nullable', false);
     });
 
+    it('should merge hooks', function () {
+      var f1 = () => 123;
+      var f2 = () => 456;
+      inst.use({hooks: {constructor: f1, children: [f1, f2]}});
+      Model.hooks.should.eql({constructor: [f1], children: [f1, f2]});
+      inst.use({hooks: {constructor: f2}});
+      Model.hooks.should.eql({constructor: [f1, f2], children: [f1, f2]});
+    });
+
     it('should merge builders', function () {
       var myBuilder = () => 123;
       inst.use({builders: {foobar: myBuilder}});

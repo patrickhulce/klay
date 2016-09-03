@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var sinon = require('sinon');
 var assert = require('assert');
 var ValueRef = relativeRequire('ValueRef');
 var ValidationError = relativeRequire('ValidationError');
@@ -65,6 +66,17 @@ defineTest('Model.js', function (Model) {
       model.should.have.deep.property('spec.type', 'string');
       model.should.have.deep.property('spec.format', 'enum');
       model.should.have.deep.property('spec.options').eql(['foo', 'bar']);
+    });
+
+    it('should not have hooks by default', function () {
+      (typeof Model.hooks.constructor).should.equal('undefined');
+    });
+
+    it('should call appropriate hooks', function () {
+      var hook = sinon.stub();
+      Model.hooks.constructor = [hook];
+      var model = new Model({type: 'string'});
+      hook.should.have.been.calledOn(model);
     });
   });
 
@@ -403,6 +415,17 @@ defineTest('Model.js', function (Model) {
 
       var model = new Model().type('array').children(childModel);
       model.spec.should.have.property('children').eql(childModel);
+    });
+
+    it('should call appropriate hooks', function () {
+      var hook = sinon.stub();
+      Model.hooks.children = [hook];
+      var childModel = new Model({type: 'string'});
+
+      var model = new Model().type('array').children(childModel);
+      model.spec.should.have.property('children').eql(childModel);
+      hook.should.have.been.calledOn(model);
+      Model.reset();
     });
 
     it('should fail when given undefined', function () {
