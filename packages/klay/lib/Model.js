@@ -198,6 +198,25 @@ Model.prototype.children = function (children) {
   }
 };
 
+Model.prototype.pick = function (fields) {
+  var matched = _.filter(this.spec.children || [], item => _.includes(fields, item.name));
+  return this.children(matched);
+};
+
+Model.prototype.omit = function (fields) {
+  var matched = _.reject(this.spec.children || [], item => _.includes(fields, item.name));
+  return this.children(matched);
+};
+
+Model.prototype.merge = function (other) {
+  assert.ok(other instanceof Model, 'can only merge with another model');
+  var matched = (this.spec.children || []).concat(other.spec.children || []);
+  var uniq = _(matched).map('name').uniq().value();
+
+  assert.equal(matched.length, uniq.length, 'cannot merge conflicting models');
+  return this.children(matched);
+};
+
 Model.prototype.validations = function (validations) {
   assert.ok(_.isArray(validations), 'validations must be an array');
   return validations.reduce(function (model, validation) {

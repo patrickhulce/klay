@@ -459,6 +459,136 @@ defineTest('Model.js', function (Model) {
     });
   });
 
+  describe('#pick', function () {
+    it('should limit the children to named fields', function () {
+      var childModel = {
+        first: new Model({type: 'string'}),
+        second: new Model({type: 'number'}),
+        third: new Model({type: 'object'}),
+      };
+
+      var model = new Model().type('object').children(childModel);
+      model.spec.should.have.property('children').length(3);
+      model.pick(['first', 'third']).spec.should.have.property('children').eql([
+        {name: 'first', model: childModel.first},
+        {name: 'third', model: childModel.third},
+      ]);
+    });
+
+    it('should limit the children to named single field', function () {
+      var childModel = {
+        first: new Model({type: 'string'}),
+        second: new Model({type: 'number'}),
+        third: new Model({type: 'object'}),
+      };
+
+      var model = new Model().type('object').children(childModel);
+      model.spec.should.have.property('children').length(3);
+      model.pick('second').spec.should.have.property('children').eql([
+        {name: 'second', model: childModel.second},
+      ]);
+    });
+
+    it('should not fail when no children exist', function () {
+      var model = new Model().type('object');
+      model.pick('second').spec.should.have.property('children').eql([]);
+    });
+  });
+
+  describe('#omit', function () {
+    it('should limit the children to not named fields', function () {
+      var childModel = {
+        first: new Model({type: 'string'}),
+        second: new Model({type: 'number'}),
+        third: new Model({type: 'object'}),
+      };
+
+      var model = new Model().type('object').children(childModel);
+      model.spec.should.have.property('children').length(3);
+      model.omit(['second', 'first']).spec.should.have.property('children').eql([
+        {name: 'third', model: childModel.third},
+      ]);
+    });
+
+    it('should limit the children to not the named field', function () {
+      var childModel = {
+        first: new Model({type: 'string'}),
+        second: new Model({type: 'number'}),
+        third: new Model({type: 'object'}),
+      };
+
+      var model = new Model().type('object').children(childModel);
+      model.spec.should.have.property('children').length(3);
+      model.omit('first').spec.should.have.property('children').eql([
+        {name: 'second', model: childModel.second},
+        {name: 'third', model: childModel.third},
+      ]);
+    });
+
+    it('should not fail when no children exist', function () {
+      var model = new Model().type('object');
+      model.omit('random').spec.should.have.property('children').eql([]);
+    });
+  });
+
+  describe('#merge', function () {
+    it('should take the union of both objects', function () {
+      var childModelA = {
+        first: new Model({type: 'string'}),
+        second: new Model({type: 'number'}),
+      };
+
+      var childModelB = {
+        third: new Model({type: 'boolean'}),
+        fourth: new Model({type: 'string'}),
+      };
+
+      var modelA = new Model().type('object').children(childModelA);
+      var modelB = new Model().type('object').children(childModelB);
+      modelA.merge(modelB).spec.should.have.property('children').eql([
+        {name: 'first', model: childModelA.first},
+        {name: 'second', model: childModelA.second},
+        {name: 'third', model: childModelB.third},
+        {name: 'fourth', model: childModelB.fourth},
+      ]);
+    });
+
+    it('should fail when given a conflicting model', function () {
+      var childModelA = {
+        first: new Model({type: 'string'}),
+        second: new Model({type: 'number'}),
+        third: new Model({type: 'object'}),
+      };
+
+      var childModelB = {second: new Model({type: 'boolean'})};
+
+      var modelA = new Model().type('object').children(childModelA);
+      var modelB = new Model().type('object').children(childModelB);
+      (function () {
+        modelA.merge(modelB);
+      }).should.throw(/cannot merge conflicting models/);
+    });
+
+    it('should fail when given a non-model', function () {
+      var childModel = {
+        first: new Model({type: 'string'}),
+        second: new Model({type: 'number'}),
+        third: new Model({type: 'object'}),
+      };
+
+      var model = new Model().type('object').children(childModel);
+      (function () {
+        model.merge({});
+      }).should.throw(/can only merge with another model/);
+    });
+
+    it('should not fail when no children exist', function () {
+      var modelA = new Model().type('object');
+      var modelB = new Model().type('object');
+      modelA.merge(modelB).spec.should.have.property('children').eql([]);
+    });
+  });
+
   describe('#validations', function () {
     it('should set spec.validations when regex', function () {
       var regex = /^something|else$/;
