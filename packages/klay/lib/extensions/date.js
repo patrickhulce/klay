@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var assert = require('../assert');
 
+var twoDaysInMiliseconds = 1000 * 60 * 60 * 48;
 module.exports = function (construct) {
   return {
     types: ['date'],
@@ -34,7 +35,8 @@ module.exports = function (construct) {
 
             if (_.isNaN(date.getTime())) {
               return value;
-            } else if (_.isNaN(dateWithTz.getTime())) {
+            } else if (_.isNaN(dateWithTz.getTime()) ||
+                Math.abs(dateWithTz.getTime() - date.getTime()) > twoDaysInMiliseconds) {
               return date;
             } else {
               return dateWithTz;
