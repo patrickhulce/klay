@@ -78,6 +78,11 @@ defineTest('extensions/date.js', function (dateFactory) {
         transform(86400 * 366 * 1000).should.eql(new Date('1971-01-02T00:00:00.000Z'));
       });
 
+      it('should interpret ambiguous number values as javascript timestamps', function () {
+        transform(0).should.eql(new Date('1970-01-01T00:00:00.000Z'));
+        transform(2).should.eql(new Date('1970-01-01T00:00:00.002Z'));
+      });
+
       it('should directly return a date value', function () {
         var d1 = new Date(2016, 04, 03);
         var d2 = new Date(1985, 02, 01);
