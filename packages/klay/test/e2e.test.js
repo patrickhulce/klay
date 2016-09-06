@@ -7,6 +7,7 @@ describe('klay', function () {
     var model;
 
     beforeEach(function () {
+      klay.reset();
       model = fixture(klay());
     });
 
