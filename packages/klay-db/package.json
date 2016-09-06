@@ -60,7 +60,7 @@
   },
   "config": {
     "exportAliases": {
-      "extension": "./lib/extension.js",
+      "helpers": "./lib/helpers/index.js",
       "options": "./lib/Options.js"
     },
     "commitizen": {
@@ -76,7 +76,7 @@
     "cz-conventional-changelog": "^1.2.0",
     "generate-export-aliases": "^1.0.0",
     "istanbul": "^0.4.5",
-    "klay": "^1.1.0",
+    "klay": "^1.2.0",
     "mocha": "^3.0.2",
     "semantic-release": "^4.3.5",
     "sinon": "^1.17.5",
@@ -84,6 +84,6 @@
     "xo": "^0.16.0"
   },
   "peerDependencies": {
-    "klay": "^1.0.2"
+    "klay": "^1.2.0"
   }
 }

@@ -57,11 +57,13 @@ module.exports = function (extOptions) {
         createdAt: function (type) {
           return construct({type: 'date'}).
             dbautomanage('create', type || 'date').
-            immutable();
+            immutable().
+            required();
         },
         updatedAt: function (type) {
           return construct({type: 'date'}).
-            dbautomanage('*', type || 'date');
+            dbautomanage('*', type || 'date').
+            required();
         },
         integerId: function () {
           return construct({type: 'number', format: 'integer'}).
