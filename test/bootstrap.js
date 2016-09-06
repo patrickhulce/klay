@@ -36,7 +36,7 @@ global.testFailingValues = function () {
     try {
       items[0].should.throw(assert.AssertionError);
     } catch (err) {
-      assert.ok(false, `${items[1]} should have failed validation`);
+      assert.fail(`${items[1]} should have failed validation`);
     }
   });
 };
