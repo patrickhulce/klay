@@ -124,15 +124,17 @@ defineTest('extensions/minmax.js', function (minmaxFactory) {
   });
 
   describe('#extend', function () {
-    var inst;
-
     beforeEach(function () {
-      inst = klay({extensions: []}).use(extension);
+      klay({extensions: []}).use(extension);
+    });
+
+    afterEach(function () {
+      klay.reset();
     });
 
     describe('min', function () {
       it('should set spec.min', function () {
-        var model = new inst.builders.integer().min(10);
+        var model = new klay.builders.integer().min(10);
         model.should.have.deep.property('spec.min', 10);
         model.validate(8).should.have.property('conforms', false);
         model.validate(11).should.have.property('conforms', true);
@@ -140,14 +142,14 @@ defineTest('extensions/minmax.js', function (minmaxFactory) {
 
       it('should fail for non-numeric types', function () {
         (function () {
-          new inst.builders.number().min('foo');
+          new klay.builders.number().min('foo');
         }).should.throw();
       });
     });
 
     describe('max', function () {
       it('should set spec.max', function () {
-        var model = new inst.builders.integer().max(10);
+        var model = new klay.builders.integer().max(10);
         model.should.have.deep.property('spec.max', 10);
         model.validate(8).should.have.property('conforms', true);
         model.validate(11).should.have.property('conforms', false);
@@ -155,14 +157,14 @@ defineTest('extensions/minmax.js', function (minmaxFactory) {
 
       it('should fail for non-numeric types', function () {
         (function () {
-          new inst.builders.number().max('foo');
+          new klay.builders.number().max('foo');
         }).should.throw();
       });
     });
 
     describe('length', function () {
       it('should set spec.min and spec.max', function () {
-        var model = new inst.Model({type: 'string'}).length(10);
+        var model = new klay.Model({type: 'string'}).length(10);
         model.should.have.deep.property('spec.min', 10);
         model.should.have.deep.property('spec.max', 10);
         model.validate('0123456789').should.have.property('conforms', true);
