@@ -1,0 +1,87 @@
+{
+  "name": "klay-kiln-sql",
+  "version": "0.0.0",
+  "description": "Kiln extension to generate SQL models from Klay models.",
+  "main": "./lib/extension.js",
+  "scripts": {
+    "test": "xo ./lib/**/*.js && mocha --reporter spec --require test/bootstrap test/*.test.js test/**/*.test.js",
+    "test:lint": "xo ./lib/**/*.js",
+    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap test/*.test.js test/**/*.test.js",
+    "test:watch": "mocha --watch --reporter dot --require test/bootstrap test/*.test.js test/**/*.test.js",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/patrickhulce/klay-kiln-sql.git"
+  },
+  "author": "Patrick Hulce <patrick.hulce@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/patrickhulce/klay-kiln-sql/issues"
+  },
+  "homepage": "https://github.com/patrickhulce/klay-kiln-sql#readme",
+  "xo": {
+    "env": [
+      "browser",
+      "node",
+      "mocha"
+    ],
+    "space": 2,
+    "rules": {
+      "complexity": [
+        "warn",
+        10
+      ],
+      "babel/new-cap": 0,
+      "xo/filename-case": 0,
+      "no-else-return": 0,
+      "max-statements-per-line": [
+        "error",
+        {
+          "max": 2
+        }
+      ],
+      "brace-style": [
+        "error",
+        "1tbs",
+        {
+          "allowSingleLine": true
+        }
+      ],
+      "comma-dangle": [
+        "error",
+        "only-multiline"
+      ],
+      "dot-location": [
+        "error",
+        "object"
+      ]
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "klay-db": "^1.0.0",
+    "lodash": "^4.15.0",
+    "sequelize": "^3.24.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "cz-conventional-changelog": "^1.2.0",
+    "istanbul": "^0.4.5",
+    "klay": "^1.2.1",
+    "mocha": "^3.0.2",
+    "semantic-release": "^4.3.5",
+    "sinon": "^1.17.5",
+    "sinon-chai": "^2.8.0",
+    "xo": "^0.16.0"
+  },
+  "peerDependencies": {
+    "klay": "^1.0.2",
+    "klay-kiln": "^1.0.0"
+  }
+}
