@@ -80,6 +80,48 @@ defineTest('Model.js', function (Model) {
     });
   });
 
+  describe('immutability', function () {
+    it('should use distinct values when modifying properties', function () {
+      var validation = _.noop;
+      var modelA = new Model({type: 'string'}).validation(validation);
+      var modelB = modelA.type('number');
+      var modelC = modelA.validation(validation);
+
+      modelA.spec.should.have.property('validations').length(1);
+      modelB.spec.should.have.property('validations').length(1);
+      modelC.spec.should.have.property('validations').length(2);
+    });
+
+    it('should be immune to tampering with clones', function () {
+      var children = [
+        {name: 'id', model: new Model({type: 'number'})},
+        {name: 'name', model: new Model({type: 'string'})},
+      ];
+
+      var modelA = new Model({type: 'object', children: children});
+      var modelB = modelA.validation(_.noop);
+      modelB.spec.children[0].model.spec.type = 'undefined';
+      modelA.spec.should.have.deep.property('children.0.model.spec.type', 'number');
+    });
+
+    it('should be immune to tampering with underlying', function () {
+      var children = [
+        {name: 'id', model: new Model({type: 'number'})},
+        {name: 'name', model: new Model({type: 'string'})},
+      ];
+
+      var validations = [_.noop];
+
+      var modelA = new Model({type: 'object', children, validations});
+      validations.push(_.noop);
+      children[0].name = 'other';
+      children.push({name: 'foobar', model: new Model({type: 'string'})});
+      modelA.spec.should.have.property('children').length(2);
+      modelA.spec.should.have.property('validations').length(1);
+      modelA.spec.should.have.deep.property('children.0.name', 'id');
+    });
+  });
+
   describe('#type', function () {
     it('should set spec.type', function () {
       var model = new Model().type('string');
@@ -122,7 +164,7 @@ defineTest('Model.js', function (Model) {
     it('should set spec.formatOptions', function () {
       var options = {extended: true};
       var model = new Model().type('string').format('zip', options);
-      model.spec.should.have.property('formatOptions', options);
+      model.spec.should.have.property('formatOptions').eql(options);
     });
 
     it('should fail when type is not set yet', function () {
@@ -225,7 +267,7 @@ defineTest('Model.js', function (Model) {
     it('should set spec.default as array', function () {
       var arr = [1, 2, 3];
       var model = new Model().type('array').default(arr);
-      model.spec.should.have.property('default', arr);
+      model.spec.should.have.property('default').eql(arr);
     });
 
     it('should unset spec.default', function () {
@@ -341,7 +383,7 @@ defineTest('Model.js', function (Model) {
       it('should set spec.options first element with string condition', function () {
         var sModel = new Model({type: 'string'});
         var model = new Model().type('conditional').option(sModel, 'path', 'value');
-        model.spec.should.have.deep.property('options.0.model', sModel);
+        model.spec.should.have.deep.property('options.0.model').eql(sModel);
         model.spec.should.have.deep.property('options.0.ref.path', 'path');
         model.spec.should.have.deep.property('options.0.condition').is.a('function');
       });
@@ -349,7 +391,7 @@ defineTest('Model.js', function (Model) {
       it('should set spec.options first element with array condition', function () {
         var sModel = new Model({type: 'string'});
         var model = new Model().type('conditional').option(sModel, ['path1', 'path2'], [0, 1]);
-        model.spec.should.have.deep.property('options.0.model', sModel);
+        model.spec.should.have.deep.property('options.0.model').eql(sModel);
         model.spec.should.have.deep.property('options.0.ref.0.path', 'path1');
         model.spec.should.have.deep.property('options.0.ref.1.path', 'path2');
         model.spec.should.have.deep.property('options.0.condition').is.a('function');
