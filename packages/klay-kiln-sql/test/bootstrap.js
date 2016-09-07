@@ -11,3 +11,20 @@ global.defineTest = (file, func) => {
     func(require('../lib/' + file));
   });
 };
+
+if (process.env.KLAY_MYSQL_DB) {
+  global.mysqlOptions = {
+    host: process.env.KLAY_MYSQL_HOST,
+    database: process.env.KLAY_MYSQL_DB,
+    user: process.env.KLAY_MYSQL_USER,
+    password: process.env.KLAY_MYSQL_PASSWORD || '',
+  };
+
+  global.describesql = function () {
+    describe.apply(null, arguments);
+  };
+} else {
+  global.describesql = function () {
+    describe.skip.apply(null, arguments);
+  };
+}

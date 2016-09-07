@@ -65,7 +65,7 @@
   },
   "dependencies": {
     "bluebird": "^3.4.6",
-    "klay-db": "^1.0.0",
+    "klay-db": "patrickhulce/klay-db#master",
     "lodash": "^4.15.0",
     "sequelize": "^3.24.1"
   },
@@ -75,13 +75,14 @@
     "istanbul": "^0.4.5",
     "klay": "^1.2.1",
     "mocha": "^3.0.2",
+    "mysql": "^2.11.1",
     "semantic-release": "^4.3.5",
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
     "xo": "^0.16.0"
   },
   "peerDependencies": {
-    "klay": "^1.0.2",
+    "klay": "^1.2.2",
     "klay-kiln": "^1.0.0"
   }
 }

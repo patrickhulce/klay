@@ -2,7 +2,9 @@ var klay = require('klay');
 var klayDb = require('klay-db');
 
 defineTest('shared/primaryKey.js', function (utils) {
-  klay.use(klayDb());
+  before(function () {
+    klay.use(klayDb());
+  });
 
   describe('#getPrimaryKeyField', function () {
     it('should return the name of the primaryKey field', function () {

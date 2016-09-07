@@ -6,7 +6,11 @@ module.exports = function (dbOptions, migrationOptions) {
   var sequelize = new Sequelize(dbOptions);
 
   return {
+    _sequelize: sequelize,
     name: 'sql',
+    sync: function (options) {
+      return sequelize.sync(options);
+    },
     determineDependencies: function (modelDef, options) {
 
     },
