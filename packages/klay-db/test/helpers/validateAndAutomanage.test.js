@@ -21,7 +21,7 @@ defineTest('helpers/validateAndAutomanage.js', function (validateAndAutomanageFa
     {name: 'updatedAt', model: types.updatedAt()},
   ];
 
-  var model = types.object(children).strict();
+  var model = types.object(children);
 
   context('when event is create', function () {
     var validateAndAutomanage;
@@ -60,7 +60,7 @@ defineTest('helpers/validateAndAutomanage.js', function (validateAndAutomanageFa
     it('should not validate on insert properties', function () {
       var results = validateAndAutomanage({id: 12, name: 'Jill', age: '17'});
       results.errors.should.eql([
-        {path: undefined, message: 'unexpected properties: id'},
+        {path: 'id', message: 'expected 12 to have typeof undefined'},
       ]);
     });
 

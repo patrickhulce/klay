@@ -6,6 +6,22 @@ function determineIgnoredProperties(automanaged, event) {
     map(item => item.property);
 }
 
+function modelWithEnforcedIgnoredProperties(model, ignoredPropertyNames) {
+  if (!ignoredPropertyNames.length) {
+    return model;
+  }
+
+  var allChildren = model.spec.children.map(function (item) {
+    if (_.includes(ignoredPropertyNames, item.name)) {
+      return {name: item.name, model: model.constructor.construct({type: 'undefined'})};
+    } else {
+      return item;
+    }
+  });
+
+  return model.children(allChildren);
+}
+
 function determinePostValidationStatus(results, postvalidatePropertyNames) {
   if (results.conforms) {
     return results;
@@ -46,7 +62,7 @@ module.exports = function (model, event) {
   var prevalidateProperties = _.filter(automanaged, {step: 'pre-validate'});
   var postvalidateProperties = _.filter(automanaged, {step: 'post-validate'});
   var postvalidatePropertyNames = _.map(postvalidateProperties, 'property');
-  model = model.omit(ignoredPropertyNames);
+  model = modelWithEnforcedIgnoredProperties(model, ignoredPropertyNames);
 
   return function (object, options) {
     object = _.cloneDeep(object);
