@@ -28,12 +28,16 @@ module.exports = function () {
   }
 
   function createDeps(listOfDependencies, modelName) {
-    return listOfDependencies.map(function (item) {
-      var parts = item.split(':');
-      var model = parts.length > 1 ? parts[0] : modelName;
-      var extension = parts.length > 1 ? parts[1] : parts[0];
-      return bake(model, extension);
-    });
+    return _(listOfDependencies).
+      map(function (item) {
+        var parts = item.split(':');
+        var model = parts.length > 1 ? parts[0] : modelName;
+        var extension = parts.length > 1 ? parts[1] : parts[0];
+        return {name: item, value: bake(model, extension)};
+      }).
+      keyBy('name').
+      mapValues('value').
+      value();
   }
 
   function bake(modelName, extension, options) {
