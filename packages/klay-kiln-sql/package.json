@@ -83,6 +83,6 @@
   },
   "peerDependencies": {
     "klay": "^1.2.2",
-    "klay-kiln": "^1.0.0"
+    "klay-kiln": "^1.0.1"
   }
 }

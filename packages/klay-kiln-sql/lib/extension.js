@@ -12,7 +12,12 @@ module.exports = function (dbOptions, migrationOptions) {
       return sequelize.sync(options);
     },
     determineDependencies: function (modelDef, options) {
-
+      var constraints = _.get(modelDef, 'model.spec.db.constraints', []);
+      return _(constraints).
+        filter({type: 'reference'}).
+        map(item => _.get(item, 'meta.model') + ':sql').
+        uniq().
+        value();
     },
     bake: function (modelDef, options, dependencies) {
       _.assign(options, {sequelize, dependencies});
