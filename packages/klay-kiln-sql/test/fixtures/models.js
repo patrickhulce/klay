@@ -25,6 +25,7 @@ module.exports = function () {
     id: types.uuidId(),
     ownerId: types.integer().required().dbconstrain('reference', {model: 'user'}),
     aspectRatio: types.number().required(),
+    metadata: types.object().required(),
     createdAt: types.createdAt(),
     updatedAt: types.updatedAt(),
   };

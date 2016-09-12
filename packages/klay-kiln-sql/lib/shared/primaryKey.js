@@ -1,6 +1,8 @@
 var assert = require('assert');
 var _ = require('lodash');
 
+var serialization = require('./serialization');
+
 const PK_MULTI_MSG = 'multi-column primary key not yet supported';
 const PK_NOT_FOUND_MSG = 'could not find primary key field for model';
 
@@ -40,7 +42,9 @@ function findByPrimaryKey(model, sequelizeModel) {
         assert.ok(record, `no such object with primaryKey: ${pk}`);
       }
 
-      return record && record.get();
+      if (record) {
+        return serialization.fromStorage(model, record.get());
+      }
     });
   };
 }

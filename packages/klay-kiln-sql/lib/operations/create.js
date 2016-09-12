@@ -10,8 +10,8 @@ module.exports = function (modelDef, sequelizeModel) {
   var operation = {
     _insert: function (object) {
       return sequelizeModel.
-        create(object).
-        then(record => record.get());
+        create(utils.toStorage(modelDef.model, object)).
+        then(record => utils.fromStorage(modelDef.model, record.get()));
     },
     run: function (object, options) {
       return Promise.resolve(object).

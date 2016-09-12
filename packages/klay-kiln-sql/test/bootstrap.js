@@ -3,6 +3,7 @@ var sinon = require('sinon');
 chai.should();
 
 chai.use(require('sinon-chai'));
+chai.use(require('chai-as-promised'));
 
 global.createSandbox = () => sinon.sandbox.create();
 global.relativeRequire = file => require('../lib/' + file);

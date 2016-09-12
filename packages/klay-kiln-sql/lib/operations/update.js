@@ -19,7 +19,7 @@ module.exports = function (modelDef, sequelizeModel) {
     },
     _update: function (object, options) {
       return sequelizeModel.
-        build(object, {isNewRecord: false}).
+        build(utils.toStorage(modelDef.model, object), {isNewRecord: false}).
         save().
         then(() => findByPrimaryKey(object, options));
     },
