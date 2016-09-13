@@ -1,6 +1,6 @@
 var _ = require('lodash');
 
-module.exports = function (model, query) {
+module.exports = function (model, query, deserialize) {
   query = query || {};
 
   var builder = {
@@ -39,13 +39,15 @@ module.exports = function (model, query) {
     fetchResult: function (options) {
       if (!model) { throw new Error('no model provided to QueryBuilder'); }
       return model.findOne(_.assign({}, query, options)).then(function (item) {
-        return item.get();
+        if (item) {
+          return deserialize(item.get());
+        }
       });
     },
     fetchResults: function (options) {
       if (!model) { throw new Error('no model provided to QueryBuilder'); }
       return model.findAll(_.assign({}, query, options)).then(function (items) {
-        return items.map(function (item) { return item.get(); });
+        return items.map(function (item) { return deserialize(item.get()); });
       });
     },
   };

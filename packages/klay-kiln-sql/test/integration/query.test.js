@@ -36,6 +36,13 @@ describesql('query objects', function () {
         items[1].should.have.property('email', 'jack.doe@example.com');
       });
     });
+
+    it('should find photos', function () {
+      return photoModel.find({order: [['aspectRatio', 'asc']]}).then(function (items) {
+        items.should.have.length(7);
+        items[0].should.have.property('metadata').eql({type: 'psd', width: 200, height: 300});
+      });
+    });
   });
 
   describe('findOne', function () {
@@ -43,6 +50,24 @@ describesql('query objects', function () {
       return userModel.findOne({where: {email: 'smith@example.com'}}).then(function (item) {
         item.should.have.property('lastName', 'Smith');
         item.should.have.property('email', 'smith@example.com');
+      });
+    });
+  });
+
+  describe('findById', function () {
+    it('should find a single user by id', function () {
+      return userModel.findOne({where: {email: 'smith@example.com'}}).then(function (itemA) {
+        return userModel.findById(itemA.id).then(function (itemB) {
+          itemA.should.eql(itemB);
+        });
+      });
+    });
+
+    it('should find a single photo by id', function () {
+      return photoModel.findOne({where: {aspectRatio: 0.66}}).then(function (itemA) {
+        return photoModel.findById(itemA.id).then(function (itemB) {
+          itemA.should.eql(itemB);
+        });
       });
     });
   });

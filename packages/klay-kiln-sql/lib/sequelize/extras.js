@@ -48,7 +48,7 @@ module.exports = {
 
       var modelName = _.get(constraint, 'meta.model', foreignKey.replace(/(_)?id$/ig, ''));
       var otherModel = _.get(dependencies, [modelName + ':sql', '_sequelizeModel']);
-      sequelizeModel.belongsTo(otherModel, {foreignKey});
+      sequelizeModel.belongsTo(otherModel, {foreignKey, onDelete: 'CASCADE'});
     });
   },
 };
