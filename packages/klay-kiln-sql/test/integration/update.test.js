@@ -1,11 +1,12 @@
 var _ = require('lodash');
+var Promise = require('bluebird');
 var steps = require('./steps');
 
 describesql('update objects', function () {
   var shared = steps.init();
 
   describe('users', function () {
-    it('should create a user', function () {
+    it('should create users', function () {
       var user = {
         age: 23, isAdmin: true,
         email: 'test@klay.com',
@@ -14,8 +15,12 @@ describesql('update objects', function () {
         lastName: 'Thompson',
       };
 
-      return shared.models.user.create(user).then(function (item) {
-        shared.userA = item;
+      return Promise.all([
+        shared.models.user.create(user),
+        shared.models.user.create(_.defaults({email: 'test2@klay.com'}, user)),
+      ]).then(function (items) {
+        shared.userA = items[0];
+        shared.userB = items[1];
       });
     });
 
@@ -38,6 +43,11 @@ describesql('update objects', function () {
     it('should prevent changing immutable properties', function () {
       var user = _.assign({}, shared.userA, {createdAt: new Date()});
       return shared.models.user.update(user).should.be.rejectedWith(/immutable.*violated/);
+    });
+
+    it('should prevent violating a unique constraint', function () {
+      var user = _.assign({}, shared.userA, {email: 'test2@klay.com'});
+      return shared.models.user.update(user).should.be.rejectedWith(/unique.*violated/);
     });
   });
 
