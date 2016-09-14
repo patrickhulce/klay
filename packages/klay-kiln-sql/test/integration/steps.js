@@ -25,7 +25,7 @@ var steps = module.exports = {
   cleanAndSync: function (shared) {
     it('should initialize properly', function () {
       var extensionOpts = _.assign({logging: _.noop}, mysqlOptions);
-      var ext = shared.extension = extensionFactory(mysqlOptions);
+      var ext = shared.extension = extensionFactory(extensionOpts);
       shared.sequelize = shared.extension._sequelize;
 
       var models = shared.models = {};

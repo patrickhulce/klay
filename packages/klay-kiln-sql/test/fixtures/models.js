@@ -31,7 +31,9 @@ module.exports = function () {
   };
 
   return {
-    user: types.object(user).dbindexChildren(['email', 'password']),
+    user: types.object(user).
+      dbconstrainChildren(['firstName', 'lastName'], 'unique').
+      dbindexChildren(['email', 'password']),
     photo: types.object(photo),
   };
 };

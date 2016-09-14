@@ -26,7 +26,7 @@ describesql('initialize database', function () {
           age: {Type: 'bigint(20)'},
           isAdmin: {Type: 'tinyint(1)'},
           email: {Type: 'varchar(250)', Key: 'UNI'},
-          firstName: {Type: 'varchar(100)'},
+          firstName: {Type: 'varchar(100)', Key: 'MUL'},
           lastName: {Type: 'varchar(100)'},
           password: {Type: 'varchar(32)'},
           createdAt: {Type: 'datetime(6)'},

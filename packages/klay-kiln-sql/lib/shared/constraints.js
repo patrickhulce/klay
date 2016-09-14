@@ -18,30 +18,36 @@ function validatePrimaryConstraint(model, sequelizeModel) {
   };
 }
 
-function validateUniqueConstraints(model, sequelizeModel) {
+function lookupByUniqueConstrains(model, sequelizeModel) {
   var attributes = [primaryKeyUtils.getPrimaryKeyField(model)];
-  var getPrimaryKey = primaryKeyUtils.getPrimaryKey(model);
   var uniqueConstraints = getConstraints(model, 'unique');
 
-  return function (object) {
-    return Promise.map(uniqueConstraints, function (item) {
-      var where = _(item.properties).
+  return function (object, onEach) {
+    onEach = onEach || _.identity;
+
+    return Promise.map(uniqueConstraints, function (constraint) {
+      var where = _(constraint.properties).
         map(prop => _.set({name: prop}, 'value', _.get(object, prop))).
         keyBy('name').
         mapValues('value').
         value();
 
-      return sequelizeModel.findOne({where, attributes}).then(function (result) {
-        return {
-          name: item.name,
-          exists: Boolean(result) && getPrimaryKey(result) !== getPrimaryKey(object),
-        };
+      return sequelizeModel.findOne({where, attributes}).then(function (record) {
+        return onEach({constraint, record: record && record.get()});
       });
-    }).then(function (lookups) {
-      lookups.forEach(function (lookup) {
-        assert.ok(!lookup.exists, `constraint ${lookup.name} violated`);
-      });
+    });
+  };
+}
 
+function validateUniqueConstraints(model, sequelizeModel) {
+  var getPrimaryKey = primaryKeyUtils.getPrimaryKey(model);
+  var lookupRecords = lookupByUniqueConstrains(model, sequelizeModel);
+
+  return function (object) {
+    return lookupRecords(object, function (lookup) {
+      var passes = !lookup.record || getPrimaryKey(lookup.record) === getPrimaryKey(object);
+      assert.ok(passes, `constraint ${lookup.constraint.name} violated`);
+    }).then(function () {
       return object;
     });
   };
@@ -74,6 +80,7 @@ function validateImmutableConstraints(model, sequelizeModel) {
 
 module.exports = {
   getConstraints,
+  lookupByUniqueConstrains,
   validatePrimaryConstraint,
   validateUniqueConstraints,
   validateImmutableConstraints,

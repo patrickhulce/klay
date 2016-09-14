@@ -12,6 +12,7 @@ module.exports = function (modelDef, options) {
 
   var create = operations.create(modelDef, sequelizeModel).run;
   var update = operations.update(modelDef, sequelizeModel).run;
+  var upsert = operations.upsert(modelDef, sequelizeModel).run;
   var setPrimaryKey = utils.setPrimaryKey(modelDef.model);
   var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, sequelizeModel);
   var deserialize = record => utils.fromStorage(modelDef.model, record);
@@ -20,7 +21,7 @@ module.exports = function (modelDef, options) {
     _sequelize: sequelize,
     _sequelizeModel: sequelizeModel,
     findById: findByPrimaryKey,
-    create, update,
+    create, update, upsert,
     find: function (query, options) {
       return dbModel.queryBuilder(query).fetchResults(options);
     },

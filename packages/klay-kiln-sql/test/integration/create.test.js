@@ -27,7 +27,7 @@ describesql('create objects', function () {
     });
 
     it('should create a 2nd user', function () {
-      var user = _.assign({}, defaultUser, {email: 'test2@foobar.com'});
+      var user = _.assign({}, defaultUser, {firstName: 'Klay2', email: 'test2@foobar.com'});
       return shared.models.user.create(user).then(function (item) {
         item.should.have.property('id').is.a('number').greaterThan(shared.userA.id);
         item.should.have.property('createdAt').instanceof(Date).greaterThan(shared.userA.createdAt);
@@ -39,17 +39,17 @@ describesql('create objects', function () {
     });
 
     it('should prevent creation of user with same email', function () {
-      var user = _.clone(defaultUser);
+      var user = _.assign({}, defaultUser, {firstName: 'missing'});
       return shared.models.user.create(user).should.be.rejectedWith(/constraint.*email.*violated/);
     });
 
     it('should prevent creation of user with preset id', function () {
-      var user = _.assign({}, defaultUser, {id: 15});
+      var user = _.assign({}, defaultUser, {id: 15, firstName: 'missing'});
       return shared.models.user.create(user).should.be.rejectedWith(/expected 15.*undefined/);
     });
 
     it('should prevent creation of user with invalid values', function () {
-      var user = _.assign({}, defaultUser, {age: 'what'});
+      var user = _.assign({}, defaultUser, {age: 'what', firstName: 'missing'});
       return shared.models.user.create(user).should.be.rejectedWith(/must be.*integer/);
     });
   });

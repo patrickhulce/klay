@@ -17,7 +17,7 @@ describesql('update objects', function () {
 
       return Promise.all([
         shared.models.user.create(user),
-        shared.models.user.create(_.defaults({email: 'test2@klay.com'}, user)),
+        shared.models.user.create(_.defaults({firstName: 'klay2', email: 'test2@klay.com'}, user)),
       ]).then(function (items) {
         shared.userA = items[0];
         shared.userB = items[1];
