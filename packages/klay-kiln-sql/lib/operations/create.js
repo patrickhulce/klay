@@ -8,9 +8,9 @@ module.exports = function (modelDef, sequelizeModel) {
   var validateUnique = utils.validateUniqueConstraints(modelDef.model, sequelizeModel);
 
   var operation = {
-    _insert: function (object) {
+    _insert: function (object, options) {
       return sequelizeModel.
-        create(utils.toStorage(modelDef.model, object)).
+        create(utils.toStorage(modelDef.model, object), options).
         then(record => utils.fromStorage(modelDef.model, record.get()));
     },
     run: function (object, options) {

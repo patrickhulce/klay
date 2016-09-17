@@ -1,7 +1,7 @@
 var _ = require('lodash');
 var steps = require('./steps');
 
-describesql('query objects', function () {
+describesql('destroy objects', function () {
   var shared = steps.init();
   var userModel, photoModel;
 

@@ -21,6 +21,7 @@ module.exports = function (modelDef, options) {
   var dbModel = {
     _sequelize: sequelize,
     _sequelizeModel: sequelizeModel,
+    transaction: sequelize.transaction.bind(sequelize),
     findById: findByPrimaryKey,
     create, update, upsert, patch,
     find: function (query, options) {
