@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var validateAndAutomanageFactory = require('klay-db/lib/helpers').validateAndAutomanage;
+var validateAndAutomanageFactory = require('klay-db/helpers').validateAndAutomanage;
 
 var utils = require('../shared');
 
