@@ -13,6 +13,7 @@ module.exports = function (modelDef, options) {
   var create = operations.create(modelDef, sequelizeModel).run;
   var update = operations.update(modelDef, sequelizeModel).run;
   var upsert = operations.upsert(modelDef, sequelizeModel).run;
+  var patch = operations.patch(modelDef, sequelizeModel).run;
   var setPrimaryKey = utils.setPrimaryKey(modelDef.model);
   var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, sequelizeModel);
   var deserialize = record => utils.fromStorage(modelDef.model, record);
@@ -21,7 +22,7 @@ module.exports = function (modelDef, options) {
     _sequelize: sequelize,
     _sequelizeModel: sequelizeModel,
     findById: findByPrimaryKey,
-    create, update, upsert,
+    create, update, upsert, patch,
     find: function (query, options) {
       return dbModel.queryBuilder(query).fetchResults(options);
     },
@@ -30,6 +31,10 @@ module.exports = function (modelDef, options) {
     },
     count: function (query, options) {
       return dbModel.queryBuilder(query).fetchCount(options);
+    },
+    patchById: function (id, changes, options) {
+      var changesObj = _.assign({}, changes, setPrimaryKey({}, id));
+      return patch(changesObj, options);
     },
     destroy: function (where, options) {
       return sequelizeModel.destroy(_.assign({where}, options));
