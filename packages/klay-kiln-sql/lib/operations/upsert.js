@@ -5,8 +5,8 @@ var updateOperation = require('./update');
 
 module.exports = function (modelDef, sequelizeModel, dependencies) {
   var getPrimaryKey = utils.getPrimaryKey(modelDef.model);
-  var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, sequelizeModel);
-  var lookupRecords = utils.lookupByUniqueConstrains(modelDef.model, sequelizeModel);
+  var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, dependencies);
+  var lookupRecords = utils.lookupByUniqueConstrains(modelDef.model, dependencies);
 
   var create = createOperation(modelDef, sequelizeModel, dependencies).run;
   var update = updateOperation(modelDef, sequelizeModel, dependencies).run;

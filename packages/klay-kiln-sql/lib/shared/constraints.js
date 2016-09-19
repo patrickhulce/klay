@@ -10,15 +10,14 @@ function getConstraints(model, type) {
   return type ? _.filter(constraints, {type}) : constraints;
 }
 
-function validatePrimaryConstraint(model, sequelizeModel) {
-  var findByPrimaryKey = primaryKeyUtils.findByPrimaryKey(model, sequelizeModel);
-
+function validatePrimaryConstraint(model, dependencies) {
   return function (object) {
-    return findByPrimaryKey(object, {failLoudly: true});
+    return dependencies.__self.findById(object, {failLoudly: true});
   };
 }
 
-function lookupByUniqueConstrains(model, sequelizeModel) {
+function lookupByUniqueConstrains(model, dependencies) {
+  var findOne = q => dependencies.__self.findOne(q);
   var attributes = [primaryKeyUtils.getPrimaryKeyField(model)];
   var uniqueConstraints = getConstraints(model, 'unique');
 
@@ -32,16 +31,16 @@ function lookupByUniqueConstrains(model, sequelizeModel) {
         mapValues('value').
         value();
 
-      return sequelizeModel.findOne({where, attributes}).then(function (record) {
-        return onEach({constraint, record: record && record.get()});
+      return findOne({where, attributes}).then(function (record) {
+        return onEach({constraint, record});
       });
     });
   };
 }
 
-function validateUniqueConstraints(model, sequelizeModel) {
+function validateUniqueConstraints(model, dependencies) {
   var getPrimaryKey = primaryKeyUtils.getPrimaryKey(model);
-  var lookupRecords = lookupByUniqueConstrains(model, sequelizeModel);
+  var lookupRecords = lookupByUniqueConstrains(model, dependencies);
 
   return function (object) {
     return lookupRecords(object, function (lookup) {
@@ -53,9 +52,9 @@ function validateUniqueConstraints(model, sequelizeModel) {
   };
 }
 
-function validateImmutableConstraints(model, sequelizeModel) {
+function validateImmutableConstraints(model, dependencies) {
+  var findById = (obj, opts) => dependencies.__self.findById(obj, opts);
   var immutableConstraints = getConstraints(model, 'immutable');
-  var findByPrimaryKey = primaryKeyUtils.findByPrimaryKey(model, sequelizeModel);
 
   function assertEquality(object, record) {
     immutableConstraints.forEach(function (constraint) {
@@ -70,7 +69,7 @@ function validateImmutableConstraints(model, sequelizeModel) {
       assertEquality(object, record);
       return object;
     } else {
-      return findByPrimaryKey(object, options).then(function (record) {
+      return findById(object, options).then(function (record) {
         assertEquality(object, record);
         return object;
       });

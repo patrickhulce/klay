@@ -5,7 +5,7 @@ var utils = require('../shared');
 
 module.exports = function (modelDef, sequelizeModel, dependencies) {
   var validateAndAutomanage = validateAndAutomanageFactory(modelDef.model, 'create');
-  var validateUnique = utils.validateUniqueConstraints(modelDef.model, sequelizeModel);
+  var validateUnique = utils.validateUniqueConstraints(modelDef.model, dependencies);
   var validateCustom = utils.validateCustomConstraints(modelDef.model, dependencies);
 
   var operation = {

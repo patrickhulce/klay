@@ -16,7 +16,7 @@ module.exports = function (modelDef, options) {
   var upsert = operations.upsert(modelDef, sequelizeModel, dependencies).run;
   var patch = operations.patch(modelDef, sequelizeModel, dependencies).run;
   var setPrimaryKey = utils.setPrimaryKey(modelDef.model);
-  var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, sequelizeModel);
+  var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, dependencies);
 
   var dbModel = {
     _sequelize: sequelize,

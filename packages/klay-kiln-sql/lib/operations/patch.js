@@ -7,7 +7,7 @@ var utils = require('../shared');
 var updateOperation = require('./update');
 
 module.exports = function (modelDef, sequelizeModel, dependencies) {
-  var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, sequelizeModel);
+  var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, dependencies);
   var validateAndAutomanage = validateAndAutomanageFactory(modelDef.model, 'update');
 
   var update = updateOperation(modelDef, sequelizeModel, dependencies).run;

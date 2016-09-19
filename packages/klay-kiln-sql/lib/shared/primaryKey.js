@@ -1,8 +1,6 @@
 var assert = require('assert');
 var _ = require('lodash');
 
-var serialization = require('./serialization');
-
 const PK_MULTI_MSG = 'multi-column primary key not yet supported';
 const PK_NOT_FOUND_MSG = 'could not find primary key field for model';
 
@@ -31,20 +29,18 @@ function setPrimaryKey(model) {
   return (obj, pk) => _.set(obj, field, pk);
 }
 
-function findByPrimaryKey(model, sequelizeModel) {
+function findByPrimaryKey(model, dependencies) {
   var get = getPrimaryKey(model);
   var set = setPrimaryKey(model);
   return function (object, options) {
     var pk = typeof object === 'object' ? get(object) : object;
     var where = set({}, pk);
-    return sequelizeModel.findOne({where}).then(function (record) {
+    return dependencies.__self.findOne({where}).then(function (record) {
       if (options && options.failLoudly) {
         assert.ok(record, `no such object with primaryKey: ${pk}`);
       }
 
-      if (record) {
-        return serialization.fromStorage(model, record.get());
-      }
+      return record;
     });
   };
 }
