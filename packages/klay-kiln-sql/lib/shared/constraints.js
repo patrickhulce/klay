@@ -67,13 +67,13 @@ function validateImmutableConstraints(model, sequelizeModel) {
 
   return function (object, record, options) {
     if (record) {
+      assertEquality(object, record);
+      return object;
+    } else {
       return findByPrimaryKey(object, options).then(function (record) {
         assertEquality(object, record);
         return object;
       });
-    } else {
-      assertEquality(object, record);
-      return object;
     }
   };
 }
