@@ -3,19 +3,22 @@ var validateAndAutomanageFactory = require('klay-db/helpers').validateAndAutoman
 
 var utils = require('../shared');
 
-module.exports = function (modelDef, sequelizeModel) {
+module.exports = function (modelDef, sequelizeModel, dependencies) {
   var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, sequelizeModel);
   var validateAndAutomanage = validateAndAutomanageFactory(modelDef.model, 'update');
   var validatePrimary = utils.validatePrimaryConstraint(modelDef.model, sequelizeModel);
   var validateImmutable = utils.validateImmutableConstraints(modelDef.model, sequelizeModel);
   var validateUnique = utils.validateUniqueConstraints(modelDef.model, sequelizeModel);
+  var validateCustom = utils.validateCustomConstraints(modelDef.model, dependencies);
 
   var operation = {
     _validateConstraints: function (object) {
-      return Promise.resolve().
-        then(() => validatePrimary(object)).
-        then(record => validateImmutable(object, record)).
-        then(() => validateUnique(object));
+      return validatePrimary(object).then(function (record) {
+        return Promise.resolve().
+          then(() => validateImmutable(object, record)).
+          then(() => validateUnique(object, record)).
+          then(() => validateCustom(object, record));
+      });
     },
     _update: function (object, options) {
       return sequelizeModel.

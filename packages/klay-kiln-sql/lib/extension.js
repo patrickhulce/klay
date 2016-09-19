@@ -2,6 +2,17 @@ var _ = require('lodash');
 var Model = require('./Model');
 var Sequelize = require('./sequelize/connection');
 
+function determineDependency(modelDef, constraint) {
+  if (constraint.type === 'reference') {
+    return _.get(constraint, 'meta.model') + ':sql';
+  } else if (constraint.type === 'custom') {
+    return _.get(constraint, 'meta.dependencies', []).
+      filter(dep => dep !== modelDef.name + ':sql');
+  } else {
+    return [];
+  }
+}
+
 module.exports = function (dbOptions, migrationOptions) {
   var sequelize = new Sequelize(dbOptions);
 
@@ -14,8 +25,8 @@ module.exports = function (dbOptions, migrationOptions) {
     determineDependencies: function (modelDef, options) {
       var constraints = _.get(modelDef, 'model.spec.db.constraints', []);
       return _(constraints).
-        filter({type: 'reference'}).
-        map(item => _.get(item, 'meta.model') + ':sql').
+        map(constraint => determineDependency(modelDef, constraint)).
+        flatten().
         uniq().
         value();
     },

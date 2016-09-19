@@ -6,11 +6,11 @@ var validateAndAutomanageFactory = require('klay-db/helpers').validateAndAutoman
 var utils = require('../shared');
 var updateOperation = require('./update');
 
-module.exports = function (modelDef, sequelizeModel) {
+module.exports = function (modelDef, sequelizeModel, dependencies) {
   var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, sequelizeModel);
   var validateAndAutomanage = validateAndAutomanageFactory(modelDef.model, 'update');
 
-  var update = updateOperation(modelDef, sequelizeModel).run;
+  var update = updateOperation(modelDef, sequelizeModel, dependencies).run;
 
   var operation = {
     _mergeObject: function (patch, record) {

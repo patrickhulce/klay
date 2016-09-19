@@ -5,10 +5,9 @@ var sequelizeExtras = require('./extras');
 var sequelizeDatatypes = require('./datatypes');
 
 module.exports = {
-  fromKlayModel: function (klayModelDef, options) {
+  fromKlayModel: function (klayModelDef, options, dependencies) {
     var klayModel = klayModelDef.model;
     var sequelize = options.sequelize;
-    var dependencies = options.dependencies;
 
     var sequelizeObject = {};
 

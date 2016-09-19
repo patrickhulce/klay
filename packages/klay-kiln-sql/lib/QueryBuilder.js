@@ -1,6 +1,7 @@
 var _ = require('lodash');
+var utils = require('./shared');
 
-module.exports = function (model, query, deserialize) {
+module.exports = function (klayModel, sequelizeModel, query) {
   query = query || {};
 
   var builder = {
@@ -33,21 +34,23 @@ module.exports = function (model, query, deserialize) {
       return _.cloneDeep(query);
     },
     fetchCount: function (options) {
-      if (!model) { throw new Error('no model provided to QueryBuilder'); }
-      return model.count(_.assign({}, query, options));
+      if (!sequelizeModel) { throw new Error('no model provided to QueryBuilder'); }
+      return sequelizeModel.count(_.assign({}, query, options));
     },
     fetchResult: function (options) {
-      if (!model) { throw new Error('no model provided to QueryBuilder'); }
-      return model.findOne(_.assign({}, query, options)).then(function (item) {
+      if (!sequelizeModel) { throw new Error('no model provided to QueryBuilder'); }
+      return sequelizeModel.findOne(_.assign({}, query, options)).then(function (item) {
         if (item) {
-          return deserialize(item.get());
+          return utils.fromStorage(klayModel, item.get());
         }
       });
     },
     fetchResults: function (options) {
-      if (!model) { throw new Error('no model provided to QueryBuilder'); }
-      return model.findAll(_.assign({}, query, options)).then(function (items) {
-        return items.map(function (item) { return deserialize(item.get()); });
+      if (!sequelizeModel) { throw new Error('no model provided to QueryBuilder'); }
+      return sequelizeModel.findAll(_.assign({}, query, options)).then(function (items) {
+        return items.map(function (item) {
+          return utils.fromStorage(klayModel, item.get());
+        });
       });
     },
   };

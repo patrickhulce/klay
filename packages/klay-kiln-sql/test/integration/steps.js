@@ -6,11 +6,12 @@ var modelsFactory = require('../fixtures/models');
 var extensionFactory = relativeRequire('extension.js');
 
 var steps = module.exports = {
-  init: function () {
+  init: function (withModels) {
     var shared = {};
 
     before(function () {
       shared.klayModels = modelsFactory();
+      if (withModels) { withModels(shared.klayModels); }
     });
 
     after(function () {

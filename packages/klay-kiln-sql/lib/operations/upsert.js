@@ -3,13 +3,13 @@ var utils = require('../shared');
 var createOperation = require('./create');
 var updateOperation = require('./update');
 
-module.exports = function (modelDef, sequelizeModel) {
+module.exports = function (modelDef, sequelizeModel, dependencies) {
   var getPrimaryKey = utils.getPrimaryKey(modelDef.model);
   var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, sequelizeModel);
   var lookupRecords = utils.lookupByUniqueConstrains(modelDef.model, sequelizeModel);
 
-  var create = createOperation(modelDef, sequelizeModel).run;
-  var update = updateOperation(modelDef, sequelizeModel).run;
+  var create = createOperation(modelDef, sequelizeModel, dependencies).run;
+  var update = updateOperation(modelDef, sequelizeModel, dependencies).run;
 
   var operation = {
     _lookupExistingRecord: function (object) {

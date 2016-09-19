@@ -78,10 +78,25 @@ function validateImmutableConstraints(model, sequelizeModel) {
   };
 }
 
+function validateCustomConstraints(model, dependencies) {
+  var customConstraints = getConstraints(model, 'custom');
+
+  return function (object, record, options) {
+    return Promise.map(customConstraints, function (constraint) {
+      var assert = constraint.meta.assert || _.noop;
+      var queryBuilder = dependencies.__self.queryBuilder();
+      return assert.call(queryBuilder, object, record, constraint, dependencies, options);
+    }, {concurrency: _.get(options, 'concurrency', 1)}).then(function () {
+      return object;
+    });
+  };
+}
+
 module.exports = {
   getConstraints,
   lookupByUniqueConstrains,
   validatePrimaryConstraint,
   validateUniqueConstraints,
   validateImmutableConstraints,
+  validateCustomConstraints,
 };

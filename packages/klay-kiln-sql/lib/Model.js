@@ -8,15 +8,15 @@ var utils = require('./shared');
 
 module.exports = function (modelDef, options) {
   var sequelize = options.sequelize;
-  var sequelizeModel = sequelizeModels.fromKlayModel(modelDef, options);
+  var dependencies = options.dependencies || {};
+  var sequelizeModel = sequelizeModels.fromKlayModel(modelDef, options, dependencies);
 
-  var create = operations.create(modelDef, sequelizeModel).run;
-  var update = operations.update(modelDef, sequelizeModel).run;
-  var upsert = operations.upsert(modelDef, sequelizeModel).run;
-  var patch = operations.patch(modelDef, sequelizeModel).run;
+  var create = operations.create(modelDef, sequelizeModel, dependencies).run;
+  var update = operations.update(modelDef, sequelizeModel, dependencies).run;
+  var upsert = operations.upsert(modelDef, sequelizeModel, dependencies).run;
+  var patch = operations.patch(modelDef, sequelizeModel, dependencies).run;
   var setPrimaryKey = utils.setPrimaryKey(modelDef.model);
   var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, sequelizeModel);
-  var deserialize = record => utils.fromStorage(modelDef.model, record);
 
   var dbModel = {
     _sequelize: sequelize,
@@ -47,9 +47,10 @@ module.exports = function (modelDef, options) {
       return dbModel.destroyOne(setPrimaryKey({}, id), options);
     },
     queryBuilder: function (query) {
-      return new QueryBuilder(sequelizeModel, query, deserialize);
+      return new QueryBuilder(modelDef.model, sequelizeModel, query);
     },
   };
 
+  dependencies.__self = dependencies[modelDef.name + ':sql'] = dbModel;
   return dbModel;
 };
