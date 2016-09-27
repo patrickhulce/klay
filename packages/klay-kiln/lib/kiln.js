@@ -42,13 +42,13 @@ module.exports = function () {
 
   function bake(modelName, extension, options) {
     var modelDef = getModelDefOrThrow(modelName);
-    if (typeof extension === 'string' && typeof options === 'undefined') {
+    if (typeof extension === 'string') {
       var extensionName = extension;
       var extensions = getExtensions(modelDef);
       var extensionDef = _.find(extensions, item => item.extension.name === extensionName);
       assert.ok(extensionDef, `could not find extension: ${extensionName}`);
       extension = _.get(extensionDef, 'extension');
-      options = _.get(extensionDef, 'options');
+      options = _.assign({}, _.get(extensionDef, 'options'), options);
     }
 
     options = options || {};
@@ -56,8 +56,8 @@ module.exports = function () {
 
     // Check if we've already baked this model
     var prebakedInst = _.get(prebaked, [modelName, extension.name]);
-    if (prebakedInst) {
-      return prebakedInst;
+    if (prebakedInst && _.isEqual(prebakedInst.options, options)) {
+      return prebakedInst.inst;
     }
 
     var determineDeps = _.get(extension, 'determineDependencies', _.noop);
@@ -66,7 +66,7 @@ module.exports = function () {
     var result = extension.bake(modelDef, options, dependencies);
 
     var prebakedOfModel = prebaked[modelName] || {};
-    prebakedOfModel[extension.name] = result;
+    prebakedOfModel[extension.name] = {inst: result, options};
     prebaked[modelName] = prebakedOfModel;
 
     return result;
