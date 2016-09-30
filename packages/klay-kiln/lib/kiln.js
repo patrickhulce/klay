@@ -27,20 +27,22 @@ module.exports = function () {
       'extension determineDependencies must be a function');
   }
 
-  function createDeps(listOfDependencies, modelName) {
+  function createDeps(listOfDependencies, modelName, kiln) {
     return _(listOfDependencies).
       map(function (item) {
         var parts = item.split(':');
         var model = parts.length > 1 ? parts[0] : modelName;
         var extension = parts.length > 1 ? parts[1] : parts[0];
-        return {name: item, value: bake(model, extension)};
+        return {name: item, value: bake.call(kiln, model, extension)};
       }).
       keyBy('name').
       mapValues('value').
+      assign({kiln}).
       value();
   }
 
   function bake(modelName, extension, options) {
+    var kilnRef = this;
     var modelDef = getModelDefOrThrow(modelName);
     if (typeof extension === 'string') {
       var extensionName = extension;
@@ -62,7 +64,7 @@ module.exports = function () {
 
     var determineDeps = _.get(extension, 'determineDependencies', _.noop);
     var dependsOn = determineDeps(modelDef, options) || [];
-    var dependencies = createDeps(dependsOn, modelName);
+    var dependencies = createDeps(dependsOn, modelName, kilnRef);
     var result = extension.bake(modelDef, options, dependencies);
 
     var prebakedOfModel = prebaked[modelName] || {};
@@ -110,13 +112,13 @@ module.exports = function () {
         return _(getExtensions(modelDef)).
           map(item => _.assign({
             name: item.extension.name,
-            result: bake(modelName, item.extension, item.options),
+            result: bake.call(kiln, modelName, item.extension, item.options),
           })).
           keyBy('name').
           mapValues('result').
           value();
       } else {
-        return bake(modelName, extension, options);
+        return bake.call(kiln, modelName, extension, options);
       }
     },
     getModels: function () {

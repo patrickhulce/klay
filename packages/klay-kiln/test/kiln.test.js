@@ -182,21 +182,21 @@ defineTest('kiln.js', function (Kiln) {
       dep1Args.should.have.deep.property('0.model', userModel);
       dep1Args.should.have.deep.property('0.metadata', userOptions);
       dep1Args.should.have.property('1').eql(dep1Options);
-      dep1Args.should.have.property('2').eql({});
+      dep1Args.should.have.property('2').eql({kiln});
 
       var dep2Args = dep2Stub.firstCall.args;
       dep2Args.should.have.deep.property('0.name', 'photo');
       dep2Args.should.have.deep.property('0.model', photoModel);
       dep2Args.should.have.deep.property('0.metadata').eql({});
       dep2Args.should.have.property('1').eql(dep2Options);
-      dep2Args.should.have.property('2').eql({});
+      dep2Args.should.have.property('2').eql({kiln});
 
       var bakeArgs = bakeStub.firstCall.args;
       bakeArgs.should.have.deep.property('0.name', 'user');
       bakeArgs.should.have.deep.property('0.model', userModel);
       bakeArgs.should.have.deep.property('0.metadata', userOptions);
       bakeArgs.should.have.property('1').eql(extensionOptions);
-      bakeArgs.should.have.property('2').eql({dep1: {result: 'dep1'}, 'photo:dep2': {result: 'dep2'}});
+      bakeArgs.should.have.property('2').eql({kiln, dep1: {result: 'dep1'}, 'photo:dep2': {result: 'dep2'}});
     });
 
     it('should cache results of already baked extensions', function () {
