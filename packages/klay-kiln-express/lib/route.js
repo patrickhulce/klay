@@ -2,7 +2,7 @@ const assert = require('assert');
 const _ = require('lodash');
 
 const validationFactory = require('./validation.js');
-const routes = require('./routes');
+const actions = require('./actions');
 
 const modelPaths = ['query', 'body', 'params'];
 
@@ -25,10 +25,10 @@ module.exports = function (extOptions) {
     bake: function (modelDef, options, deps) {
       options = options || {};
 
-      var route = options.action;
-      var routeLogic = routes[route];
-      assert.ok(routes[route], `unknown action: ${route}`);
-      options = _.assign({}, routeLogic.defaultOptions, options);
+      var action = options.action;
+      var actionLogic = actions[action];
+      assert.ok(actionLogic, `unknown action: ${action}`);
+      options = _.assign({}, actionLogic.defaultOptions, options);
 
       var middleware = [];
       var output = {middleware};
@@ -39,13 +39,13 @@ module.exports = function (extOptions) {
       extendMiddleware(middleware, _.get(options, 'middleware.preValidation'));
       extendMiddleware(middleware, validationMiddleware);
       extendMiddleware(middleware, _.get(options, 'middleware.postValidation'));
-      extendMiddleware(middleware, routeLogic.handler(modelDef, options, extOptions, deps));
+      extendMiddleware(middleware, actionLogic.handler(modelDef, options, extOptions, deps));
       extendMiddleware(middleware, _.get(options, 'middleware.postResponse'));
 
       return output;
 
       function determineMiddleware(path) {
-        var modelFactory = _.get(routeLogic, path + 'Model', _.noop);
+        var modelFactory = _.get(actionLogic, path + 'Model', _.noop);
         var model = modelFactory(modelDef, options, deps);
 
         if (model) {

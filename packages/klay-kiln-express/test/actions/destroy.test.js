@@ -14,7 +14,7 @@ function addRoutes(kiln, app) {
   app.use(result.router);
 }
 
-describedb('routes/destroy.js', function () {
+describedb('actions/destroy.js', function () {
   var shared = steps.init(addRoutes);
 
   context('byId', function () {

@@ -13,7 +13,7 @@ function addRoutes(kiln, app) {
   app.use(result.router);
 }
 
-describedb('routes/list.js', function () {
+describedb('actions/list.js', function () {
   var shared = steps.init(addRoutes);
 
   function list(query, validate, done) {

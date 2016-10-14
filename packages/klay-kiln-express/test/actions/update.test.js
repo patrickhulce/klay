@@ -13,7 +13,7 @@ function addRoutes(kiln, app) {
   app.use(result.router);
 }
 
-describedb('routes/update.js', function () {
+describedb('actions/update.js', function () {
   var shared = steps.init(addRoutes);
 
   var recordA = _.assign({metadata: {foo: 'bar'}}, fixtures.data.users[0]);
