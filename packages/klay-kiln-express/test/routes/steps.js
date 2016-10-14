@@ -12,7 +12,7 @@ var kilnRouter = relativeRequire('router.js');
 
 var kilnInst;
 var kilnSqlInst;
-var logging = console.log.bind(console);
+var logging = _.noop;
 
 var steps = module.exports = {
   init: function (configureApp) {
@@ -41,7 +41,7 @@ var steps = module.exports = {
         if (err) {
           res.status(500);
           res.json({message: err.message});
-          console.log(err.stack);
+          logging(err.stack);
         } else {
           next();
         }
@@ -62,7 +62,9 @@ var steps = module.exports = {
   cleanAndSync: function (shared) {
     it('should initialize database', function () {
       shared.dbModels = {user: shared.kiln.bake('user', 'sql')};
-      return shared.sql.sync({force: true});
+      return shared.sql.sync({force: true}).then(function () {
+        return shared.dbModels.user.destroy({});
+      });
     });
   },
   insertData: function (shared) {
