@@ -35,7 +35,7 @@ module.exports = function (klayModel, sequelizeModel, query) {
     },
     fetchCount: function (options) {
       if (!sequelizeModel) { throw new Error('no model provided to QueryBuilder'); }
-      return sequelizeModel.count(_.assign({}, query, options));
+      return sequelizeModel.count(_.assign({where: query.where || {}}, options));
     },
     fetchResult: function (options) {
       if (!sequelizeModel) { throw new Error('no model provided to QueryBuilder'); }

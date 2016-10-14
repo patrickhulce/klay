@@ -114,5 +114,15 @@ describesql('query objects', function () {
         fetchResult().
         should.eventually.eql({firstName: 'John', lastName: 'Doe'});
     });
+
+    it('should fetch the count', function () {
+      return userModel.queryBuilder().
+        where('firstName', 'John').
+        where('lastName', 'Doe').
+        where('isAdmin', true).
+        fields(['firstName', 'lastName']).
+        fetchCount().
+        should.eventually.eql(1);
+    });
   });
 });
