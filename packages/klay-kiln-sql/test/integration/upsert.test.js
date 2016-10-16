@@ -26,10 +26,26 @@ describesql('upsert objects', function () {
       });
     });
 
+    it('should create a set of users', function () {
+      var userA = _.assign({}, defaultUser, {firstName: 'John', email: 'john@test.com'});
+      var userB = _.assign({}, defaultUser, {firstName: 'Jade', email: 'jade@test.com'});
+      return shared.models.user.upsert([userA, userB]).then(function (items) {
+        items.should.have.length(2);
+        items.forEach(function (item, index) {
+          var expected = index === 0 ? userA : userB;
+          item.should.have.property('id').is.a('number');
+          item.should.have.property('createdAt').instanceof(Date);
+          item.should.have.property('updatedAt').instanceof(Date);
+
+          var untouched = _.omit(item, ['id', 'createdAt', 'updatedAt']);
+          untouched.should.eql(expected);
+        });
+      });
+    });
+
     it('should update an existing user by id', function () {
       var user = _.assign({}, shared.userA, {email: 'test2@example.com'});
       return shared.models.user.upsert(user).then(function (item) {
-        item.should.have.property('id', shared.userA.id);
         item.should.have.property('email', 'test2@example.com');
         item.should.have.property('updatedAt').instanceof(Date).greaterThan(shared.userA.updatedAt);
 
@@ -40,16 +56,24 @@ describesql('upsert objects', function () {
     });
 
     it('should update an existing user by unique constraints', function () {
-      var user = _.assign({}, defaultUser, {email: 'test2@example.com', age: 24, password: 'other'});
+      var user = _.assign({}, shared.userA, {age: 24, password: 'other'});
       return shared.models.user.upsert(user).then(function (item) {
-        item.should.have.property('id', shared.userA.id);
         item.should.have.property('age', 24);
         item.should.have.property('password', 'other');
         item.should.have.property('updatedAt').instanceof(Date).greaterThan(shared.userA.updatedAt);
 
         var untouched = _.omit(item, ['age', 'password', 'updatedAt']);
         untouched.should.eql(_.omit(shared.userA, ['age', 'password', 'updatedAt']));
+        shared.userA = item;
       });
+    });
+
+    it('should respect last updates to the same record', function () {
+      var users = _.range(10).map(i => _.assign({}, _.omit(shared.userA, 'id'), {age: 100 + i}));
+      return shared.models.user.upsert(users).then(function (dbUsers) {
+        dbUsers.forEach(user => user.should.have.property('id', shared.userA.id));
+        return shared.models.user.findById(shared.userA.id);
+      }).should.eventually.have.property('age', 109);
     });
 
     it('should prevent ambiguous updates by unique constraints', function () {

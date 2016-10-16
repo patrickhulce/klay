@@ -38,6 +38,23 @@ describesql('create objects', function () {
       });
     });
 
+    it('should create a set of users', function () {
+      var userA = _.assign({}, defaultUser, {firstName: 'Klay3', email: 'test3@foobar.com'});
+      var userB = _.assign({}, defaultUser, {firstName: 'Klay4', email: 'test4@foobar.com'});
+
+      return shared.models.user.create([userA, userB]).then(function (items) {
+        items.should.have.length(2);
+        items.forEach(function (item, index) {
+          item.should.have.property('id').is.a('number').greaterThan(shared.userA.id);
+          item.should.have.property('createdAt').instanceof(Date).greaterThan(shared.userA.createdAt);
+          item.should.have.property('updatedAt').instanceof(Date).greaterThan(shared.userA.updatedAt);
+
+          var untouched = _.omit(item, ['id', 'createdAt', 'updatedAt']);
+          untouched.should.eql(index === 0 ? userA : userB);
+        });
+      });
+    });
+
     it('should prevent creation of user with same email', function () {
       var user = _.assign({}, defaultUser, {firstName: 'missing'});
       return shared.models.user.create(user).should.be.rejectedWith(/constraint.*email.*violated/);
@@ -51,6 +68,19 @@ describesql('create objects', function () {
     it('should prevent creation of user with invalid values', function () {
       var user = _.assign({}, defaultUser, {age: 'what', firstName: 'missing'});
       return shared.models.user.create(user).should.be.rejectedWith(/must be.*integer/);
+    });
+
+    it('should prevent creation of users when one is invalid', function () {
+      var userA = _.assign({}, defaultUser, {firstName: 'Klay5', email: 'test5@foobar.com'});
+      var userB = _.assign({}, defaultUser, {firstName: 'Klay6', email: 'test4@foobar.com'});
+      var userC = _.assign({}, defaultUser, {firstName: 'Klay7', email: 'test6@foobar.com'});
+      var promise = shared.models.user.create([userA, userB, userC]);
+      return promise.should.be.rejectedWith(/constraint.*email.*violated/);
+    });
+
+    it('should have prevented creation of other users when one is invalid', function () {
+      var where = {firstName: 'Klay5'};
+      return shared.models.user.findOne({where}).should.eventually.eql(undefined);
     });
   });
 

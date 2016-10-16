@@ -52,11 +52,13 @@ describesql('update objects', function () {
   });
 
   describe('photos', function () {
-    it('should create a photo', function () {
+    it('should create photos', function () {
       var metadata = {type: 'png', gps: 'coords'};
-      var photo = {ownerId: shared.userA.id, aspectRatio: 0.66, metadata};
-      return shared.models.photo.create(photo).then(function (item) {
-        shared.photoA = item;
+      var photoA = {ownerId: shared.userA.id, aspectRatio: 0.66, metadata};
+      var photoB = {ownerId: shared.userA.id, aspectRatio: 2, metadata};
+      return shared.models.photo.create([photoA, photoB]).then(function (items) {
+        shared.photoA = items[0];
+        shared.photoB = items[1];
       });
     });
 
@@ -66,10 +68,28 @@ describesql('update objects', function () {
       return shared.models.photo.update(photo).then(function (item) {
         item.should.have.property('aspectRatio', 2);
         item.should.have.property('metadata').eql(metadata);
-        item.should.have.property('updatedAt').instanceof(Date).greaterThan(shared.photoA.updatedAt);
+        item.should.have.property('updatedAt').instanceof(Date).greaterThan(photo.updatedAt);
 
         var untouched = _.omit(item, ['updatedAt', 'metadata', 'aspectRatio']);
         untouched.should.eql(_.omit(photo, ['updatedAt', 'metadata', 'aspectRatio']));
+        shared.photoA = item;
+      });
+    });
+
+    it('should update multiple photos', function () {
+      var metadata = {type: 'jpeg', gps: 'otherr coords'};
+      var photoA = _.assign({}, shared.photoA, {aspectRatio: '1', metadata});
+      var photoB = _.assign({}, shared.photoB, {aspectRatio: '.5', metadata});
+      return shared.models.photo.update([photoA, photoB]).then(function (items) {
+        items.forEach(function (item, index) {
+          var expected = index === 0 ? photoA : photoB;
+          item.should.have.property('aspectRatio', Number(expected.aspectRatio));
+          item.should.have.property('metadata').eql(expected.metadata);
+          item.should.have.property('updatedAt').instanceof(Date).greaterThan(expected.updatedAt);
+
+          var untouched = _.omit(item, ['updatedAt', 'metadata', 'aspectRatio']);
+          untouched.should.eql(_.omit(expected, ['updatedAt', 'metadata', 'aspectRatio']));
+        });
       });
     });
   });

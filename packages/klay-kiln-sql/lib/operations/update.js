@@ -4,7 +4,6 @@ var validateAndAutomanageFactory = require('klay-db/helpers').validateAndAutoman
 var utils = require('../shared');
 
 module.exports = function (modelDef, sequelizeModel, dependencies) {
-  var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, dependencies);
   var validateAndAutomanage = validateAndAutomanageFactory(modelDef.model, 'update');
   var validatePrimary = utils.validatePrimaryConstraint(modelDef.model, dependencies);
   var validateImmutable = utils.validateImmutableConstraints(modelDef.model, dependencies);
@@ -24,7 +23,7 @@ module.exports = function (modelDef, sequelizeModel, dependencies) {
       return sequelizeModel.
         build(utils.toStorage(modelDef.model, object), {isNewRecord: false}).
         save(options).
-        then(() => findByPrimaryKey(object, options));
+        then(() => object);
     },
     run: function (object, options) {
       return Promise.resolve(object).

@@ -1,16 +1,31 @@
 var assert = require('assert');
 
 var _ = require('lodash');
+var Promise = require('bluebird');
 var QueryBuilder = require('./QueryBuilder');
 var sequelizeModels = require('./sequelize/models');
 var operations = require('./operations');
 var utils = require('./shared');
+
+function asOneOrList(operation, startTransaction) {
+  return function (object, options) {
+    if (_.isArray(object)) {
+      return startTransaction(function (transaction) {
+        var opts = _.assign({}, options, {transaction});
+        return Promise.mapSeries(object, item => operation(item, opts));
+      });
+    } else {
+      return operation(object, options);
+    }
+  };
+}
 
 module.exports = function (modelDef, options) {
   var sequelize = options.sequelize;
   var dependencies = options.dependencies || {};
   var sequelizeModel = sequelizeModels.fromKlayModel(modelDef, options, dependencies);
 
+  var transaction = sequelize.transaction.bind(sequelize);
   var create = operations.create(modelDef, sequelizeModel, dependencies).run;
   var update = operations.update(modelDef, sequelizeModel, dependencies).run;
   var upsert = operations.upsert(modelDef, sequelizeModel, dependencies).run;
@@ -18,12 +33,23 @@ module.exports = function (modelDef, options) {
   var setPrimaryKey = utils.setPrimaryKey(modelDef.model);
   var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, dependencies);
 
+  if (_.get(options, 'createAsList', true)) {
+    create = asOneOrList(create, transaction);
+  }
+
+  if (_.get(options, 'updateAsList', true)) {
+    update = asOneOrList(update, transaction);
+  }
+
+  if (_.get(options, 'upsertAsList', true)) {
+    upsert = asOneOrList(upsert, transaction);
+  }
+
   var dbModel = {
     _sequelize: sequelize,
     _sequelizeModel: sequelizeModel,
-    transaction: sequelize.transaction.bind(sequelize),
     findById: findByPrimaryKey,
-    create, update, upsert, patch,
+    transaction, create, update, upsert, patch,
     find: function (query, options) {
       return dbModel.queryBuilder(query).fetchResults(options);
     },
