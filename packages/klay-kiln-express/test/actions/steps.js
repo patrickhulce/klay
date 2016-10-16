@@ -69,7 +69,7 @@ var steps = module.exports = {
   },
   insertData: function (shared) {
     it('should create data', function () {
-      return Promise.mapSeries(fixtures.data.users, u => shared.dbModels.user.create(u));
+      return shared.dbModels.user.create(fixtures.data.users);
     });
   },
 };

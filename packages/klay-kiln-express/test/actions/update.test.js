@@ -6,6 +6,7 @@ function addRoutes(kiln, app) {
   var result = kiln.bake('user', 'express-router', {
     routes: {
       'POST /users': 'create',
+      'PUT /users': {action: 'update', byId: false, validation: {body: {allowedAsList: true}}},
       'PUT /users/:id': 'update',
     },
   });
@@ -17,7 +18,7 @@ describedb('actions/update.js', function () {
   var shared = steps.init(addRoutes);
 
   var recordA = _.assign({metadata: {foo: 'bar'}}, fixtures.data.users[0]);
-  var recordB = _.assign({metadata: null}, fixtures.data.users[1]);
+  var recordB = fixtures.data.users[1];
 
   var post = function (data, func, done) {
     return request(shared.app).
@@ -31,6 +32,15 @@ describedb('actions/update.js', function () {
   var put = function (data, func, done, id) {
     return request(shared.app).
       put('/users/' + (id || data.id)).
+      type('json').
+      send(data).
+      expect(func).
+      end(done);
+  };
+
+  var putBulk = function (data, func, done) {
+    return request(shared.app).
+      put('/users').
       type('json').
       send(data).
       expect(func).
@@ -88,5 +98,16 @@ describedb('actions/update.js', function () {
         _.omit(user, toOmit).should.eql(_.omit(shared.userA, toOmit));
       }, done);
     });
+  });
+
+  it('should update multiple records', function (done) {
+    putBulk([shared.userA, shared.userB], function (res) {
+      res.status.should.equal(200);
+
+      res.body.should.have.length(2);
+      res.body.forEach(function (item) {
+        item.should.have.property('updatedAt').greaterThan(shared.userB.updatedAt);
+      });
+    }, done);
   });
 });

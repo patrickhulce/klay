@@ -68,6 +68,9 @@
     "klay": "^1.2.4",
     "lodash": "^4.16.2"
   },
+  "peerDependencies": {
+    "klay-kiln": "^1.2.0"
+  },
   "devDependencies": {
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
@@ -75,7 +78,7 @@
     "istanbul": "^0.4.5",
     "klay-db": "^1.0.0",
     "klay-kiln": "^1.2.0",
-    "klay-kiln-sql": "^1.1.0",
+    "klay-kiln-sql": "^1.2.0",
     "mocha": "^3.1.0",
     "mysql": "^2.11.1",
     "semantic-release": "^4.3.5",

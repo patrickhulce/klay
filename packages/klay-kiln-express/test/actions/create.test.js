@@ -2,10 +2,10 @@ var _ = require('lodash');
 var request = require('supertest');
 var steps = require('./steps');
 
-function addCreateRoutes(kiln, app) {
+function addRoutes(kiln, app) {
   var result = kiln.bake('user', 'express-router', {
     routes: {
-      'POST /users': 'create',
+      'POST /users': {action: 'create', validation: {body: {allowedAsList: true}}},
     },
   });
 
@@ -13,10 +13,11 @@ function addCreateRoutes(kiln, app) {
 }
 
 describedb('actions/create.js', function () {
-  var shared = steps.init(addCreateRoutes);
+  var shared = steps.init(addRoutes);
 
   var record = _.assign({metadata: {foo: 'bar'}}, fixtures.data.users[0]);
-  var recordB = _.assign({metadata: null}, fixtures.data.users[1]);
+  var records = fixtures.data.users.slice(1, 3);
+  var recordsB = fixtures.data.users.slice(3);
 
   var post = function (data, func, done) {
     return request(shared.app).
@@ -41,16 +42,16 @@ describedb('actions/create.js', function () {
       }, done);
     });
 
-    it('should create a second record', function (done) {
-      post(recordB, function (res) {
+    it('should create multiple records', function (done) {
+      post(records, function (res) {
         res.status.should.equal(200);
 
-        var user = res.body;
-        user.should.have.property('id');
-        user.should.have.property('createdAt');
-        user.should.have.property('updatedAt');
-
-        _.omit(user, ['id', 'createdAt', 'updatedAt']).should.eql(recordB);
+        res.body.should.have.length(2);
+        res.body.forEach(function (item) {
+          item.should.have.property('id');
+          item.should.have.property('createdAt');
+          item.should.have.property('updatedAt');
+        });
       }, done);
     });
   });
@@ -70,6 +71,19 @@ describedb('actions/create.js', function () {
 
     it('should prevent a duplicate record', function (done) {
       post(record, function (res) {
+        res.status.should.equal(500);
+        res.body.message.should.match(/constraint.*violated/);
+      }, done);
+    });
+
+    it('should validate a list of records', function (done) {
+      post(recordsB.concat([{foo: 'what'}]), function (res) {
+        res.status.should.equal(400);
+      }, done);
+    });
+
+    it('should prevent duplicates in a list', function (done) {
+      post(recordsB.concat(record), function (res) {
         res.status.should.equal(500);
         res.body.message.should.match(/constraint.*violated/);
       }, done);
