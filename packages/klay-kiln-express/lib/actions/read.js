@@ -1,3 +1,6 @@
+var assert = require('assert');
+
+var _ = require('lodash');
 var paramifyModel = require('../shared/paramifyModel');
 var findDbModel = require('../shared/findDbModel');
 
@@ -10,7 +13,10 @@ module.exports = {
     var dbModel = findDbModel(modelDef.name, options, dependencies);
     return function (req, res, next) {
       var where = req.validated.params;
-      res.promise = dbModel.findOne(where);
+      res.promise = dbModel.findOne({where}).then(function (item) {
+        assert.ok(item, 'no such record: ' + _.values(where)[0]);
+        return item;
+      });
       next();
     };
   },

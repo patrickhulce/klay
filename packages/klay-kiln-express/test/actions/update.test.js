@@ -98,16 +98,16 @@ describedb('actions/update.js', function () {
         _.omit(user, toOmit).should.eql(_.omit(shared.userA, toOmit));
       }, done);
     });
-  });
 
-  it('should update multiple records', function (done) {
-    putBulk([shared.userA, shared.userB], function (res) {
-      res.status.should.equal(200);
+    it('should update multiple records', function (done) {
+      putBulk([shared.userA, shared.userB], function (res) {
+        res.status.should.equal(200);
 
-      res.body.should.have.length(2);
-      res.body.forEach(function (item) {
-        item.should.have.property('updatedAt').greaterThan(shared.userB.updatedAt);
-      });
-    }, done);
+        res.body.should.have.length(2);
+        res.body.forEach(function (item) {
+          item.should.have.property('updatedAt').greaterThan(shared.userB.updatedAt);
+        });
+      }, done);
+    });
   });
 });
