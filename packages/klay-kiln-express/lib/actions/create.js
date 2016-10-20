@@ -2,7 +2,7 @@ var creatifyModel = require('../shared/creatifyModel');
 var findDbModel = require('../shared/findDbModel');
 
 module.exports = {
-  defaultOptions: {},
+  options: {},
   bodyModel: function (modelDef, options) {
     return creatifyModel(modelDef.model, options);
   },

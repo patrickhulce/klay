@@ -5,6 +5,7 @@ const validationFactory = require('./validation.js');
 const actions = require('./actions');
 
 const modelPaths = ['query', 'body', 'params'];
+const actionKeys = ['handler', 'options', 'queryModel', 'paramsModel', 'bodyModel'];
 
 function extendMiddleware(base, addition) {
   if (_.isArray(addition)) {
@@ -12,6 +13,12 @@ function extendMiddleware(base, addition) {
   } else if (addition) {
     base.push(addition);
   }
+}
+
+function isAction(object) {
+  return typeof object === 'object' &&
+    typeof object.handler === 'function' &&
+    _.difference(_.keys(object), actionKeys).length === 0;
 }
 
 module.exports = function (extOptions) {
@@ -27,8 +34,13 @@ module.exports = function (extOptions) {
 
       var action = options.action;
       var actionLogic = actions[action];
-      assert.ok(actionLogic, `unknown action: ${action}`);
-      options = _.assign({}, actionLogic.defaultOptions, options);
+      if (isAction(options)) {
+        actionLogic = options;
+        options = _.cloneDeep(actionLogic.options);
+      } else {
+        assert.ok(isAction(actionLogic), `unknown action: ${action}`);
+        options = _.assign({}, actionLogic.options, options);
+      }
 
       var middleware = [];
       var output = {middleware};

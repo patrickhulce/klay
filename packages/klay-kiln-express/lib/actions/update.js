@@ -3,7 +3,7 @@ var paramifyModel = require('../shared/paramifyModel');
 var findDbModel = require('../shared/findDbModel');
 
 module.exports = {
-  defaultOptions: {byId: true},
+  options: {byId: true},
   paramsModel: function (modelDef, options) {
     return options.byId ? paramifyModel(modelDef.model, modelDef.name) : null;
   },

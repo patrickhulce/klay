@@ -47,7 +47,7 @@ function generateModel(model, options) {
 }
 
 module.exports = {
-  defaultOptions: {
+  options: {
     queryIn: 'query',
   },
   queryModel: function (modelDef, options) {
