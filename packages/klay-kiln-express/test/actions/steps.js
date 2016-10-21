@@ -16,6 +16,10 @@ var logging = _.noop;
 
 var steps = module.exports = {
   init: function (configureApp) {
+    if (typeof mysqlOptions === 'undefined') {
+      return;
+    }
+
     kilnSqlInst = kilnSqlInst || kilnSql(_.assign({logging}, mysqlOptions));
     kilnInst = kilnInst || Kiln().
       add('user', fixtures.models.user).
