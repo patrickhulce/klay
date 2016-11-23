@@ -1,6 +1,6 @@
 var assert = require('assert');
 var _ = require('lodash');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 function Options(spec) {
   if (spec instanceof Options) {
