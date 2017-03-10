@@ -29,10 +29,10 @@ function createMiddleware(model, modelAsList, options) {
   };
 }
 
-module.exports = function (extOptions) {
+module.exports = function () {
   return {
     name: 'express-validation',
-    bake: function (modelDef, options, dependencies) {
+    bake: function (modelDef, options) {
       options = options || {};
 
       var model = modelDef.model;
