@@ -1,73 +1,73 @@
-var _ = require('lodash');
-var assert = require('./assert');
-var ValidationResult = require('./ValidationResult');
+const _ = require('lodash')
+const assert = require('./assert')
+const ValidationResult = require('./ValidationResult')
 
 module.exports = {
   boolean: {
-    __default: function (value) {
+    __default(value) {
       if (value === 'true') {
-        return true;
+        return true
       } else if (value === 'false') {
-        return false;
+        return false
       } else {
-        return value;
+        return value
       }
     }
   },
   number: {
-    __default: function (value) {
+    __default(value) {
       if (typeof value === 'string') {
-        var x = Number(value);
-        return !value || _.isNaN(x) ? value : x;
+        const x = Number(value)
+        return !value || _.isNaN(x) ? value : x
       } else {
-        return value;
+        return value
       }
     }
   },
   object: {
-    __default: function (value, root, path) {
-      var children = this.spec.children;
-      if (!children) { return value; }
-      var pathPrefix = path ? path + '.' : '';
+    __default(value, root, path) {
+      const children = this.spec.children
+      if (!children) { return value }
+      const pathPrefix = path ? path + '.' : ''
 
-      assert.typeof(value, 'object');
+      assert.typeof(value, 'object')
 
-      var priorityByType = {object: 1, conditional: 2};
-      var leftovers = _.omit(value, _.map(children, 'name'));
-      var orderedChildren = _.sortBy(children, item => priorityByType[item.model.spec.type] || 0);
+      const priorityByType = {object: 1, conditional: 2}
+      const leftovers = _.omit(value, _.map(children, 'name'))
+      const orderedChildren = _.sortBy(children, item => priorityByType[item.model.spec.type] || 0)
 
-      var transformedRoot = _.assign({}, leftovers);
-      var validationResults = _.map(orderedChildren, function (item) {
-        var validation = item.model._validate(
+      const transformedRoot = _.assign({}, leftovers)
+      const validationResults = _.map(orderedChildren, item => {
+        const validation = item.model._validate(
           value[item.name],
           transformedRoot,
           pathPrefix + item.name
-        );
+        )
 
-        _.set(transformedRoot, item.name, validation.value);
-        return {name: item.name, validation: validation};
-      });
+        _.set(transformedRoot, item.name, validation.value)
+        return {name: item.name, validation}
+      })
 
       return ValidationResult.
         coalesce(validationResults, {}).
-        merge(leftovers);
+        merge(leftovers)
     }
   },
   array: {
-    __default: function (value, root, path) {
-      if (!this.spec.children) { return value; }
-      var pathPrefix = path ? path + '.' : '';
+    __default(value, root, path) {
+      if (!this.spec.children) { return value }
+      const pathPrefix = path ? path + '.' : ''
 
-      assert.typeof(value, 'array');
+      assert.typeof(value, 'array')
 
-      var validationResults = _.map(value, function (value, index) {
+      const validationResults = _.map(value, (value, index) => {
         return {
           name: index,
           validation: this.spec.children._validate(value, root, pathPrefix + index),
-        };
-      }.bind(this));
+        }
+      })
 
-      return ValidationResult.coalesce(validationResults, []);
+      return ValidationResult.coalesce(validationResults, [])
     }
   },
-};
+}
