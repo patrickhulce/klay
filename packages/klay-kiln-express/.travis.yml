@@ -16,13 +16,11 @@ cache:
 notifications:
   email: false
 node_js:
+  - v7
   - v6
-  - v5
-  - v4
 before_install:
   - npm install -g coveralls
 before_script:
-  - npm prune
   - mysql -e 'create database if not exists klay_kiln_express;' -u root
 script:
   - npm run test:lint
