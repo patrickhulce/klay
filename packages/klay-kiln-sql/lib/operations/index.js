@@ -3,4 +3,4 @@ module.exports = {
   update: require('./update'),
   upsert: require('./upsert'),
   patch: require('./patch'),
-};
+}

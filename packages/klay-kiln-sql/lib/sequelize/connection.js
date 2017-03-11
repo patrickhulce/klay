@@ -1,26 +1,26 @@
-var _ = require('lodash');
-var Sequelize = require('sequelize');
+const _ = require('lodash')
+const Sequelize = require('sequelize')
 
-var cached = [];
+const cached = []
 
 function get(options) {
-  return _.find(cached, item => _.isEqual(item.options, options));
+  return _.find(cached, item => _.isEqual(item.options, options))
 }
 
 module.exports = function (dbOptions) {
-  var existing = get(dbOptions);
+  const existing = get(dbOptions)
 
   if (dbOptions.constructor === Sequelize) {
-    return dbOptions;
+    return dbOptions
   } else if (existing) {
-    return existing.sequelize;
+    return existing.sequelize
   } else {
-    var database = dbOptions.database;
-    var user = dbOptions.user || 'root';
-    var password = dbOptions.password || null;
-    var options = _.omit(dbOptions, ['database', 'user', 'password']);
-    var sequelize = new Sequelize(database, user, password, options);
-    cached.push({options: dbOptions, sequelize});
-    return sequelize;
+    const database = dbOptions.database
+    const user = dbOptions.user || 'root'
+    const password = dbOptions.password || null
+    const options = _.omit(dbOptions, ['database', 'user', 'password'])
+    const sequelize = new Sequelize(database, user, password, options)
+    cached.push({options: dbOptions, sequelize})
+    return sequelize
   }
-};
+}

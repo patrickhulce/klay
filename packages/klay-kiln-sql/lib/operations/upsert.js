@@ -1,50 +1,50 @@
-var _ = require('lodash');
-var utils = require('../shared');
-var createOperation = require('./create');
-var updateOperation = require('./update');
+const _ = require('lodash')
+const utils = require('../shared')
+const createOperation = require('./create')
+const updateOperation = require('./update')
 
 module.exports = function (modelDef, sequelizeModel, dependencies) {
-  var getPrimaryKey = utils.getPrimaryKey(modelDef.model);
-  var findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, dependencies);
-  var lookupRecords = utils.lookupByUniqueConstrains(modelDef.model, dependencies);
+  const getPrimaryKey = utils.getPrimaryKey(modelDef.model)
+  const findByPrimaryKey = utils.findByPrimaryKey(modelDef.model, dependencies)
+  const lookupRecords = utils.lookupByUniqueConstrains(modelDef.model, dependencies)
 
-  var create = createOperation(modelDef, sequelizeModel, dependencies).run;
-  var update = updateOperation(modelDef, sequelizeModel, dependencies).run;
+  const create = createOperation(modelDef, sequelizeModel, dependencies).run
+  const update = updateOperation(modelDef, sequelizeModel, dependencies).run
 
-  var operation = {
-    _lookupExistingRecord: function (object) {
-      return lookupRecords(object).then(function (lookups) {
+  const operation = {
+    _lookupExistingRecord(object) {
+      return lookupRecords(object).then(lookups => {
         if (!_.find(lookups, 'record')) {
-          return;
+          return
         }
 
-        var firstLookup = lookups[0];
-        lookups.reduce(function (previous, current) {
+        const firstLookup = lookups[0]
+        lookups.reduce((previous, current) => {
           if (_.isEqual(previous.record, current.record)) {
-            return current;
+            return current
           } else {
-            throw new Error('ambiguous upsert matches multiple records');
+            throw new Error('ambiguous upsert matches multiple records')
           }
-        }, firstLookup);
+        }, firstLookup)
 
-        return findByPrimaryKey(firstLookup.record).then(function (existing) {
-          return _.assign({}, existing, object);
-        });
-      });
+        return findByPrimaryKey(firstLookup.record).then(existing => {
+          return _.assign({}, existing, object)
+        })
+      })
     },
-    run: function (object, options) {
-      var validationResults = modelDef.model.validate(object);
-      var primaryKey = getPrimaryKey(validationResults.value);
+    run(object, options) {
+      const validationResults = modelDef.model.validate(object)
+      const primaryKey = getPrimaryKey(validationResults.value)
 
       if (primaryKey) {
-        return update(object, options);
+        return update(object, options)
       } else {
-        return operation._lookupExistingRecord(object).then(function (merged) {
-          return merged ? update(merged, options) : create(object, options);
-        });
+        return operation._lookupExistingRecord(object).then(merged => {
+          return merged ? update(merged, options) : create(object, options)
+        })
       }
     },
-  };
+  }
 
-  return operation;
-};
+  return operation
+}

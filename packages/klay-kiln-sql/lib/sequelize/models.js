@@ -1,34 +1,34 @@
-var assert = require('assert');
+const assert = require('assert')
 
-var _ = require('lodash');
-var sequelizeExtras = require('./extras');
-var sequelizeDatatypes = require('./datatypes');
+const _ = require('lodash')
+const sequelizeExtras = require('./extras')
+const sequelizeDatatypes = require('./datatypes')
 
 module.exports = {
-  fromKlayModel: function (klayModelDef, options, dependencies) {
-    var klayModel = klayModelDef.model;
-    var sequelize = options.sequelize;
+  fromKlayModel(klayModelDef, options, dependencies) {
+    const klayModel = klayModelDef.model
+    const sequelize = options.sequelize
 
-    var sequelizeObject = {};
+    const sequelizeObject = {}
 
-    assert.equal(_.get(klayModel, 'spec.type'), 'object', 'klay model must be an object');
-    var klayModelChildren = _.get(klayModel, 'spec.children', []);
-    klayModelChildren.forEach(function (child) {
+    assert.equal(_.get(klayModel, 'spec.type'), 'object', 'klay model must be an object')
+    const klayModelChildren = _.get(klayModel, 'spec.children', [])
+    klayModelChildren.forEach(child => {
       sequelizeObject[child.name] = {
         type: sequelizeDatatypes.fromKlayModel(child.model),
-      };
-    });
+      }
+    })
 
-    var sequelizeOptions = {
+    const sequelizeOptions = {
       timestamps: false,
       freezeTableName: true,
       indexes: sequelizeExtras.klayModelToIndexes(klayModel),
-      tableName: _.get(klayModelDef, 'meta.plural', klayModelDef.name + 's')
-    };
+      tableName: _.get(klayModelDef, 'meta.plural', klayModelDef.name + 's'),
+    }
 
-    sequelizeExtras.associatePrimaryKey(klayModel, sequelizeObject);
-    var sequelizeModel = sequelize.define(klayModelDef.name, sequelizeObject, sequelizeOptions);
-    sequelizeExtras.associateForeignKeys(klayModel, sequelizeModel, dependencies);
-    return sequelizeModel;
+    sequelizeExtras.associatePrimaryKey(klayModel, sequelizeObject)
+    const sequelizeModel = sequelize.define(klayModelDef.name, sequelizeObject, sequelizeOptions)
+    sequelizeExtras.associateForeignKeys(klayModel, sequelizeModel, dependencies)
+    return sequelizeModel
   },
-};
+}
