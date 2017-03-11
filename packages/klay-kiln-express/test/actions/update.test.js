@@ -1,113 +1,113 @@
-var _ = require('lodash');
-var request = require('supertest');
-var steps = require('./steps');
+const _ = require('lodash')
+const request = require('supertest')
+const steps = require('./steps')
 
 function addRoutes(kiln, app) {
-  var result = kiln.bake('user', 'express-router', {
+  const result = kiln.bake('user', 'express-router', {
     routes: {
       'POST /users': 'create',
       'PUT /users': {action: 'update', byId: false, validation: {body: {allowedAsList: true}}},
       'PUT /users/:id': 'update',
     },
-  });
+  })
 
-  app.use(result.router);
+  app.use(result.router)
 }
 
-describedb('actions/update.js', function () {
-  var shared = steps.init(addRoutes);
+describedb('actions/update.js', () => {
+  const shared = steps.init(addRoutes)
 
-  var recordA = _.assign({metadata: {foo: 'bar'}}, fixtures.data.users[0]);
-  var recordB = fixtures.data.users[1];
+  const recordA = _.assign({metadata: {foo: 'bar'}}, fixtures.data.users[0])
+  const recordB = fixtures.data.users[1]
 
-  var post = function (data, func, done) {
-    return request(shared.app).
-      post('/users').
-      type('json').
-      send(data).
-      expect(func).
-      end(done);
-  };
+  const post = function (data, func, done) {
+    return request(shared.app)
+      .post('/users')
+      .type('json')
+      .send(data)
+      .expect(func)
+      .end(done)
+  }
 
-  var put = function (data, func, done, id) {
-    return request(shared.app).
-      put('/users/' + (id || data.id)).
-      type('json').
-      send(data).
-      expect(func).
-      end(done);
-  };
+  const put = function (data, func, done, id) {
+    return request(shared.app)
+      .put('/users/' + (id || data.id))
+      .type('json')
+      .send(data)
+      .expect(func)
+      .end(done)
+  }
 
-  var putBulk = function (data, func, done) {
-    return request(shared.app).
-      put('/users').
-      type('json').
-      send(data).
-      expect(func).
-      end(done);
-  };
+  const putBulk = function (data, func, done) {
+    return request(shared.app)
+      .put('/users')
+      .type('json')
+      .send(data)
+      .expect(func)
+      .end(done)
+  }
 
-  it('should create a record', function (done) {
-    post(recordA, res => shared.userA = res.body, done);
-  });
+  it('should create a record', done => {
+    post(recordA, res => shared.userA = res.body, done)
+  })
 
-  it('should create a 2nd record', function (done) {
-    post(recordB, res => shared.userB = res.body, done);
-  });
+  it('should create a 2nd record', done => {
+    post(recordB, res => shared.userB = res.body, done)
+  })
 
-  context('failure', function () {
-    it('should validate an incomplete record', function (done) {
-      put(_.omit(shared.userA, ['age']), function (res) {
-        res.status.should.equal(400);
-      }, done);
-    });
+  context('failure', () => {
+    it('should validate an incomplete record', done => {
+      put(_.omit(shared.userA, ['age']), res => {
+        res.status.should.equal(400)
+      }, done)
+    })
 
-    it('should validate a missing record', function (done) {
-      put(_.assign({}, shared.userA, {id: 2012}), function (res) {
-        res.status.should.equal(500);
-        res.body.message.should.match(/no such object/);
-      }, done);
-    });
+    it('should validate a missing record', done => {
+      put(_.assign({}, shared.userA, {id: 2012}), res => {
+        res.status.should.equal(500)
+        res.body.message.should.match(/no such object/)
+      }, done)
+    })
 
-    it('should validate a mismatched record', function (done) {
-      put(shared.userA, function (res) {
-        res.status.should.equal(500);
-        res.body.message.should.match(/no such object/);
-      }, done, 12512);
-    });
+    it('should validate a mismatched record', done => {
+      put(shared.userA, res => {
+        res.status.should.equal(500)
+        res.body.message.should.match(/no such object/)
+      }, done, 12512)
+    })
 
-    it('should validate an immutable record', function (done) {
-      put(_.assign({}, shared.userA, {createdAt: new Date()}), function (res) {
-        res.status.should.equal(500);
-        res.body.message.should.match(/constraint.*violated/);
-      }, done);
-    });
-  });
+    it('should validate an immutable record', done => {
+      put(_.assign({}, shared.userA, {createdAt: new Date()}), res => {
+        res.status.should.equal(500)
+        res.body.message.should.match(/constraint.*violated/)
+      }, done)
+    })
+  })
 
-  context('success', function () {
-    it('should update a record', function (done) {
-      put(_.assign({}, shared.userA, {isAdmin: false, age: 100}), function (res) {
-        res.status.should.equal(200);
+  context('success', () => {
+    it('should update a record', done => {
+      put(_.assign({}, shared.userA, {isAdmin: false, age: 100}), res => {
+        res.status.should.equal(200)
 
-        var user = res.body;
-        user.should.have.property('age', 100);
-        user.should.have.property('isAdmin', false);
-        user.should.have.property('updatedAt').greaterThan(shared.userA.updatedAt);
+        const user = res.body
+        user.should.have.property('age', 100)
+        user.should.have.property('isAdmin', false)
+        user.should.have.property('updatedAt').greaterThan(shared.userA.updatedAt)
 
-        var toOmit = ['age', 'isAdmin', 'updatedAt'];
-        _.omit(user, toOmit).should.eql(_.omit(shared.userA, toOmit));
-      }, done);
-    });
+        const toOmit = ['age', 'isAdmin', 'updatedAt']
+        _.omit(user, toOmit).should.eql(_.omit(shared.userA, toOmit))
+      }, done)
+    })
 
-    it('should update multiple records', function (done) {
-      putBulk([shared.userA, shared.userB], function (res) {
-        res.status.should.equal(200);
+    it('should update multiple records', done => {
+      putBulk([shared.userA, shared.userB], res => {
+        res.status.should.equal(200)
 
-        res.body.should.have.length(2);
-        res.body.forEach(function (item) {
-          item.should.have.property('updatedAt').greaterThan(shared.userB.updatedAt);
-        });
-      }, done);
-    });
-  });
-});
+        res.body.should.have.length(2)
+        res.body.forEach(item => {
+          item.should.have.property('updatedAt').greaterThan(shared.userB.updatedAt)
+        })
+      }, done)
+    })
+  })
+})

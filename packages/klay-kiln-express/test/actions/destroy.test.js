@@ -1,151 +1,151 @@
-var _ = require('lodash');
-var request = require('supertest');
-var steps = require('./steps');
+const _ = require('lodash')
+const request = require('supertest')
+const steps = require('./steps')
 
 function addRoutes(kiln, app) {
-  var result = kiln.bake('user', 'express-router', {
+  const result = kiln.bake('user', 'express-router', {
     routes: {
       'GET /users': 'list',
       'DELETE /users': {byId: false, range: true, action: 'destroy'},
       'DELETE /users/:id': {byId: true, action: 'destroy'},
     },
-  });
+  })
 
-  app.use(result.router);
+  app.use(result.router)
 }
 
-describedb('actions/destroy.js', function () {
-  var shared = steps.init(addRoutes);
+describedb('actions/destroy.js', () => {
+  const shared = steps.init(addRoutes)
 
-  context('byId', function () {
-    steps.cleanAndSync(shared);
-    steps.insertData(shared);
+  context('byId', () => {
+    steps.cleanAndSync(shared)
+    steps.insertData(shared)
 
-    it('should destroy a single record', function (done) {
-      request(shared.app).
-        delete('/users/1').
-        expect(validate).
-        end(done);
-
-      function validate(res) {
-        res.status.should.equal(200);
-      }
-    });
-
-    it('should no longer appear in results', function (done) {
-      request(shared.app).
-        get('/users').
-        expect(validate).
-        end(done);
+    it('should destroy a single record', done => {
+      request(shared.app)
+        .delete('/users/1')
+        .expect(validate)
+        .end(done)
 
       function validate(res) {
-        res.status.should.equal(200);
-        res.body.should.have.property('total', 5);
+        res.status.should.equal(200)
       }
-    });
-  });
+    })
 
-  context('queryIn=query', function () {
-    steps.cleanAndSync(shared);
-    steps.insertData(shared);
-
-    it('should destroy equality records', function (done) {
-      request(shared.app).
-        delete('/users?isAdmin=true').
-        expect(validate).
-        end(done);
+    it('should no longer appear in results', done => {
+      request(shared.app)
+        .get('/users')
+        .expect(validate)
+        .end(done)
 
       function validate(res) {
-        res.status.should.equal(200);
+        res.status.should.equal(200)
+        res.body.should.have.property('total', 5)
       }
-    });
+    })
+  })
 
-    it('should no longer appear in results', function (done) {
-      request(shared.app).
-        get('/users').
-        expect(validate).
-        end(done);
+  context('queryIn=query', () => {
+    steps.cleanAndSync(shared)
+    steps.insertData(shared)
+
+    it('should destroy equality records', done => {
+      request(shared.app)
+        .delete('/users?isAdmin=true')
+        .expect(validate)
+        .end(done)
 
       function validate(res) {
-        res.status.should.equal(200);
-        res.body.should.have.property('total', 4);
+        res.status.should.equal(200)
       }
-    });
+    })
 
-    it('should destroy range records with limit', function (done) {
-      request(shared.app).
-        delete('/users?age[$gte]=20&limit=2').
-        expect(validate).
-        end(done);
+    it('should no longer appear in results', done => {
+      request(shared.app)
+        .get('/users')
+        .expect(validate)
+        .end(done)
 
       function validate(res) {
-        res.status.should.equal(200);
+        res.status.should.equal(200)
+        res.body.should.have.property('total', 4)
       }
-    });
+    })
 
-    it('should no longer appear in results', function (done) {
-      request(shared.app).
-        get('/users').
-        expect(validate).
-        end(done);
+    it('should destroy range records with limit', done => {
+      request(shared.app)
+        .delete('/users?age[$gte]=20&limit=2')
+        .expect(validate)
+        .end(done)
 
       function validate(res) {
-        res.status.should.equal(200);
-        res.body.should.have.property('total', 2);
+        res.status.should.equal(200)
       }
-    });
-  });
+    })
 
-  context('queryIn=body', function () {
-    steps.cleanAndSync(shared);
-    steps.insertData(shared);
-
-    it('should destroy range records', function (done) {
-      request(shared.app).
-        delete('/users').
-        send({age: {$gte: 20, $lte: 30}}).type('json').
-        expect(validate).
-        end(done);
+    it('should no longer appear in results', done => {
+      request(shared.app)
+        .get('/users')
+        .expect(validate)
+        .end(done)
 
       function validate(res) {
-        res.status.should.equal(200);
+        res.status.should.equal(200)
+        res.body.should.have.property('total', 2)
       }
-    });
+    })
+  })
 
-    it('should no longer appear in results', function (done) {
-      request(shared.app).
-        get('/users').
-        expect(validate).
-        end(done);
+  context('queryIn=body', () => {
+    steps.cleanAndSync(shared)
+    steps.insertData(shared)
+
+    it('should destroy range records', done => {
+      request(shared.app)
+        .delete('/users')
+        .send({age: {$gte: 20, $lte: 30}}).type('json')
+        .expect(validate)
+        .end(done)
 
       function validate(res) {
-        res.status.should.equal(200);
-        res.body.should.have.property('total', 3);
+        res.status.should.equal(200)
       }
-    });
+    })
 
-    it('should destroy equality records with limit', function (done) {
-      request(shared.app).
-        delete('/users').
-        send({isAdmin: true, limit: 1}).type('json').
-        expect(validate).
-        end(done);
+    it('should no longer appear in results', done => {
+      request(shared.app)
+        .get('/users')
+        .expect(validate)
+        .end(done)
 
       function validate(res) {
-        res.status.should.equal(200);
+        res.status.should.equal(200)
+        res.body.should.have.property('total', 3)
       }
-    });
+    })
 
-    it('should no longer appear in results', function (done) {
-      request(shared.app).
-        get('/users').
-        expect(validate).
-        end(done);
+    it('should destroy equality records with limit', done => {
+      request(shared.app)
+        .delete('/users')
+        .send({isAdmin: true, limit: 1}).type('json')
+        .expect(validate)
+        .end(done)
 
       function validate(res) {
-        res.status.should.equal(200);
-        res.body.should.have.property('total', 2);
+        res.status.should.equal(200)
       }
-    });
-  });
-});
+    })
+
+    it('should no longer appear in results', done => {
+      request(shared.app)
+        .get('/users')
+        .expect(validate)
+        .end(done)
+
+      function validate(res) {
+        res.status.should.equal(200)
+        res.body.should.have.property('total', 2)
+      }
+    })
+  })
+})
