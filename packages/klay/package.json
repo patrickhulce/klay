@@ -34,10 +34,10 @@
     "cz-conventional-changelog": "^1.1.6",
     "istanbul": "^0.4.4",
     "mocha": "^2.5.3",
-    "semantic-release": "^4.3.5",
+    "semantic-release": "^6.3.2",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
-    "xo": "^0.16.0"
+    "xo": "patrickhulce/xo#master"
   },
   "xo": {
     "env": [
