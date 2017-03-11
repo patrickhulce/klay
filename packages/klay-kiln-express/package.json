@@ -3,8 +3,9 @@
   "description": "Kiln extension to generate express middleware from klay models.",
   "main": "./lib/index.js",
   "scripts": {
-    "test": "xo './lib/**/*.js' && mocha --reporter spec --require test/bootstrap test/*.test.js test/**/*.test.js",
+    "test": "npm run test:lint && npm run test:unit",
     "test:lint": "xo './lib/**/*.js'",
+    "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
     "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**/*.test.js'",
     "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
@@ -21,41 +22,9 @@
   "homepage": "https://github.com/patrickhulce/klay-kiln-express#readme",
   "xo": {
     "env": [
-      "browser",
       "node",
       "mocha"
-    ],
-    "space": 2,
-    "rules": {
-      "complexity": [
-        "warn",
-        10
-      ],
-      "xo/no-abusive-eslint-disable": 0,
-      "xo/filename-case": 0,
-      "no-else-return": 0,
-      "max-statements-per-line": [
-        "error",
-        {
-          "max": 2
-        }
-      ],
-      "brace-style": [
-        "error",
-        "1tbs",
-        {
-          "allowSingleLine": true
-        }
-      ],
-      "comma-dangle": [
-        "error",
-        "only-multiline"
-      ],
-      "dot-location": [
-        "error",
-        "object"
-      ]
-    }
+    ]
   },
   "config": {
     "commitizen": {
@@ -85,6 +54,6 @@
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
     "supertest": "patrickhulce/supertest",
-    "xo": "^0.16.0"
+    "xo": "patrickhulce/xo#master"
   }
 }
