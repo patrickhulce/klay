@@ -78,10 +78,10 @@
     "klay": "^1.2.1",
     "mocha": "^3.0.2",
     "mysql": "^2.11.1",
-    "semantic-release": "^4.3.5",
+    "semantic-release": "^6.3.2",
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
-    "xo": "^0.16.0"
+    "xo": "patrickhulce/xo#master"
   },
   "peerDependencies": {
     "klay": "^1.2.2",
