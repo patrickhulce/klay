@@ -58,15 +58,15 @@ module.exports = function () {
           } else {
             return value
           }
-        }
-      }
-    }
+        },
+      },
+    },
   }
 
   extension.validations = {
     string: _.map(extension.formats.string, format => {
       return _.set({}, format, validation(format))
-    }).reduce(_.merge, {})
+    }).reduce(_.merge, {}),
   }
 
   return extension
