@@ -39,7 +39,7 @@ module.exports = function (extOptions) {
         options = _.cloneDeep(actionLogic.options)
       } else {
         assert.ok(isAction(actionLogic), `unknown action: ${action}`)
-        options = _.assign({}, actionLogic.options, options)
+        options = _.assign(_.cloneDeep(actionLogic.options), options)
       }
 
       const middleware = []

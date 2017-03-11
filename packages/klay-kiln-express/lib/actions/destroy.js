@@ -7,9 +7,7 @@ const querifyModel = require('../shared/querifyModel')
 const queryBuilderFactory = require('../shared/queryBuilder')
 
 function generateModel(model, options) {
-  const minLimit = _.get(options, 'minLimit', 0)
-  const maxLimit = _.get(options, 'maxLimit', 1000)
-  const defaultLimit = _.get(options, 'defaultLimit', 0)
+  const {minLimit, maxLimit, defaultLimit} = options
   const limitModel = klay.builders.integer()
     .min(minLimit).max(maxLimit).default(defaultLimit)
     .optional()
@@ -45,7 +43,12 @@ function destroyAll(dbModel) {
 }
 
 module.exports = {
-  options: {byId: true},
+  options: {
+    byId: true,
+    minLimit: 0,
+    maxLimit: 1000,
+    defaultLimit: 0,
+  },
   paramsModel(modelDef, options) {
     return options.byId ? paramifyModel(modelDef.model, modelDef.name).required() : null
   },

@@ -10,9 +10,7 @@ function parseOrder(value) {
 }
 
 function generateAdditionalFields(model, options) {
-  const maxLimit = _.get(options, 'maxLimit', 1000)
-  const defaultLimit = _.get(options, 'defaultLimit', 10)
-  const defaultOrder = _.get(options, 'defaultOrder', [['updatedAt', 'desc']])
+  const {maxLimit, defaultLimit, defaultOrder} = options
 
   const offsetModel = klay.builders.integer().min(0).default(0).optional()
   const limitModel = klay.builders.integer().min(0).max(maxLimit).default(defaultLimit).optional()
@@ -49,6 +47,9 @@ function generateModel(model, options) {
 module.exports = {
   options: {
     queryIn: 'query',
+    maxLimit: 1000,
+    defaultLimit: 10,
+    defaultOrder: [['updatedAt', 'desc']],
   },
   queryModel(modelDef, options) {
     return options.queryIn === 'query' ?
