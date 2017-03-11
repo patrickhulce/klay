@@ -5,4 +5,4 @@ module.exports = {
   read: require('./read'),
   update: require('./update'),
   upsert: require('./upsert'),
-};
+}

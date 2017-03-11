@@ -1,17 +1,17 @@
-var creatifyModel = require('../shared/creatifyModel');
-var findDbModel = require('../shared/findDbModel');
+const creatifyModel = require('../shared/creatifyModel')
+const findDbModel = require('../shared/findDbModel')
 
 module.exports = {
   options: {},
-  bodyModel: function (modelDef, options) {
-    return creatifyModel(modelDef.model, options);
+  bodyModel(modelDef, options) {
+    return creatifyModel(modelDef.model, options)
   },
-  handler: function (modelDef, options, extOptions, dependencies) {
-    var dbModel = findDbModel(modelDef.name, options, dependencies);
+  handler(modelDef, options, extOptions, dependencies) {
+    const dbModel = findDbModel(modelDef.name, options, dependencies)
     return function (req, res, next) {
-      var payload = req.validated.body;
-      res.promise = dbModel.create(payload);
-      next();
-    };
+      const payload = req.validated.body
+      res.promise = dbModel.create(payload)
+      next()
+    }
   },
-};
+}

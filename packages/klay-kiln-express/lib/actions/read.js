@@ -1,23 +1,23 @@
-var assert = require('assert');
+const assert = require('assert')
 
-var _ = require('lodash');
-var paramifyModel = require('../shared/paramifyModel');
-var findDbModel = require('../shared/findDbModel');
+const _ = require('lodash')
+const paramifyModel = require('../shared/paramifyModel')
+const findDbModel = require('../shared/findDbModel')
 
 module.exports = {
   options: {byId: true},
-  paramsModel: function (modelDef) {
-    return paramifyModel(modelDef.model, modelDef.name);
+  paramsModel(modelDef) {
+    return paramifyModel(modelDef.model, modelDef.name)
   },
-  handler: function (modelDef, options, extOptions, dependencies) {
-    var dbModel = findDbModel(modelDef.name, options, dependencies);
+  handler(modelDef, options, extOptions, dependencies) {
+    const dbModel = findDbModel(modelDef.name, options, dependencies)
     return function (req, res, next) {
-      var where = req.validated.params;
-      res.promise = dbModel.findOne({where}).then(function (item) {
-        assert.ok(item, 'no such record: ' + _.values(where)[0]);
-        return item;
-      });
-      next();
-    };
+      const where = req.validated.params
+      res.promise = dbModel.findOne({where}).then(item => {
+        assert.ok(item, 'no such record: ' + _.values(where)[0])
+        return item
+      })
+      next()
+    }
   },
-};
+}

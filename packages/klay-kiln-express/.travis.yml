@@ -9,7 +9,7 @@ addons:
 language: node_js
 services: mysql
 env:
-  - KLAY_MYSQL_HOST=localhost KLAY_MYSQL_DB=klay_kiln_sql KLAY_MYSQL_USER=root
+  - KLAY_MYSQL_HOST=localhost KLAY_MYSQL_DB=klay_kiln_express KLAY_MYSQL_USER=root
 cache:
   directories:
     - node_modules
@@ -23,7 +23,7 @@ before_install:
   - npm install -g coveralls
 before_script:
   - npm prune
-  - mysql -e 'create database if not exists klay_kiln_sql;' -u root
+  - mysql -e 'create database if not exists klay_kiln_express;' -u root
 script:
   - npm run test:lint
   - npm run test:coverage
