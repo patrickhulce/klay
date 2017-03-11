@@ -1,139 +1,139 @@
-var assert = require('assert');
-var _ = require('lodash');
+const assert = require('assert')
+const _ = require('lodash')
 
 module.exports = function () {
-  var models = {};
-  var prebaked = {};
-  var globalExtensions = [];
+  let models = {}
+  let prebaked = {}
+  let globalExtensions = []
 
   function getModelDefOrThrow(name) {
     if (models[name]) {
-      return models[name];
+      return models[name]
     } else {
-      throw new Error(`unknown model: ${name}`);
+      throw new Error(`unknown model: ${name}`)
     }
   }
 
   function getExtensions(modelDef) {
-    return modelDef.extensions.concat(globalExtensions);
+    return modelDef.extensions.concat(globalExtensions)
   }
 
   function validateExtension(extension) {
-    assert.ok(typeof extension === 'object', 'extension must be an object');
-    assert.ok(typeof extension.name === 'string', 'extension must have a name');
-    assert.ok(typeof extension.bake === 'function', 'extension must have a bake function');
+    assert.ok(typeof extension === 'object', 'extension must be an object')
+    assert.ok(typeof extension.name === 'string', 'extension must have a name')
+    assert.ok(typeof extension.bake === 'function', 'extension must have a bake function')
     assert.ok(_.isNil(extension.determineDependencies) ||
       typeof extension.determineDependencies === 'function',
-      'extension determineDependencies must be a function');
+      'extension determineDependencies must be a function')
   }
 
   function createDeps(listOfDependencies, modelName, kiln) {
-    return _(listOfDependencies).
-      map(function (item) {
-        var parts = item.split(':');
-        var model = parts.length > 1 ? parts[0] : modelName;
-        var extension = parts.length > 1 ? parts[1] : parts[0];
-        return {name: item, value: bake.call(kiln, model, extension)};
-      }).
-      keyBy('name').
-      mapValues('value').
-      assign({kiln}).
-      value();
+    return _(listOfDependencies)
+      .map(item => {
+        const parts = item.split(':')
+        const model = parts.length > 1 ? parts[0] : modelName
+        const extension = parts.length > 1 ? parts[1] : parts[0]
+        return {name: item, value: bake.call(kiln, model, extension)}
+      })
+      .keyBy('name')
+      .mapValues('value')
+      .assign({kiln})
+      .value()
   }
 
   function bake(modelName, extension, options) {
-    var kilnRef = this;
-    var modelDef = getModelDefOrThrow(modelName);
+    const kilnRef = this
+    const modelDef = getModelDefOrThrow(modelName)
     if (typeof extension === 'string') {
-      var extensionName = extension;
-      var extensions = getExtensions(modelDef);
-      var extensionDef = _.find(extensions, item => item.extension.name === extensionName);
-      assert.ok(extensionDef, `could not find extension: ${extensionName}`);
-      extension = _.get(extensionDef, 'extension');
-      options = _.assign({}, _.get(extensionDef, 'options'), options);
+      const extensionName = extension
+      const extensions = getExtensions(modelDef)
+      const extensionDef = _.find(extensions, item => item.extension.name === extensionName)
+      assert.ok(extensionDef, `could not find extension: ${extensionName}`)
+      extension = _.get(extensionDef, 'extension')
+      options = _.assign({}, _.get(extensionDef, 'options'), options)
     }
 
-    options = options || {};
-    validateExtension(extension);
+    options = options || {}
+    validateExtension(extension)
 
     // Check if we've already baked this model
-    var prebakedInst = _.get(prebaked, [modelName, extension.name]);
+    const prebakedInst = _.get(prebaked, [modelName, extension.name])
     if (prebakedInst && _.isEqual(prebakedInst.options, options)) {
-      return prebakedInst.inst;
+      return prebakedInst.inst
     }
 
-    var determineDeps = _.get(extension, 'determineDependencies', _.noop);
-    var dependsOn = determineDeps(modelDef, options) || [];
-    var dependencies = createDeps(dependsOn, modelName, kilnRef);
-    var result = extension.bake(modelDef, options, dependencies);
+    const determineDeps = _.get(extension, 'determineDependencies', _.noop)
+    const dependsOn = determineDeps(modelDef, options) || []
+    const dependencies = createDeps(dependsOn, modelName, kilnRef)
+    const result = extension.bake(modelDef, options, dependencies)
 
-    var prebakedOfModel = prebaked[modelName] || {};
-    prebakedOfModel[extension.name] = {inst: result, options};
-    prebaked[modelName] = prebakedOfModel;
+    const prebakedOfModel = prebaked[modelName] || {}
+    prebakedOfModel[extension.name] = {inst: result, options}
+    prebaked[modelName] = prebakedOfModel
 
-    return result;
+    return result
   }
 
-  var kiln = {
-    add: function (modelName, model, metadata) {
-      metadata = metadata || {};
+  const kiln = {
+    add(modelName, model, metadata) {
+      metadata = metadata || {}
 
       models[modelName] = {
         name: modelName,
         model, metadata,
         extensions: [],
-      };
-
-      return kiln;
-    },
-    extend: function (modelName, extension, options) {
-      if (typeof modelName !== 'string' && arguments.length < 3) {
-        options = extension;
-        extension = modelName;
-        modelName = null;
       }
 
-      var extensions = modelName ?
-        getModelDefOrThrow(modelName).extensions :
-        globalExtensions;
-
-      options = options || {};
-      validateExtension(extension);
-      extensions.push({options, extension});
-      return kiln;
+      return kiln
     },
-    bake: function (modelName, extension, options) {
+    extend(modelName, extension, options) {
+      if (typeof modelName !== 'string' && arguments.length < 3) {
+        options = extension
+        extension = modelName
+        modelName = null
+      }
+
+      const extensions = modelName ?
+        getModelDefOrThrow(modelName).extensions :
+        globalExtensions
+
+      options = options || {}
+      validateExtension(extension)
+      extensions.push({options, extension})
+      return kiln
+    },
+    bake(modelName, extension, options) {
       if (arguments.length === 0) {
-        return _.mapValues(models, function (value, modelName) {
-          return kiln.bake(modelName);
-        });
+        return _.mapValues(models, (value, modelName) => {
+          return kiln.bake(modelName)
+        })
       } else if (arguments.length === 1) {
-        var modelDef = getModelDefOrThrow(modelName);
-        return _(getExtensions(modelDef)).
-          map(item => _.assign({
+        const modelDef = getModelDefOrThrow(modelName)
+        return _(getExtensions(modelDef))
+          .map(item => _.assign({
             name: item.extension.name,
             result: bake.call(kiln, modelName, item.extension, item.options),
-          })).
-          keyBy('name').
-          mapValues('result').
-          value();
+          }))
+          .keyBy('name')
+          .mapValues('result')
+          .value()
       } else {
-        return bake.call(kiln, modelName, extension, options);
+        return bake.call(kiln, modelName, extension, options)
       }
     },
-    getModels: function () {
-      return _.cloneDeep(models);
+    getModels() {
+      return _.cloneDeep(models)
     },
-    clearCache: function () {
-      prebaked = {};
-      return kiln;
+    clearCache() {
+      prebaked = {}
+      return kiln
     },
-    reset: function () {
-      models = {};
-      globalExtensions = [];
-      return kiln.clearCache();
+    reset() {
+      models = {}
+      globalExtensions = []
+      return kiln.clearCache()
     },
-  };
+  }
 
-  return kiln;
-};
+  return kiln
+}
