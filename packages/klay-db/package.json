@@ -4,8 +4,9 @@
   "description": "Extensions for klay to add generic information typically used for database interactions.",
   "main": "./lib/extension.js",
   "scripts": {
-    "test": "xo './lib/**/*.js' && mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
-    "test:lint": "xo './lib/**/*.js'",
+    "test": "npm run test:lint && npm run test:unit",
+    "test:lint": "xo",
+    "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**.test.js'",
     "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**.test.js'",
     "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
     "prepublish": "./node_modules/.bin/generate-export-aliases",
@@ -21,6 +22,16 @@
     "url": "https://github.com/patrickhulce/klay-db/issues"
   },
   "homepage": "https://github.com/patrickhulce/klay-db#readme",
+  "xo": {
+    "env": [
+      "node",
+      "mocha",
+      "es6"
+    ],
+    "global": [
+      "defineTest"
+    ]
+  },
   "config": {
     "exportAliases": {
       "helpers": "./lib/helpers/index.js",
