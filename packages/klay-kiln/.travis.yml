@@ -5,13 +5,10 @@ cache:
 notifications:
   email: false
 node_js:
+  - v7
   - v6
-  - v5
-  - v4
 before_install:
   - npm install -g coveralls
-before_script:
-  - npm prune
 script:
   - npm run test:lint
   - npm run test:coverage
