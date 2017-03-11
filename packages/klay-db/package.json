@@ -5,9 +5,9 @@
   "main": "./lib/extension.js",
   "scripts": {
     "test": "npm run test:lint && npm run test:unit",
-    "test:lint": "xo 'lib/**.js' 'test/**.js'",
-    "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**.test.js'",
-    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**.test.js'",
+    "test:lint": "xo 'lib/**/*.js' 'test/**/*.js'",
+    "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
+    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**/*.test.js'",
     "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
     "prepublish": "./node_modules/.bin/generate-export-aliases",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
