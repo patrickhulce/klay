@@ -95,6 +95,28 @@ defineTest('validation.js', validationFactory => {
         next.should.not.have.been.called
       })
 
+      it('should error when fails with transform', () => {
+        const newModel = klay.builders.string()
+        const transform = sandbox.stub()
+        transform.returns(newModel)
+        middleware = bake({transform})
+        middleware({body: {name: 'hi', value: 1}}, resApi, next)
+        transform.should.have.been.called
+        next.should.not.have.been.called
+      })
+
+      it('should error when fails with omit', () => {
+        middleware = bake({omit: ['value']})
+        middleware({body: {name: 'hi', value: 1}}, resApi, next)
+        next.should.not.have.been.called
+      })
+
+      it('should error when fails with pick', () => {
+        middleware = bake({pick: ['value']})
+        middleware({body: {name: 'hi', value: 1}}, resApi, next)
+        next.should.not.have.been.called
+      })
+
       it('should handle an error', () => {
         middleware(req, resApi, next)
         json.should.have.been.called
