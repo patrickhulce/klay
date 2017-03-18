@@ -5,10 +5,6 @@ var ValueRef = relativeRequire('ValueRef');
 var ValidationError = relativeRequire('ValidationError');
 var ValidationResult = relativeRequire('ValidationResult');
 
-ValidationResult.prototype.asObject = function () {
-  return JSON.parse(JSON.stringify(this));
-};
-
 defineTest('Model.js', function (Model) {
   describe('#constructor', function () {
     afterEach(function () { Model.reset(); });
