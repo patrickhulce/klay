@@ -1,100 +1,100 @@
-var _ = require('lodash');
-var assert = require('assert');
-var should = require('chai').should();
-var Model = relativeRequire('Model');
+const assert = require('assert')
+const should = require('chai').should()
 
-defineTest('transformations.js', function (transformations) {
-  describe('#boolean', function () {
-    var transform = transformations.boolean.__default;
+const Model = relativeRequire('Model')
 
-    it('should transform string values', function () {
-      transform('true').should.equal(true);
-      transform('false').should.equal(false);
-    });
+defineTest('transformations.js', transformations => {
+  describe('#boolean', () => {
+    const transform = transformations.boolean.__default
 
-    it('should directly return a boolean value', function () {
-      transform(true).should.equal(true);
-      transform(false).should.equal(false);
-    });
+    it('should transform string values', () => {
+      transform('true').should.equal(true)
+      transform('false').should.equal(false)
+    })
 
-    it('should directly return all other values', function () {
-      var obj = {};
-      var arr = [];
+    it('should directly return a boolean value', () => {
+      transform(true).should.equal(true)
+      transform(false).should.equal(false)
+    })
 
-      transform(0).should.equal(0);
-      transform(obj).should.equal(obj);
-      transform(arr).should.equal(arr);
-      should.equal(transform(null), null);
-      should.equal(transform(undefined), undefined);
-    });
-  });
+    it('should directly return all other values', () => {
+      const obj = {}
+      const arr = []
 
-  describe('#number', function () {
-    var transform = transformations.number.__default;
+      transform(0).should.equal(0)
+      transform(obj).should.equal(obj)
+      transform(arr).should.equal(arr)
+      should.equal(transform(null), null)
+      should.equal(transform(undefined), undefined)
+    })
+  })
 
-    it('should transform valid string values', function () {
-      transform('123').should.equal(123);
-      transform('12.54').should.equal(12.54);
-    });
+  describe('#number', () => {
+    const transform = transformations.number.__default
 
-    it('should directly return an invalid string value', function () {
-      transform('').should.equal('');
-      transform('two').should.equal('two');
-      transform('foobar').should.equal('foobar');
-    });
+    it('should transform valid string values', () => {
+      transform('123').should.equal(123)
+      transform('12.54').should.equal(12.54)
+    })
 
-    it('should directly return all other values', function () {
-      var obj = {};
-      var arr = [];
+    it('should directly return an invalid string value', () => {
+      transform('').should.equal('')
+      transform('two').should.equal('two')
+      transform('foobar').should.equal('foobar')
+    })
 
-      transform(obj).should.equal(obj);
-      transform(arr).should.equal(arr);
-      should.equal(transform(null), null);
-      should.equal(transform(undefined), undefined);
-    });
-  });
+    it('should directly return all other values', () => {
+      const obj = {}
+      const arr = []
 
-  describe('#object', function () {
-    var transform = transformations.object.__default;
+      transform(obj).should.equal(obj)
+      transform(arr).should.equal(arr)
+      should.equal(transform(null), null)
+      should.equal(transform(undefined), undefined)
+    })
+  })
 
-    it('should directly return values when children is not set', function () {
-      var arr = [];
-      var obj = {property: 1};
-      var model = new Model({type: 'object'});
+  describe('#object', () => {
+    const transform = transformations.object.__default
 
-      transform.call(model, 123).should.equal(123);
-      transform.call(model, arr).should.equal(arr);
-      transform.call(model, obj).should.equal(obj);
-      transform.call(model, 'foobar').should.equal('foobar');
-      should.equal(transform.call(model, undefined), undefined);
-    });
+    it('should directly return values when children is not set', () => {
+      const arr = []
+      const obj = {property: 1}
+      const model = new Model({type: 'object'})
 
-    it('should fail when value is not an object', function () {
+      transform.call(model, 123).should.equal(123)
+      transform.call(model, arr).should.equal(arr)
+      transform.call(model, obj).should.equal(obj)
+      transform.call(model, 'foobar').should.equal('foobar')
+      should.equal(transform.call(model, undefined), undefined)
+    })
+
+    it('should fail when value is not an object', () => {
       (function () {
-        var child = {foo: {}};
-        var model = new Model({type: 'object', children: child});
+        const child = {foo: {}}
+        const model = new Model({type: 'object', children: child})
 
-        transform.call(model, 'foobar');
-      }).should.throw(assert.AssertionError);
-    });
+        transform.call(model, 'foobar')
+      }).should.throw(assert.AssertionError)
+    })
 
-    context('when validating children', function () {
-      var children, model;
+    context('when validating children', () => {
+      let children, model
 
-      beforeEach(function () {
+      beforeEach(() => {
         children = {
           id: new Model({type: 'number'}),
           name: new Model({type: 'string', validations: [/^ABC/]}),
           isAdmin: new Model({type: 'boolean'}),
-        };
+        }
 
         model = new Model({
           type: 'object',
-          children: children,
-        });
-      });
+          children,
+        })
+      })
 
-      it('should succeed', function () {
+      it('should succeed', () => {
         transform.call(model, {
           id: 123,
           name: 'ABC4ME',
@@ -107,10 +107,10 @@ defineTest('transformations.js', function (transformations) {
             name: 'ABC4ME',
             isAdmin: true,
           },
-        });
-      });
+        })
+      })
 
-      it('should transform children', function () {
+      it('should transform children', () => {
         transform.call(model, {
           id: '1234',
           name: 'ABC4ME',
@@ -123,10 +123,10 @@ defineTest('transformations.js', function (transformations) {
             name: 'ABC4ME',
             isAdmin: false,
           },
-        });
-      });
+        })
+      })
 
-      it('should pass along unknown children', function () {
+      it('should pass along unknown children', () => {
         transform.call(model, {
           id: '1234',
           name: 'ABC4ME',
@@ -141,10 +141,10 @@ defineTest('transformations.js', function (transformations) {
             isAdmin: false,
             unknown: 'value',
           },
-        });
-      });
+        })
+      })
 
-      it('should fail when a child fails', function () {
+      it('should fail when a child fails', () => {
         transform.call(model, {
           id: '1234',
           name: 'nonconform',
@@ -157,10 +157,10 @@ defineTest('transformations.js', function (transformations) {
             name: 'nonconform',
             isAdmin: false,
           },
-        });
-      });
+        })
+      })
 
-      it('should fail when multiple children fail', function () {
+      it('should fail when multiple children fail', () => {
         transform.call(model, {
           id: 'id',
           name: 'nonconform',
@@ -176,34 +176,34 @@ defineTest('transformations.js', function (transformations) {
             name: 'nonconform',
             isAdmin: false,
           },
-        });
-      });
-    });
+        })
+      })
+    })
 
-    context('when validating nested children', function () {
-      var model;
+    context('when validating nested children', () => {
+      let model
 
-      beforeEach(function () {
-        var nestedObject = new Model({
+      beforeEach(() => {
+        const nestedObject = new Model({
           type: 'object',
-          children: {type: new Model({type: 'number'})}
-        });
+          children: {type: new Model({type: 'number'})},
+        })
 
-        var nestedConditional = new Model({type: 'conditional'}).
-          option(new Model({type: 'number'}), 'source.type', 2).
-          option(new Model({type: 'boolean'}), 'source.type', 3);
+        const nestedConditional = new Model({type: 'conditional'})
+          .option(new Model({type: 'number'}), 'source.type', 2)
+          .option(new Model({type: 'boolean'}), 'source.type', 3)
 
-        var children = {
+        const children = {
           id: new Model({type: 'number'}),
           meta: nestedConditional,
           name: new Model({type: 'string'}),
           source: nestedObject,
-        };
+        }
 
-        model = new Model({type: 'object', children: children});
-      });
+        model = new Model({type: 'object', children})
+      })
 
-      it('should succeed', function () {
+      it('should succeed', () => {
         transform.call(model, {
           id: 123,
           name: 'cool name',
@@ -218,10 +218,10 @@ defineTest('transformations.js', function (transformations) {
             source: {type: 2},
             meta: 123,
           },
-        });
-      });
+        })
+      })
 
-      it('should transform children', function () {
+      it('should transform children', () => {
         transform.call(model, {
           id: 123,
           name: 'cool name',
@@ -236,10 +236,10 @@ defineTest('transformations.js', function (transformations) {
             source: {type: 3},
             meta: true,
           },
-        });
-      });
+        })
+      })
 
-      it('should not fail when children are missing', function () {
+      it('should not fail when children are missing', () => {
         transform.call(model, {
           id: 123,
           name: 'still works',
@@ -250,10 +250,10 @@ defineTest('transformations.js', function (transformations) {
             id: 123,
             name: 'still works',
           },
-        });
-      });
+        })
+      })
 
-      it('should fail when children fail', function () {
+      it('should fail when children fail', () => {
         transform.call(model, {
           id: 123,
           name: 'other name',
@@ -268,70 +268,70 @@ defineTest('transformations.js', function (transformations) {
             source: {type: 'other'},
             meta: 'true',
           },
-        });
-      });
-    });
-  });
+        })
+      })
+    })
+  })
 
-  describe('#array', function () {
-    var transform = transformations.array.__default;
+  describe('#array', () => {
+    const transform = transformations.array.__default
 
-    it('should directly return values when children is not set', function () {
-      var arr = [];
-      var obj = {property: 1};
-      var model = new Model({type: 'array'});
+    it('should directly return values when children is not set', () => {
+      const arr = []
+      const obj = {property: 1}
+      const model = new Model({type: 'array'})
 
-      transform.call(model, 123).should.equal(123);
-      transform.call(model, arr).should.equal(arr);
-      transform.call(model, obj).should.equal(obj);
-      transform.call(model, 'foobar').should.equal('foobar');
-      should.equal(transform.call(model, undefined), undefined);
-    });
+      transform.call(model, 123).should.equal(123)
+      transform.call(model, arr).should.equal(arr)
+      transform.call(model, obj).should.equal(obj)
+      transform.call(model, 'foobar').should.equal('foobar')
+      should.equal(transform.call(model, undefined), undefined)
+    })
 
-    it('should fail when value is not an array', function () {
+    it('should fail when value is not an array', () => {
       (function () {
-        var childModel = new Model({type: 'number'});
-        var model = new Model({type: 'object', children: childModel});
+        const childModel = new Model({type: 'number'})
+        const model = new Model({type: 'object', children: childModel})
 
-        transform.call(model, 'foobar');
-      }).should.throw(assert.AssertionError);
-    });
+        transform.call(model, 'foobar')
+      }).should.throw(assert.AssertionError)
+    })
 
-    context('when validating children', function () {
-      var children, model;
+    context('when validating children', () => {
+      let model
 
-      beforeEach(function () {
+      beforeEach(() => {
         model = new Model({
           type: 'array',
           children: new Model({type: 'number'}),
-        });
-      });
+        })
+      })
 
-      it('should succeed', function () {
+      it('should succeed', () => {
         transform.call(model, [123]).asObject().should.eql({
           conforms: true,
           errors: [],
           value: [123],
-        });
-      });
+        })
+      })
 
-      it('should transform children', function () {
+      it('should transform children', () => {
         transform.call(model, ['123']).asObject().should.eql({
           conforms: true,
           errors: [],
           value: [123],
-        });
-      });
+        })
+      })
 
-      it('should fail when a child fails', function () {
+      it('should fail when a child fails', () => {
         transform.call(model, [1, 'foo', 2]).asObject().should.eql({
           conforms: false,
           errors: [{path: '1', message: 'expected "foo" to have typeof number'}],
           value: [1, 'foo', 2],
-        });
-      });
+        })
+      })
 
-      it('should fail when multiple children fail', function () {
+      it('should fail when multiple children fail', () => {
         transform.call(model, [1, 'foo', 'bar']).asObject().should.eql({
           conforms: false,
           errors: [
@@ -339,8 +339,8 @@ defineTest('transformations.js', function (transformations) {
             {path: '2', message: 'expected "bar" to have typeof number'},
           ],
           value: [1, 'foo', 'bar'],
-        });
-      });
-    });
-  });
-});
+        })
+      })
+    })
+  })
+})
