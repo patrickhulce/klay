@@ -5,14 +5,14 @@ cache:
 notifications:
   email: false
 node_js:
+  - v8
   - v7
   - v6
 before_install:
-  - npm install -g coveralls codeclimate-test-reporter
+  - npm install -g coveralls
 script:
   - npm run test:lint
   - npm run test:coverage
 after_success:
   - cat ./coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
-  - codeclimate-test-reporter < ./coverage/lcov.info || echo 'Failed to upload to codeclimate...'
   - npm run semantic-release
