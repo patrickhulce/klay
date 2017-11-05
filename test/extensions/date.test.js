@@ -1,119 +1,119 @@
-var _ = require('lodash');
-var should = require('chai').should();
-var Model = relativeRequire('Model.js');
+const should = require('chai').should()
 
-defineTest('extensions/date.js', function (dateFactory) {
-  var extension = dateFactory(spec => new Model(spec));
+const Model = relativeRequire('Model.js')
 
-  describe('#builders', function () {
-    beforeEach(function () {
-      Model.types = ['date'];
-      Model.formats.date = ['unix'];
-    });
+defineTest('extensions/date.js', dateFactory => {
+  const extension = dateFactory(spec => new Model(spec))
 
-    afterEach(function () {
-      Model.reset();
-    });
+  describe('#builders', () => {
+    beforeEach(() => {
+      Model.types = ['date']
+      Model.formats.date = ['unix']
+    })
 
-    var builders = extension.builders;
-    describe('date', function () {
-      it('should create a model with type date', function () {
-        var model = builders.date();
-        model.should.have.deep.property('spec.type', 'date');
-      });
-    });
+    afterEach(() => {
+      Model.reset()
+    })
 
-    describe('unix', function () {
-      it('should create a model with type date and format unix', function () {
-        var model = builders.unixtimestamp();
-        model.should.have.deep.property('spec.type', 'date');
-        model.should.have.deep.property('spec.format', 'unix');
-      });
-    });
-  });
+    const builders = extension.builders
+    describe('date', () => {
+      it('should create a model with type date', () => {
+        const model = builders.date()
+        model.should.have.deep.property('spec.type', 'date')
+      })
+    })
 
-  describe('#transformations', function () {
-    describe('unix', function () {
-      var transform = extension.transformations.date.unix;
+    describe('unix', () => {
+      it('should create a model with type date and format unix', () => {
+        const model = builders.unixtimestamp()
+        model.should.have.deep.property('spec.type', 'date')
+        model.should.have.deep.property('spec.format', 'unix')
+      })
+    })
+  })
 
-      it('should transform string values', function () {
-        transform('86400').should.eql(new Date('1970-01-02T00:00:00.000Z'));
-        transform(String(86400 * 366)).should.eql(new Date('1971-01-02T00:00:00.000Z'));
-      });
+  describe('#transformations', () => {
+    describe('unix', () => {
+      const transform = extension.transformations.date.unix
 
-      it('should transform number values', function () {
-        transform(86400).should.eql(new Date('1970-01-02T00:00:00.000Z'));
-        transform(86400 * 366).should.eql(new Date('1971-01-02T00:00:00.000Z'));
-      });
+      it('should transform string values', () => {
+        transform('86400').should.eql(new Date('1970-01-02T00:00:00.000Z'))
+        transform(String(86400 * 366)).should.eql(new Date('1971-01-02T00:00:00.000Z'))
+      })
 
-      it('should directly return a date value', function () {
-        var d1 = new Date(2016, 04, 03);
-        var d2 = new Date(1985, 02, 01);
-        transform(d1).should.equal(d1);
-        transform(d2).should.equal(d2);
-      });
+      it('should transform number values', () => {
+        transform(86400).should.eql(new Date('1970-01-02T00:00:00.000Z'))
+        transform(86400 * 366).should.eql(new Date('1971-01-02T00:00:00.000Z'))
+      })
 
-      it('should directly return all other values', function () {
-        var obj = {};
-        var arr = [];
+      it('should directly return a date value', () => {
+        const d1 = new Date(2016, 4, 3)
+        const d2 = new Date(1985, 2, 1)
+        transform(d1).should.equal(d1)
+        transform(d2).should.equal(d2)
+      })
 
-        transform('foobar').should.equal('foobar');
-        transform(obj).should.equal(obj);
-        transform(arr).should.equal(arr);
-        should.equal(transform(null), null);
-        should.equal(transform(undefined), undefined);
-      });
-    });
+      it('should directly return all other values', () => {
+        const obj = {}
+        const arr = []
 
-    describe('__default', function () {
-      var transform = extension.transformations.date.__default;
+        transform('foobar').should.equal('foobar')
+        transform(obj).should.equal(obj)
+        transform(arr).should.equal(arr)
+        should.equal(transform(null), null)
+        should.equal(transform(undefined), undefined)
+      })
+    })
 
-      it('should transform string values', function () {
-        transform('2016-01-04').should.eql(new Date('2016-01-04T00:00:00.000Z'));
-        transform('1993-02-14T08:00:00.000Z').should.eql(new Date('1993-02-14T08:00:00.000Z'));
-      });
+    describe('__default', () => {
+      const transform = extension.transformations.date.__default
 
-      it('should transform number values', function () {
-        transform(86400 * 1000).should.eql(new Date('1970-01-02T00:00:00.000Z'));
-        transform(86400 * 366 * 1000).should.eql(new Date('1971-01-02T00:00:00.000Z'));
-      });
+      it('should transform string values', () => {
+        transform('2016-01-04').should.eql(new Date('2016-01-04T00:00:00.000Z'))
+        transform('1993-02-14T08:00:00.000Z').should.eql(new Date('1993-02-14T08:00:00.000Z'))
+      })
 
-      it('should interpret ambiguous number values as javascript timestamps', function () {
-        transform(0).should.eql(new Date('1970-01-01T00:00:00.000Z'));
-        transform(2).should.eql(new Date('1970-01-01T00:00:00.002Z'));
-      });
+      it('should transform number values', () => {
+        transform(86400 * 1000).should.eql(new Date('1970-01-02T00:00:00.000Z'))
+        transform(86400 * 366 * 1000).should.eql(new Date('1971-01-02T00:00:00.000Z'))
+      })
 
-      it('should directly return a date value', function () {
-        var d1 = new Date(2016, 04, 03);
-        var d2 = new Date(1985, 02, 01);
-        transform(d1).should.equal(d1);
-        transform(d2).should.equal(d2);
-      });
+      it('should interpret ambiguous number values as javascript timestamps', () => {
+        transform(0).should.eql(new Date('1970-01-01T00:00:00.000Z'))
+        transform(2).should.eql(new Date('1970-01-01T00:00:00.002Z'))
+      })
 
-      it('should directly return all other values', function () {
-        var obj = {};
-        var arr = [];
+      it('should directly return a date value', () => {
+        const d1 = new Date(2016, 4, 3)
+        const d2 = new Date(1985, 2, 1)
+        transform(d1).should.equal(d1)
+        transform(d2).should.equal(d2)
+      })
 
-        transform('foobar').should.equal('foobar');
-        transform(obj).should.equal(obj);
-        transform(arr).should.equal(arr);
-        should.equal(transform(null), null);
-        should.equal(transform(undefined), undefined);
-      });
-    });
-  });
+      it('should directly return all other values', () => {
+        const obj = {}
+        const arr = []
 
-  describe('#validations', function () {
-    describe('__default', function () {
-      var validate = extension.validations.date.__default;
-      it('should pass valid date values', function () {
+        transform('foobar').should.equal('foobar')
+        transform(obj).should.equal(obj)
+        transform(arr).should.equal(arr)
+        should.equal(transform(null), null)
+        should.equal(transform(undefined), undefined)
+      })
+    })
+  })
+
+  describe('#validations', () => {
+    describe('__default', () => {
+      const validate = extension.validations.date.__default
+      it('should pass valid date values', () => {
         (function () {
-          validate(new Date());
-          validate(new Date('2016-01-02'));
-        }).should.not.throw();
-      });
+          validate(new Date())
+          validate(new Date('2016-01-02'))
+        }).should.not.throw()
+      })
 
-      it('should fail invalid values', function () {
+      it('should fail invalid values', () => {
         [
           () => validate(null),
           () => validate(undefined),
@@ -121,8 +121,8 @@ defineTest('extensions/date.js', function (dateFactory) {
           () => validate(1231235),
           () => validate('2016-01-12'),
           () => validate(new Date('unknown')),
-        ].forEach(f => f.should.throw());
-      });
-    });
-  });
-});
+        ].forEach(f => f.should.throw())
+      })
+    })
+  })
+})

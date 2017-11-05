@@ -1,1045 +1,1063 @@
-var _ = require('lodash');
-var sinon = require('sinon');
-var assert = require('assert');
-var ValueRef = relativeRequire('ValueRef');
-var ValidationError = relativeRequire('ValidationError');
-var ValidationResult = relativeRequire('ValidationResult');
+const assert = require('assert')
 
-defineTest('Model.js', function (Model) {
-  describe('#constructor', function () {
-    afterEach(function () { Model.reset(); });
+const _ = require('lodash')
+const sinon = require('sinon')
 
-    it('should set spec properties', function () {
-      Model.formats = {string: ['name']};
-      var model = new Model({type: 'string', format: 'name'});
-      model.should.have.deep.property('spec.type', 'string');
-      model.should.have.deep.property('spec.format', 'name');
-    });
+const ValueRef = relativeRequire('ValueRef')
+const ValidationResult = relativeRequire('ValidationResult')
 
-    it('should set unknown spec properties', function () {
-      var model = new Model({foobar: null, bazbam: 123});
-      model.should.have.deep.property('spec.foobar', null);
-      model.should.have.deep.property('spec.bazbam', 123);
-    });
+defineTest('Model.js', Model => {
+  describe('#constructor', () => {
+    afterEach(() => {
+      Model.reset()
+    })
 
-    it('should return the argument when it is already a model', function () {
-      var modelA = new Model({type: 'string'});
-      var modelB = new Model(modelA);
-      modelA.should.equal(modelB);
-    });
+    it('should set spec properties', () => {
+      Model.formats = {string: ['name']}
+      const model = new Model({type: 'string', format: 'name'})
+      model.should.have.deep.property('spec.type', 'string')
+      model.should.have.deep.property('spec.format', 'name')
+    })
 
-    it('should fail when argument is not an object', function () {
+    it('should set unknown spec properties', () => {
+      const model = new Model({foobar: null, bazbam: 123})
+      model.should.have.deep.property('spec.foobar', null)
+      model.should.have.deep.property('spec.bazbam', 123)
+    })
+
+    it('should return the argument when it is already a model', () => {
+      const modelA = new Model({type: 'string'})
+      const modelB = new Model(modelA)
+      modelA.should.equal(modelB)
+    })
+
+    it('should fail when argument is not an object', () => {
       (function () {
-        new Model(1234);
-      }).should.throw(Error);
-    });
+        new Model(1234) // eslint-disable-line no-new
+      }).should.throw(Error)
+    })
 
-    it('should validate the spec properties', function () {
+    it('should validate the spec properties', () => {
       (function () {
-        new Model({type: 'asdf'});
-      }).should.throw();
-    });
+        new Model({type: 'asdf'}) // eslint-disable-line no-new
+      }).should.throw()
+    })
 
-    it('should assign defaults to the spec', function () {
-      Model.defaults = {required: true};
-      Model.formats = {number: ['double']};
-      var model = new Model({type: 'number', format: 'double'});
-      model.should.have.deep.property('spec.type', 'number');
-      model.should.have.deep.property('spec.format', 'double');
-      model.should.have.deep.property('spec.required', true);
-    });
+    it('should assign defaults to the spec', () => {
+      Model.defaults = {required: true}
+      Model.formats = {number: ['double']}
+      const model = new Model({type: 'number', format: 'double'})
+      model.should.have.deep.property('spec.type', 'number')
+      model.should.have.deep.property('spec.format', 'double')
+      model.should.have.deep.property('spec.required', true)
+    })
 
-    it('should override defaults with arguments', function () {
-      Model.defaults = {required: true, strict: true};
-      var model = new Model({type: 'object', required: false});
-      model.should.have.deep.property('spec.required', false);
-      model.should.have.deep.property('spec.strict', true);
-    });
+    it('should override defaults with arguments', () => {
+      Model.defaults = {required: true, strict: true}
+      const model = new Model({type: 'object', required: false})
+      model.should.have.deep.property('spec.required', false)
+      model.should.have.deep.property('spec.strict', true)
+    })
 
-    it('should work with list spec properties', function () {
-      Model.formats = {string: ['enum']};
-      var model = new Model({type: 'string', format: 'enum', options: ['foo', 'bar']});
-      model.should.have.deep.property('spec.type', 'string');
-      model.should.have.deep.property('spec.format', 'enum');
-      model.should.have.deep.property('spec.options').eql(['foo', 'bar']);
-    });
+    it('should work with list spec properties', () => {
+      Model.formats = {string: ['enum']}
+      const model = new Model({type: 'string', format: 'enum', options: ['foo', 'bar']})
+      model.should.have.deep.property('spec.type', 'string')
+      model.should.have.deep.property('spec.format', 'enum')
+      model.should.have.deep.property('spec.options').eql(['foo', 'bar'])
+    })
 
-    it('should not have hooks by default', function () {
-      (typeof Model.hooks.constructor).should.equal('undefined');
-    });
+    it('should not have hooks by default', () => {
+      (typeof Model.hooks.constructor).should.equal('undefined')
+    })
 
-    it('should call appropriate hooks', function () {
-      var hook = sinon.stub();
-      Model.hooks.constructor = [hook];
-      var model = new Model({type: 'string'});
-      hook.should.have.been.calledOn(model);
-    });
-  });
+    it('should call appropriate hooks', () => {
+      const hook = sinon.stub()
+      Model.hooks.constructor = [hook]
+      const model = new Model({type: 'string'})
+      hook.should.have.been.calledOn(model)
+    })
+  })
 
-  describe('immutability', function () {
-    it('should use distinct values when modifying properties', function () {
-      var validation = _.noop;
-      var modelA = new Model({type: 'string'}).validation(validation);
-      var modelB = modelA.type('number');
-      var modelC = modelA.validation(validation);
+  describe('immutability', () => {
+    it('should use distinct values when modifying properties', () => {
+      const validation = _.noop
+      const modelA = new Model({type: 'string'}).validation(validation)
+      const modelB = modelA.type('number')
+      const modelC = modelA.validation(validation)
 
-      modelA.spec.should.have.property('validations').length(1);
-      modelB.spec.should.have.property('validations').length(1);
-      modelC.spec.should.have.property('validations').length(2);
-    });
+      modelA.spec.should.have.property('validations').length(1)
+      modelB.spec.should.have.property('validations').length(1)
+      modelC.spec.should.have.property('validations').length(2)
+    })
 
-    it('should be immune to tampering with clones', function () {
-      var children = [
+    it('should be immune to tampering with clones', () => {
+      const children = [
         {name: 'id', model: new Model({type: 'number'})},
         {name: 'name', model: new Model({type: 'string'})},
-      ];
+      ]
 
-      var modelA = new Model({type: 'object', children: children});
-      var modelB = modelA.validation(_.noop);
-      modelB.spec.children[0].model.spec.type = 'undefined';
-      modelA.spec.should.have.deep.property('children.0.model.spec.type', 'number');
-    });
+      const modelA = new Model({type: 'object', children})
+      const modelB = modelA.validation(_.noop)
+      modelB.spec.children[0].model.spec.type = 'undefined'
+      modelA.spec.should.have.deep.property('children.0.model.spec.type', 'number')
+    })
 
-    it('should be immune to tampering with underlying', function () {
-      var children = [
+    it('should be immune to tampering with underlying', () => {
+      const children = [
         {name: 'id', model: new Model({type: 'number'})},
         {name: 'name', model: new Model({type: 'string'})},
-      ];
+      ]
 
-      var validations = [_.noop];
+      const validations = [_.noop]
 
-      var modelA = new Model({type: 'object', children, validations});
-      validations.push(_.noop);
-      children[0].name = 'other';
-      children.push({name: 'foobar', model: new Model({type: 'string'})});
-      modelA.spec.should.have.property('children').length(2);
-      modelA.spec.should.have.property('validations').length(1);
-      modelA.spec.should.have.deep.property('children.0.name', 'id');
-    });
-  });
+      const modelA = new Model({type: 'object', children, validations})
+      validations.push(_.noop)
+      children[0].name = 'other'
+      children.push({name: 'foobar', model: new Model({type: 'string'})})
+      modelA.spec.should.have.property('children').length(2)
+      modelA.spec.should.have.property('validations').length(1)
+      modelA.spec.should.have.deep.property('children.0.name', 'id')
+    })
+  })
 
-  describe('#type', function () {
-    it('should set spec.type', function () {
-      var model = new Model().type('string');
-      model.spec.should.have.property('type', 'string');
-    });
+  describe('#type', () => {
+    it('should set spec.type', () => {
+      const model = new Model().type('string')
+      model.spec.should.have.property('type', 'string')
+    })
 
-    it('should fail when unknown type is used', function () {
+    it('should fail when unknown type is used', () => {
       (function () {
-        new Model().type('missingTypeA');
-      }).should.throw();
-    });
+        new Model().type('missingTypeA')
+      }).should.throw()
+    })
 
-    it('should respect new types', function () {
-      Model.types.push('missingTypeA');
-      var model = new Model().type('missingTypeA');
-      model.spec.should.have.property('type', 'missingTypeA');
-      Model.reset();
-    });
-  });
+    it('should respect new types', () => {
+      Model.types.push('missingTypeA')
+      const model = new Model().type('missingTypeA')
+      model.spec.should.have.property('type', 'missingTypeA')
+      Model.reset()
+    })
+  })
 
-  describe('#format', function () {
-    beforeEach(function () {
-      Model.formats = {string: ['name', 'address', 'zip'], number: ['integer']};
-    });
+  describe('#format', () => {
+    beforeEach(() => {
+      Model.formats = {string: ['name', 'address', 'zip'], number: ['integer']}
+    })
 
-    afterEach(function () {
-      Model.reset();
-    });
+    afterEach(() => {
+      Model.reset()
+    })
 
-    it('should set spec.format', function () {
-      var model = new Model().type('string').format('name');
-      model.spec.should.have.property('format', 'name');
-    });
+    it('should set spec.format', () => {
+      const model = new Model().type('string').format('name')
+      model.spec.should.have.property('format', 'name')
+    })
 
-    it('should default spec.formatOptions to empty', function () {
-      var model = new Model().type('string').format('address');
-      model.spec.should.have.property('formatOptions').eql({});
-    });
+    it('should default spec.formatOptions to empty', () => {
+      const model = new Model().type('string').format('address')
+      model.spec.should.have.property('formatOptions').eql({})
+    })
 
-    it('should set spec.formatOptions', function () {
-      var options = {extended: true};
-      var model = new Model().type('string').format('zip', options);
-      model.spec.should.have.property('formatOptions').eql(options);
-    });
+    it('should set spec.formatOptions', () => {
+      const options = {extended: true}
+      const model = new Model().type('string').format('zip', options)
+      model.spec.should.have.property('formatOptions').eql(options)
+    })
 
-    it('should fail when type is not set yet', function () {
+    it('should fail when type is not set yet', () => {
       (function () {
-        new Model().format('name');
-      }).should.throw();
-    });
+        new Model().format('name')
+      }).should.throw()
+    })
 
-    it('should fail when format is not available for type', function () {
+    it('should fail when format is not available for type', () => {
       (function () {
-        new Model().type('number').format('name');
-      }).should.throw();
-    });
+        new Model().type('number').format('name')
+      }).should.throw()
+    })
 
-    it('should fail when unknown format is used', function () {
+    it('should fail when unknown format is used', () => {
       (function () {
-        new Model().type('string').format('missing');
-      }).should.throw();
-    });
-  });
+        new Model().type('string').format('missing')
+      }).should.throw()
+    })
+  })
 
-  describe('#required', function () {
-    it('should set spec.required', function () {
-      var model = new Model({required: false}).required();
-      model.spec.should.have.property('required', true);
-    });
+  describe('#required', () => {
+    it('should set spec.required', () => {
+      const model = new Model({required: false}).required()
+      model.spec.should.have.property('required', true)
+    })
 
-    it('should set spec.required', function () {
-      var model = new Model({required: true}).required(false);
-      model.spec.should.have.property('required', false);
-    });
+    it('should set spec.required', () => {
+      const model = new Model({required: true}).required(false)
+      model.spec.should.have.property('required', false)
+    })
 
-    it('should fail when required is not a boolean', function () {
+    it('should fail when required is not a boolean', () => {
       (function () {
-        new Model().required('true');
-      }).should.throw();
-    });
-  });
+        new Model().required('true')
+      }).should.throw()
+    })
+  })
 
-  describe('#optional', function () {
-    it('should set spec.required', function () {
-      var model = new Model({required: true}).optional();
-      model.spec.should.have.property('required', false);
-    });
+  describe('#optional', () => {
+    it('should set spec.required', () => {
+      const model = new Model({required: true}).optional()
+      model.spec.should.have.property('required', false)
+    })
 
-    it('should set spec.required', function () {
-      var model = new Model({required: false}).optional(false);
-      model.spec.should.have.property('required', true);
-    });
+    it('should set spec.required', () => {
+      const model = new Model({required: false}).optional(false)
+      model.spec.should.have.property('required', true)
+    })
 
-    it('should fail when required is not a boolean', function () {
+    it('should fail when required is not a boolean', () => {
       (function () {
-        new Model().optional(0);
-      }).should.throw();
-    });
-  });
+        new Model().optional(0)
+      }).should.throw()
+    })
+  })
 
-  describe('#nullable', function () {
-    it('should set spec.nullable', function () {
-      var model = new Model({nullable: false}).nullable();
-      model.spec.should.have.property('nullable', true);
-    });
+  describe('#nullable', () => {
+    it('should set spec.nullable', () => {
+      const model = new Model({nullable: false}).nullable()
+      model.spec.should.have.property('nullable', true)
+    })
 
-    it('should set spec.nullable', function () {
-      var model = new Model({nullable: true}).nullable(false);
-      model.spec.should.have.property('nullable', false);
-    });
+    it('should set spec.nullable', () => {
+      const model = new Model({nullable: true}).nullable(false)
+      model.spec.should.have.property('nullable', false)
+    })
 
-    it('should fail when nullable is not a boolean', function () {
+    it('should fail when nullable is not a boolean', () => {
       (function () {
-        new Model().nullable('false');
-      }).should.throw();
-    });
-  });
+        new Model().nullable('false')
+      }).should.throw()
+    })
+  })
 
-  describe('#strict', function () {
-    it('should set spec.strict', function () {
-      var model = new Model({type: 'object', strict: false}).strict();
-      model.spec.should.have.property('strict', true);
-    });
+  describe('#strict', () => {
+    it('should set spec.strict', () => {
+      const model = new Model({type: 'object', strict: false}).strict()
+      model.spec.should.have.property('strict', true)
+    })
 
-    it('should set spec.strict', function () {
-      var model = new Model({type: 'object', strict: true}).strict(false);
-      model.spec.should.have.property('strict', false);
-    });
+    it('should set spec.strict', () => {
+      const model = new Model({type: 'object', strict: true}).strict(false)
+      model.spec.should.have.property('strict', false)
+    })
 
-    it('should fail when strict is not a boolean', function () {
+    it('should fail when strict is not a boolean', () => {
       (function () {
-        new Model().type('object').strict('false');
-      }).should.throw();
-    });
-  });
+        new Model().type('object').strict('false')
+      }).should.throw()
+    })
+  })
 
-  describe('#default', function () {
-    it('should set spec.default', function () {
-      var model = new Model().type('string').default('foobar');
-      model.spec.should.have.property('default', 'foobar');
-    });
+  describe('#default', () => {
+    it('should set spec.default', () => {
+      const model = new Model().type('string').default('foobar')
+      model.spec.should.have.property('default', 'foobar')
+    })
 
-    it('should set spec.default as array', function () {
-      var arr = [1, 2, 3];
-      var model = new Model().type('array').default(arr);
-      model.spec.should.have.property('default').eql(arr);
-    });
+    it('should set spec.default as array', () => {
+      const arr = [1, 2, 3]
+      const model = new Model().type('array').default(arr)
+      model.spec.should.have.property('default').eql(arr)
+    })
 
-    it('should unset spec.default', function () {
-      var model = new Model({type: 'number', default: 1}).default();
-      model.spec.should.have.property('default', undefined);
-    });
+    it('should unset spec.default', () => {
+      const model = new Model({type: 'number', default: 1}).default()
+      model.spec.should.have.property('default', undefined)
+    })
 
-    it('should fail when type is not set', function () {
+    it('should fail when type is not set', () => {
       (function () {
-        new Model().default('something');
-      }).should.throw();
-    });
+        new Model().default('something')
+      }).should.throw()
+    })
 
-    it('should fail when default is not the same type as model', function () {
+    it('should fail when default is not the same type as model', () => {
       (function () {
-        new Model().type('number').default('12');
-      }).should.throw();
-    });
+        new Model().type('number').default('12')
+      }).should.throw()
+    })
 
-    it('should fail when default is not array but type is', function () {
+    it('should fail when default is not array but type is', () => {
       (function () {
-        new Model().type('array').default({'0': 1});
-      }).should.throw();
-    });
-  });
+        new Model().type('array').default({0: 1})
+      }).should.throw()
+    })
+  })
 
-  describe('#parse', function () {
-    it('should set spec.parse', function () {
-      var parse = function () {};
-      var model = new Model().parse(parse);
-      model.spec.should.have.property('parse', parse);
-    });
+  describe('#parse', () => {
+    it('should set spec.parse', () => {
+      const parse = function () {}
+      const model = new Model().parse(parse)
+      model.spec.should.have.property('parse', parse)
+    })
 
-    it('should fail when parse is not a function', function () {
+    it('should fail when parse is not a function', () => {
       (function () {
-        new Model().parse('false');
-      }).should.throw();
-    });
-  });
+        new Model().parse('false')
+      }).should.throw()
+    })
+  })
 
-  describe('#transform', function () {
-    it('should set spec.transform', function () {
-      var transform = function () {};
-      var model = new Model().transform(transform);
-      model.spec.should.have.property('transform', transform);
-    });
+  describe('#transform', () => {
+    it('should set spec.transform', () => {
+      const transform = function () {}
+      const model = new Model().transform(transform)
+      model.spec.should.have.property('transform', transform)
+    })
 
-    it('should fail when transform is not a function', function () {
+    it('should fail when transform is not a function', () => {
       (function () {
-        new Model().transform({});
-      }).should.throw();
-    });
-  });
+        new Model().transform({})
+      }).should.throw()
+    })
+  })
 
-  describe('#options', function () {
-    it('should set spec.options', function () {
-      var model = new Model().type('string').options(['foo', 'bar']);
-      model.spec.should.have.property('options').eql(['foo', 'bar']);
-    });
+  describe('#options', () => {
+    it('should set spec.options', () => {
+      const model = new Model().type('string').options(['foo', 'bar'])
+      model.spec.should.have.property('options').eql(['foo', 'bar'])
+    })
 
-    it('should fail when type is not set yet', function () {
+    it('should fail when type is not set yet', () => {
       (function () {
-        new Model().options(['foo']);
-      }).should.throw();
-    });
+        new Model().options(['foo'])
+      }).should.throw()
+    })
 
-    it('should fail when type of option doesn\'t match type', function () {
+    it('should fail when type of option doesn\'t match type', () => {
       (function () {
-        new Model().type('number').options([1, null]);
-      }).should.throw();
-    });
-  });
+        new Model().type('number').options([1, null])
+      }).should.throw()
+    })
+  })
 
-  describe('#option', function () {
-    it('should fail when type is not set yet', function () {
+  describe('#option', () => {
+    it('should fail when type is not set yet', () => {
       (function () {
-        new Model().option('foo');
-      }).should.throw();
-    });
+        new Model().option('foo')
+      }).should.throw()
+    })
 
-    it('should fail when type of option doesn\'t match type', function () {
+    it('should fail when type of option doesn\'t match type', () => {
       (function () {
-        new Model().type('number').option(null);
-      }).should.throw();
-    });
+        new Model().type('number').option(null)
+      }).should.throw()
+    })
 
-    context('when type is primitive', function () {
-      it('should set spec.options first element', function () {
-        var model = new Model().type('string').option('foo');
-        model.spec.should.have.property('options').eql(['foo']);
-      });
+    context('when type is primitive', () => {
+      it('should set spec.options first element', () => {
+        const model = new Model().type('string').option('foo')
+        model.spec.should.have.property('options').eql(['foo'])
+      })
 
-      it('should set spec.options second element', function () {
-        var model = new Model().type('string').option('foo').option('bar');
-        model.spec.should.have.property('options').eql(['foo', 'bar']);
-      });
+      it('should set spec.options second element', () => {
+        const model = new Model().type('string').option('foo').option('bar')
+        model.spec.should.have.property('options').eql(['foo', 'bar'])
+      })
 
-      it('should set spec.options first element as number', function () {
-        var model = new Model().type('number').option(13);
-        model.spec.should.have.property('options').eql([13]);
-      });
-    });
+      it('should set spec.options first element as number', () => {
+        const model = new Model().type('number').option(13)
+        model.spec.should.have.property('options').eql([13])
+      })
+    })
 
-    context('when type is conditional', function () {
-      it('should set spec.options first element with condition', function () {
-        var sModel = new Model({type: 'string'});
-        var sRef = new ValueRef('foobar');
-        var sCondition = s => typeof s === 'string';
-        var model = new Model().type('conditional').option(sModel, sRef, sCondition);
-        model.spec.should.have.property('options').eql([{model: sModel, ref: sRef, condition: sCondition}]);
-      });
+    context('when type is conditional', () => {
+      it('should set spec.options first element with condition', () => {
+        const sModel = new Model({type: 'string'})
+        const sRef = new ValueRef('foobar')
+        const sCondition = s => typeof s === 'string'
+        const model = new Model().type('conditional').option(sModel, sRef, sCondition)
+        const expectation = [{model: sModel, ref: sRef, condition: sCondition}]
+        model.spec.should.have.property('options').eql(expectation)
+      })
 
-      it('should set spec.options first element with string condition', function () {
-        var sModel = new Model({type: 'string'});
-        var model = new Model().type('conditional').option(sModel, 'path', 'value');
-        model.spec.should.have.deep.property('options.0.model').eql(sModel);
-        model.spec.should.have.deep.property('options.0.ref.path', 'path');
-        model.spec.should.have.deep.property('options.0.condition').is.a('function');
-      });
+      it('should set spec.options first element with string condition', () => {
+        const sModel = new Model({type: 'string'})
+        const model = new Model().type('conditional').option(sModel, 'path', 'value')
+        model.spec.should.have.deep.property('options.0.model').eql(sModel)
+        model.spec.should.have.deep.property('options.0.ref.path', 'path')
+        model.spec.should.have.deep.property('options.0.condition').is.a('function')
+      })
 
-      it('should set spec.options first element with array condition', function () {
-        var sModel = new Model({type: 'string'});
-        var model = new Model().type('conditional').option(sModel, ['path1', 'path2'], [0, 1]);
-        model.spec.should.have.deep.property('options.0.model').eql(sModel);
-        model.spec.should.have.deep.property('options.0.ref.0.path', 'path1');
-        model.spec.should.have.deep.property('options.0.ref.1.path', 'path2');
-        model.spec.should.have.deep.property('options.0.condition').is.a('function');
-      });
+      it('should set spec.options first element with array condition', () => {
+        const sModel = new Model({type: 'string'})
+        const model = new Model().type('conditional').option(sModel, ['path1', 'path2'], [0, 1])
+        model.spec.should.have.deep.property('options.0.model').eql(sModel)
+        model.spec.should.have.deep.property('options.0.ref.0.path', 'path1')
+        model.spec.should.have.deep.property('options.0.ref.1.path', 'path2')
+        model.spec.should.have.deep.property('options.0.condition').is.a('function')
+      })
 
-      it('should set spec.options first element without condition', function () {
-        var sModel = new Model({type: 'string'});
-        var model = new Model().type('conditional').option(sModel);
-        model.spec.should.have.property('options').eql([{model: sModel}]);
-      });
+      it('should set spec.options first element without condition', () => {
+        const sModel = new Model({type: 'string'})
+        const model = new Model().type('conditional').option(sModel)
+        model.spec.should.have.property('options').eql([{model: sModel}])
+      })
 
-      it('should set spec.options second element without condition', function () {
-        var sModel = new Model({type: 'string'});
-        var iModel = new Model({type: 'number'});
-        var iRef = new ValueRef('foobar');
-        var iCondition = s => typeof s === 'number';
-        var model = new Model().
-          type('conditional').
-          option(sModel).
-          option(iModel, iRef, iCondition);
+      it('should set spec.options second element without condition', () => {
+        const sModel = new Model({type: 'string'})
+        const iModel = new Model({type: 'number'})
+        const iRef = new ValueRef('foobar')
+        const iCondition = s => typeof s === 'number'
+        const model = new Model()
+          .type('conditional')
+          .option(sModel)
+          .option(iModel, iRef, iCondition)
         model.spec.should.have.property('options').eql([
           {model: sModel},
-          {model: iModel, ref: iRef, condition: iCondition}
-        ]);
-      });
+          {model: iModel, ref: iRef, condition: iCondition},
+        ])
+      })
 
-      it('should fail when first argument is not model', function () {
+      it('should fail when first argument is not model', () => {
         (function () {
-          new Model().type('conditional').option('string');
-        }).should.throw();
-      });
+          new Model().type('conditional').option('string')
+        }).should.throw()
+      })
 
-      it('should fail when second argument is not a path', function () {
+      it('should fail when second argument is not a path', () => {
         (function () {
-          new Model().type('conditional').option(new Model(), {}, _.noop);
-        }).should.throw();
-      });
+          new Model().type('conditional').option(new Model(), {}, _.noop)
+        }).should.throw()
+      })
 
-      it('should fail when third argument is missing', function () {
+      it('should fail when third argument is missing', () => {
         (function () {
-          new Model().type('conditional').option(new Model(), 'path');
-        }).should.throw();
-      });
-    });
-  });
+          new Model().type('conditional').option(new Model(), 'path')
+        }).should.throw()
+      })
+    })
+  })
 
-  describe('#children', function () {
-    it('should set spec.children when object', function () {
-      var childModel = {
+  describe('#children', () => {
+    it('should set spec.children when object', () => {
+      const childModel = {
         first: new Model({type: 'string'}),
         second: new Model({type: 'number'}),
-      };
+      }
 
-      var model = new Model().type('object').children(childModel);
+      const model = new Model().type('object').children(childModel)
       model.spec.should.have.property('children').eql([
         {name: 'first', model: childModel.first},
         {name: 'second', model: childModel.second},
-      ]);
-    });
+      ])
+    })
 
-    it('should set spec.children when array', function () {
-      var childModel = new Model({type: 'string'});
+    it('should set spec.children when array', () => {
+      const childModel = new Model({type: 'string'})
 
-      var model = new Model().type('array').children(childModel);
-      model.spec.should.have.property('children').eql(childModel);
-    });
+      const model = new Model().type('array').children(childModel)
+      model.spec.should.have.property('children').eql(childModel)
+    })
 
-    it('should call appropriate hooks', function () {
-      var hook = sinon.stub();
-      Model.hooks.children = [hook];
-      var childModel = new Model({type: 'string'});
+    it('should call appropriate hooks', () => {
+      const hook = sinon.stub()
+      Model.hooks.children = [hook]
+      const childModel = new Model({type: 'string'})
 
-      var model = new Model().type('array').children(childModel);
-      model.spec.should.have.property('children').eql(childModel);
-      hook.should.have.been.calledOn(model);
-      Model.reset();
-    });
+      const model = new Model().type('array').children(childModel)
+      model.spec.should.have.property('children').eql(childModel)
+      hook.should.have.been.calledOn(model)
+      Model.reset()
+    })
 
-    it('should fail when given undefined', function () {
+    it('should fail when given undefined', () => {
       (function () {
-        new Model().type('object').children();
-      }).should.throw();
-    });
+        new Model().type('object').children()
+      }).should.throw()
+    })
 
-    it('should fail when given a non-object', function () {
+    it('should fail when given a non-object', () => {
       (function () {
-        new Model().type('object').children('something');
-      }).should.throw();
-    });
+        new Model().type('object').children('something')
+      }).should.throw()
+    })
 
-    it('should fail when set on a non-object Model', function () {
+    it('should fail when set on a non-object Model', () => {
       (function () {
-        new Model().type('string').children({});
-      }).should.throw();
-    });
+        new Model().type('string').children({})
+      }).should.throw()
+    })
 
-    it('should fail when given a non-spec conforming object', function () {
+    it('should fail when given a non-spec conforming object', () => {
       (function () {
-        new Model().type('object').children({unknown: 'foobar'});
-      }).should.throw();
-    });
+        new Model().type('object').children({unknown: 'foobar'})
+      }).should.throw()
+    })
 
-    it('should fail when type is object and is given a model', function () {
+    it('should fail when type is object and is given a model', () => {
       (function () {
-        new Model().type('object').children(new Model());
-      }).should.throw();
-    });
-  });
+        new Model().type('object').children(new Model())
+      }).should.throw()
+    })
+  })
 
-  describe('#pick', function () {
-    it('should limit the children to named fields', function () {
-      var childModel = {
+  describe('#pick', () => {
+    it('should limit the children to named fields', () => {
+      const childModel = {
         first: new Model({type: 'string'}),
         second: new Model({type: 'number'}),
         third: new Model({type: 'object'}),
-      };
+      }
 
-      var model = new Model().type('object').children(childModel);
-      model.spec.should.have.property('children').length(3);
+      const model = new Model().type('object').children(childModel)
+      model.spec.should.have.property('children').length(3)
       model.pick(['first', 'third']).spec.should.have.property('children').eql([
         {name: 'first', model: childModel.first},
         {name: 'third', model: childModel.third},
-      ]);
-    });
+      ])
+    })
 
-    it('should limit the children to named single field', function () {
-      var childModel = {
+    it('should limit the children to named single field', () => {
+      const childModel = {
         first: new Model({type: 'string'}),
         second: new Model({type: 'number'}),
         third: new Model({type: 'object'}),
-      };
+      }
 
-      var model = new Model().type('object').children(childModel);
-      model.spec.should.have.property('children').length(3);
+      const model = new Model().type('object').children(childModel)
+      model.spec.should.have.property('children').length(3)
       model.pick('second').spec.should.have.property('children').eql([
         {name: 'second', model: childModel.second},
-      ]);
-    });
+      ])
+    })
 
-    it('should not fail when no children exist', function () {
-      var model = new Model().type('object');
-      model.pick('second').spec.should.have.property('children').eql([]);
-    });
-  });
+    it('should not fail when no children exist', () => {
+      const model = new Model().type('object')
+      model.pick('second').spec.should.have.property('children').eql([])
+    })
+  })
 
-  describe('#omit', function () {
-    it('should limit the children to not named fields', function () {
-      var childModel = {
+  describe('#omit', () => {
+    it('should limit the children to not named fields', () => {
+      const childModel = {
         first: new Model({type: 'string'}),
         second: new Model({type: 'number'}),
         third: new Model({type: 'object'}),
-      };
+      }
 
-      var model = new Model().type('object').children(childModel);
-      model.spec.should.have.property('children').length(3);
+      const model = new Model().type('object').children(childModel)
+      model.spec.should.have.property('children').length(3)
       model.omit(['second', 'first']).spec.should.have.property('children').eql([
         {name: 'third', model: childModel.third},
-      ]);
-    });
+      ])
+    })
 
-    it('should limit the children to not the named field', function () {
-      var childModel = {
+    it('should limit the children to not the named field', () => {
+      const childModel = {
         first: new Model({type: 'string'}),
         second: new Model({type: 'number'}),
         third: new Model({type: 'object'}),
-      };
+      }
 
-      var model = new Model().type('object').children(childModel);
-      model.spec.should.have.property('children').length(3);
+      const model = new Model().type('object').children(childModel)
+      model.spec.should.have.property('children').length(3)
       model.omit('first').spec.should.have.property('children').eql([
         {name: 'second', model: childModel.second},
         {name: 'third', model: childModel.third},
-      ]);
-    });
+      ])
+    })
 
-    it('should not fail when no children exist', function () {
-      var model = new Model().type('object');
-      model.omit('random').spec.should.have.property('children').eql([]);
-    });
-  });
+    it('should not fail when no children exist', () => {
+      const model = new Model().type('object')
+      model.omit('random').spec.should.have.property('children').eql([])
+    })
+  })
 
-  describe('#merge', function () {
-    it('should take the union of both objects', function () {
-      var childModelA = {
+  describe('#merge', () => {
+    it('should take the union of both objects', () => {
+      const childModelA = {
         first: new Model({type: 'string'}),
         second: new Model({type: 'number'}),
-      };
+      }
 
-      var childModelB = {
+      const childModelB = {
         third: new Model({type: 'boolean'}),
         fourth: new Model({type: 'string'}),
-      };
+      }
 
-      var modelA = new Model().type('object').children(childModelA);
-      var modelB = new Model().type('object').children(childModelB);
+      const modelA = new Model().type('object').children(childModelA)
+      const modelB = new Model().type('object').children(childModelB)
       modelA.merge(modelB).spec.should.have.property('children').eql([
         {name: 'first', model: childModelA.first},
         {name: 'second', model: childModelA.second},
         {name: 'third', model: childModelB.third},
         {name: 'fourth', model: childModelB.fourth},
-      ]);
-    });
+      ])
+    })
 
-    it('should fail when given a conflicting model', function () {
-      var childModelA = {
+    it('should fail when given a conflicting model', () => {
+      const childModelA = {
         first: new Model({type: 'string'}),
         second: new Model({type: 'number'}),
         third: new Model({type: 'object'}),
-      };
+      }
 
-      var childModelB = {second: new Model({type: 'boolean'})};
+      const childModelB = {second: new Model({type: 'boolean'})}
 
-      var modelA = new Model().type('object').children(childModelA);
-      var modelB = new Model().type('object').children(childModelB);
+      const modelA = new Model().type('object').children(childModelA)
+      const modelB = new Model().type('object').children(childModelB);
       (function () {
-        modelA.merge(modelB);
-      }).should.throw(/cannot merge conflicting models/);
-    });
+        modelA.merge(modelB)
+      }).should.throw(/cannot merge conflicting models/)
+    })
 
-    it('should fail when given a non-model', function () {
-      var childModel = {
+    it('should fail when given a non-model', () => {
+      const childModel = {
         first: new Model({type: 'string'}),
         second: new Model({type: 'number'}),
         third: new Model({type: 'object'}),
-      };
+      }
 
-      var model = new Model().type('object').children(childModel);
+      const model = new Model().type('object').children(childModel);
       (function () {
-        model.merge({});
-      }).should.throw(/can only merge with another model/);
-    });
+        model.merge({})
+      }).should.throw(/can only merge with another model/)
+    })
 
-    it('should not fail when no children exist', function () {
-      var modelA = new Model().type('object');
-      var modelB = new Model().type('object');
-      modelA.merge(modelB).spec.should.have.property('children').eql([]);
-    });
-  });
+    it('should not fail when no children exist', () => {
+      const modelA = new Model().type('object')
+      const modelB = new Model().type('object')
+      modelA.merge(modelB).spec.should.have.property('children').eql([])
+    })
+  })
 
-  describe('#validations', function () {
-    it('should set spec.validations when regex', function () {
-      var regex = /^something|else$/;
-      var model = new Model().type('string').validations([regex]);
-      model.spec.should.have.property('validations').eql([regex]);
-    });
+  describe('#validations', () => {
+    it('should set spec.validations when regex', () => {
+      const regex = /^something|else$/
+      const model = new Model().type('string').validations([regex])
+      model.spec.should.have.property('validations').eql([regex])
+    })
 
-    it('should set spec.validations when function', function () {
-      var validate = function () { };
-      var model = new Model().type('number').validations([validate]);
-      model.spec.should.have.property('validations').eql([validate]);
-    });
+    it('should set spec.validations when function', () => {
+      const validate = function () { }
+      const model = new Model().type('number').validations([validate])
+      model.spec.should.have.property('validations').eql([validate])
+    })
 
-    it('should set spec.validations when array of functions', function () {
-      var validateA = function () { };
-      var validateB = function () { };
-      var validate = [validateA, validateB];
-      var model = new Model().validations(validate);
-      model.spec.should.have.property('validations').eql(validate);
-    });
+    it('should set spec.validations when array of functions', () => {
+      const validateA = function () { }
+      const validateB = function () { }
+      const validate = [validateA, validateB]
+      const model = new Model().validations(validate)
+      model.spec.should.have.property('validations').eql(validate)
+    })
 
-    it('should fail when given a non-array', function () {
+    it('should fail when given a non-array', () => {
       (function () {
-        new Model().validations('random');
-      }).should.throw();
-    });
+        new Model().validations('random')
+      }).should.throw()
+    })
 
-    it('should fail when given a regexp and type is not string', function () {
+    it('should fail when given a regexp and type is not string', () => {
       (function () {
-        new Model().validations([/foo/]);
-      }).should.throw();
-    });
+        new Model().validations([/foo/])
+      }).should.throw()
+    })
 
-    it('should fail when given an array with invalid values', function () {
+    it('should fail when given an array with invalid values', () => {
       (function () {
-        new Model().validations([function () {}, 'other']);
-      }).should.throw();
-    });
-  });
+        new Model().validations([function () {}, 'other'])
+      }).should.throw()
+    })
+  })
 
-  describe('#validate', function () {
-    it('should fail when type is not set', function () {
+  describe('#validate', () => {
+    it('should fail when type is not set', () => {
       (function () {
-        new Model().validate('test');
-      }).should.throw(/defined/);
-    });
+        new Model().validate('test')
+      }).should.throw(/defined/)
+    })
 
-    it('should fail loudly when told to', function () {
+    it('should fail loudly when told to', () => {
       (function () {
-        new Model({type: 'number'}).validate({}, true);
-      }).should.throw();
-    });
+        new Model({type: 'number'}).validate({}, true)
+      }).should.throw()
+    })
 
-    context('when required', function () {
-      it('should conform when present', function () {
-        var model = new Model({type: 'string', required: true});
+    context('when required', () => {
+      it('should conform when present', () => {
+        const model = new Model({type: 'string', required: true})
         model.validate('foobar').asObject().should.eql({
           conforms: true,
           value: 'foobar',
           errors: [],
-        });
-      });
+        })
+      })
 
-      it('should conform when present', function () {
-        var model = new Model({type: 'string', required: true});
+      it('should conform when present', () => {
+        const model = new Model({type: 'string', required: true})
         model.validate(null).asObject().should.eql({
           conforms: true,
           value: null,
           errors: [],
-        });
-      });
+        })
+      })
 
-      it('should not conform when absent', function () {
-        var model = new Model({type: 'string', required: true});
+      it('should not conform when absent', () => {
+        const model = new Model({type: 'string', required: true})
         model.validate(undefined).asObject().should.eql({
           conforms: false,
           errors: [{message: 'expected value to be defined'}],
-        });
-      });
-    });
+        })
+      })
+    })
 
-    context('when not nullable', function () {
-      it('should not conform when null', function () {
-        var model = new Model({type: 'string', nullable: false});
+    context('when not nullable', () => {
+      it('should not conform when null', () => {
+        const model = new Model({type: 'string', nullable: false})
         model.validate(null).asObject().should.eql({
           conforms: false,
           value: null,
           errors: [{message: 'expected value to be non-null'}],
-        });
-      });
+        })
+      })
 
-      it('should conform even when required', function () {
-        var model = new Model({type: 'string', required: true, nullable: true});
+      it('should conform even when required', () => {
+        const model = new Model({type: 'string', required: true, nullable: true})
         model.validate(null).asObject().should.eql({
           conforms: true,
           value: null,
           errors: [],
-        });
-      });
-    });
+        })
+      })
+    })
 
-    context('when default is set', function () {
-      it('should fill in when undefined', function () {
-        var model = new Model({type: 'string', default: 'hello world'});
+    context('when default is set', () => {
+      it('should fill in when undefined', () => {
+        const model = new Model({type: 'string', default: 'hello world'})
         model.validate(undefined).asObject().should.eql({
           conforms: true,
           value: 'hello world',
           errors: [],
-        });
-      });
+        })
+      })
 
-      it('should fill in when undefined and value is required', function () {
-        var model = new Model({type: 'number', default: 123, required: true});
+      it('should fill in when undefined and value is required', () => {
+        const model = new Model({type: 'number', default: 123, required: true})
         model.validate(undefined).asObject().should.eql({
           conforms: true,
           value: 123,
           errors: [],
-        });
-      });
+        })
+      })
 
-      it('should not fill in when null', function () {
-        var model = new Model({type: 'string', default: 'hello world'});
+      it('should not fill in when null', () => {
+        const model = new Model({type: 'string', default: 'hello world'})
         model.validate(null).asObject().should.eql({
           conforms: true,
           value: null,
           errors: [],
-        });
-      });
+        })
+      })
 
-      it('should still validate', function () {
-        var model = new Model({
+      it('should still validate', () => {
+        const model = new Model({
           type: 'string',
           default: 'hello world',
-          validations: [function () { assert.ok(false, 'oops'); }],
-        });
+          validations: [function () {
+            assert.ok(false, 'oops')
+          }],
+        })
 
         model.validate(undefined).asObject().should.eql({
           conforms: false,
           value: 'hello world',
           errors: [{message: 'oops'}],
-        });
-      });
+        })
+      })
 
-      it('should still validate except when Nil', function () {
-        var model = new Model({
+      it('should still validate except when Nil', () => {
+        const model = new Model({
           type: 'string',
           default: null,
-          validations: [function () { assert.ok(false, 'oops'); }],
-        });
+          validations: [function () {
+            assert.ok(false, 'oops')
+          }],
+        })
 
         model.validate(undefined).asObject().should.eql({
           conforms: true,
           value: null,
           errors: [],
-        });
-      });
-    });
+        })
+      })
+    })
 
-    context('when parse is set', function () {
-      it('should use parse before checking definedness', function () {
-        var parser = function (value) { return 'something'; };
-        var model = new Model({type: 'string', parse: parser, required: true});
+    context('when parse is set', () => {
+      it('should use parse before checking definedness', () => {
+        const parser = function () {
+          return 'something'
+        }
+        const model = new Model({type: 'string', parse: parser, required: true})
         model.validate(undefined).asObject().should.eql({
           conforms: true,
           value: 'something',
           errors: [],
-        });
-      });
+        })
+      })
 
-      it('should still check definedness', function () {
-        var parser = function (value) { return; };
-        var model = new Model({type: 'string', parse: parser, required: true});
+      it('should still check definedness', () => {
+        const parser = function () { }
+        const model = new Model({type: 'string', parse: parser, required: true})
         model.validate('something').asObject().should.eql({
           conforms: false,
           errors: [{message: 'expected value to be defined'}],
-        });
-      });
+        })
+      })
 
-      it('should short-circuit when returning ValidationResult', function () {
-        var parser = function (value) { return new ValidationResult('foo', true); };
-        var validations = function () { assert.ok(false, 'yikes'); };
-        var model = new Model({
+      it('should short-circuit when returning ValidationResult', () => {
+        const parser = function () {
+          return new ValidationResult('foo', true)
+        }
+        const validations = function () {
+          assert.ok(false, 'yikes')
+        }
+        const model = new Model({
           type: 'string',
           parse: parser,
           validations: [validations],
-        });
+        })
 
         model.validate('something').asObject().should.eql({
           conforms: true,
           value: 'foo',
           errors: [],
-        });
-      });
-    });
+        })
+      })
+    })
 
-    context('when transform is set', function () {
-      it('should transform the value', function () {
-        var transform = function (value) { return Number(value); };
-        var model = new Model({type: 'number', transform: transform});
+    context('when transform is set', () => {
+      it('should transform the value', () => {
+        const transform = function (value) {
+          return Number(value)
+        }
+        const model = new Model({type: 'number', transform})
         model.validate('123').asObject().should.eql({
           conforms: true,
           value: 123,
           errors: [],
-        });
-      });
+        })
+      })
 
-      it('should short-circuit when returning failed validation result', function () {
-        var transform = function (value) {
-          return new ValidationResult(10, false, ['message']);
-        };
+      it('should short-circuit when returning failed validation result', () => {
+        const transform = function () {
+          return new ValidationResult(10, false, ['message'])
+        }
 
-        var model = new Model({type: 'number', transform: transform});
+        const model = new Model({type: 'number', transform})
         model.validate('foo').asObject().should.eql({
           value: 10,
           conforms: false,
           errors: ['message'],
-        });
-      });
+        })
+      })
 
-      it('should not short-circuit when returning successful validation result', function () {
-        var transform = function (value) {
-          return new ValidationResult(10, true);
-        };
+      it('should not short-circuit when returning successful validation result', () => {
+        const transform = function () {
+          return new ValidationResult(10, true)
+        }
 
-        var validate = function () {
-          assert.ok(false, 'done');
-        };
+        const validate = function () {
+          assert.ok(false, 'done')
+        }
 
-        var model = new Model({
+        const model = new Model({
           type: 'number',
-          transform: transform,
+          transform,
           validations: [validate],
-        });
+        })
 
         model.validate(123).asObject().should.eql({
           value: 10,
           conforms: false,
           errors: [{message: 'done'}],
-        });
-      });
-    });
+        })
+      })
+    })
 
-    context('when validations is a RegExp', function () {
-      it('should pass a valid match', function () {
-        var model = new Model({type: 'string', validations: [/^foo.*bar$/]});
+    context('when validations is a RegExp', () => {
+      it('should pass a valid match', () => {
+        const model = new Model({type: 'string', validations: [/^foo.*bar$/]})
         model.validate('fooANYTHINGbar').asObject().should.eql({
           value: 'fooANYTHINGbar',
           conforms: true,
           errors: [],
-        });
-      });
+        })
+      })
 
-      it('should fail an invalid match', function () {
-        var model = new Model({type: 'string', validations: [/^foo.*bar$/]});
+      it('should fail an invalid match', () => {
+        const model = new Model({type: 'string', validations: [/^foo.*bar$/]})
         model.validate('somethingElsebar').asObject().should.eql({
           value: 'somethingElsebar',
           conforms: false,
           errors: [{message: 'expected somethingElsebar to match /^foo.*bar$/'}],
-        });
-      });
+        })
+      })
 
-      it('should fail a non-string', function () {
-        var model = new Model({type: 'string', validations: [/\d+/]});
+      it('should fail a non-string', () => {
+        const model = new Model({type: 'string', validations: [/\d+/]})
         model.validate(12312).asObject().should.eql({
           value: 12312,
           conforms: false,
           errors: [{message: 'expected 12312 to have typeof string'}],
-        });
-      });
-    });
+        })
+      })
+    })
 
-    context('when validations is an array', function () {
-      it('should pass a valid match', function () {
-        var model = new Model({type: 'string', validations: [_.noop, _.noop]});
+    context('when validations is an array', () => {
+      it('should pass a valid match', () => {
+        const model = new Model({type: 'string', validations: [_.noop, _.noop]})
         model.validate('a string').asObject().should.eql({
           value: 'a string',
           conforms: true,
           errors: [],
-        });
-      });
+        })
+      })
 
-      it('should fail when one element fails', function () {
-        var fail = function () { assert.ok(false, 'oops'); };
-        var model = new Model({type: 'number', validations: [_.noop, fail, _.noop]});
+      it('should fail when one element fails', () => {
+        const fail = function () {
+          assert.ok(false, 'oops')
+        }
+        const model = new Model({type: 'number', validations: [_.noop, fail, _.noop]})
         model.validate(123).asObject().should.eql({
           value: 123,
           conforms: false,
           errors: [{message: 'oops'}],
-        });
-      });
-    });
+        })
+      })
+    })
 
-    context('when type is conditional', function () {
-      var model, topLevelModel;
+    context('when type is conditional', () => {
+      let model, topLevelModel
 
-      beforeEach(function () {
-        model = new Model({type: 'conditional'}).
-          option(new Model({type: 'string'}), value => value === 'special').
-          option(new Model({type: 'array'}), 'length', 5).
-          option(new Model({type: 'boolean'}), 'id', value => value > 10).
-          option(new Model({type: 'number'}), ['id', 'type'], [42, 'special']);
+      beforeEach(() => {
+        model = new Model({type: 'conditional'})
+          .option(new Model({type: 'string'}), value => value === 'special')
+          .option(new Model({type: 'array'}), 'length', 5)
+          .option(new Model({type: 'boolean'}), 'id', value => value > 10)
+          .option(new Model({type: 'number'}), ['id', 'type'], [42, 'special'])
 
-        topLevelModel = () => new Model({type: 'object'}).
-          children({
+        topLevelModel = () => new Model({type: 'object'})
+          .children({
             id: new Model({type: 'number'}),
             type: new Model({type: 'string'}),
             conditional: model,
-          });
-      });
+          })
+      })
 
-      context('when no options apply', function () {
-        it('should immediately conform when strict is false', function () {
+      context('when no options apply', () => {
+        it('should immediately conform when strict is false', () => {
           model.validate({}).asObject().should.eql({
             value: {},
             conforms: true,
             errors: [],
-          });
-        });
+          })
+        })
 
-        it('should fail when strict is true', function () {
+        it('should fail when strict is true', () => {
           model.strict().validate({}).asObject().should.eql({
             value: {},
             conforms: false,
             errors: [{message: 'no applicable models for strict conditional'}],
-          });
-        });
-      });
+          })
+        })
+      })
 
-      context('when a single option applies', function () {
-        beforeEach(function () {
-          model = model.strict();
-        });
+      context('when a single option applies', () => {
+        beforeEach(() => {
+          model = model.strict()
+        })
 
-        it('should conform when simple model conforms', function () {
+        it('should conform when simple model conforms', () => {
           model.validate('special').asObject().should.eql({
             value: 'special',
             conforms: true,
             errors: [],
-          });
-        });
+          })
+        })
 
-        it('should conform when complex model conforms', function () {
+        it('should conform when complex model conforms', () => {
           topLevelModel().validate({id: 12, conditional: 'true'}).asObject().should.eql({
             value: {id: 12, conditional: true},
             conforms: true,
             errors: [],
-          });
-        });
+          })
+        })
 
-        it('should conform when complex refs conform', function () {
+        it('should conform when complex refs conform', () => {
           topLevelModel().validate({
             id: 42, type: 'special',
-            conditional: '500'
+            conditional: '500',
           }).asObject().should.eql({
             value: {id: 42, type: 'special', conditional: 500},
             conforms: true,
             errors: [],
-          });
-        });
+          })
+        })
 
-        it('should fail when simple model fails', function () {
+        it('should fail when simple model fails', () => {
           model.validate('12345').asObject().should.eql({
             value: '12345',
             conforms: false,
             errors: [{message: 'expected "12345" to have typeof array'}],
-          });
-        });
+          })
+        })
 
-        it('should fail when complex model fails', function () {
+        it('should fail when complex model fails', () => {
           topLevelModel().validate({id: 12, conditional: 1234}).asObject().should.eql({
             value: {id: 12, conditional: 1234},
             conforms: false,
             errors: [
               {path: 'conditional', message: 'expected 1234 to have typeof boolean'},
             ],
-          });
-        });
-      });
+          })
+        })
+      })
 
-      context('when multiple options apply', function () {
-        beforeEach(function () {
-          model = new Model({type: 'conditional'}).
-            option(new Model({type: 'number'})).
-            option(new Model({type: 'boolean'})).
-            option(new Model({type: 'string'})).
-            option(new Model({type: 'array'}), 'id', 15);
-        });
+      context('when multiple options apply', () => {
+        beforeEach(() => {
+          model = new Model({type: 'conditional'})
+            .option(new Model({type: 'number'}))
+            .option(new Model({type: 'boolean'}))
+            .option(new Model({type: 'string'}))
+            .option(new Model({type: 'array'}), 'id', 15)
+        })
 
-        it('should pass when the first option passes', function () {
+        it('should pass when the first option passes', () => {
           model.validate('1234').asObject().should.eql({
             value: 1234,
             conforms: true,
             errors: [],
-          });
-        });
+          })
+        })
 
-        it('should pass when the second option passes', function () {
+        it('should pass when the second option passes', () => {
           model.validate('false').asObject().should.eql({
             value: false,
             conforms: true,
             errors: [],
-          });
-        });
+          })
+        })
 
-        it('should pass when the third option passes', function () {
+        it('should pass when the third option passes', () => {
           model.validate('foobar').asObject().should.eql({
             value: 'foobar',
             conforms: true,
             errors: [],
-          });
-        });
+          })
+        })
 
-        it('should fail when no option passes', function () {
+        it('should fail when no option passes', () => {
           topLevelModel().validate({id: 1, conditional: []}).asObject().should.eql({
             value: {id: 1, conditional: []},
             conforms: false,
@@ -1048,9 +1066,9 @@ defineTest('Model.js', function (Model) {
               {path: 'conditional', message: 'expected [] to have typeof boolean'},
               {path: 'conditional', message: 'expected [] to have typeof string'},
             ],
-          });
-        });
-      });
-    });
-  });
-});
+          })
+        })
+      })
+    })
+  })
+})
