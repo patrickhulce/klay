@@ -98,11 +98,13 @@ klay.reset = function () {
   const ExtendedModel = function () {
     return Model.apply(this, arguments)
   }
+
   ExtendedModel.prototype = _.create(Model.prototype, {constructor: ExtendedModel})
-  ExtendedModel.construct = Model.construct = function (spec) {
+  ExtendedModel.construct = function (spec) {
     return new ExtendedModel(spec)
   }
 
+  Model.construct = ExtendedModel.construct
   klay.Model = ExtendedModel
 }
 
