@@ -19,12 +19,14 @@ Isomorphic and extensible validation library for JavaScript.
 const klay = require('klay')
 
 const builders = klay().builders
-const myModel = builders.object({
+const myModel = builders
+  .object({
     firstName: builders.string().required(),
     lastName: builders.string().required(),
     email: builders.email().required(),
     age: builders.integer(),
-  }).strict()
+  })
+  .strict()
 
 const results = myModel.validate({
   firstName: 'John',
