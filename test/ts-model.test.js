@@ -4,7 +4,7 @@ const Model = require('../lib-ts/model').Model
 describe('model.ts', () => {
   describe('#constructor', () => {
     it('should construct a model', () => {
-
+      expect(() => new Model({}, {types: []})).to.not.throw()
     })
   })
 
