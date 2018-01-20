@@ -1,2 +1,6 @@
 coverage/
 node_modules/
+
+lib-ts/*.js
+lib-ts/*.js.map
+lib-ts/*.d.ts
