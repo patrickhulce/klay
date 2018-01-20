@@ -15,14 +15,14 @@ defineTest('Model.js', Model => {
     it('should set spec properties', () => {
       Model.formats = {string: ['name']}
       const model = new Model({type: 'string', format: 'name'})
-      model.should.have.deep.property('spec.type', 'string')
-      model.should.have.deep.property('spec.format', 'name')
+      model.should.have.nested.property('spec.type', 'string')
+      model.should.have.nested.property('spec.format', 'name')
     })
 
     it('should set unknown spec properties', () => {
       const model = new Model({foobar: null, bazbam: 123})
-      model.should.have.deep.property('spec.foobar', null)
-      model.should.have.deep.property('spec.bazbam', 123)
+      model.should.have.nested.property('spec.foobar', null)
+      model.should.have.nested.property('spec.bazbam', 123)
     })
 
     it('should return the argument when it is already a model', () => {
@@ -47,24 +47,24 @@ defineTest('Model.js', Model => {
       Model.defaults = {required: true}
       Model.formats = {number: ['double']}
       const model = new Model({type: 'number', format: 'double'})
-      model.should.have.deep.property('spec.type', 'number')
-      model.should.have.deep.property('spec.format', 'double')
-      model.should.have.deep.property('spec.required', true)
+      model.should.have.nested.property('spec.type', 'number')
+      model.should.have.nested.property('spec.format', 'double')
+      model.should.have.nested.property('spec.required', true)
     })
 
     it('should override defaults with arguments', () => {
       Model.defaults = {required: true, strict: true}
       const model = new Model({type: 'object', required: false})
-      model.should.have.deep.property('spec.required', false)
-      model.should.have.deep.property('spec.strict', true)
+      model.should.have.nested.property('spec.required', false)
+      model.should.have.nested.property('spec.strict', true)
     })
 
     it('should work with list spec properties', () => {
       Model.formats = {string: ['enum']}
       const model = new Model({type: 'string', format: 'enum', options: ['foo', 'bar']})
-      model.should.have.deep.property('spec.type', 'string')
-      model.should.have.deep.property('spec.format', 'enum')
-      model.should.have.deep.property('spec.options').eql(['foo', 'bar'])
+      model.should.have.nested.property('spec.type', 'string')
+      model.should.have.nested.property('spec.format', 'enum')
+      model.should.have.nested.property('spec.options').eql(['foo', 'bar'])
     })
 
     it('should not have hooks by default', () => {
@@ -100,7 +100,7 @@ defineTest('Model.js', Model => {
       const modelA = new Model({type: 'object', children})
       const modelB = modelA.validation(_.noop)
       modelB.spec.children[0].model.spec.type = 'undefined'
-      modelA.spec.should.have.deep.property('children.0.model.spec.type', 'number')
+      modelA.spec.should.have.nested.property('children.0.model.spec.type', 'number')
     })
 
     it('should be immune to tampering with underlying', () => {
@@ -117,7 +117,7 @@ defineTest('Model.js', Model => {
       children.push({name: 'foobar', model: new Model({type: 'string'})})
       modelA.spec.should.have.property('children').length(2)
       modelA.spec.should.have.property('validations').length(1)
-      modelA.spec.should.have.deep.property('children.0.name', 'id')
+      modelA.spec.should.have.nested.property('children.0.name', 'id')
     })
   })
 
@@ -383,18 +383,18 @@ defineTest('Model.js', Model => {
       it('should set spec.options first element with string condition', () => {
         const sModel = new Model({type: 'string'})
         const model = new Model().type('conditional').option(sModel, 'path', 'value')
-        model.spec.should.have.deep.property('options.0.model').eql(sModel)
-        model.spec.should.have.deep.property('options.0.ref.path', 'path')
-        model.spec.should.have.deep.property('options.0.condition').is.a('function')
+        model.spec.should.have.nested.property('options.0.model').eql(sModel)
+        model.spec.should.have.nested.property('options.0.ref.path', 'path')
+        model.spec.should.have.nested.property('options.0.condition').is.a('function')
       })
 
       it('should set spec.options first element with array condition', () => {
         const sModel = new Model({type: 'string'})
         const model = new Model().type('conditional').option(sModel, ['path1', 'path2'], [0, 1])
-        model.spec.should.have.deep.property('options.0.model').eql(sModel)
-        model.spec.should.have.deep.property('options.0.ref.0.path', 'path1')
-        model.spec.should.have.deep.property('options.0.ref.1.path', 'path2')
-        model.spec.should.have.deep.property('options.0.condition').is.a('function')
+        model.spec.should.have.nested.property('options.0.model').eql(sModel)
+        model.spec.should.have.nested.property('options.0.ref.0.path', 'path1')
+        model.spec.should.have.nested.property('options.0.ref.1.path', 'path2')
+        model.spec.should.have.nested.property('options.0.condition').is.a('function')
       })
 
       it('should set spec.options first element without condition', () => {
