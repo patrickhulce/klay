@@ -133,7 +133,7 @@ defineTest('extensions/minmax.js', minmaxFactory => {
     describe('min', () => {
       it('should set spec.min', () => {
         const model = klay.builders.integer().min(10)
-        model.should.have.deep.property('spec.min', 10)
+        model.should.have.nested.property('spec.min', 10)
         model.validate(8).should.have.property('conforms', false)
         model.validate(11).should.have.property('conforms', true)
       })
@@ -148,7 +148,7 @@ defineTest('extensions/minmax.js', minmaxFactory => {
     describe('max', () => {
       it('should set spec.max', () => {
         const model = klay.builders.integer().max(10)
-        model.should.have.deep.property('spec.max', 10)
+        model.should.have.nested.property('spec.max', 10)
         model.validate(8).should.have.property('conforms', true)
         model.validate(11).should.have.property('conforms', false)
       })
@@ -163,8 +163,8 @@ defineTest('extensions/minmax.js', minmaxFactory => {
     describe('length', () => {
       it('should set spec.min and spec.max', () => {
         const model = (new klay.Model({type: 'string'})).length(10)
-        model.should.have.deep.property('spec.min', 10)
-        model.should.have.deep.property('spec.max', 10)
+        model.should.have.nested.property('spec.min', 10)
+        model.should.have.nested.property('spec.max', 10)
         model.validate('0123456789').should.have.property('conforms', true)
       })
 

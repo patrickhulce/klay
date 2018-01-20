@@ -19,15 +19,15 @@ defineTest('extensions/date.js', dateFactory => {
     describe('date', () => {
       it('should create a model with type date', () => {
         const model = builders.date()
-        model.should.have.deep.property('spec.type', 'date')
+        model.should.have.nested.property('spec.type', 'date')
       })
     })
 
     describe('unix', () => {
       it('should create a model with type date and format unix', () => {
         const model = builders.unixtimestamp()
-        model.should.have.deep.property('spec.type', 'date')
-        model.should.have.deep.property('spec.format', 'unix')
+        model.should.have.nested.property('spec.type', 'date')
+        model.should.have.nested.property('spec.format', 'unix')
       })
     })
   })
