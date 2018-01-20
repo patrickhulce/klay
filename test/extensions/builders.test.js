@@ -29,7 +29,7 @@ defineTest('extensions/builders.js', buildersFactory => {
             model.spec.should.have.property('children').an('object')
           } else {
             model.spec.should.have.property('children')
-              .with.deep.property('0.model').instanceof(Model)
+              .with.nested.property('0.model').instanceof(Model)
           }
         })
       }

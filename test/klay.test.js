@@ -93,13 +93,13 @@ defineTest('klay.js', klay => {
 
       const modelA = inst.builders.myName()
       modelA.should.be.instanceof(Model)
-      modelA.should.have.deep.property('spec.type', 'string')
-      modelA.should.have.deep.property('spec.format', 'myName')
+      modelA.should.have.nested.property('spec.type', 'string')
+      modelA.should.have.nested.property('spec.format', 'myName')
 
       const modelB = inst.builders.double()
       modelB.should.be.instanceof(Model)
-      modelB.should.have.deep.property('spec.type', 'number')
-      modelB.should.have.deep.property('spec.format', 'double')
+      modelB.should.have.nested.property('spec.type', 'number')
+      modelB.should.have.nested.property('spec.format', 'double')
     })
 
     it('should respect builderExtras', () => {
@@ -115,9 +115,9 @@ defineTest('klay.js', klay => {
 
       const modelA = inst.builders.myName()
       modelA.should.be.instanceof(Model)
-      modelA.should.have.deep.property('spec.type', 'string')
-      modelA.should.have.deep.property('spec.format', 'myName')
-      modelA.should.have.deep.property('spec.options').eql(['foo', 'bar'])
+      modelA.should.have.nested.property('spec.type', 'string')
+      modelA.should.have.nested.property('spec.format', 'myName')
+      modelA.should.have.nested.property('spec.options').eql(['foo', 'bar'])
     })
 
     it('should merge transformations', () => {
@@ -130,8 +130,8 @@ defineTest('klay.js', klay => {
         },
       })
 
-      Model.transformations.should.have.deep.property('string.name', nameTransform)
-      Model.transformations.should.have.deep.property('number.__default', numberTransform)
+      Model.transformations.should.have.nested.property('string.name', nameTransform)
+      Model.transformations.should.have.nested.property('number.__default', numberTransform)
     })
 
     it('should merge validations', () => {
@@ -144,8 +144,8 @@ defineTest('klay.js', klay => {
         },
       })
 
-      Model.validations.should.have.deep.property('string.name', nameValidate)
-      Model.validations.should.have.deep.property('number.__default', numberValidate)
+      Model.validations.should.have.nested.property('string.name', nameValidate)
+      Model.validations.should.have.nested.property('number.__default', numberValidate)
     })
 
     it('should merge and union validations', () => {
@@ -154,7 +154,7 @@ defineTest('klay.js', klay => {
       inst.use({validations: {number: {__default: [validationA]}}})
       inst.use({validations: {number: {__default: validationB}}})
 
-      Model.validations.should.have.deep.property('number.__default')
+      Model.validations.should.have.nested.property('number.__default')
         .include(validationA)
         .include(validationB)
     })
