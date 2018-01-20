@@ -16,4 +16,5 @@ script:
   - npm run test:coverage
 after_success:
   - cat ./coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
-  - npm run semantic-release
+  # Disabled while working on TS rewrite
+  # - npm run semantic-release
