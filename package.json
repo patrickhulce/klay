@@ -59,7 +59,8 @@
     },
     "tslint": {
       "rules": {
-        "whitespace": false
+        "whitespace": false,
+        "no-any": false
       }
     },
     "commitizen": {
