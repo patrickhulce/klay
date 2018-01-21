@@ -48,4 +48,9 @@ export class Model implements IModel {
     this.spec.strict = strict
     return this
   }
+
+  public default(value: any): IModel {
+    this.spec.default = value
+    return this
+  }
 }
