@@ -28,9 +28,9 @@ export class AssertionError extends Error {
       return
     }
 
-    const reprActual = AssertionError.getRepresentation(value)
-    const reprExpected = AssertionError.getRepresentation(expected)
-    throw new AssertionError(`expected ${reprActual} to equal ${reprExpected}`)
+    const reprActual = AssertionError.getRepresentation(value, 1)
+    const reprExpected = AssertionError.getRepresentation(expected, 1)
+    throw new AssertionError(`expected ${name} (${reprActual}) to equal ${reprExpected}`)
   }
 
   public static defined(value: any, name: string = 'value'): void {
@@ -42,7 +42,9 @@ export class AssertionError extends Error {
   }
 
   public static typeof(value: any, expectedType: string, name: string = 'value'): void {
-    this.ok(typeof value === expectedType, `expected ${name} to have typeof ${expectedType}`)
+    const type = Array.isArray(value) ? 'array' : typeof value
+    const reprActual = AssertionError.getRepresentation(value, 1)
+    this.ok(type === expectedType, `expected ${name} (${reprActual}) to have typeof ${expectedType}`)
   }
 
   public static oneOf(value: any, expectedValues: any[], name: string = 'value'): void {
