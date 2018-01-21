@@ -6,6 +6,7 @@ export interface IModel {
   nullable(nullable?: boolean): IModel
   strict(strict?: boolean): IModel
   default(value?: any): IModel
+  options(...options: any[]): IModel
 }
 
 export interface IModelSpecification {
@@ -16,6 +17,7 @@ export interface IModelSpecification {
   nullable?: boolean,
   strict?: boolean,
   default?: any,
+  options?: any[],
 }
 
 export interface IModelOptions {
