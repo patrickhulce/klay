@@ -1,4 +1,5 @@
-import {IModel, IModelOptions, IModelSpecification} from './types'
+import {AssertionError} from './errors/assertion-error'
+import {IModel, IModelOptions, IModelSpecification} from './typedefs'
 
 export class Model implements IModel {
   public readonly spec: IModelSpecification
@@ -12,11 +13,15 @@ export class Model implements IModel {
   }
 
   public type(type: string): IModel {
-    if (this._options.types.indexOf(type) === -1) {
-      throw new TypeError(`Unrecognized type: ${type}`)
-    }
-
+    AssertionError.oneOf(type, this._options.types, 'type')
     this.spec.type = type
+    return this
+  }
+
+  public format(format: string): IModel {
+    AssertionError.ok(this.spec.type, 'type must be set before format')
+    AssertionError.oneOf(format, this._options.formats[this.spec.type!], 'format')
+    this.spec.format = format
     return this
   }
 }
