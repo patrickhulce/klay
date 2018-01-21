@@ -102,4 +102,11 @@ describe('model.ts', () => {
       expect(() => new Model({}, defaultOptions).strict('string')).to.throw()
     })
   })
+
+  describe('.default', () => {
+    it('should set default', () => {
+      const model = new Model({}, defaultOptions).default(10)
+      expect(model.spec.default).to.equal(10)
+    })
+  })
 })

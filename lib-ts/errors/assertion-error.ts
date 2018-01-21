@@ -44,7 +44,10 @@ export class AssertionError extends Error {
   public static typeof(value: any, expectedType: string, name: string = 'value'): void {
     const type = Array.isArray(value) ? 'array' : typeof value
     const reprActual = AssertionError.getRepresentation(value, 1)
-    this.ok(type === expectedType, `expected ${name} (${reprActual}) to have typeof ${expectedType}`)
+    this.ok(
+      type === expectedType,
+      `expected ${name} (${reprActual}) to have typeof ${expectedType}`
+    )
   }
 
   public static oneOf(value: any, expectedValues: any[], name: string = 'value'): void {
