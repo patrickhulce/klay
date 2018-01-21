@@ -33,7 +33,7 @@ export class Model implements IModel {
 
   public optional(optional: boolean = true): IModel {
     AssertionError.typeof(optional, 'boolean', 'optional')
-    this.spec.optional = optional
+    this.spec.required = !optional
     return this
   }
 

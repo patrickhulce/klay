@@ -58,12 +58,12 @@ describe('model.ts', () => {
   describe('.optional', () => {
     it('should implicitly set spec.optional', () => {
       const model = new Model({}, defaultOptions).optional()
-      expect(model.spec.optional).to.equal(true)
+      expect(model.spec.required).to.equal(false)
     })
 
     it('should explicitly set spec.optional', () => {
       const model = new Model({}, defaultOptions).optional(false)
-      expect(model.spec.optional).to.equal(false)
+      expect(model.spec.required).to.equal(true)
     })
 
     it('should throw on incorrect type', () => {
