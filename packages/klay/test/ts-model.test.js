@@ -38,4 +38,68 @@ describe('model.ts', () => {
       expect(() => new Model({}, defaultOptions).type('string').format('unknown')).to.throw()
     })
   })
+
+  describe('.required', () => {
+    it('should implicitly set spec.required', () => {
+      const model = new Model({}, defaultOptions).required()
+      expect(model.spec.required).to.equal(true)
+    })
+
+    it('should explicitly set spec.required', () => {
+      const model = new Model({}, defaultOptions).required(false)
+      expect(model.spec.required).to.equal(false)
+    })
+
+    it('should throw on incorrect type', () => {
+      expect(() => new Model({}, defaultOptions).required('string')).to.throw()
+    })
+  })
+
+  describe('.optional', () => {
+    it('should implicitly set spec.optional', () => {
+      const model = new Model({}, defaultOptions).optional()
+      expect(model.spec.optional).to.equal(true)
+    })
+
+    it('should explicitly set spec.optional', () => {
+      const model = new Model({}, defaultOptions).optional(false)
+      expect(model.spec.optional).to.equal(false)
+    })
+
+    it('should throw on incorrect type', () => {
+      expect(() => new Model({}, defaultOptions).optional('string')).to.throw()
+    })
+  })
+
+  describe('.nullable', () => {
+    it('should implicitly set spec.nullable', () => {
+      const model = new Model({}, defaultOptions).nullable()
+      expect(model.spec.nullable).to.equal(true)
+    })
+
+    it('should explicitly set spec.nullable', () => {
+      const model = new Model({}, defaultOptions).nullable(false)
+      expect(model.spec.nullable).to.equal(false)
+    })
+
+    it('should throw on incorrect type', () => {
+      expect(() => new Model({}, defaultOptions).nullable('string')).to.throw()
+    })
+  })
+
+  describe('.strict', () => {
+    it('should implicitly set spec.strict', () => {
+      const model = new Model({}, defaultOptions).strict()
+      expect(model.spec.strict).to.equal(true)
+    })
+
+    it('should explicitly set spec.strict', () => {
+      const model = new Model({}, defaultOptions).strict(false)
+      expect(model.spec.strict).to.equal(false)
+    })
+
+    it('should throw on incorrect type', () => {
+      expect(() => new Model({}, defaultOptions).strict('string')).to.throw()
+    })
+  })
 })
