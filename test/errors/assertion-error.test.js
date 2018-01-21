@@ -21,6 +21,23 @@ describe('errors/assertion-error.ts', () => {
     })
   })
 
+  describe('#typeof', () => {
+    it('should throw on failed typeofs', () => {
+      expect(() => AssertionError.typeof(false, 'number')).to.throw()
+      expect(() => AssertionError.typeof('', 'number')).to.throw()
+      expect(() => AssertionError.typeof(123, 'string')).to.throw()
+      expect(() => AssertionError.typeof(null, 'array')).to.throw()
+    })
+
+    it('should pass on true typeofs', () => {
+      expect(() => AssertionError.typeof(1, 'number')).to.not.throw()
+      expect(() => AssertionError.typeof(true, 'boolean')).to.not.throw()
+      expect(() => AssertionError.typeof('123', 'string')).to.not.throw()
+      expect(() => AssertionError.typeof([1, 2], 'array')).to.not.throw()
+      expect(() => AssertionError.typeof(null, 'object')).to.not.throw()
+    })
+  })
+
   describe('#getRepresentation', () => {
     const getRepresentation = AssertionError.getRepresentation
 
