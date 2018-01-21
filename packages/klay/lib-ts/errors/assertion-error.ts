@@ -46,7 +46,7 @@ export class AssertionError extends Error {
     const reprActual = AssertionError.getRepresentation(value, 1)
     this.ok(
       type === expectedType,
-      `expected ${name} (${reprActual}) to have typeof ${expectedType}`
+      `expected ${name} (${reprActual}) to have typeof ${expectedType}`,
     )
   }
 
