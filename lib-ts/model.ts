@@ -1,4 +1,4 @@
-import {AssertionError} from './errors/assertion-error'
+import {assertions as modelAssertions} from './errors/model-error'
 import {IModel, IModelOptions, IModelSpecification} from './typedefs'
 
 export class Model implements IModel {
@@ -13,38 +13,38 @@ export class Model implements IModel {
   }
 
   public type(type: string): IModel {
-    AssertionError.oneOf(type, this._options.types, 'type')
+    modelAssertions.oneOf(type, this._options.types, 'type')
     this.spec.type = type
     return this
   }
 
   public format(format: string): IModel {
-    AssertionError.ok(this.spec.type, 'type must be set before format')
-    AssertionError.oneOf(format, this._options.formats[this.spec.type!], 'format')
+    modelAssertions.ok(this.spec.type, 'type must be set before format')
+    modelAssertions.oneOf(format, this._options.formats[this.spec.type!], 'format')
     this.spec.format = format
     return this
   }
 
   public required(required: boolean = true): IModel {
-    AssertionError.typeof(required, 'boolean', 'required')
+    modelAssertions.typeof(required, 'boolean', 'required')
     this.spec.required = required
     return this
   }
 
   public optional(optional: boolean = true): IModel {
-    AssertionError.typeof(optional, 'boolean', 'optional')
+    modelAssertions.typeof(optional, 'boolean', 'optional')
     this.spec.required = !optional
     return this
   }
 
   public nullable(nullable: boolean = true): IModel {
-    AssertionError.typeof(nullable, 'boolean', 'nullable')
+    modelAssertions.typeof(nullable, 'boolean', 'nullable')
     this.spec.nullable = nullable
     return this
   }
 
   public strict(strict: boolean = true): IModel {
-    AssertionError.typeof(strict, 'boolean', 'strict')
+    modelAssertions.typeof(strict, 'boolean', 'strict')
     this.spec.strict = strict
     return this
   }
@@ -55,11 +55,11 @@ export class Model implements IModel {
   }
 
   public options(options: any[]): IModel {
-    AssertionError.typeof(options, 'array', 'options')
+    modelAssertions.typeof(options, 'array', 'options')
     const nextOptions = this.spec.options || []
     options.forEach(option => {
       if (this.spec.type === 'string' || this.spec.type === 'number') {
-        AssertionError.typeof(option, this.spec.type, 'option')
+        modelAssertions.typeof(option, this.spec.type, 'option')
       }
 
       nextOptions.push(option)
