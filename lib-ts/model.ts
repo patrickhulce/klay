@@ -24,4 +24,28 @@ export class Model implements IModel {
     this.spec.format = format
     return this
   }
+
+  public required(required: boolean = true): IModel {
+    AssertionError.typeof(required, 'boolean', 'required')
+    this.spec.required = required
+    return this
+  }
+
+  public optional(optional: boolean = true): IModel {
+    AssertionError.typeof(optional, 'boolean', 'optional')
+    this.spec.optional = optional
+    return this
+  }
+
+  public nullable(nullable: boolean = true): IModel {
+    AssertionError.typeof(nullable, 'boolean', 'nullable')
+    this.spec.nullable = nullable
+    return this
+  }
+
+  public strict(strict: boolean = true): IModel {
+    AssertionError.typeof(strict, 'boolean', 'strict')
+    this.spec.strict = strict
+    return this
+  }
 }
