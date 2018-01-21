@@ -53,4 +53,19 @@ export class Model implements IModel {
     this.spec.default = value
     return this
   }
+
+  public options(options: any[]): IModel {
+    AssertionError.typeof(options, 'array', 'options')
+    const nextOptions = this.spec.options || []
+    options.forEach(option => {
+      if (this.spec.type === 'string' || this.spec.type === 'number') {
+        AssertionError.typeof(option, this.spec.type, 'option')
+      }
+
+      nextOptions.push(option)
+    })
+
+    this.spec.options = nextOptions
+    return this
+  }
 }

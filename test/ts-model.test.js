@@ -109,4 +109,16 @@ describe('model.ts', () => {
       expect(model.spec.default).to.equal(10)
     })
   })
+
+  describe('.options', () => {
+    it('should set options', () => {
+      const model = new Model({}, defaultOptions).options([1, 2])
+      expect(model.spec.options).to.eql([1, 2])
+    })
+
+    it('should throw when type does not match', () => {
+      const model = new Model({}, defaultOptions).type('string')
+      expect(() => model.options([1, 2])).to.throw()
+    })
+  })
 })
