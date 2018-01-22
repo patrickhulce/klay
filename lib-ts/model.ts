@@ -27,6 +27,10 @@ export class Model implements IModel {
 
   public format(format: string): IModel {
     modelAssertions.ok(this.spec.type, 'type must be set before format')
+    modelAssertions.ok(
+      this._options.formats[this.spec.type!],
+      `no formats available for ${this.spec.type}`,
+    )
     modelAssertions.oneOf(format, this._options.formats[this.spec.type!], 'format')
     this.spec.format = format
     return this
