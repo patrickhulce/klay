@@ -1,3 +1,4 @@
+import * as _ from 'lodash'
 import {assertions as modelAssertions} from './errors/model-error'
 import {
   IModel,
@@ -132,5 +133,26 @@ export class Model implements IModel {
       child => paths.indexOf(child.path) === -1,
     )
     return this
+  }
+
+  public merge(model: IModel): IModel {
+    modelAssertions.ok(model.isKlayModel, 'can only merge with another model')
+    modelAssertions.equal(model.spec.type, 'object', 'type')
+    modelAssertions.equal(this.spec.type, 'object', 'type')
+    if (model.spec.children) {
+      modelAssertions.typeof(model.spec.children, 'array', 'children')
+    }
+
+    if (this.spec.children) {
+      modelAssertions.typeof(this.spec.children, 'array', 'children')
+    }
+
+    const thisChildren = (this.spec.children as IModelChild[]) || []
+    const otherChildren = (model.spec.children as IModelChild[]) || []
+    const merged = thisChildren.concat(otherChildren)
+    const uniq = _.uniq(merged.map(item => item.path))
+
+    modelAssertions.ok(uniq.length === merged.length, 'cannot merge conflicting models')
+    return this.children(merged)
   }
 }
