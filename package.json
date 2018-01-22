@@ -60,6 +60,7 @@
     "tslint": {
       "rules": {
         "whitespace": false,
+        "newline-per-chained-call": false,
         "no-any": false
       }
     },

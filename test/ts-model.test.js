@@ -3,7 +3,7 @@ const Model = require('../lib-ts/model').Model
 
 describe('model.ts', () => {
   const defaultOptions = {
-    types: ['string'],
+    types: ['string', 'array', 'object'],
     formats: {string: ['lowercase']},
   }
 
@@ -119,6 +119,89 @@ describe('model.ts', () => {
     it('should throw when type does not match', () => {
       const model = new Model({}, defaultOptions).type('string')
       expect(() => model.options([1, 2])).to.throw()
+    })
+  })
+
+  describe('.children', () => {
+    it('should set children when type is array', () => {
+      const childModel = new Model({}, defaultOptions).type('string')
+      const model = new Model({}, defaultOptions).type('array').children(childModel)
+      expect(model.spec.children).to.equal(childModel)
+    })
+
+    it('should set children when type is object', () => {
+      const childModel = new Model({}, defaultOptions).type('string')
+      const model = new Model({}, defaultOptions).type('object').children({id: childModel})
+      expect(model.spec.children).to.eql([{path: 'id', model: childModel}])
+    })
+
+    it('should throw when type is array and input is not valid', () => {
+      const childModel = new Model({}, defaultOptions).type('string')
+      const model = new Model({}, defaultOptions).type('array')
+      expect(() => model.children({id: childModel})).to.throw()
+    })
+
+    it('should throw when type is object and input is not valid', () => {
+      const childModel = new Model({}, defaultOptions).type('string')
+      const model = new Model({}, defaultOptions).type('object')
+      expect(() => model.children({id: 123})).to.throw()
+      expect(() => model.children([{path: '1', model: 123}])).to.throw()
+      expect(() => model.children(childModel)).to.throw()
+    })
+  })
+
+  describe('.pick', () => {
+    it('should set options', () => {
+      const childModel = new Model({}, defaultOptions).type('string')
+      const model = new Model({}, defaultOptions).type('object').children({
+        id: childModel,
+        name: childModel,
+        user: childModel,
+      })
+
+      model.pick(['id', 'user'])
+      expect(model.spec.children).to.eql([
+        {path: 'id', model: childModel},
+        {path: 'user', model: childModel},
+      ])
+    })
+
+    it('should throw when type does not match', () => {
+      const childModel = new Model({}, defaultOptions).type('string')
+      const model = new Model({}, defaultOptions).type('array').children(childModel)
+      expect(() => model.pick(['foo'])).to.throw()
+    })
+
+    it('should throw when no children available', () => {
+      const model = new Model({}, defaultOptions).type('object')
+      expect(() => model.pick(['foo'])).to.throw()
+    })
+  })
+
+  describe('.omit', () => {
+    it('should set options', () => {
+      const childModel = new Model({}, defaultOptions).type('string')
+      const model = new Model({}, defaultOptions).type('object').children({
+        id: childModel,
+        name: childModel,
+        user: childModel,
+      })
+
+      model.omit(['id', 'user'])
+      expect(model.spec.children).to.eql([
+        {path: 'name', model: childModel},
+      ])
+    })
+
+    it('should throw when type does not match', () => {
+      const childModel = new Model({}, defaultOptions).type('string')
+      const model = new Model({}, defaultOptions).type('array').children(childModel)
+      expect(() => model.omit(['foo'])).to.throw()
+    })
+
+    it('should throw when no children available', () => {
+      const model = new Model({}, defaultOptions).type('object')
+      expect(() => model.omit(['foo'])).to.throw()
     })
   })
 })

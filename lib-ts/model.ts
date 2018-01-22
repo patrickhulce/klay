@@ -1,5 +1,12 @@
 import {assertions as modelAssertions} from './errors/model-error'
-import {IModel, IModelOptions, IModelSpecification} from './typedefs'
+import {
+  IModel,
+  IModelChild,
+  IModelChildrenInput,
+  IModelChildrenMap,
+  IModelOptions,
+  IModelSpecification,
+} from './typedefs'
 
 export class Model implements IModel {
   public readonly spec: IModelSpecification
@@ -66,6 +73,60 @@ export class Model implements IModel {
     })
 
     this.spec.options = nextOptions
+    return this
+  }
+
+  public children(children: IModelChildrenInput): IModel {
+    if ((children as IModel).isKlayModel) {
+      modelAssertions.ok(
+        this.spec.type === 'array',
+        'model type must be array when children is a model',
+      )
+      this.spec.children = children as IModel
+      return this
+    }
+
+    // tslint:disable-next-line
+    modelAssertions.ok(children && typeof children === 'object', 'children must be an object')
+    modelAssertions.ok(this.spec.type === 'object', 'model type must be object for named children')
+
+    let modelChildren: IModelChild[]
+    if (Array.isArray(children)) {
+      modelChildren = children as IModelChild[]
+    } else {
+      modelChildren = []
+      Object.keys(children).forEach(path => {
+        const model = (children as IModelChildrenMap)[path]
+        modelChildren.push({path, model})
+      })
+    }
+
+    modelChildren.forEach((child, i) => {
+      modelAssertions.typeof(child.path, 'string', `children.${i}`)
+      modelAssertions.ok(child.model.isKlayModel, `expected children.${i} to have a model`)
+    })
+
+    this.spec.children = modelChildren
+    return this
+  }
+
+  public pick(paths: string[]): IModel {
+    modelAssertions.typeof(paths, 'array', 'pick')
+    modelAssertions.ok(this.spec.children, 'must have children to pick')
+    modelAssertions.typeof(this.spec.children, 'array', 'children')
+    this.spec.children = (this.spec.children as IModelChild[]).filter(
+      child => paths.indexOf(child.path) >= 0,
+    )
+    return this
+  }
+
+  public omit(paths: string[]): IModel {
+    modelAssertions.typeof(paths, 'array', 'omit')
+    modelAssertions.ok(this.spec.children, 'must have children to omit')
+    modelAssertions.typeof(this.spec.children, 'array', 'children')
+    this.spec.children = (this.spec.children as IModelChild[]).filter(
+      child => paths.indexOf(child.path) === -1,
+    )
     return this
   }
 }
