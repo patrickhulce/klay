@@ -35,11 +35,15 @@ describe('model.ts', () => {
     })
 
     it('should throw on no available formats', () => {
-      expect(() => new Model({}, defaultOptions).type('array').format('unknown')).to.throw(/no formats available/)
+      expect(() => new Model({}, defaultOptions).type('array').format('unknown')).to.throw(
+        /no formats available/,
+      )
     })
 
     it('should throw on unacceptable format', () => {
-      expect(() => new Model({}, defaultOptions).type('string').format('unknown')).to.throw(/expected format.*to be/)
+      expect(() => new Model({}, defaultOptions).type('string').format('unknown')).to.throw(
+        /expected format.*to be/,
+      )
     })
   })
 
@@ -192,9 +196,7 @@ describe('model.ts', () => {
       })
 
       model.omit(['id', 'user'])
-      expect(model.spec.children).to.eql([
-        {path: 'name', model: childModel},
-      ])
+      expect(model.spec.children).to.eql([{path: 'name', model: childModel}])
     })
 
     it('should throw when type does not match', () => {
@@ -206,6 +208,60 @@ describe('model.ts', () => {
     it('should throw when no children available', () => {
       const model = new Model({}, defaultOptions).type('object')
       expect(() => model.omit(['foo'])).to.throw()
+    })
+  })
+
+  describe('.merge', () => {
+    it('should merge two models', () => {
+      const modelAChildren = {
+        first: new Model({}, defaultOptions),
+        second: new Model({}, defaultOptions),
+      }
+      const modelBChildren = {
+        third: new Model({}, defaultOptions),
+        fourth: new Model({}, defaultOptions),
+      }
+
+      const modelA = new Model({}, defaultOptions).type('object').children(modelAChildren)
+      const modelB = new Model({}, defaultOptions).type('object').children(modelBChildren)
+      modelA.merge(modelB)
+      expect(modelA.spec.children).to.eql([
+        {path: 'first', model: modelAChildren.first},
+        {path: 'second', model: modelAChildren.second},
+        {path: 'third', model: modelBChildren.third},
+        {path: 'fourth', model: modelBChildren.fourth},
+      ])
+    })
+
+    it('should not merge two conflicting models', () => {
+      const modelAChildren = {
+        first: new Model({}, defaultOptions),
+        second: new Model({}, defaultOptions),
+      }
+      const modelBChildren = {
+        second: new Model({}, defaultOptions),
+        fourth: new Model({}, defaultOptions),
+      }
+
+      const modelA = new Model({}, defaultOptions).type('object').children(modelAChildren)
+      const modelB = new Model({}, defaultOptions).type('object').children(modelBChildren)
+      expect(() => modelA.merge(modelB)).to.throw()
+    })
+
+    it('should not merge with invalid input', () => {
+      const childModel = {id: new Model({}, defaultOptions)}
+      const model = new Model({}, defaultOptions).type('object').children(childModel)
+      expect(() => model.merge(1)).to.throw()
+      expect(() => model.merge({})).to.throw()
+      expect(() => model.merge()).to.throw()
+      expect(() => model.merge(childModel.id)).to.throw()
+      expect(() => childModel.id.merge(model)).to.throw()
+    })
+
+    it('should not fail when no children exist', () => {
+      const modelA = new Model({}, defaultOptions).type('object')
+      const modelB = new Model({}, defaultOptions).type('object')
+      expect(() => modelA.merge(modelB)).to.not.throw()
     })
   })
 })

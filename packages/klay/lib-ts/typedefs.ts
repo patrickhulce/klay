@@ -1,5 +1,6 @@
 export interface IModel {
   isKlayModel: boolean
+  spec: IModelSpecification
   type(type: string): IModel
   format(format: string): IModel
   required(required?: boolean): IModel
@@ -11,6 +12,7 @@ export interface IModel {
   children(children: IModelChildrenInput): IModel
   pick(paths: string[]): IModel
   omit(paths: string[]): IModel
+  merge(model: IModel): IModel
 }
 
 export interface IModelSpecification {
