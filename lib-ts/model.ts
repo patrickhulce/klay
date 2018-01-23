@@ -1,6 +1,7 @@
 import * as _ from 'lodash'
 import {assertions as modelAssertions} from './errors/model-error'
 import {
+  ICoerceFunction,
   IModel,
   IModelChild,
   IModelChildrenInput,
@@ -154,5 +155,11 @@ export class Model implements IModel {
 
     modelAssertions.ok(uniq.length === merged.length, 'cannot merge conflicting models')
     return this.children(merged)
+  }
+
+  public coerce(coerceFn: ICoerceFunction): IModel {
+    modelAssertions.typeof(coerceFn, 'function', 'coerce')
+    this.spec.coerce = coerceFn
+    return this
   }
 }

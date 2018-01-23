@@ -13,6 +13,7 @@ export interface IModel {
   pick(paths: string[]): IModel
   omit(paths: string[]): IModel
   merge(model: IModel): IModel
+  coerce(coerce: ICoerceFunction): IModel
 }
 
 export interface IModelSpecification {
@@ -25,6 +26,8 @@ export interface IModelSpecification {
   default?: any
   options?: any[]
   children?: IModel | IModelChild[]
+
+  coerce: ICoerceFunction
 }
 
 export interface IModelOptions {
@@ -42,3 +45,23 @@ export interface IModelChildrenMap {
 }
 
 export type IModelChildrenInput = IModelChildrenMap | IModel | IModelChild[]
+
+export type ICoerceFunction = (
+  value: any,
+  rootValue: any,
+  pathToValue: string[],
+) => IValidationResult
+
+export interface IValidationResultError {
+  message: string
+  path?: string[]
+  actual?: any
+  expected?: any
+}
+
+export interface IValidationResult {
+  value: any
+  isFinished: boolean
+  conforms: boolean
+  errors: IValidationResultError[]
+}
