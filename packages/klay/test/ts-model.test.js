@@ -264,4 +264,19 @@ describe('model.ts', () => {
       expect(() => modelA.merge(modelB)).to.not.throw()
     })
   })
+
+  describe('.coerce', () => {
+    it('should set coerce', () => {
+      const coerce = () => {}
+      const model = new Model({}, defaultOptions).coerce(coerce)
+      expect(model.spec.coerce).to.equal(coerce)
+    })
+
+    it('should throw when not a function', () => {
+      const model = new Model({}, defaultOptions)
+      expect(() => model.coerce(1)).to.throw()
+      expect(() => model.coerce('foo')).to.throw()
+      expect(() => model.coerce({})).to.throw()
+    })
+  })
 })
