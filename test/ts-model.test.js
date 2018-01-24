@@ -285,7 +285,7 @@ describe('model.ts', () => {
       expect(() => model.coerce(() => {})).to.throw()
       expect(() => model.coerce(() => {}, 'foo')).to.throw()
       expect(() => model.coerce({foo: 'bar'})).to.throw()
-      expect(() => model.coerce({'preextract': () => {}})).to.throw()
+      expect(() => model.coerce({preextract: () => {}})).to.throw()
     })
   })
 
