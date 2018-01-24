@@ -268,15 +268,24 @@ describe('model.ts', () => {
   describe('.coerce', () => {
     it('should set coerce', () => {
       const coerce = () => {}
-      const model = new Model({}, defaultOptions).coerce(coerce)
-      expect(model.spec.coerce).to.equal(coerce)
+      const model = new Model({}, defaultOptions).coerce(coerce, 'pre-extract')
+      expect(model.spec.coerce).to.eql({'pre-extract': coerce})
+      model.coerce(coerce, 'post-extract')
+      expect(model.spec.coerce).to.eql({'pre-extract': coerce, 'post-extract': coerce})
+      model.coerce({'type-coerce': coerce})
+      expect(model.spec.coerce).to.eql({'type-coerce': coerce})
+      model.coerce({})
+      expect(model.spec.coerce).to.eql({})
     })
 
-    it('should throw when not a function', () => {
+    it('should throw when invalid', () => {
       const model = new Model({}, defaultOptions)
       expect(() => model.coerce(1)).to.throw()
       expect(() => model.coerce('foo')).to.throw()
-      expect(() => model.coerce({})).to.throw()
+      expect(() => model.coerce(() => {})).to.throw()
+      expect(() => model.coerce(() => {}, 'foo')).to.throw()
+      expect(() => model.coerce({foo: 'bar'})).to.throw()
+      expect(() => model.coerce({'preextract': () => {}})).to.throw()
     })
   })
 })
