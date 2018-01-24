@@ -2,7 +2,6 @@ import * as _ from 'lodash'
 import {assertions as modelAssertions} from './errors/model-error'
 import {
   CoercePhase,
-  ICoerceFunction,
   IModel,
   IModelChild,
   IModelChildrenInput,
@@ -10,6 +9,8 @@ import {
   IModelCoercionMap,
   IModelOptions,
   IModelSpecification,
+  IModelValidationInput,
+  IValidationFunction,
 } from './typedefs'
 
 const COERCE_PHASES = _.values(CoercePhase)
@@ -161,7 +162,7 @@ export class Model implements IModel {
     return this.children(merged)
   }
 
-  public coerce(coerce: IModelCoercionMap | ICoerceFunction, phase?: CoercePhase): IModel {
+  public coerce(coerce: IModelCoercionMap | IValidationFunction, phase?: CoercePhase): IModel {
     if (coerce && typeof coerce === 'object' && !phase) {
       this.spec.coerce = {}
       Object.keys(coerce).forEach(phase => {
@@ -174,7 +175,33 @@ export class Model implements IModel {
     modelAssertions.typeof(coerce, 'function', 'coerce')
     modelAssertions.oneOf(phase, COERCE_PHASES, 'coerce.phase')
     this.spec.coerce = this.spec.coerce || {}
-    this.spec.coerce[phase!] = coerce as ICoerceFunction
+    this.spec.coerce[phase!] = coerce as IValidationFunction
+    return this
+  }
+
+  public validations(maybeValidations: IModelValidationInput | IModelValidationInput[]): IModel {
+    let additive = false
+    let validations = maybeValidations as IModelValidationInput[]
+    if (!Array.isArray(maybeValidations)) {
+      additive = true
+      validations = [maybeValidations as IModelValidationInput]
+    }
+
+    validations.forEach((validation, index) => {
+      const label = `validations.${index}`
+      if (typeof validation === 'object') {
+        const ctor: any = validation && validation.constructor
+        // tslint:disable-next-line
+        modelAssertions.ok(ctor && ctor.name === 'RegExp', `${label} must be a function or RegExp`)
+      } else {
+        modelAssertions.typeof(validation, 'function', label)
+      }
+    })
+
+    const currentValidations = this.spec.validations || []
+    const validationsToAssign = additive ? currentValidations.concat(validations) : validations
+    this.spec.validations = validationsToAssign
+
     return this
   }
 }
