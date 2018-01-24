@@ -13,8 +13,9 @@ export interface IModel {
   pick(paths: string[]): IModel
   omit(paths: string[]): IModel
   merge(model: IModel): IModel
-  coerce(coerce: ICoerceFunction, phase?: CoercePhase): IModel
+  coerce(coerce: IValidationFunction, phase?: CoercePhase): IModel
   coerce(coerce: IModelCoercionMap): IModel
+  validations(validations: IModelValidationInput | IModelValidationInput[]): IModel
 }
 
 export interface IModelSpecification {
@@ -28,6 +29,7 @@ export interface IModelSpecification {
   options?: any[]
   children?: IModel | IModelChild[]
   coerce?: IModelCoercionMap
+  validations?: IModelValidationInput[]
 }
 
 export interface IModelOptions {
@@ -44,13 +46,15 @@ export interface IModelChildrenMap {
   [key: string]: IModel
 }
 
-export interface IModelCoercionMap {
-  [phase: string]: ICoerceFunction
-}
-
 export type IModelChildrenInput = IModelChildrenMap | IModel | IModelChild[]
 
-export type ICoerceFunction = (
+export type IModelValidationInput = IValidationFunction | RegExp
+
+export interface IModelCoercionMap {
+  [phase: string]: IValidationFunction
+}
+
+export type IValidationFunction = (
   value: any,
   rootValue: any,
   pathToValue: string[],
