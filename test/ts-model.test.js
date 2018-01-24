@@ -288,4 +288,39 @@ describe('model.ts', () => {
       expect(() => model.coerce({'preextract': () => {}})).to.throw()
     })
   })
+
+  describe('.validations', () => {
+    it('should set validations', () => {
+      const validationA = () => {}
+      const validationB = /regex/
+      const model = new Model({}, defaultOptions).validations([validationA, validationB])
+      expect(model.spec.validations).to.eql([validationA, validationB])
+    })
+
+    it('should override existing validations', () => {
+      const validationA = () => {}
+      const validationB = () => {}
+      const model = new Model({}, defaultOptions).validations([validationA, validationB])
+      model.validations([validationA])
+      expect(model.spec.validations).to.eql([validationA])
+    })
+
+    it('should add to existing violations', () => {
+      const validationA = () => {}
+      const validationB = /regexp/
+      const validationC = () => {}
+      const model = new Model({}, defaultOptions).validations([validationA, validationB])
+      model.validations(validationC)
+      expect(model.spec.validations).to.eql([validationA, validationB, validationC])
+    })
+
+    it('should throw when invalid', () => {
+      const model = new Model({}, defaultOptions)
+      expect(() => model.validations(1)).to.throw()
+      expect(() => model.validations('foo')).to.throw()
+      expect(() => model.validations({})).to.throw()
+      expect(() => model.validations([() => {}, 'foo'])).to.throw()
+      expect(() => model.validations([/foo/, {}])).to.throw()
+    })
+  })
 })
