@@ -13,7 +13,8 @@ export interface IModel {
   pick(paths: string[]): IModel
   omit(paths: string[]): IModel
   merge(model: IModel): IModel
-  coerce(coerce: ICoerceFunction): IModel
+  coerce(coerce: ICoerceFunction, phase?: CoercePhase): IModel
+  coerce(coerce: IModelCoercionMap): IModel
 }
 
 export interface IModelSpecification {
@@ -26,8 +27,7 @@ export interface IModelSpecification {
   default?: any
   options?: any[]
   children?: IModel | IModelChild[]
-
-  coerce: ICoerceFunction
+  coerce?: IModelCoercionMap
 }
 
 export interface IModelOptions {
@@ -42,6 +42,10 @@ export interface IModelChild {
 
 export interface IModelChildrenMap {
   [key: string]: IModel
+}
+
+export interface IModelCoercionMap {
+  [phase: string]: ICoerceFunction
 }
 
 export type IModelChildrenInput = IModelChildrenMap | IModel | IModelChild[]
@@ -64,4 +68,17 @@ export interface IValidationResult {
   isFinished: boolean
   conforms: boolean
   errors: IValidationResultError[]
+}
+
+export enum CoercePhase {
+  PreExtract = 'pre-extract',
+  PostExtract = 'post-extract',
+  PreTypeCoerce = 'pre-type-coerce',
+  TypeCoerce = 'type-coerce',
+  PostTypeCoerce = 'post-type-coerce',
+  PreFormatCoerce = 'pre-format-coerce',
+  FormatCoerce = 'format-coerce',
+  PostFormatCoerce = 'post-format-coerce',
+  PreValidation = 'pre-validation',
+  PostValidation = 'post-validation',
 }

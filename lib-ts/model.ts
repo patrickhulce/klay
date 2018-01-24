@@ -1,14 +1,18 @@
 import * as _ from 'lodash'
 import {assertions as modelAssertions} from './errors/model-error'
 import {
+  CoercePhase,
   ICoerceFunction,
   IModel,
   IModelChild,
   IModelChildrenInput,
   IModelChildrenMap,
+  IModelCoercionMap,
   IModelOptions,
   IModelSpecification,
 } from './typedefs'
+
+const COERCE_PHASES = _.values(CoercePhase)
 
 export class Model implements IModel {
   public readonly spec: IModelSpecification
@@ -157,9 +161,20 @@ export class Model implements IModel {
     return this.children(merged)
   }
 
-  public coerce(coerceFn: ICoerceFunction): IModel {
-    modelAssertions.typeof(coerceFn, 'function', 'coerce')
-    this.spec.coerce = coerceFn
+  public coerce(coerce: IModelCoercionMap | ICoerceFunction, phase?: CoercePhase): IModel {
+    if (coerce && typeof coerce === 'object' && !phase) {
+      this.spec.coerce = {}
+      Object.keys(coerce).forEach(phase => {
+        this.coerce(coerce[phase], phase as CoercePhase)
+      })
+
+      return this
+    }
+
+    modelAssertions.typeof(coerce, 'function', 'coerce')
+    modelAssertions.oneOf(phase, COERCE_PHASES, 'coerce.phase')
+    this.spec.coerce = this.spec.coerce || {}
+    this.spec.coerce[phase!] = coerce as ICoerceFunction
     return this
   }
 }
