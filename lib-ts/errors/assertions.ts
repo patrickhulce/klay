@@ -85,8 +85,22 @@ export class Assertions {
     })
   }
 
+  public match(actual: any, expected: RegExp, path: string = 'value'): void {
+    if (expected.test(actual)) {
+      return
+    }
+
+    const reprActual = Assertions.getRepresentation(actual, 0)
+    const reprExpected = Assertions.getRepresentation(expected)
+    this._throw(`expected ${path} (${reprActual}) to match ${reprExpected}`, {
+      path,
+      actual,
+      expected,
+    })
+  }
+
   public static getRepresentation(value: any, limit: number = 3): string {
-    if (!value || typeof value !== 'object' || limit <= 0) {
+    if (!value || typeof value !== 'object' || limit <= 0 || value instanceof RegExp) {
       return String(value)
     }
 

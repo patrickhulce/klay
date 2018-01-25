@@ -45,6 +45,21 @@ describe('errors/assertions.ts', () => {
     })
   })
 
+  describe('.match', () => {
+    it('should throw on failed match', () => {
+      expect(() => assertions.match(false, /foo/)).to.throw()
+      expect(() => assertions.match('bar', /foo/)).to.throw()
+      expect(() => assertions.match({}, /foo/)).to.throw()
+      expect(() => assertions.match('', /foo/)).to.throw()
+    })
+
+    it('should pass on true matches', () => {
+      expect(() => assertions.match('foo', /foo/)).to.not.throw()
+      expect(() => assertions.match('123foo123', /foo/)).to.not.throw()
+      expect(() => assertions.match('other Thing', /her/)).to.not.throw()
+    })
+  })
+
   describe('#getRepresentation', () => {
     const getRepresentation = Assertions.getRepresentation
 
@@ -54,6 +69,7 @@ describe('errors/assertions.ts', () => {
       expect(getRepresentation(false)).to.equal('false')
       expect(getRepresentation(123)).to.equal('123')
       expect(getRepresentation('foo')).to.equal('foo')
+      expect(getRepresentation(/^foobar$/)).to.equal('/^foobar$/')
     })
 
     it('should convert objects to string', () => {
