@@ -173,6 +173,7 @@ export class Model implements IModel {
       return this
     }
 
+    phase = phase || ValidationPhase.Parse
     assertions.typeof(coerce, 'function', 'coerce')
     assertions.oneOf(phase, PHASES, 'coerce.phase')
     this.spec.coerce = this.spec.coerce || {}
