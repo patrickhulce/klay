@@ -22,7 +22,10 @@ describe('lib/validator-options.ts', () => {
     })
 
     it('allows partial definition', () => {
-      const options = new Options({types: ['string'], validations: {string: {___ALL_FORMATS___: [1]}}})
+      const options = new Options({
+        types: ['string'],
+        validations: {string: {___ALL_FORMATS___: [1]}},
+      })
       expect(options.types).to.eql(['string'])
       expect(options.formats).to.eql({string: []})
       expect(options.coerce).to.eql({string: emptyObj})
