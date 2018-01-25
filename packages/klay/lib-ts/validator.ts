@@ -1,3 +1,4 @@
+import {ValidatorOptions} from './validator-options'
 import {assertions as validationAssertions, ValidationError} from './errors/validation-error'
 import {
   ALL_FORMATS,
@@ -6,17 +7,19 @@ import {
   IModelValidationInput,
   IValidationResult,
   IValidatorOptions,
+  IValidatorOptionsUnsafe,
   NO_FORMAT,
   ValidationPhase,
 } from './typedefs'
+
 
 export class Validator {
   private readonly _model: IModel
   private readonly _options: IValidatorOptions
 
-  public constructor(model: IModel, options: IValidatorOptions) {
+  public constructor(model: IModel, options: IValidatorOptionsUnsafe) {
     this._model = model
-    this._options = options
+    this._options = ValidatorOptions.sanitize(options)
   }
 
   private _runValidations(

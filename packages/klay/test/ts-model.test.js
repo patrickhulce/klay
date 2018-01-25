@@ -34,12 +34,6 @@ describe('model.ts', () => {
       expect(() => new Model({}, defaultOptions).format('string')).to.throw(/type must be set/)
     })
 
-    it('should throw on no available formats', () => {
-      expect(() => new Model({}, defaultOptions).type('array').format('unknown')).to.throw(
-        /no formats available/,
-      )
-    })
-
     it('should throw on unacceptable format', () => {
       expect(() => new Model({}, defaultOptions).type('string').format('unknown')).to.throw(
         /expected format.*to be/,
