@@ -2,7 +2,7 @@ import * as _ from 'lodash'
 import {assertions} from './errors/model-error'
 
 import {
-  CoercePhase,
+  ValidationPhase,
   IModel,
   IModelChild,
   IModelChildrenInput,
@@ -14,7 +14,7 @@ import {
   IValidationFunction,
 } from './typedefs'
 
-const COERCE_PHASES = _.values(CoercePhase)
+const PHASES = _.values(ValidationPhase)
 
 export class Model implements IModel {
   public readonly spec: IModelSpecification
@@ -163,11 +163,11 @@ export class Model implements IModel {
     return this.children(merged)
   }
 
-  public coerce(coerce: IModelCoercionMap | IValidationFunction, phase?: CoercePhase): IModel {
+  public coerce(coerce: IModelCoercionMap | IValidationFunction, phase?: ValidationPhase): IModel {
     if (coerce && typeof coerce === 'object' && !phase) {
       this.spec.coerce = {}
       Object.keys(coerce).forEach(phase => {
-        this.coerce(coerce[phase], phase as CoercePhase)
+        this.coerce(coerce[phase], phase as ValidationPhase)
       })
 
       return this
