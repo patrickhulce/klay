@@ -2,6 +2,7 @@ import * as _ from 'lodash'
 import {assertions} from './errors/model-error'
 
 import {
+  ICoerceFunction,
   IModel,
   IModelChild,
   IModelChildrenInput,
@@ -9,7 +10,6 @@ import {
   IModelCoercionMap,
   IModelSpecification,
   IModelValidationInput,
-  IValidationFunction,
   IValidatorOptions,
   ValidationPhase,
 } from './typedefs'
@@ -28,18 +28,16 @@ export class Model implements IModel {
   }
 
   public type(type: string): IModel {
-    assertions.oneOf(type, this._options.types, 'type')
+    assertions.oneOf(type, this._options && this._options.types!, 'type')
     this.spec.type = type
     return this
   }
 
   public format(format: string): IModel {
+    const availableFormats = this._options.formats && this._options.formats[this.spec.type!]
     assertions.ok(this.spec.type, 'type must be set before format')
-    assertions.ok(
-      this._options.formats[this.spec.type!],
-      `no formats available for ${this.spec.type}`,
-    )
-    assertions.oneOf(format, this._options.formats[this.spec.type!], 'format')
+    assertions.ok(availableFormats, `no formats available for ${this.spec.type}`)
+    assertions.oneOf(format, availableFormats!, 'format')
     this.spec.format = format
     return this
   }
@@ -161,7 +159,7 @@ export class Model implements IModel {
   }
 
   public coerce(
-    coerce: IModelCoercionMap | IValidationFunction,
+    coerce: IModelCoercionMap | ICoerceFunction,
     phase: ValidationPhase = ValidationPhase.Parse,
   ): IModel {
     if (coerce && typeof coerce === 'object') {
@@ -176,7 +174,7 @@ export class Model implements IModel {
     assertions.typeof(coerce, 'function', 'coerce')
     assertions.oneOf(phase, PHASES, 'coerce.phase')
     this.spec.coerce = this.spec.coerce || {}
-    this.spec.coerce[phase!] = coerce as IValidationFunction
+    this.spec.coerce[phase!] = coerce as ICoerceFunction
     return this
   }
 
