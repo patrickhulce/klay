@@ -2,16 +2,16 @@ import * as _ from 'lodash'
 import {assertions} from './errors/model-error'
 
 import {
-  ValidationPhase,
   IModel,
   IModelChild,
   IModelChildrenInput,
   IModelChildrenMap,
   IModelCoercionMap,
-  IModelOptions,
   IModelSpecification,
   IModelValidationInput,
   IValidationFunction,
+  IValidatorOptions,
+  ValidationPhase,
 } from './typedefs'
 
 const PHASES = _.values(ValidationPhase)
@@ -19,9 +19,9 @@ const PHASES = _.values(ValidationPhase)
 export class Model implements IModel {
   public readonly spec: IModelSpecification
   public readonly isKlayModel: boolean
-  private readonly _options: IModelOptions
+  private readonly _options: IValidatorOptions
 
-  public constructor(spec: IModelSpecification, options: IModelOptions) {
+  public constructor(spec: IModelSpecification, options: IValidatorOptions) {
     this.spec = spec || {}
     this.isKlayModel = true
     this._options = options
@@ -90,10 +90,7 @@ export class Model implements IModel {
 
   public children(children: IModelChildrenInput): IModel {
     if ((children as IModel).isKlayModel) {
-      assertions.ok(
-        this.spec.type === 'array',
-        'model type must be array when children is a model',
-      )
+      assertions.ok(this.spec.type === 'array', 'model type must be array when children is a model')
       this.spec.children = children as IModel
       return this
     }
@@ -163,8 +160,11 @@ export class Model implements IModel {
     return this.children(merged)
   }
 
-  public coerce(coerce: IModelCoercionMap | IValidationFunction, phase?: ValidationPhase): IModel {
-    if (coerce && typeof coerce === 'object' && !phase) {
+  public coerce(
+    coerce: IModelCoercionMap | IValidationFunction,
+    phase: ValidationPhase = ValidationPhase.Parse,
+  ): IModel {
+    if (coerce && typeof coerce === 'object') {
       this.spec.coerce = {}
       Object.keys(coerce).forEach(phase => {
         this.coerce(coerce[phase], phase as ValidationPhase)
@@ -173,7 +173,6 @@ export class Model implements IModel {
       return this
     }
 
-    phase = phase || ValidationPhase.Parse
     assertions.typeof(coerce, 'function', 'coerce')
     assertions.oneOf(phase, PHASES, 'coerce.phase')
     this.spec.coerce = this.spec.coerce || {}

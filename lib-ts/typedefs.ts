@@ -32,9 +32,11 @@ export interface IModelSpecification {
   validations?: IModelValidationInput[]
 }
 
-export interface IModelOptions {
+export interface IValidatorOptions {
   types: string[]
   formats: {[typeName: string]: string[]}
+  coerce: {[typeName: string]: {[formatName: string]: IModelCoercionMap}}
+  validations: {[typeName: string]: {[formatName: string]: IModelValidationInput[]}}
 }
 
 export interface IModelChild {
