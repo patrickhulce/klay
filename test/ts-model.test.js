@@ -268,10 +268,10 @@ describe('model.ts', () => {
   describe('.coerce', () => {
     it('should set coerce', () => {
       const coerce = () => {}
-      const model = new Model({}, defaultOptions).coerce(coerce, 'pre-extract')
-      expect(model.spec.coerce).to.eql({'pre-extract': coerce})
-      model.coerce(coerce, 'post-extract')
-      expect(model.spec.coerce).to.eql({'pre-extract': coerce, 'post-extract': coerce})
+      const model = new Model({}, defaultOptions).coerce(coerce, 'parse')
+      expect(model.spec.coerce).to.eql({parse: coerce})
+      model.coerce(coerce, 'format-coerce')
+      expect(model.spec.coerce).to.eql({parse: coerce, 'format-coerce': coerce})
       model.coerce({'type-coerce': coerce})
       expect(model.spec.coerce).to.eql({'type-coerce': coerce})
       model.coerce({})
