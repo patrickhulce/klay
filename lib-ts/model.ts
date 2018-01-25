@@ -1,5 +1,6 @@
 import * as _ from 'lodash'
 import {assertions} from './errors/model-error'
+import {ValidatorOptions} from './validator-options'
 
 import {
   ICoerceFunction,
@@ -11,33 +12,31 @@ import {
   IModelSpecification,
   IModelValidationInput,
   IValidatorOptions,
+  IValidatorOptionsUnsafe,
   ValidationPhase,
+  PHASES,
 } from './typedefs'
-
-const PHASES = _.values(ValidationPhase)
 
 export class Model implements IModel {
   public readonly spec: IModelSpecification
   public readonly isKlayModel: boolean
   private readonly _options: IValidatorOptions
 
-  public constructor(spec: IModelSpecification, options: IValidatorOptions) {
+  public constructor(spec: IModelSpecification, options: IValidatorOptionsUnsafe) {
     this.spec = spec || {}
     this.isKlayModel = true
-    this._options = options
+    this._options = ValidatorOptions.sanitize(options)
   }
 
   public type(type: string): IModel {
-    assertions.oneOf(type, this._options && this._options.types!, 'type')
+    assertions.oneOf(type, this._options.types, 'type')
     this.spec.type = type
     return this
   }
 
   public format(format: string): IModel {
-    const availableFormats = this._options.formats && this._options.formats[this.spec.type!]
     assertions.ok(this.spec.type, 'type must be set before format')
-    assertions.ok(availableFormats, `no formats available for ${this.spec.type}`)
-    assertions.oneOf(format, availableFormats!, 'format')
+    assertions.oneOf(format, this._options.formats[this.spec.type!], 'format')
     this.spec.format = format
     return this
   }

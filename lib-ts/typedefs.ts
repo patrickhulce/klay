@@ -32,13 +32,6 @@ export interface IModelSpecification {
   validations?: IModelValidationInput[]
 }
 
-export interface IValidatorOptions {
-  types?: string[]
-  formats?: {[typeName: string]: string[]}
-  coerce?: {[typeName: string]: {[formatName: string]: IModelCoercionMap}}
-  validations?: {[typeName: string]: {[formatName: string]: IModelValidationInput[]}}
-}
-
 export interface IModelChild {
   path: string
   model: IModel
@@ -92,5 +85,33 @@ export enum ValidationPhase {
   ValidateValue = 'validate-value',
 }
 
+export interface IValidatorFormats {
+  [typeName: string]: string[]
+}
+
+export interface IValidatorCoerce {
+  [typeName: string]: {[formatName: string]: IModelCoercionMap}
+}
+
+export interface IValidatorValidations {
+  [typeName: string]: {[formatName: string]: IModelValidationInput[]}
+}
+
+export interface IValidatorOptionsUnsafe {
+  types?: string[]
+  formats?: IValidatorFormats
+  coerce?: IValidatorCoerce
+  validations?: IValidatorValidations
+}
+
+export interface IValidatorOptions {
+  types: string[]
+  formats: IValidatorFormats
+  coerce: IValidatorCoerce
+  validations: IValidatorValidations
+}
+
+
 export const NO_FORMAT = '___NO_FORMAT___'
 export const ALL_FORMATS = '___ALL_FORMATS___'
+export const PHASES = Object.keys(ValidationPhase).map(k => ValidationPhase[k as any])
