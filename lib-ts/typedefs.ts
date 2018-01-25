@@ -13,7 +13,7 @@ export interface IModel {
   pick(paths: string[]): IModel
   omit(paths: string[]): IModel
   merge(model: IModel): IModel
-  coerce(coerce: IValidationFunction, phase?: CoercePhase): IModel
+  coerce(coerce: IValidationFunction, phase?: ValidationPhase): IModel
   coerce(coerce: IModelCoercionMap): IModel
   validations(validations: IModelValidationInput | IModelValidationInput[]): IModel
 }
@@ -74,15 +74,10 @@ export interface IValidationResult {
   errors: IValidationResultError[]
 }
 
-export enum CoercePhase {
-  PreExtract = 'pre-extract',
-  PostExtract = 'post-extract',
-  PreTypeCoerce = 'pre-type-coerce',
+export enum ValidationPhase {
+  Parse = 'parse',
+  ValidateDefinition = 'validate-definition',
   TypeCoerce = 'type-coerce',
-  PostTypeCoerce = 'post-type-coerce',
-  PreFormatCoerce = 'pre-format-coerce',
   FormatCoerce = 'format-coerce',
-  PostFormatCoerce = 'post-format-coerce',
-  PreValidation = 'pre-validation',
-  PostValidation = 'post-validation',
+  ValidateValue = 'validate-value',
 }
