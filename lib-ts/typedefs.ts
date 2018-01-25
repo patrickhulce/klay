@@ -111,7 +111,6 @@ export interface IValidatorOptions {
   validations: IValidatorValidations
 }
 
-
 export const NO_FORMAT = '___NO_FORMAT___'
 export const ALL_FORMATS = '___ALL_FORMATS___'
 export const PHASES = Object.keys(ValidationPhase).map(k => ValidationPhase[k as any])

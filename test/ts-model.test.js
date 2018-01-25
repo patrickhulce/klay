@@ -36,7 +36,7 @@ describe('model.ts', () => {
 
     it('should throw on unacceptable format', () => {
       expect(() => new Model({}, defaultOptions).type('string').format('unknown')).to.throw(
-        /expected format.*to be/,
+        /expected format.*to be/
       )
     })
   })
@@ -265,7 +265,7 @@ describe('model.ts', () => {
       const model = new Model({}, defaultOptions).coerce(coerce, 'parse')
       expect(model.spec.coerce).to.eql({parse: coerce})
       model.coerce(coerce, 'format-coerce')
-      expect(model.spec.coerce).to.eql({parse: coerce, 'format-coerce': coerce})
+      expect(model.spec.coerce).to.eql({'parse': coerce, 'format-coerce': coerce})
       model.coerce({'type-coerce': coerce})
       expect(model.spec.coerce).to.eql({'type-coerce': coerce})
       model.coerce({})

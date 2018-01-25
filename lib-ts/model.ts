@@ -13,8 +13,8 @@ import {
   IModelValidationInput,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
-  ValidationPhase,
   PHASES,
+  ValidationPhase,
 } from './typedefs'
 
 export class Model implements IModel {

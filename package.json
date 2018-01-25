@@ -61,6 +61,8 @@
       "rules": {
         "whitespace": false,
         "newline-per-chained-call": false,
+        "no-void-expression": false,
+        "no-unsafe-any": false,
         "no-any": false
       }
     },
