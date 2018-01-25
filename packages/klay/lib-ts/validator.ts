@@ -1,4 +1,3 @@
-import {ValidatorOptions} from './validator-options'
 import {assertions as validationAssertions, ValidationError} from './errors/validation-error'
 import {
   ALL_FORMATS,
@@ -11,7 +10,7 @@ import {
   NO_FORMAT,
   ValidationPhase,
 } from './typedefs'
-
+import {ValidatorOptions} from './validator-options'
 
 export class Validator {
   private readonly _model: IModel

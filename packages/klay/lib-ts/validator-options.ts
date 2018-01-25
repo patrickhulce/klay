@@ -1,15 +1,15 @@
 import {forEach} from 'lodash'
+import {assertions} from './errors/model-error'
 import {
-  IValidatorOptionsUnsafe,
-  IValidatorOptions,
-  IValidatorFormats,
-  IValidatorCoerce,
-  IValidatorValidations,
   ALL_FORMATS,
+  IValidatorCoerce,
+  IValidatorFormats,
+  IValidatorOptions,
+  IValidatorOptionsUnsafe,
+  IValidatorValidations,
   NO_FORMAT,
   PHASES,
 } from './typedefs'
-import {assertions} from './errors/model-error'
 
 export class ValidatorOptions {
   public types: string[]
@@ -70,7 +70,7 @@ export class ValidatorOptions {
     this.validations = validations
   }
 
-  private static _fillWithKeys(target: any, keys: string[], fillFn?: () => any) {
+  private static _fillWithKeys(target: any, keys: string[], fillFn?: () => any): void {
     forEach(keys, key => {
       // tslint:disable-next-line
       target[key] = target[key] || (fillFn ? fillFn() : {})

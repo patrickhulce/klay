@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const expect = require('chai').expect
 const Model = require('../lib-ts/model').Model
 const Validator = require('../lib-ts/validator').Validator
@@ -17,7 +18,7 @@ describe('lib/validator.ts', () => {
       },
       string: {___ALL_FORMATS___: [v => assert.typeof(v, 'string')]},
       object: {___ALL_FORMATS___: [v => assert.typeof(v, 'object')]},
-    }
+    },
   }
 
   describe('.validate', () => {
@@ -39,7 +40,7 @@ describe('lib/validator.ts', () => {
     it.skip('should fail loudly when told to', () => {
       (function () {
         new Model({type: 'number'}).validate({}, true)
-      }).should.throw()
+      }.should.throw())
     })
 
     context('when required', () => {
@@ -54,7 +55,10 @@ describe('lib/validator.ts', () => {
       })
 
       it('should conform when present', () => {
-        model = model.type('object').required().nullable()
+        model = model
+          .type('object')
+          .required()
+          .nullable()
         expect(validate(null)).to.eql({
           conforms: true,
           isFinished: true,
@@ -77,81 +81,106 @@ describe('lib/validator.ts', () => {
     context.skip('when not nullable', () => {
       it('should not conform when null', () => {
         const model = new Model({type: 'string', nullable: false})
-        model.validate(null).asObject().should.eql({
-          conforms: false,
-          value: null,
-          errors: [{message: 'expected value to be non-null'}],
-        })
+        model
+          .validate(null)
+          .asObject()
+          .should.eql({
+            conforms: false,
+            value: null,
+            errors: [{message: 'expected value to be non-null'}],
+          })
       })
 
       it('should conform even when required', () => {
         const model = new Model({type: 'string', required: true, nullable: true})
-        model.validate(null).asObject().should.eql({
-          conforms: true,
-          value: null,
-          errors: [],
-        })
+        model
+          .validate(null)
+          .asObject()
+          .should.eql({
+            conforms: true,
+            value: null,
+            errors: [],
+          })
       })
     })
 
     context.skip('when default is set', () => {
       it('should fill in when undefined', () => {
         const model = new Model({type: 'string', default: 'hello world'})
-        model.validate(undefined).asObject().should.eql({
-          conforms: true,
-          value: 'hello world',
-          errors: [],
-        })
+        model
+          .validate(undefined)
+          .asObject()
+          .should.eql({
+            conforms: true,
+            value: 'hello world',
+            errors: [],
+          })
       })
 
       it('should fill in when undefined and value is required', () => {
         const model = new Model({type: 'number', default: 123, required: true})
-        model.validate(undefined).asObject().should.eql({
-          conforms: true,
-          value: 123,
-          errors: [],
-        })
+        model
+          .validate(undefined)
+          .asObject()
+          .should.eql({
+            conforms: true,
+            value: 123,
+            errors: [],
+          })
       })
 
       it('should not fill in when null', () => {
         const model = new Model({type: 'string', default: 'hello world'})
-        model.validate(null).asObject().should.eql({
-          conforms: true,
-          value: null,
-          errors: [],
-        })
+        model
+          .validate(null)
+          .asObject()
+          .should.eql({
+            conforms: true,
+            value: null,
+            errors: [],
+          })
       })
 
       it('should still validate', () => {
         const model = new Model({
           type: 'string',
           default: 'hello world',
-          validations: [function () {
-            assert.ok(false, 'oops')
-          }],
+          validations: [
+            function () {
+              assert.ok(false, 'oops')
+            },
+          ],
         })
 
-        model.validate(undefined).asObject().should.eql({
-          conforms: false,
-          value: 'hello world',
-          errors: [{message: 'oops'}],
-        })
+        model
+          .validate(undefined)
+          .asObject()
+          .should.eql({
+            conforms: false,
+            value: 'hello world',
+            errors: [{message: 'oops'}],
+          })
       })
 
       it('should still validate except when Nil', () => {
         const model = new Model({
           type: 'string',
           default: null,
-          validations: [function () {
-            assert.ok(false, 'oops')
-          }],
+          validations: [
+            function () {
+              assert.ok(false, 'oops')
+            },
+          ],
         })
 
-        model.validate(undefined).asObject().should.eql({
-          conforms: true,
-          value: null,
-          errors: [],
-        })
+        model
+          .validate(undefined)
+          .asObject()
+          .should.eql({
+            conforms: true,
+            value: null,
+            errors: [],
+          })
       })
     })
 
@@ -161,20 +190,26 @@ describe('lib/validator.ts', () => {
           return 'something'
         }
         const model = new Model({type: 'string', parse: parser, required: true})
-        model.validate(undefined).asObject().should.eql({
-          conforms: true,
-          value: 'something',
-          errors: [],
-        })
+        model
+          .validate(undefined)
+          .asObject()
+          .should.eql({
+            conforms: true,
+            value: 'something',
+            errors: [],
+          })
       })
 
       it('should still check definedness', () => {
-        const parser = function () { }
+        const parser = function () {}
         const model = new Model({type: 'string', parse: parser, required: true})
-        model.validate('something').asObject().should.eql({
-          conforms: false,
-          errors: [{message: 'expected value to be defined'}],
-        })
+        model
+          .validate('something')
+          .asObject()
+          .should.eql({
+            conforms: false,
+            errors: [{message: 'expected value to be defined'}],
+          })
       })
 
       it('should short-circuit when returning ValidationResult', () => {
@@ -190,11 +225,14 @@ describe('lib/validator.ts', () => {
           validations: [validations],
         })
 
-        model.validate('something').asObject().should.eql({
-          conforms: true,
-          value: 'foo',
-          errors: [],
-        })
+        model
+          .validate('something')
+          .asObject()
+          .should.eql({
+            conforms: true,
+            value: 'foo',
+            errors: [],
+          })
       })
     })
 
@@ -204,11 +242,14 @@ describe('lib/validator.ts', () => {
           return Number(value)
         }
         const model = new Model({type: 'number', transform})
-        model.validate('123').asObject().should.eql({
-          conforms: true,
-          value: 123,
-          errors: [],
-        })
+        model
+          .validate('123')
+          .asObject()
+          .should.eql({
+            conforms: true,
+            value: 123,
+            errors: [],
+          })
       })
 
       it('should short-circuit when returning failed validation result', () => {
@@ -217,11 +258,14 @@ describe('lib/validator.ts', () => {
         }
 
         const model = new Model({type: 'number', transform})
-        model.validate('foo').asObject().should.eql({
-          value: 10,
-          conforms: false,
-          errors: ['message'],
-        })
+        model
+          .validate('foo')
+          .asObject()
+          .should.eql({
+            value: 10,
+            conforms: false,
+            errors: ['message'],
+          })
       })
 
       it('should not short-circuit when returning successful validation result', () => {
@@ -239,51 +283,66 @@ describe('lib/validator.ts', () => {
           validations: [validate],
         })
 
-        model.validate(123).asObject().should.eql({
-          value: 10,
-          conforms: false,
-          errors: [{message: 'done'}],
-        })
+        model
+          .validate(123)
+          .asObject()
+          .should.eql({
+            value: 10,
+            conforms: false,
+            errors: [{message: 'done'}],
+          })
       })
     })
 
     context.skip('when validations is a RegExp', () => {
       it('should pass a valid match', () => {
         const model = new Model({type: 'string', validations: [/^foo.*bar$/]})
-        model.validate('fooANYTHINGbar').asObject().should.eql({
-          value: 'fooANYTHINGbar',
-          conforms: true,
-          errors: [],
-        })
+        model
+          .validate('fooANYTHINGbar')
+          .asObject()
+          .should.eql({
+            value: 'fooANYTHINGbar',
+            conforms: true,
+            errors: [],
+          })
       })
 
       it('should fail an invalid match', () => {
         const model = new Model({type: 'string', validations: [/^foo.*bar$/]})
-        model.validate('somethingElsebar').asObject().should.eql({
-          value: 'somethingElsebar',
-          conforms: false,
-          errors: [{message: 'expected somethingElsebar to match /^foo.*bar$/'}],
-        })
+        model
+          .validate('somethingElsebar')
+          .asObject()
+          .should.eql({
+            value: 'somethingElsebar',
+            conforms: false,
+            errors: [{message: 'expected somethingElsebar to match /^foo.*bar$/'}],
+          })
       })
 
       it('should fail a non-string', () => {
         const model = new Model({type: 'string', validations: [/\d+/]})
-        model.validate(12312).asObject().should.eql({
-          value: 12312,
-          conforms: false,
-          errors: [{message: 'expected 12312 to have typeof string'}],
-        })
+        model
+          .validate(12312)
+          .asObject()
+          .should.eql({
+            value: 12312,
+            conforms: false,
+            errors: [{message: 'expected 12312 to have typeof string'}],
+          })
       })
     })
 
     context.skip('when validations is an array', () => {
       it('should pass a valid match', () => {
         const model = new Model({type: 'string', validations: [_.noop, _.noop]})
-        model.validate('a string').asObject().should.eql({
-          value: 'a string',
-          conforms: true,
-          errors: [],
-        })
+        model
+          .validate('a string')
+          .asObject()
+          .should.eql({
+            value: 'a string',
+            conforms: true,
+            errors: [],
+          })
       })
 
       it('should fail when one element fails', () => {
@@ -291,11 +350,14 @@ describe('lib/validator.ts', () => {
           assert.ok(false, 'oops')
         }
         const model = new Model({type: 'number', validations: [_.noop, fail, _.noop]})
-        model.validate(123).asObject().should.eql({
-          value: 123,
-          conforms: false,
-          errors: [{message: 'oops'}],
-        })
+        model
+          .validate(123)
+          .asObject()
+          .should.eql({
+            value: 123,
+            conforms: false,
+            errors: [{message: 'oops'}],
+          })
       })
     })
   })
