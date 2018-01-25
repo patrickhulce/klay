@@ -86,7 +86,7 @@ export class Assertions {
   }
 
   public match(actual: any, expected: RegExp, path: string = 'value'): void {
-    if (expected.test(actual)) {
+    if (expected.test(actual as string)) {
       return
     }
 
