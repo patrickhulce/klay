@@ -13,7 +13,7 @@ export interface IModel {
   pick(paths: string[]): IModel
   omit(paths: string[]): IModel
   merge(model: IModel): IModel
-  coerce(coerce: IValidationFunction, phase?: ValidationPhase): IModel
+  coerce(coerce: ICoerceFunction, phase?: ValidationPhase): IModel
   coerce(coerce: IModelCoercionMap): IModel
   validations(validations: IModelValidationInput | IModelValidationInput[]): IModel
 }
@@ -33,10 +33,10 @@ export interface IModelSpecification {
 }
 
 export interface IValidatorOptions {
-  types: string[]
-  formats: {[typeName: string]: string[]}
-  coerce: {[typeName: string]: {[formatName: string]: IModelCoercionMap}}
-  validations: {[typeName: string]: {[formatName: string]: IModelValidationInput[]}}
+  types?: string[]
+  formats?: {[typeName: string]: string[]}
+  coerce?: {[typeName: string]: {[formatName: string]: IModelCoercionMap}}
+  validations?: {[typeName: string]: {[formatName: string]: IModelValidationInput[]}}
 }
 
 export interface IModelChild {
@@ -53,14 +53,22 @@ export type IModelChildrenInput = IModelChildrenMap | IModel | IModelChild[]
 export type IModelValidationInput = IValidationFunction | RegExp
 
 export interface IModelCoercionMap {
-  [phase: string]: IValidationFunction
+  [phase: string]: ICoerceFunction
 }
+
+export type ICoerceFunction = (
+  value: any,
+  rootValue: any,
+  pathToValue: string[],
+  spec: IModelSpecification,
+) => IValidationResult
 
 export type IValidationFunction = (
   value: any,
   rootValue: any,
   pathToValue: string[],
-) => IValidationResult
+  spec: IModelSpecification,
+) => void
 
 export interface IValidationResultError {
   message: string
@@ -83,3 +91,6 @@ export enum ValidationPhase {
   FormatCoerce = 'format-coerce',
   ValidateValue = 'validate-value',
 }
+
+export const NO_FORMAT = '___NO_FORMAT___'
+export const ALL_FORMATS = '___ALL_FORMATS___'
