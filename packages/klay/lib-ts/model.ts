@@ -1,5 +1,6 @@
 import * as _ from 'lodash'
-import {assertions as modelAssertions} from './errors/model-error'
+import {assertions} from './errors/model-error'
+
 import {
   CoercePhase,
   IModel,
@@ -27,42 +28,42 @@ export class Model implements IModel {
   }
 
   public type(type: string): IModel {
-    modelAssertions.oneOf(type, this._options.types, 'type')
+    assertions.oneOf(type, this._options.types, 'type')
     this.spec.type = type
     return this
   }
 
   public format(format: string): IModel {
-    modelAssertions.ok(this.spec.type, 'type must be set before format')
-    modelAssertions.ok(
+    assertions.ok(this.spec.type, 'type must be set before format')
+    assertions.ok(
       this._options.formats[this.spec.type!],
       `no formats available for ${this.spec.type}`,
     )
-    modelAssertions.oneOf(format, this._options.formats[this.spec.type!], 'format')
+    assertions.oneOf(format, this._options.formats[this.spec.type!], 'format')
     this.spec.format = format
     return this
   }
 
   public required(required: boolean = true): IModel {
-    modelAssertions.typeof(required, 'boolean', 'required')
+    assertions.typeof(required, 'boolean', 'required')
     this.spec.required = required
     return this
   }
 
   public optional(optional: boolean = true): IModel {
-    modelAssertions.typeof(optional, 'boolean', 'optional')
+    assertions.typeof(optional, 'boolean', 'optional')
     this.spec.required = !optional
     return this
   }
 
   public nullable(nullable: boolean = true): IModel {
-    modelAssertions.typeof(nullable, 'boolean', 'nullable')
+    assertions.typeof(nullable, 'boolean', 'nullable')
     this.spec.nullable = nullable
     return this
   }
 
   public strict(strict: boolean = true): IModel {
-    modelAssertions.typeof(strict, 'boolean', 'strict')
+    assertions.typeof(strict, 'boolean', 'strict')
     this.spec.strict = strict
     return this
   }
@@ -73,11 +74,11 @@ export class Model implements IModel {
   }
 
   public options(options: any[]): IModel {
-    modelAssertions.typeof(options, 'array', 'options')
+    assertions.typeof(options, 'array', 'options')
     const nextOptions = this.spec.options || []
     options.forEach(option => {
       if (this.spec.type === 'string' || this.spec.type === 'number') {
-        modelAssertions.typeof(option, this.spec.type, 'option')
+        assertions.typeof(option, this.spec.type, 'option')
       }
 
       nextOptions.push(option)
@@ -89,7 +90,7 @@ export class Model implements IModel {
 
   public children(children: IModelChildrenInput): IModel {
     if ((children as IModel).isKlayModel) {
-      modelAssertions.ok(
+      assertions.ok(
         this.spec.type === 'array',
         'model type must be array when children is a model',
       )
@@ -98,8 +99,8 @@ export class Model implements IModel {
     }
 
     // tslint:disable-next-line
-    modelAssertions.ok(children && typeof children === 'object', 'children must be an object')
-    modelAssertions.ok(this.spec.type === 'object', 'model type must be object for named children')
+    assertions.ok(children && typeof children === 'object', 'children must be an object')
+    assertions.ok(this.spec.type === 'object', 'model type must be object for named children')
 
     let modelChildren: IModelChild[]
     if (Array.isArray(children)) {
@@ -113,8 +114,8 @@ export class Model implements IModel {
     }
 
     modelChildren.forEach((child, i) => {
-      modelAssertions.typeof(child.path, 'string', `children.${i}`)
-      modelAssertions.ok(child.model.isKlayModel, `expected children.${i} to have a model`)
+      assertions.typeof(child.path, 'string', `children.${i}`)
+      assertions.ok(child.model.isKlayModel, `expected children.${i} to have a model`)
     })
 
     this.spec.children = modelChildren
@@ -122,9 +123,9 @@ export class Model implements IModel {
   }
 
   public pick(paths: string[]): IModel {
-    modelAssertions.typeof(paths, 'array', 'pick')
-    modelAssertions.ok(this.spec.children, 'must have children to pick')
-    modelAssertions.typeof(this.spec.children, 'array', 'children')
+    assertions.typeof(paths, 'array', 'pick')
+    assertions.ok(this.spec.children, 'must have children to pick')
+    assertions.typeof(this.spec.children, 'array', 'children')
     this.spec.children = (this.spec.children as IModelChild[]).filter(
       child => paths.indexOf(child.path) >= 0,
     )
@@ -132,9 +133,9 @@ export class Model implements IModel {
   }
 
   public omit(paths: string[]): IModel {
-    modelAssertions.typeof(paths, 'array', 'omit')
-    modelAssertions.ok(this.spec.children, 'must have children to omit')
-    modelAssertions.typeof(this.spec.children, 'array', 'children')
+    assertions.typeof(paths, 'array', 'omit')
+    assertions.ok(this.spec.children, 'must have children to omit')
+    assertions.typeof(this.spec.children, 'array', 'children')
     this.spec.children = (this.spec.children as IModelChild[]).filter(
       child => paths.indexOf(child.path) === -1,
     )
@@ -142,15 +143,15 @@ export class Model implements IModel {
   }
 
   public merge(model: IModel): IModel {
-    modelAssertions.ok(model.isKlayModel, 'can only merge with another model')
-    modelAssertions.equal(model.spec.type, 'object', 'type')
-    modelAssertions.equal(this.spec.type, 'object', 'type')
+    assertions.ok(model.isKlayModel, 'can only merge with another model')
+    assertions.equal(model.spec.type, 'object', 'type')
+    assertions.equal(this.spec.type, 'object', 'type')
     if (model.spec.children) {
-      modelAssertions.typeof(model.spec.children, 'array', 'children')
+      assertions.typeof(model.spec.children, 'array', 'children')
     }
 
     if (this.spec.children) {
-      modelAssertions.typeof(this.spec.children, 'array', 'children')
+      assertions.typeof(this.spec.children, 'array', 'children')
     }
 
     const thisChildren = (this.spec.children as IModelChild[]) || []
@@ -158,7 +159,7 @@ export class Model implements IModel {
     const merged = thisChildren.concat(otherChildren)
     const uniq = _.uniq(merged.map(item => item.path))
 
-    modelAssertions.ok(uniq.length === merged.length, 'cannot merge conflicting models')
+    assertions.ok(uniq.length === merged.length, 'cannot merge conflicting models')
     return this.children(merged)
   }
 
@@ -172,8 +173,8 @@ export class Model implements IModel {
       return this
     }
 
-    modelAssertions.typeof(coerce, 'function', 'coerce')
-    modelAssertions.oneOf(phase, COERCE_PHASES, 'coerce.phase')
+    assertions.typeof(coerce, 'function', 'coerce')
+    assertions.oneOf(phase, PHASES, 'coerce.phase')
     this.spec.coerce = this.spec.coerce || {}
     this.spec.coerce[phase!] = coerce as IValidationFunction
     return this
@@ -192,9 +193,9 @@ export class Model implements IModel {
       if (typeof validation === 'object') {
         const ctor: any = validation && validation.constructor
         // tslint:disable-next-line
-        modelAssertions.ok(ctor && ctor.name === 'RegExp', `${label} must be a function or RegExp`)
+        assertions.ok(ctor && ctor.name === 'RegExp', `${label} must be a function or RegExp`)
       } else {
-        modelAssertions.typeof(validation, 'function', label)
+        assertions.typeof(validation, 'function', label)
       }
     })
 
