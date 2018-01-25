@@ -276,13 +276,14 @@ describe('model.ts', () => {
       expect(model.spec.coerce).to.eql({'type-coerce': coerce})
       model.coerce({})
       expect(model.spec.coerce).to.eql({})
+      model.coerce(coerce)
+      expect(model.spec.coerce).to.eql({parse: coerce})
     })
 
     it('should throw when invalid', () => {
       const model = new Model({}, defaultOptions)
       expect(() => model.coerce(1)).to.throw()
       expect(() => model.coerce('foo')).to.throw()
-      expect(() => model.coerce(() => {})).to.throw()
       expect(() => model.coerce(() => {}, 'foo')).to.throw()
       expect(() => model.coerce({foo: 'bar'})).to.throw()
       expect(() => model.coerce({preextract: () => {}})).to.throw()
