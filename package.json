@@ -13,7 +13,7 @@
     "test": "npm run test:lint && npm run test:tslint && npm run test:unit",
     "test:lint": "lint",
     "test:tslint": "lint -t typescript './lib-ts/**/*.ts' --ignore './lib-ts/**/*.d.ts'",
-    "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
+    "test:unit": "mocha --reporter spec --require source-map-support/register --require test/bootstrap 'test/**/*.test.js'",
     "test:coverage": "nyc npm run test:unit",
     "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
