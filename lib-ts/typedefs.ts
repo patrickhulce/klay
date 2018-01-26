@@ -64,6 +64,7 @@ export interface IValidationResultError {
   path?: string[]
   actual?: any
   expected?: any
+  error?: Error
 }
 
 export interface IValidationResult {
@@ -80,7 +81,7 @@ export interface IIntermediateValidationResult extends IValidationResult {
 
 export interface IInternalValidationResult extends IIntermediateValidationResult {
   setValue(value: any): IInternalValidationResult
-  markAsFinished(): IInternalValidationResult
+  setIsFinished(value: boolean): IInternalValidationResult
   markAsErrored(error: Error): IInternalValidationResult
 }
 
@@ -116,6 +117,10 @@ export interface IValidatorOptions {
   formats: IValidatorFormats
   coerce: IValidatorCoerce
   validations: IValidatorValidations
+}
+
+export interface IValidateOptions {
+  failLoudly?: boolean
 }
 
 export const NO_FORMAT = '___NO_FORMAT___'

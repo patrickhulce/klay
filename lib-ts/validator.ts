@@ -4,6 +4,7 @@ import {
   ICoerceFunction,
   IModel,
   IModelValidationInput,
+  IValidateOptions,
   IValidationResult,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
@@ -47,7 +48,7 @@ export class Validator {
         throw err
       }
 
-      return validationResult.markAsErrored(err as ValidationError).markAsFinished()
+      return validationResult.markAsErrored(err as ValidationError).setIsFinished(true)
     }
   }
 
@@ -66,23 +67,24 @@ export class Validator {
   }
 
   private _validateDefinition(validationResult: ValidationResult): ValidationResult {
-    const {value, pathToValue} = validationResult
+    const {value} = validationResult
+
+    if (this._model.spec.required) {
+      validationAssertions.defined(value)
+    }
+
     const defaultValue = this._model.spec.default
     const hasDefault = typeof defaultValue !== 'undefined'
     const useDefault = hasDefault && typeof value === 'undefined'
-    const isRequired = Boolean(this._model.spec.required)
-    const isNullable = Boolean(this._model.spec.nullable)
-    const pathAsString = pathToValue.length ? pathToValue.join('.') : undefined
+    const finalValue = useDefault ? defaultValue : value
 
-    if (isRequired) {
-      validationAssertions.defined(value, pathAsString)
+    if (!this._model.spec.nullable) {
+      validationAssertions.nonNull(finalValue)
     }
 
-    if (!isNullable) {
-      validationAssertions.nonNull(value, pathAsString)
-    }
-
-    return validationResult.setValue(useDefault ? defaultValue : value)
+    return validationResult
+      .setValue(finalValue)
+      .setIsFinished(finalValue === undefined || finalValue === null)
   }
 
   private _validateValue(validationResult: ValidationResult): ValidationResult {
@@ -101,16 +103,8 @@ export class Validator {
       if (typeof validation === 'function') {
         validation(validationResult, this._model.spec)
       } else {
-        validationAssertions.typeof(
-          validationResult.value,
-          'string',
-          validationResult.pathAsString(),
-        )
-        validationAssertions.match(
-          validationResult.value,
-          validation,
-          validationResult.pathAsString(),
-        )
+        validationAssertions.typeof(validationResult.value, 'string')
+        validationAssertions.match(validationResult.value, validation)
       }
     })
 
@@ -129,10 +123,15 @@ export class Validator {
     validationResult = runValidations(this._validateValue)
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.ValidateValue))
 
-    return validationResult.markAsFinished()
+    return validationResult.setIsFinished(true)
   }
 
-  public validate(value: any): IValidationResult {
-    return this._validate(ValidationResult.fromValue(value, value, [])).toJSON()
+  public validate(value: any, options?: IValidateOptions): IValidationResult {
+    const result = this._validate(ValidationResult.fromValue(value, value, []))
+    if (!result.conforms && options && options.failLoudly) {
+      throw ValidationError.fromResultError(result.errors[0])
+    }
+
+    return result.toJSON()
   }
 }
