@@ -27,7 +27,8 @@ export class Validator {
     validationResult: ValidationResult,
     fn?: ICoerceFunction | ICoerceFunction[],
   ): ValidationResult {
-    if (validationResult.isFinished || !fn || !fn.length) {
+    const fnIsEmptyArray = Array.isArray(fn) && !fn.length
+    if (validationResult.isFinished || !fn || fnIsEmptyArray) {
       return validationResult
     }
 
