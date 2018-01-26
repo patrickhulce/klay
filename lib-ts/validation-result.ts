@@ -1,4 +1,4 @@
-import {assign, pick} from 'lodash'
+import {assign, omit, pick} from 'lodash'
 import {ValidationError} from './errors/validation-error'
 import {
   IIntermediateValidationResult,
@@ -27,8 +27,8 @@ export class ValidationResult implements IInternalValidationResult {
     return this
   }
 
-  public markAsFinished(): ValidationResult {
-    this.isFinished = true
+  public setIsFinished(isFinished: boolean): ValidationResult {
+    this.isFinished = isFinished
     return this
   }
 
@@ -43,7 +43,9 @@ export class ValidationResult implements IInternalValidationResult {
   }
 
   public toJSON(): IValidationResult {
-    return pick(this, ['value', 'conforms', 'errors'])
+    const json = pick(this, ['value', 'conforms', 'errors'])
+    json.errors = json.errors.map(err => omit(err, ['error']) as IValidationResultError)
+    return json
   }
 
   public static is(value: any): boolean {
