@@ -38,7 +38,7 @@ describe('lib/validator.ts', () => {
     })
 
     it.skip('should fail loudly when told to', () => {
-      (function () {
+      ;(function() {
         new Model({type: 'number'}).validate({}, true)
       }.should.throw())
     })
@@ -75,29 +75,26 @@ describe('lib/validator.ts', () => {
       })
     })
 
-    context.skip('when not nullable', () => {
+    context('when not nullable', () => {
       it('should not conform when null', () => {
-        const model = new Model({type: 'string', nullable: false})
-        model
-          .validate(null)
-          .asObject()
-          .should.eql({
-            conforms: false,
-            value: null,
-            errors: [{message: 'expected value to be non-null'}],
-          })
+        model = model.type('string').nullable(false)
+        expect(validate(null)).to.eql({
+          conforms: false,
+          value: null,
+          errors: [{message: 'expected value to be non-null', actual: null, path: 'value'}],
+        })
       })
 
       it('should conform even when required', () => {
-        const model = new Model({type: 'string', required: true, nullable: true})
-        model
-          .validate(null)
-          .asObject()
-          .should.eql({
-            conforms: true,
-            value: null,
-            errors: [],
-          })
+        model = model
+          .type('object')
+          .required()
+          .nullable()
+        expect(validate(null)).to.eql({
+          conforms: true,
+          value: null,
+          errors: [],
+        })
       })
     })
 
@@ -143,7 +140,7 @@ describe('lib/validator.ts', () => {
           type: 'string',
           default: 'hello world',
           validations: [
-            function () {
+            function() {
               assert.ok(false, 'oops')
             },
           ],
@@ -164,7 +161,7 @@ describe('lib/validator.ts', () => {
           type: 'string',
           default: null,
           validations: [
-            function () {
+            function() {
               assert.ok(false, 'oops')
             },
           ],
@@ -183,7 +180,7 @@ describe('lib/validator.ts', () => {
 
     context.skip('when parse is set', () => {
       it('should use parse before checking definedness', () => {
-        const parser = function () {
+        const parser = function() {
           return 'something'
         }
         const model = new Model({type: 'string', parse: parser, required: true})
@@ -198,7 +195,7 @@ describe('lib/validator.ts', () => {
       })
 
       it('should still check definedness', () => {
-        const parser = function () {}
+        const parser = function() {}
         const model = new Model({type: 'string', parse: parser, required: true})
         model
           .validate('something')
@@ -210,10 +207,10 @@ describe('lib/validator.ts', () => {
       })
 
       it('should short-circuit when returning ValidationResult', () => {
-        const parser = function () {
+        const parser = function() {
           return new ValidationResult('foo', true)
         }
-        const validations = function () {
+        const validations = function() {
           assert.ok(false, 'yikes')
         }
         const model = new Model({
@@ -235,7 +232,7 @@ describe('lib/validator.ts', () => {
 
     context.skip('when transform is set', () => {
       it('should transform the value', () => {
-        const transform = function (value) {
+        const transform = function(value) {
           return Number(value)
         }
         const model = new Model({type: 'number', transform})
@@ -250,7 +247,7 @@ describe('lib/validator.ts', () => {
       })
 
       it('should short-circuit when returning failed validation result', () => {
-        const transform = function () {
+        const transform = function() {
           return new ValidationResult(10, false, ['message'])
         }
 
@@ -266,11 +263,11 @@ describe('lib/validator.ts', () => {
       })
 
       it('should not short-circuit when returning successful validation result', () => {
-        const transform = function () {
+        const transform = function() {
           return new ValidationResult(10, true)
         }
 
-        const validate = function () {
+        const validate = function() {
           assert.ok(false, 'done')
         }
 
@@ -343,7 +340,7 @@ describe('lib/validator.ts', () => {
       })
 
       it('should fail when one element fails', () => {
-        const fail = function () {
+        const fail = function() {
           assert.ok(false, 'oops')
         }
         const model = new Model({type: 'number', validations: [_.noop, fail, _.noop]})

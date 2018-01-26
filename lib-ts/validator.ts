@@ -47,7 +47,7 @@ export class Validator {
         throw err
       }
 
-      return validationResult.markAsErrored(err as ValidationError)
+      return validationResult.markAsErrored(err as ValidationError).markAsFinished()
     }
   }
 
