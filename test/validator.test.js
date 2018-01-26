@@ -374,8 +374,8 @@ describe('lib/validator.ts', () => {
             validations: {
               number: {
                 ___ALL_FORMATS___: v => assert.typeof(v.value, 'number'),
-                ___NO_FORMAT___: v => assert.ok(v.value, 'not a format'),
-                integer: v => assert.ok(Math.floor(v.value) === v.value, 'not an integer'),
+                ___NO_FORMAT___: v => assert.ok(v.value, 'fails format'),
+                integer: v => assert.ok(Number.isInteger(v.value), 'not an integer'),
               },
             },
           }
@@ -409,6 +409,57 @@ describe('lib/validator.ts', () => {
           expect(validate(1.1)).to.have.property('conforms', false)
           expect(validate(15)).to.have.property('conforms', true)
           expect(validate(5.23)).to.have.property('conforms', false)
+        })
+      })
+
+      context('coerce', () => {
+        beforeEach(() => {
+          validatorOptions = {
+            types: ['string'],
+            formats: {string: ['phone', 'name']},
+            coerce: {
+              string: {
+                ___ALL_FORMATS___: {
+                  'type-coerce': v => v.setValue(String(v.value)),
+                },
+                ___NO_FORMAT___: {
+                  'format-coerce': v => v.setValue(`format: ${v.value}`)
+                },
+                phone: {
+                  'format-coerce': v => v.setValue(v.value.replace(/[^\d]+/g, ''))
+                }
+              },
+            },
+          }
+
+          model = new Model({}, validatorOptions)
+        })
+
+        it('should use ___ALL_FORMATS___', () => {
+          model = model.type('string').format('name')
+          expect(validate(1)).to.eql({
+            conforms: true,
+            value: '1',
+            errors: [],
+          })
+        })
+
+        it('should use ___NO_FORMAT___', () => {
+          model = model.type('string')
+          expect(validate(false)).to.eql({
+            conforms: true,
+            value: 'format: false',
+            errors: [],
+          })
+        })
+
+        it('should use appropriate format', () => {
+          model = model.type('string').format('phone')
+          expect(validate('+1 (555) 555-5555')).to.eql({
+            conforms: true,
+            value: '15555555555',
+            errors: [],
+          })
         })
       })
     })
