@@ -22,15 +22,20 @@ describe('lib/validator-options.ts', () => {
     })
 
     it('allows partial definition', () => {
+      const parseFn = () => ''
       const options = new Options({
         types: ['string'],
         validations: {string: {___ALL_FORMATS___: [1]}},
+        coerce: {string: {___ALL_FORMATS___: {parse: parseFn}}},
       })
+
       expect(options.types).to.eql(['string'])
       expect(options.formats).to.eql({string: []})
-      expect(options.coerce).to.eql({string: emptyObj})
+      expect(options.coerce).to.eql({
+        string: {___ALL_FORMATS___: {parse: parseFn}, ___NO_FORMAT___: {}},
+      })
       expect(options.validations).to.eql({
-        string: Object.assign({}, emptyArr, {___ALL_FORMATS___: [1]}),
+        string: {___ALL_FORMATS___: [1], ___NO_FORMAT___: []},
       })
     })
 

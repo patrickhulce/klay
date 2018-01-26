@@ -43,7 +43,7 @@ export class ValidatorOptions {
       ValidatorOptions._fillWithKeys(coerceForType, formatsForType)
       forEach(coerceForType, (coercionMap, format) => {
         assertions.oneOf(format, formatsForType)
-        forEach(coercionMap, phase => {
+        forEach(coercionMap, (fn, phase) => {
           assertions.oneOf(phase, PHASES)
         })
       })
