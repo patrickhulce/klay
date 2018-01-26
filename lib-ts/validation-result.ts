@@ -1,11 +1,15 @@
-import {assign, omit, pick} from 'lodash'
+import {assign, omit, pick, difference} from 'lodash'
 import {ValidationError} from './errors/validation-error'
+import {assertions} from './errors/model-error'
 import {
   IIntermediateValidationResult,
   IInternalValidationResult,
   IValidationResult,
   IValidationResultError,
 } from './typedefs'
+
+
+const KEYS = ['value', 'conforms', 'errors', 'isFinished', 'rootValue', 'pathToValue']
 
 export class ValidationResult implements IInternalValidationResult {
   public value: any
@@ -16,10 +20,8 @@ export class ValidationResult implements IInternalValidationResult {
   public pathToValue: string[]
 
   public constructor(result: IIntermediateValidationResult) {
-    assign(
-      this,
-      pick(result, ['value', 'conforms', 'errors', 'isFinished', 'rootValue', 'pathToValue']),
-    )
+    assertions.ok(ValidationResult.isLike(result), 'expected value to be ValidationResult')
+    assign(this, pick(result, KEYS))
   }
 
   public setValue(value: any): ValidationResult {
@@ -55,6 +57,10 @@ export class ValidationResult implements IInternalValidationResult {
       value.constructor &&
       value.constructor.name === 'ValidationResult'
     )
+  }
+
+  public static isLike(value: any): boolean {
+    return typeof value === 'object' && value && difference(KEYS, Object.keys(value)).length === 0
   }
 
   public static fromResult(result: IIntermediateValidationResult): ValidationResult {
