@@ -17,8 +17,8 @@ describe('lib/validator-options.ts', () => {
       const options = new Options({types: ['string'], formats: {string: ['name']}})
       expect(options.types).to.eql(['string'])
       expect(options.formats).to.eql({string: ['name']})
-      expect(options.coerce).to.eql({string: {...emptyObj, name: {}}})
-      expect(options.validations).to.eql({string: {...emptyArr, name: []}})
+      expect(options.coerce).to.eql({string: Object.assign({}, emptyObj, {name: {}})})
+      expect(options.validations).to.eql({string: Object.assign({}, emptyArr, {name: []})})
     })
 
     it('allows partial definition', () => {
@@ -29,7 +29,9 @@ describe('lib/validator-options.ts', () => {
       expect(options.types).to.eql(['string'])
       expect(options.formats).to.eql({string: []})
       expect(options.coerce).to.eql({string: emptyObj})
-      expect(options.validations).to.eql({string: {...emptyArr, ___ALL_FORMATS___: [1]}})
+      expect(options.validations).to.eql({
+        string: Object.assign({}, emptyArr, {___ALL_FORMATS___: [1]}),
+      })
     })
 
     it('throws on invalid input', () => {
