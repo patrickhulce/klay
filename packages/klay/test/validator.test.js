@@ -1,4 +1,5 @@
 /* eslint-disable no-undef, space-before-function-paren, no-extra-semi */
+const _ = require('lodash')
 const expect = require('chai').expect
 const Model = require('../lib-ts/model').Model
 const Validator = require('../lib-ts/validator').Validator
@@ -244,128 +245,127 @@ describe('lib/validator.ts', () => {
       })
     })
 
-    context.skip('when transform is set', () => {
-      it('should transform the value', () => {
-        const transform = function(value) {
-          return Number(value)
-        }
-        const model = new Model({type: 'number', transform})
-        model
-          .validate('123')
-          .asObject()
-          .should.eql({
-            conforms: true,
-            value: 123,
-            errors: [],
-          })
-      })
-
-      it('should short-circuit when returning failed validation result', () => {
-        const transform = function() {
-          return new ValidationResult(10, false, ['message'])
-        }
-
-        const model = new Model({type: 'number', transform})
-        model
-          .validate('foo')
-          .asObject()
-          .should.eql({
-            value: 10,
-            conforms: false,
-            errors: ['message'],
-          })
-      })
-
-      it('should not short-circuit when returning successful validation result', () => {
-        const transform = function() {
-          return new ValidationResult(10, true)
-        }
-
-        const validate = function() {
-          assert.ok(false, 'done')
-        }
-
-        const model = new Model({
-          type: 'number',
-          transform,
-          validations: [validate],
-        })
-
-        model
-          .validate(123)
-          .asObject()
-          .should.eql({
-            value: 10,
-            conforms: false,
-            errors: [{message: 'done'}],
-          })
-      })
-    })
-
-    context.skip('when validations is a RegExp', () => {
+    context('validations [RegExp]', () => {
       it('should pass a valid match', () => {
-        const model = new Model({type: 'string', validations: [/^foo.*bar$/]})
-        model
-          .validate('fooANYTHINGbar')
-          .asObject()
-          .should.eql({
-            value: 'fooANYTHINGbar',
-            conforms: true,
-            errors: [],
-          })
+        model = model
+          .type('string')
+          .required()
+          .validations(/^foo.*bar$/)
+
+        expect(validate('foo Anything Goes bar')).to.eql({
+          conforms: true,
+          value: 'foo Anything Goes bar',
+          errors: [],
+        })
       })
 
       it('should fail an invalid match', () => {
-        const model = new Model({type: 'string', validations: [/^foo.*bar$/]})
-        model
-          .validate('somethingElsebar')
-          .asObject()
-          .should.eql({
-            value: 'somethingElsebar',
-            conforms: false,
-            errors: [{message: 'expected somethingElsebar to match /^foo.*bar$/'}],
-          })
+        model = model
+          .type('string')
+          .required()
+          .validations(/^foo.*bar$/)
+
+        expect(validate('Anything Goes bar')).to.eql({
+          conforms: false,
+          value: 'Anything Goes bar',
+          errors: [
+            {
+              message: 'expected value (Anything Goes bar) to match /^foo.*bar$/',
+              actual: 'Anything Goes bar',
+              expected: /^foo.*bar$/,
+            },
+          ],
+        })
       })
 
       it('should fail a non-string', () => {
-        const model = new Model({type: 'string', validations: [/\d+/]})
-        model
-          .validate(12312)
-          .asObject()
-          .should.eql({
-            value: 12312,
-            conforms: false,
-            errors: [{message: 'expected 12312 to have typeof string'}],
-          })
+        model = model.type('object').validations(/^foo.*bar$/)
+
+        expect(validate({})).to.eql({
+          conforms: false,
+          value: {},
+          errors: [
+            {
+              message: 'expected value ({}) to have typeof string',
+              actual: 'object',
+              expected: 'string',
+            },
+          ],
+        })
       })
     })
 
-    context.skip('when validations is an array', () => {
+    context('validations [function]', () => {
       it('should pass a valid match', () => {
-        const model = new Model({type: 'string', validations: [_.noop, _.noop]})
-        model
-          .validate('a string')
-          .asObject()
-          .should.eql({
-            value: 'a string',
-            conforms: true,
-            errors: [],
-          })
+        model = model
+          .type('string')
+          .required()
+          .validations(_.noop)
+
+        expect(validate('Hello, World')).to.eql({
+          conforms: true,
+          value: 'Hello, World',
+          errors: [],
+        })
       })
 
-      it('should fail when one element fails', () => {
-        const fail = function() {
-          assert.ok(false, 'oops')
-        }
-        const model = new Model({type: 'number', validations: [_.noop, fail, _.noop]})
-        model
-          .validate(123)
-          .asObject()
-          .should.eql({
-            value: 123,
-            conforms: false,
-            errors: [{message: 'oops'}],
-          })
+      it('should pass a valid array match', () => {
+        model = model
+          .type('string')
+          .required()
+          .validations([_.noop, _.noop])
+
+        expect(validate('Hello, World')).to.eql({
+          conforms: true,
+          value: 'Hello, World',
+          errors: [],
+        })
+      })
+
+      it('should pass a valid, mixed array match', () => {
+        model = model
+          .type('string')
+          .required()
+          .validations([_.noop, _.noop, /World/])
+
+        expect(validate('Hello, World')).to.eql({
+          conforms: true,
+          value: 'Hello, World',
+          errors: [],
+        })
+      })
+
+      it('should fail when one regex fails', () => {
+        model = model
+          .type('string')
+          .required()
+          .validations([_.noop, /missing/, _.noop])
+
+        expect(validate('Hello, World')).to.eql({
+          conforms: false,
+          value: 'Hello, World',
+          errors: [
+            {
+              message: 'expected value (Hello, World) to match /missing/',
+              actual: 'Hello, World',
+              expected: /missing/,
+            },
+          ],
+        })
+      })
+
+      it('should fail when one function fails', () => {
+        const fail = () => assert.ok(false, 'invalid value')
+        model = model
+          .type('string')
+          .required()
+          .validations([_.noop, fail, _.noop])
+
+        expect(validate('Hello, World')).to.eql({
+          conforms: false,
+          value: 'Hello, World',
+          errors: [{message: 'invalid value'}],
+        })
       })
     })
   })
