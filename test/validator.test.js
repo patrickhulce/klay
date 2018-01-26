@@ -174,55 +174,73 @@ describe('lib/validator.ts', () => {
       })
     })
 
-    context.skip('when parse is set', () => {
-      it('should use parse before checking definedness', () => {
-        const parser = function() {
-          return 'something'
-        }
-        const model = new Model({type: 'string', parse: parser, required: true})
-        model
-          .validate(undefined)
-          .asObject()
-          .should.eql({
-            conforms: true,
-            value: 'something',
-            errors: [],
-          })
+    context('coerce', () => {
+      it('should use coerce before checking definedness', () => {
+        const parser = val => val.setValue('something')
+        model = model
+          .type('string')
+          .required()
+          .coerce(parser)
+
+        expect(validate(null)).to.eql({
+          conforms: true,
+          value: 'something',
+          errors: [],
+        })
       })
 
       it('should still check definedness', () => {
-        const parser = function() {}
-        const model = new Model({type: 'string', parse: parser, required: true})
-        model
-          .validate('something')
-          .asObject()
-          .should.eql({
-            conforms: false,
-            errors: [{message: 'expected value to be defined'}],
-          })
+        const parser = val => val.setValue(undefined)
+        model = model
+          .type('string')
+          .required()
+          .coerce(parser)
+
+        expect(validate(null)).to.eql({
+          conforms: false,
+          value: undefined,
+          errors: [{message: 'expected value to be defined', actual: undefined}],
+        })
       })
 
-      it('should short-circuit when returning ValidationResult', () => {
-        const parser = function() {
-          return new ValidationResult('foo', true)
-        }
-        const validations = function() {
-          assert.ok(false, 'yikes')
-        }
-        const model = new Model({
-          type: 'string',
-          parse: parser,
-          validations: [validations],
-        })
+      it('should short-circuit', () => {
+        const parser = val => val.setValue('something').setIsFinished(true)
+        model = model
+          .type('string')
+          .required()
+          .coerce(parser)
+          .validations(/skrilla/)
 
-        model
-          .validate('something')
-          .asObject()
-          .should.eql({
-            conforms: true,
-            value: 'foo',
-            errors: [],
-          })
+        expect(validate(null)).to.eql({
+          conforms: true,
+          value: 'something',
+          errors: [],
+        })
+      })
+
+      it('should use the correct phase', () => {
+        const parser = val => val.setValue('something')
+        model = model
+          .type('string')
+          .required()
+          .coerce(parser, 'validate-value')
+          .validations(/skrilla/)
+
+        expect(validate('skrilla')).to.eql({
+          conforms: true,
+          value: 'something',
+          errors: [],
+        })
+      })
+
+      it('should throw when parser returns bad value', () => {
+        const parser = val => 'something'
+        model = model
+          .type('string')
+          .required()
+          .coerce(parser)
+
+        expect(() => validate('Hello, World')).to.throw(/must return.*ValidationResult/)
       })
     })
 
