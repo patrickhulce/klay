@@ -231,7 +231,7 @@ describe('lib/validator.ts', () => {
       })
 
       it('should throw when parser returns bad value', () => {
-        const parser = val => 'something'
+        const parser = () => 'something'
         model = model
           .type('string')
           .required()

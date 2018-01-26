@@ -1,13 +1,12 @@
-import {assign, omit, pick, difference} from 'lodash'
-import {ValidationError} from './errors/validation-error'
+import {assign, difference, omit, pick} from 'lodash'
 import {assertions} from './errors/model-error'
+import {ValidationError} from './errors/validation-error'
 import {
   IIntermediateValidationResult,
   IInternalValidationResult,
   IValidationResult,
   IValidationResultError,
 } from './typedefs'
-
 
 const KEYS = ['value', 'conforms', 'errors', 'isFinished', 'rootValue', 'pathToValue']
 
