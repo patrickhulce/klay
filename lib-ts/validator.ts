@@ -90,14 +90,11 @@ export class Validator {
 
   private _validateValue(validationResult: ValidationResult): ValidationResult {
     let allValidations: IModelValidationInput[] = []
-    const validationsInOptions =
-      this._options.validations && this._options.validations[this._model.spec.type!]
+    const validationsInOptions = this._options.validations[this._model.spec.type!]
 
     const modelValidations = this._model.spec.validations || []
-
-    const typeValidations = (validationsInOptions && validationsInOptions[ALL_FORMATS]) || []
-    const formatValidations =
-      (validationsInOptions && validationsInOptions[this._model.spec.format || NO_FORMAT]) || []
+    const typeValidations = validationsInOptions[ALL_FORMATS]
+    const formatValidations = validationsInOptions[this._model.spec.format || NO_FORMAT]
     allValidations = [...typeValidations, ...formatValidations, ...modelValidations]
 
     allValidations.forEach(validation => {
