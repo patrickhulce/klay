@@ -10,6 +10,7 @@ import {
   NO_FORMAT,
   ValidationPhase,
 } from './typedefs'
+import {ValidationResult} from './validation-result'
 import {ValidatorOptions} from './validator-options'
 
 export class Validator {
@@ -22,11 +23,9 @@ export class Validator {
   }
 
   private _runValidations(
-    validationResult: IValidationResult,
-    rootValue: any,
-    pathToValue: string[],
+    validationResult: ValidationResult,
     fn?: ICoerceFunction | ICoerceFunction[],
-  ): IValidationResult {
+  ): ValidationResult {
     if (validationResult.isFinished || !fn || !fn.length) {
       return validationResult
     }
@@ -35,12 +34,12 @@ export class Validator {
       if (Array.isArray(fn)) {
         let finalResult = validationResult
         fn.forEach(fn => {
-          finalResult = this._runValidations(validationResult, rootValue, pathToValue, fn)
+          finalResult = this._runValidations(validationResult, fn)
         })
         return finalResult
       } else {
         // tslint:disable-next-line
-        return fn.call(this, validationResult.value, rootValue, pathToValue, this._model.spec)
+        return ValidationResult.fromResult(fn.call(this, validationResult, this._model.spec))
       }
     } catch (err) {
       // tslint:disable-next-line
@@ -48,12 +47,7 @@ export class Validator {
         throw err
       }
 
-      return {
-        conforms: false,
-        isFinished: true,
-        value: validationResult.value,
-        errors: [(err as ValidationError).asValidationResultError()],
-      }
+      return validationResult.markAsErrored(err as ValidationError)
     }
   }
 
@@ -71,11 +65,8 @@ export class Validator {
     return typeCoercions && typeCoercions[ALL_FORMATS] && typeCoercions[ALL_FORMATS][phase]
   }
 
-  private _validateDefinition(
-    value: any,
-    rootValue: any,
-    pathToValue: string[],
-  ): IValidationResult {
+  private _validateDefinition(validationResult: ValidationResult): ValidationResult {
+    const {value, pathToValue} = validationResult
     const defaultValue = this._model.spec.default
     const hasDefault = typeof defaultValue !== 'undefined'
     const useDefault = hasDefault && typeof value === 'undefined'
@@ -91,15 +82,10 @@ export class Validator {
       validationAssertions.nonNull(value, pathAsString)
     }
 
-    return {
-      value: useDefault ? defaultValue : value,
-      isFinished: false,
-      conforms: true,
-      errors: [],
-    }
+    return validationResult.setValue(useDefault ? defaultValue : value)
   }
 
-  private _validateValue(value: any, rootValue: any, pathToValue: string[]): IValidationResult {
+  private _validateValue(validationResult: ValidationResult): ValidationResult {
     let allValidations: IModelValidationInput[] = []
     const validationsInOptions =
       this._options.validations && this._options.validations[this._model.spec.type!]
@@ -111,42 +97,42 @@ export class Validator {
       (validationsInOptions && validationsInOptions[this._model.spec.format || NO_FORMAT]) || []
     allValidations = [...typeValidations, ...formatValidations, ...modelValidations]
 
-    const validationResult: IValidationResult = {
-      value,
-      isFinished: false,
-      conforms: true,
-      errors: [],
-    }
     allValidations.forEach(validation => {
-      const value = validationResult.value
       if (typeof validation === 'function') {
-        validation(value, rootValue, pathToValue, this._model.spec)
+        validation(validationResult, this._model.spec)
       } else {
-        validationAssertions.typeof(value, 'string', pathToValue.join('.'))
-        validationAssertions.match(value, validation, pathToValue.join('.'))
+        validationAssertions.typeof(
+          validationResult.value,
+          'string',
+          validationResult.pathAsString(),
+        )
+        validationAssertions.match(
+          validationResult.value,
+          validation,
+          validationResult.pathAsString(),
+        )
       }
     })
 
     return validationResult
   }
 
-  private _validate(value: any, rootValue: any, pathToValue: string[]): IValidationResult {
-    let validationResult: IValidationResult = {value, conforms: true, isFinished: false, errors: []}
-    const runValidation = (fn?: ICoerceFunction) =>
-      this._runValidations(validationResult, rootValue, pathToValue, fn)
+  private _validate(initialValidationResult: ValidationResult): ValidationResult {
+    let validationResult = initialValidationResult
+    const runValidations = (fn?: ICoerceFunction) => this._runValidations(validationResult, fn)
 
-    validationResult = runValidation(this._findCoerceFn(ValidationPhase.Parse))
-    validationResult = runValidation(this._validateDefinition)
-    validationResult = runValidation(this._findCoerceFn(ValidationPhase.ValidateDefinition))
-    validationResult = runValidation(this._findCoerceFn(ValidationPhase.TypeCoerce))
-    validationResult = runValidation(this._findCoerceFn(ValidationPhase.FormatCoerce))
-    validationResult = runValidation(this._validateValue)
-    validationResult = runValidation(this._findCoerceFn(ValidationPhase.ValidateValue))
+    validationResult = runValidations(this._findCoerceFn(ValidationPhase.Parse))
+    validationResult = runValidations(this._validateDefinition)
+    validationResult = runValidations(this._findCoerceFn(ValidationPhase.ValidateDefinition))
+    validationResult = runValidations(this._findCoerceFn(ValidationPhase.TypeCoerce))
+    validationResult = runValidations(this._findCoerceFn(ValidationPhase.FormatCoerce))
+    validationResult = runValidations(this._validateValue)
+    validationResult = runValidations(this._findCoerceFn(ValidationPhase.ValidateValue))
 
-    return {...validationResult, isFinished: true}
+    return validationResult.markAsFinished()
   }
 
   public validate(value: any): IValidationResult {
-    return this._validate(value, value, [])
+    return this._validate(ValidationResult.fromValue(value, value, [])).toJSON()
   }
 }

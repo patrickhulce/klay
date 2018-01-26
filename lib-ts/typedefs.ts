@@ -50,16 +50,12 @@ export interface IModelCoercionMap {
 }
 
 export type ICoerceFunction = (
-  value: any,
-  rootValue: any,
-  pathToValue: string[],
+  value: IInternalValidationResult,
   spec: IModelSpecification,
-) => IValidationResult
+) => IIntermediateValidationResult
 
 export type IValidationFunction = (
-  value: any,
-  rootValue: any,
-  pathToValue: string[],
+  value: IInternalValidationResult,
   spec: IModelSpecification,
 ) => void
 
@@ -72,9 +68,20 @@ export interface IValidationResultError {
 
 export interface IValidationResult {
   value: any
-  isFinished: boolean
   conforms: boolean
   errors: IValidationResultError[]
+}
+
+export interface IIntermediateValidationResult extends IValidationResult {
+  rootValue: any
+  pathToValue: string[]
+  isFinished: boolean
+}
+
+export interface IInternalValidationResult extends IIntermediateValidationResult {
+  setValue(value: any): IInternalValidationResult
+  markAsFinished(): IInternalValidationResult
+  markAsErrored(error: Error): IInternalValidationResult
 }
 
 export enum ValidationPhase {

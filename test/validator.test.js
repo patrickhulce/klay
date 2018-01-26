@@ -48,7 +48,6 @@ describe('lib/validator.ts', () => {
         model = model.type('object').required()
         expect(validate({})).to.eql({
           conforms: true,
-          isFinished: true,
           value: {},
           errors: [],
         })
@@ -61,7 +60,6 @@ describe('lib/validator.ts', () => {
           .nullable()
         expect(validate(null)).to.eql({
           conforms: true,
-          isFinished: true,
           value: null,
           errors: [],
         })
@@ -71,7 +69,6 @@ describe('lib/validator.ts', () => {
         model = model.type('object').required()
         expect(validate(undefined)).to.eql({
           conforms: false,
-          isFinished: true,
           value: undefined,
           errors: [{message: 'expected value to be defined', actual: undefined, path: 'value'}],
         })
