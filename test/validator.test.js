@@ -8,17 +8,10 @@ const assert = require('../lib-ts/errors/validation-error').assertions
 describe('lib/validator.ts', () => {
   const defaultOptions = {
     types: ['number', 'string', 'object'],
-    formats: {
-      number: ['integer'],
-      string: ['name'],
-    },
     validations: {
-      number: {
-        ___ALL_FORMATS___: [v => assert.typeof(v.value, 'number')],
-        integer: [v => assert.ok(Math.floor(v.value) === v.value)],
-      },
-      string: {___ALL_FORMATS___: [v => assert.typeof(v.value, 'string')]},
-      object: {___ALL_FORMATS___: [v => assert.typeof(v.value, 'object')]},
+      number: {___ALL_FORMATS___: v => assert.typeof(v.value, 'number')},
+      string: {___ALL_FORMATS___: v => assert.typeof(v.value, 'string')},
+      object: {___ALL_FORMATS___: v => assert.typeof(v.value, 'object')},
     },
   }
 
@@ -34,14 +27,9 @@ describe('lib/validator.ts', () => {
       return new Validator(model, validatorOptions).validate(value, opts)
     }
 
-    it.skip('should fail when type is not set', () => {
-      expect(() => validate('Hello, world')).to.throw(/defined/)
-    })
-
-    it.skip('should fail loudly when told to', () => {
-      ;(function() {
-        new Model({type: 'number'}).validate({}, true)
-      }.should.throw())
+    it('should fail loudly when told to', () => {
+      model = model.type('number')
+      expect(() => validate('not a number', {failLoudly: true})).to.throw(/expected.*number/)
     })
 
     context('required', () => {
@@ -365,6 +353,52 @@ describe('lib/validator.ts', () => {
           conforms: false,
           value: 'Hello, World',
           errors: [{message: 'invalid value'}],
+        })
+      })
+    })
+
+    context('validator-options', () => {
+      context('validations', () => {
+        beforeEach(() => {
+          validatorOptions = {
+            types: ['number'],
+            formats: {number: ['integer']},
+            validations: {
+              number: {
+                ___ALL_FORMATS___: v => assert.typeof(v.value, 'number'),
+                ___NO_FORMAT___: v => assert.ok(v.value, 'not a format'),
+                integer: v => assert.ok(Math.floor(v.value) === v.value, 'not an integer'),
+              },
+            },
+          }
+
+          model = new Model({}, validatorOptions)
+        })
+
+        it('should use ___ALL_FORMATS___', () => {
+          model = model.type('number')
+          expect(validate(1)).to.have.property('conforms', true)
+          expect(validate('foo')).to.have.property('conforms', false)
+          expect(validate(true)).to.have.property('conforms', false)
+          expect(validate([])).to.have.property('conforms', false)
+
+          model = model.type('number').format('integer')
+          expect(validate('foo').errors[0]).to.have.property('message').match(/expected.*number/)
+        })
+
+        it('should use ___NO_FORMAT___', () => {
+          model = model.type('number')
+          expect(validate(0)).to.have.property('conforms', false)
+          model = model.type('number').format('integer')
+          expect(validate(0)).to.have.property('conforms', true)
+        })
+
+        it('should use appropriate format', () => {
+          model = model.type('number').format('integer')
+          expect(validate(0)).to.have.property('conforms', true)
+          expect(validate(1.1)).to.have.property('conforms', false)
+          expect(validate(15)).to.have.property('conforms', true)
+          expect(validate(5.23)).to.have.property('conforms', false)
         })
       })
     })
