@@ -70,7 +70,7 @@ describe('lib/validator.ts', () => {
         expect(validate(undefined)).to.eql({
           conforms: false,
           value: undefined,
-          errors: [{message: 'expected value to be defined', actual: undefined, path: 'value'}],
+          errors: [{message: 'expected value to be defined', actual: undefined}],
         })
       })
     })
@@ -81,7 +81,7 @@ describe('lib/validator.ts', () => {
         expect(validate(null)).to.eql({
           conforms: false,
           value: null,
-          errors: [{message: 'expected value to be non-null', actual: null, path: 'value'}],
+          errors: [{message: 'expected value to be non-null', actual: null}],
         })
       })
 
