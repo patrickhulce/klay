@@ -27,6 +27,14 @@ describe('lib/validator.ts', () => {
       return new Validator(model, validatorOptions).validate(value, opts)
     }
 
+    it('should work with no type', () => {
+      expect(validate({})).to.eql({
+        conforms: true,
+        value: {},
+        errors: [],
+      })
+    })
+
     it('should fail loudly when told to', () => {
       model = model.type('number')
       expect(() => validate('not a number', {failLoudly: true})).to.throw(/expected.*number/)
@@ -383,7 +391,9 @@ describe('lib/validator.ts', () => {
           expect(validate([])).to.have.property('conforms', false)
 
           model = model.type('number').format('integer')
-          expect(validate('foo').errors[0]).to.have.property('message').match(/expected.*number/)
+          expect(validate('foo').errors[0])
+            .to.have.property('message')
+            .match(/expected.*number/)
         })
 
         it('should use ___NO_FORMAT___', () => {
