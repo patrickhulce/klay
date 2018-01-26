@@ -77,6 +77,7 @@ export class Validator {
     const hasDefault = typeof defaultValue !== 'undefined'
     const useDefault = hasDefault && typeof value === 'undefined'
     const finalValue = useDefault ? defaultValue : value
+    validationResult.setValue(finalValue)
 
     if (!this._model.spec.nullable) {
       validationAssertions.nonNull(finalValue)

@@ -136,7 +136,7 @@ describe('lib/validator.ts', () => {
         model = model.type('number').default(null)
         expect(validate(undefined)).to.eql({
           conforms: false,
-          value: undefined,
+          value: null,
           errors: [{message: 'expected value to be non-null', actual: null}],
         })
       })
