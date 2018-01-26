@@ -20,7 +20,7 @@ export class ValidationResult implements IInternalValidationResult {
   public pathToValue: string[]
 
   public constructor(result: IIntermediateValidationResult) {
-    assertions.ok(ValidationResult.isLike(result), 'expected value to be ValidationResult')
+    assertions.ok(ValidationResult.isLike(result), 'coerce functions must return ValidationResults')
     assign(this, pick(result, KEYS))
   }
 
