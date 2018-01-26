@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+/* eslint-disable no-undef, space-before-function-paren, no-extra-semi */
 const expect = require('chai').expect
 const Model = require('../lib-ts/model').Model
 const Validator = require('../lib-ts/validator').Validator
@@ -13,11 +13,11 @@ describe('lib/validator.ts', () => {
     },
     validations: {
       number: {
-        ___ALL_FORMATS___: [v => assert.typeof(v, 'number')],
-        integer: [v => assert.ok(Math.floor(v) === v)],
+        ___ALL_FORMATS___: [v => assert.typeof(v.value, 'number')],
+        integer: [v => assert.ok(Math.floor(v.value) === v.value)],
       },
-      string: {___ALL_FORMATS___: [v => assert.typeof(v, 'string')]},
-      object: {___ALL_FORMATS___: [v => assert.typeof(v, 'object')]},
+      string: {___ALL_FORMATS___: [v => assert.typeof(v.value, 'string')]},
+      object: {___ALL_FORMATS___: [v => assert.typeof(v.value, 'object')]},
     },
   }
 
@@ -29,8 +29,8 @@ describe('lib/validator.ts', () => {
       validatorOptions = defaultOptions
     })
 
-    const validate = value => {
-      return new Validator(model, validatorOptions).validate(value)
+    const validate = (value, opts) => {
+      return new Validator(model, validatorOptions).validate(value, opts)
     }
 
     it.skip('should fail when type is not set', () => {
@@ -43,7 +43,7 @@ describe('lib/validator.ts', () => {
       }.should.throw())
     })
 
-    context('when required', () => {
+    context('required', () => {
       it('should conform when present', () => {
         model = model.type('object').required()
         expect(validate({})).to.eql({
@@ -75,7 +75,7 @@ describe('lib/validator.ts', () => {
       })
     })
 
-    context('when not nullable', () => {
+    context('nullable', () => {
       it('should not conform when null', () => {
         model = model.type('string').nullable(false)
         expect(validate(null)).to.eql({
@@ -98,83 +98,79 @@ describe('lib/validator.ts', () => {
       })
     })
 
-    context.skip('when default is set', () => {
+    context('default', () => {
       it('should fill in when undefined', () => {
-        const model = new Model({type: 'string', default: 'hello world'})
-        model
-          .validate(undefined)
-          .asObject()
-          .should.eql({
-            conforms: true,
-            value: 'hello world',
-            errors: [],
-          })
+        model = model.type('string').default('Hello, World')
+        expect(validate(undefined, {failLoudly: true})).to.eql({
+          conforms: true,
+          value: 'Hello, World',
+          errors: [],
+        })
       })
 
-      it('should fill in when undefined and value is required', () => {
-        const model = new Model({type: 'number', default: 123, required: true})
-        model
-          .validate(undefined)
-          .asObject()
-          .should.eql({
-            conforms: true,
-            value: 123,
-            errors: [],
-          })
+      it('should not fill in when undefined and value is required', () => {
+        model = model
+          .type('number')
+          .default(123)
+          .required()
+        expect(validate(undefined)).to.eql({
+          conforms: false,
+          value: undefined,
+          errors: [{message: 'expected value to be defined', actual: undefined}],
+        })
       })
 
       it('should not fill in when null', () => {
-        const model = new Model({type: 'string', default: 'hello world'})
-        model
-          .validate(null)
-          .asObject()
-          .should.eql({
-            conforms: true,
-            value: null,
-            errors: [],
-          })
+        model = model
+          .type('number')
+          .nullable()
+          .default(1)
+        expect(validate(null)).to.eql({
+          conforms: true,
+          value: null,
+          errors: [],
+        })
+      })
+
+      it('should still enforce non-null', () => {
+        model = model.type('number').default(null)
+        expect(validate(undefined)).to.eql({
+          conforms: false,
+          value: undefined,
+          errors: [{message: 'expected value to be non-null', actual: null}],
+        })
       })
 
       it('should still validate', () => {
-        const model = new Model({
-          type: 'string',
-          default: 'hello world',
-          validations: [
-            function() {
-              assert.ok(false, 'oops')
+        model = model
+          .type('string')
+          .default('Hello, World')
+          .validations(/skrilla/)
+        expect(validate(undefined)).to.eql({
+          conforms: false,
+          value: 'Hello, World',
+          errors: [
+            {
+              message: 'expected value (Hello, World) to match /skrilla/',
+              actual: 'Hello, World',
+              expected: /skrilla/,
             },
           ],
         })
-
-        model
-          .validate(undefined)
-          .asObject()
-          .should.eql({
-            conforms: false,
-            value: 'hello world',
-            errors: [{message: 'oops'}],
-          })
       })
 
-      it('should still validate except when Nil', () => {
-        const model = new Model({
-          type: 'string',
-          default: null,
-          validations: [
-            function() {
-              assert.ok(false, 'oops')
-            },
-          ],
-        })
+      it('should still validate except when null', () => {
+        model = model
+          .type('string')
+          .nullable()
+          .default(null)
+          .validations(/skrilla/)
 
-        model
-          .validate(undefined)
-          .asObject()
-          .should.eql({
-            conforms: true,
-            value: null,
-            errors: [],
-          })
+        expect(validate(null)).to.eql({
+          conforms: true,
+          value: null,
+          errors: [],
+        })
       })
     })
 
