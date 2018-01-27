@@ -25,7 +25,7 @@ export class Model implements IModel {
   public constructor(spec: IModelSpecification, options: IValidatorOptionsUnsafe) {
     this.spec = spec || {}
     this.isKlayModel = true
-    this._options = ValidatorOptions.sanitize(options)
+    this._options = ValidatorOptions.from(options)
   }
 
   public type(type: string): IModel {

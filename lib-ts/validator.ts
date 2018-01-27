@@ -20,7 +20,7 @@ export class Validator {
 
   public constructor(model: IModel, options: IValidatorOptionsUnsafe) {
     this._model = model
-    this._options = ValidatorOptions.sanitize(options)
+    this._options = ValidatorOptions.from(options)
   }
 
   private _runValidations(
