@@ -1,4 +1,4 @@
-import {forEach} from 'lodash'
+import {cloneDeep, forEach, isArray, mergeWith} from 'lodash'
 import {assertions} from './errors/model-error'
 import {
   ALL_FORMATS,
@@ -18,10 +18,10 @@ export class ValidatorOptions {
   public validations: IValidatorValidations
 
   public constructor(options: IValidatorOptionsUnsafe) {
-    const types = options.types || []
-    const formats = options.formats || {}
-    const coerce = options.coerce || {}
-    const validations = options.validations || {}
+    const types = cloneDeep(options.types || [])
+    const formats = cloneDeep(options.formats || {})
+    const coerce = cloneDeep(options.coerce || {})
+    const validations = cloneDeep(options.validations || {})
 
     assertions.typeof(types, 'array')
     forEach(types, type => assertions.typeof(type, 'string'))
@@ -70,6 +70,10 @@ export class ValidatorOptions {
     this.validations = validations
   }
 
+  public clone(): IValidatorOptions {
+    return new ValidatorOptions(this)
+  }
+
   private static _fillWithKeys(target: any, keys: string[], fillFn?: () => any): void {
     forEach(keys, key => {
       // tslint:disable-next-line
@@ -77,9 +81,25 @@ export class ValidatorOptions {
     })
   }
 
-  public static sanitize(options: IValidatorOptionsUnsafe): IValidatorOptions {
+  public static from(options: IValidatorOptionsUnsafe): ValidatorOptions {
     const optionsConstructor = options.constructor as any
     const isValidatorOptions = optionsConstructor && optionsConstructor.name === 'ValidatorOptions'
-    return isValidatorOptions ? (options as IValidatorOptions) : new ValidatorOptions(options)
+    return isValidatorOptions ? (options as ValidatorOptions) : new ValidatorOptions(options)
+  }
+
+  public static merge(
+    optionsUnsafeA: IValidatorOptionsUnsafe,
+    optionsUnsafeB: IValidatorOptionsUnsafe,
+  ): IValidatorOptions {
+    const optionsA = ValidatorOptions.from(optionsUnsafeA).clone()
+    const optionsB = ValidatorOptions.from(optionsUnsafeB).clone()
+
+    function combineArrays(dst: any, src: any): any[] | undefined {
+      if (isArray(dst)) {
+        return dst.concat(src)
+      }
+    }
+
+    return new ValidatorOptions(mergeWith(optionsA, optionsB, combineArrays))
   }
 }
