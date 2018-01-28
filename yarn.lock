@@ -15,9 +15,9 @@
     proxy-from-env "^1.0.0"
     url-template "^2.0.8"
 
-"@patrickhulce/lint@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@patrickhulce/lint/-/lint-2.0.1.tgz#5b89e9e51103fb407253779fd14d614e35f39ad2"
+"@patrickhulce/lint@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@patrickhulce/lint/-/lint-2.0.2.tgz#56eb3cfd30b620f811f5889d7f9b2a17c4486d1d"
   dependencies:
     babel-eslint "^7.2.1"
     debug "^2.6.3"
