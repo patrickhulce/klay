@@ -8,7 +8,7 @@ export interface IModel {
   nullable(nullable?: boolean): IModel
   strict(strict?: boolean): IModel
   default(value?: any): IModel
-  options(...options: any[]): IModel
+  enum(options: any[]): IModel
   children(children: IModelChildrenInput): IModel
   pick(paths: string[]): IModel
   omit(paths: string[]): IModel
@@ -26,7 +26,7 @@ export interface IModelSpecification {
   nullable?: boolean
   strict?: boolean
   default?: any
-  options?: any[]
+  enum?: any[]
   children?: IModel | IModelChild[]
   coerce?: IModelCoercionMap
   validations?: IModelValidationInput[]

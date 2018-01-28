@@ -70,9 +70,9 @@ export class Model implements IModel {
     return this
   }
 
-  public options(options: any[]): IModel {
-    assertions.typeof(options, 'array', 'options')
-    const nextOptions = this.spec.options || []
+  public enum(options: any[]): IModel {
+    assertions.typeof(options, 'array', 'enum')
+    const nextOptions = this.spec.enum || []
     options.forEach(option => {
       if (this.spec.type === 'string' || this.spec.type === 'number') {
         assertions.typeof(option, this.spec.type, 'option')
@@ -81,7 +81,7 @@ export class Model implements IModel {
       nextOptions.push(option)
     })
 
-    this.spec.options = nextOptions
+    this.spec.enum = nextOptions
     return this
   }
 
