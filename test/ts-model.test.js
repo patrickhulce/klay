@@ -112,15 +112,15 @@ describe('model.ts', () => {
     })
   })
 
-  describe('.options', () => {
-    it('should set options', () => {
-      const model = new Model({}, defaultOptions).options([1, 2])
-      expect(model.spec.options).to.eql([1, 2])
+  describe('.enum', () => {
+    it('should set enum', () => {
+      const model = new Model({}, defaultOptions).enum([1, 2])
+      expect(model.spec.enum).to.eql([1, 2])
     })
 
     it('should throw when type does not match', () => {
       const model = new Model({}, defaultOptions).type('string')
-      expect(() => model.options([1, 2])).to.throw()
+      expect(() => model.enum([1, 2])).to.throw()
     })
   })
 
