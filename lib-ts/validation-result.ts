@@ -1,4 +1,4 @@
-import {assign, difference, omit, pick} from 'lodash'
+import {assign, cloneDeep, difference, omit, pick} from 'lodash'
 import {assertions} from './errors/model-error'
 import {ValidationError} from './errors/validation-error'
 import {
@@ -20,7 +20,7 @@ export class ValidationResult implements IInternalValidationResult {
 
   public constructor(result: IIntermediateValidationResult) {
     assertions.ok(ValidationResult.isLike(result), 'coerce functions must return ValidationResults')
-    assign(this, pick(result, KEYS))
+    assign(this, cloneDeep(pick(result, KEYS)))
   }
 
   public setValue(value: any): ValidationResult {
@@ -41,6 +41,10 @@ export class ValidationResult implements IInternalValidationResult {
 
   public pathAsString(): string | undefined {
     return this.pathToValue.length ? this.pathToValue.join('.') : undefined
+  }
+
+  public clone(): ValidationResult {
+    return new ValidationResult(this)
   }
 
   public toJSON(): IValidationResult {
