@@ -1,4 +1,4 @@
-import {assign, cloneDeep, difference, omit, pick} from 'lodash'
+import {assign, cloneDeep, difference, every, flatten, omit, pick} from 'lodash'
 import {assertions} from './errors/model-error'
 import {ValidationError} from './errors/validation-error'
 import {
@@ -86,6 +86,20 @@ export class ValidationResult implements IInternalValidationResult {
       isFinished: false,
       rootValue: value,
       pathToValue: [],
+    })
+  }
+
+  public static coalesce(root: ValidationResult, values: ValidationResult[]): ValidationResult {
+    const conforms = every(values, 'conforms')
+    const errors = flatten(values.map(value => value.errors))
+
+    return new ValidationResult({
+      conforms,
+      errors,
+      value: root.value,
+      isFinished: root.isFinished,
+      rootValue: root.value,
+      pathToValue: root.pathToValue,
     })
   }
 }
