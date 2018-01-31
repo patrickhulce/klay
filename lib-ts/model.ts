@@ -73,9 +73,16 @@ export class Model implements IModel {
   public enum(options: any[]): IModel {
     assertions.typeof(options, 'array', 'enum')
     const nextOptions = this.spec.enum || []
-    options.forEach(option => {
-      if (this.spec.type === 'string' || this.spec.type === 'number') {
-        assertions.typeof(option, this.spec.type, 'option')
+    const isSimpleType = typeof options[0] === 'string' || typeof options[0] === 'number'
+    options.forEach((option, index) => {
+      if (typeof option === 'string' || typeof option === 'number') {
+        assertions.ok(isSimpleType, 'cannot mix models and simple types in enum')
+        if (this.spec.type) {
+          assertions.typeof(option, this.spec.type, 'enum')
+        }
+      } else {
+        assertions.ok(!isSimpleType, 'cannot mix models and simpel types in enum')
+        assertions.ok(option && option.isKlayModel, 'expected enum option to be a model')
       }
 
       nextOptions.push(option)
