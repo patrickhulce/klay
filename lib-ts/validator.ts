@@ -49,7 +49,7 @@ export class Validator {
         throw err
       }
 
-      return validationResult.markAsErrored(err as ValidationError).setIsFinished(true)
+      return validationResult.markAsErrored(err as ValidationError)
     }
   }
 

@@ -35,7 +35,8 @@ export class ValidationResult implements IInternalValidationResult {
 
   public markAsErrored(error: ValidationError): ValidationResult {
     this.conforms = false
-    this.errors = [...this.errors, error.asValidationResultError(this)]
+    this.isFinished = true
+    this.errors = this.errors.concat(error.asValidationResultError(this))
     return this
   }
 
