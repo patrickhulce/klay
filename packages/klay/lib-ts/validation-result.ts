@@ -33,6 +33,16 @@ export class ValidationResult implements IInternalValidationResult {
     return this
   }
 
+  public setConforms(conforms: boolean): ValidationResult {
+    this.conforms = conforms
+    return this
+  }
+
+  public setErrors(errors: IValidationResultError[]): ValidationResult {
+    this.errors = errors.slice()
+    return this
+  }
+
   public markAsErrored(error: ValidationError): ValidationResult {
     this.conforms = false
     this.isFinished = true

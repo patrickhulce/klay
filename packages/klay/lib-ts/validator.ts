@@ -1,4 +1,7 @@
-import {assertions as validationAssertions, ValidationError} from './errors/validation-error'
+import {
+  assertions as validationAssertions,
+  ValidationError,
+} from './errors/validation-error'
 import {
   ALL_FORMATS,
   ICoerceFunction,
@@ -6,6 +9,7 @@ import {
   IModelValidationInput,
   IValidateOptions,
   IValidationResult,
+  IValidationResultError,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
   NO_FORMAT,
@@ -89,6 +93,41 @@ export class Validator {
       .setIsFinished(finalValue === undefined || finalValue === null)
   }
 
+  private _validateEnum(validationResult: ValidationResult): ValidationResult {
+    if (!this._model.spec.enum) {
+      return validationResult
+    }
+
+    const enumType = typeof this._model.spec.enum[0]
+    if (enumType === 'string' || enumType === 'number') {
+      validationAssertions.oneOf(validationResult.value, this._model.spec.enum)
+      return validationResult
+    }
+
+    const failedValidationResults: ValidationResult[] = []
+    for (const option of this._model.spec.enum) {
+      const potentialModel = option as IModel
+      const potentialValidator = new Validator(potentialModel, this._options)
+      const potentialResult = potentialValidator._validate(validationResult)
+      if (potentialResult.conforms) {
+        return validationResult.setValue(potentialResult.value)
+      }
+
+      failedValidationResults.push(potentialResult)
+    }
+
+    const coalesced = ValidationResult.coalesce(validationResult, failedValidationResults)
+    const error: IValidationResultError = {
+      message: 'expected value to match an enum option',
+      details: coalesced.toJSON().errors,
+    }
+
+    return validationResult
+      .setConforms(false)
+      .setErrors(validationResult.errors.concat(error))
+      .setIsFinished(true)
+  }
+
   private _validateValue(validationResult: ValidationResult): ValidationResult {
     let typeValidations: IModelValidationInput[] = []
     let formatValidations: IModelValidationInput[] = []
@@ -114,7 +153,7 @@ export class Validator {
   }
 
   private _validate(initialValidationResult: ValidationResult): ValidationResult {
-    let validationResult = initialValidationResult
+    let validationResult = initialValidationResult.clone()
     const runValidations = (fn?: ICoerceFunction) => this._runValidations(validationResult, fn)
 
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.Parse))
@@ -122,6 +161,8 @@ export class Validator {
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.ValidateDefinition))
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.TypeCoerce))
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.FormatCoerce))
+    validationResult = runValidations(this._validateEnum)
+    validationResult = runValidations(this._findCoerceFn(ValidationPhase.ValidateEnum))
     validationResult = runValidations(this._validateValue)
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.ValidateValue))
 
