@@ -3,7 +3,7 @@ const Model = require('../lib-ts/model').Model
 
 describe('model.ts', () => {
   const defaultOptions = {
-    types: ['string', 'array', 'object'],
+    types: ['number', 'string', 'array', 'object'],
     formats: {string: ['lowercase']},
   }
 
@@ -113,14 +113,26 @@ describe('model.ts', () => {
   })
 
   describe('.enum', () => {
-    it('should set enum', () => {
+    it('should set enum when simple types', () => {
       const model = new Model({}, defaultOptions).enum([1, 2])
       expect(model.spec.enum).to.eql([1, 2])
+    })
+
+    it('should set enum when models', () => {
+      const optionA = new Model({}, defaultOptions).type('string')
+      const optionB = new Model({}, defaultOptions).type('number')
+      const model = new Model({}, defaultOptions).enum([optionA, optionB])
+      expect(model.spec.enum).to.eql([optionA, optionB])
     })
 
     it('should throw when type does not match', () => {
       const model = new Model({}, defaultOptions).type('string')
       expect(() => model.enum([1, 2])).to.throw()
+    })
+
+    it('should throw when non-model', () => {
+      const model = new Model({}, defaultOptions)
+      expect(() => model.enum([1, {}])).to.throw()
     })
   })
 
