@@ -4,9 +4,10 @@ import {ValidationResult} from '../validation-result'
 import {Assertions} from './assertions'
 
 export class ValidationError extends Error {
-  public constructor(message: string) {
+  public constructor(message: string, extras?: object) {
     super(message)
     this.name = 'ValidationError'
+    assign(this, extras)
   }
 
   public asValidationResultError(validationResult?: ValidationResult): IValidationResultError {
@@ -28,9 +29,7 @@ export class ValidationError extends Error {
       return resultError.error as ValidationError
     }
 
-    const error = new ValidationError(resultError.message)
-    assign(this, resultError)
-    return error
+    return new ValidationError(resultError.message, resultError)
   }
 }
 
