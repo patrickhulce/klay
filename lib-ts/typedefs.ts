@@ -21,15 +21,17 @@ export interface IModel {
 export interface IModelSpecification {
   type?: string
   format?: string
+
   required?: boolean
   optional?: boolean
   nullable?: boolean
-  strict?: boolean
   default?: any
-  enum?: any[]
-  children?: IModel | IModelChild[]
   coerce?: IModelCoercionMap
   validations?: IModelValidationInput[]
+  enum?: any[]
+
+  strict?: boolean
+  children?: IModel | IModelChild[]
 }
 
 export interface IModelChild {
@@ -65,6 +67,7 @@ export interface IValidationResultError {
   actual?: any
   expected?: any
   error?: Error
+  details?: any
 }
 
 export interface IValidationResult {
@@ -90,6 +93,7 @@ export enum ValidationPhase {
   ValidateDefinition = 'validate-definition',
   TypeCoerce = 'type-coerce',
   FormatCoerce = 'format-coerce',
+  ValidateEnum = 'validate-enum',
   ValidateValue = 'validate-value',
 }
 
