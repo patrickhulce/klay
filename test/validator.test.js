@@ -171,6 +171,50 @@ describe('lib/validator.ts', () => {
       })
     })
 
+    context('enum', () => {
+      it('should support simple types', () => {
+        model = model.type('string').enum(['hello', 'bar'])
+        expect(validate('hello')).to.have.property('conforms', true)
+        expect(validate('bar')).to.have.property('conforms', true)
+        expect(validate('other')).to.have.property('conforms', false)
+        expect(validate(2)).to.have.property('conforms', false)
+      })
+
+      it('should provide useful errors when simple', () => {
+        model = model.type('string').enum(['hello', 'bar'])
+        const validation = validate('other')
+        expect(validation).to.have.property('conforms', false)
+        expect(validation).to.have.property('value', 'other')
+        expect(validation).to.have.nested.property('errors.0.expected').eql(['hello', 'bar'])
+      })
+
+      it('should support complex types', () => {
+        const optionA = new Model({}, defaultOptions).type('string')
+        const optionB = new Model({}, defaultOptions).type('object')
+        model = model.enum([optionA, optionB])
+        expect(validate(true)).to.have.property('conforms', false)
+        expect(validate(1)).to.have.property('conforms', false)
+        expect(validate({})).to.have.property('conforms', true)
+        expect(validate('hello')).to.have.property('conforms', true)
+      })
+
+      it('should provide useful errors when complex', () => {
+        const optionA = new Model({}, defaultOptions).type('string')
+        const optionB = new Model({}, defaultOptions).type('object')
+        model = model.enum([optionA, optionB])
+        const validation = validate(1)
+        expect(validation).to.have.property('conforms', false)
+        expect(validation).to.have.property('value', 1)
+        expect(validation).to.have.property('errors').with.length(1)
+
+        const error = validation.errors[0]
+        expect(error).to.have.property('message').match(/match.*enum/)
+        expect(error).to.have.property('details').with.length(2)
+        expect(error.details[0]).to.have.property('expected', 'string')
+        expect(error.details[1]).to.have.property('expected', 'object')
+      })
+    })
+
     context('coerce', () => {
       it('should use coerce before checking definedness', () => {
         const parser = val => val.setValue('something')
