@@ -38,6 +38,18 @@ describe('lib/validation-result.ts', () => {
     })
   })
 
+  describe('.setConforms', () => {
+    it('sets conforms true', () => {
+      const result = new ValidationResult(create({conforms: false, isFinished: false}))
+      expect(result.setConforms(true)).to.include({conforms: true, isFinished: false})
+    })
+
+    it('sets conforms false', () => {
+      const result = new ValidationResult(create({conforms: false, isFinished: false}))
+      expect(result.setConforms(false)).to.include({conforms: false, isFinished: true})
+    })
+  })
+
   describe('.clone', () => {
     it('deep clones the options', () => {
       const value = {foo: {bar: 1}}

@@ -35,6 +35,10 @@ export class ValidationResult implements IInternalValidationResult {
 
   public setConforms(conforms: boolean): ValidationResult {
     this.conforms = conforms
+    if (!conforms) {
+      this.isFinished = true
+    }
+
     return this
   }
 
