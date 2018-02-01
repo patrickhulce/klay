@@ -62,6 +62,7 @@
         "whitespace": false,
         "newline-per-chained-call": false,
         "only-arrow-functions": false,
+        "no-empty": [true, "allow-empty-catch"],
         "no-void-expression": false,
         "no-unsafe-any": false,
         "no-any": false
