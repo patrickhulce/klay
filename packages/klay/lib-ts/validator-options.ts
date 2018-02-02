@@ -2,12 +2,12 @@ import {cloneDeep, forEach, isArray, mergeWith} from 'lodash'
 import {assertions} from './errors/model-error'
 import {
   ALL_FORMATS,
+  FALLBACK_FORMAT,
   IValidatorCoerce,
   IValidatorFormats,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
   IValidatorValidations,
-  NO_FORMAT,
   PHASES,
 } from './typedefs'
 
@@ -39,7 +39,7 @@ export class ValidatorOptions {
     forEach(coerce, (coerceForType, type) => {
       assertions.oneOf(type, types)
       assertions.typeof(coerceForType, 'object')
-      const formatsForType = formats[type].concat(ALL_FORMATS, NO_FORMAT)
+      const formatsForType = formats[type].concat(ALL_FORMATS, FALLBACK_FORMAT)
       ValidatorOptions._fillWithKeys(coerceForType, formatsForType)
       forEach(coerceForType, (coercionMap, format) => {
         assertions.oneOf(format, formatsForType)
@@ -54,7 +54,7 @@ export class ValidatorOptions {
     forEach(validations, (validationsForType, type) => {
       assertions.oneOf(type, types)
       assertions.typeof(validationsForType, 'object')
-      const formatsForType = formats[type].concat(ALL_FORMATS, NO_FORMAT)
+      const formatsForType = formats[type].concat(ALL_FORMATS, FALLBACK_FORMAT)
       ValidatorOptions._fillWithKeys(validationsForType, formatsForType, () => [])
       forEach(validationsForType, (validationsArray, format) => {
         assertions.oneOf(format, formatsForType)

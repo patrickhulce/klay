@@ -418,7 +418,7 @@ describe('lib/validator.ts', () => {
             validations: {
               number: {
                 ___ALL_FORMATS___: v => assert.typeof(v.value, 'number'),
-                ___NO_FORMAT___: v => assert.ok(v.value, 'fails format'),
+                ___FALLBACK_FORMAT___: v => assert.ok(v.value, 'fails format'),
                 integer: v => assert.ok(Number.isInteger(v.value), 'not an integer'),
               },
             },
@@ -440,7 +440,7 @@ describe('lib/validator.ts', () => {
             .match(/expected.*number/)
         })
 
-        it('should use ___NO_FORMAT___', () => {
+        it('should use ___FALLBACK_FORMAT___', () => {
           model = model.type('number')
           expect(validate(0)).to.have.property('conforms', false)
           model = model.type('number').format('integer')
@@ -464,13 +464,16 @@ describe('lib/validator.ts', () => {
             coerce: {
               string: {
                 ___ALL_FORMATS___: {
-                  'coerce-type': v => v.setValue(String(v.value)),
+                  'coerce-type': v => v.setValue(`type: ${v.value}`),
                 },
-                ___NO_FORMAT___: {
-                  'coerce-format': v => v.setValue(`format: ${v.value}`),
+                ___FALLBACK_FORMAT___: {
+                  'coerce-type': v => v.setValue(`format: ${v.value}`),
+                },
+                name: {
+                  'coerce-type': v => v.setValue(`name: ${v.value}`),
                 },
                 phone: {
-                  'coerce-format': v => v.setValue(v.value.replace(/[^\d]+/g, '')),
+                  'coerce-type': v => v.setValue(v.value.replace(/[^\d]+/g, '')),
                 },
               },
             },
@@ -483,16 +486,16 @@ describe('lib/validator.ts', () => {
           model = model.type('string').format('name')
           expect(validate(1)).to.eql({
             conforms: true,
-            value: '1',
+            value: 'name: type: 1',
             errors: [],
           })
         })
 
-        it('should use ___NO_FORMAT___', () => {
+        it('should use ___FALLBACK_FORMAT___', () => {
           model = model.type('string')
           expect(validate(false)).to.eql({
             conforms: true,
-            value: 'format: false',
+            value: 'format: type: false',
             errors: [],
           })
         })

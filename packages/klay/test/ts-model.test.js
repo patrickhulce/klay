@@ -276,8 +276,8 @@ describe('model.ts', () => {
       const coerce = () => {}
       const model = new Model({}, defaultOptions).coerce(coerce, 'parse')
       expect(model.spec.coerce).to.eql({parse: coerce})
-      model.coerce(coerce, 'coerce-format')
-      expect(model.spec.coerce).to.eql({'parse': coerce, 'coerce-format': coerce})
+      model.coerce(coerce, 'coerce-type')
+      expect(model.spec.coerce).to.eql({'parse': coerce, 'coerce-type': coerce})
       model.coerce({'coerce-type': coerce})
       expect(model.spec.coerce).to.eql({'coerce-type': coerce})
       model.coerce({})
