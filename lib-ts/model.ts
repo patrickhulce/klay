@@ -13,6 +13,7 @@ import {
   IModelValidationInput,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
+  ModelType,
   PHASES,
   ValidationPhase,
 } from './typedefs'
@@ -94,14 +95,20 @@ export class Model implements IModel {
 
   public children(children: IModelChildrenInput): IModel {
     if ((children as IModel).isKlayModel) {
-      assertions.ok(this.spec.type === 'array', 'model type must be array when children is a model')
+      assertions.ok(
+        this.spec.type === ModelType.Array,
+        'model type must be array when children is a model',
+      )
       this.spec.children = children as IModel
       return this
     }
 
     // tslint:disable-next-line
     assertions.ok(children && typeof children === 'object', 'children must be an object')
-    assertions.ok(this.spec.type === 'object', 'model type must be object for named children')
+    assertions.ok(
+      this.spec.type === ModelType.Object,
+      'model type must be object for named children',
+    )
 
     let modelChildren: IModelChild[]
     if (Array.isArray(children)) {
@@ -145,8 +152,8 @@ export class Model implements IModel {
 
   public merge(model: IModel): IModel {
     assertions.ok(model.isKlayModel, 'can only merge with another model')
-    assertions.equal(model.spec.type, 'object', 'type')
-    assertions.equal(this.spec.type, 'object', 'type')
+    assertions.equal(model.spec.type, ModelType.Object, 'type')
+    assertions.equal(this.spec.type, ModelType.Object, 'type')
     if (model.spec.children) {
       assertions.typeof(model.spec.children, 'array', 'children')
     }
