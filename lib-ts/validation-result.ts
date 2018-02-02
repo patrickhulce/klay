@@ -47,10 +47,15 @@ export class ValidationResult implements IInternalValidationResult {
     return this
   }
 
-  public markAsErrored(error: ValidationError): ValidationResult {
+  public markAsErrored(error: ValidationError | Error): ValidationResult {
+    const validationError = error as ValidationError
+    const errorResult =
+      typeof (error as any).asValidationResultError === 'function'
+        ? validationError.asValidationResultError(this)
+        : {message: error.message, error}
     this.conforms = false
     this.isFinished = true
-    this.errors = this.errors.concat(error.asValidationResultError(this))
+    this.errors = this.errors.concat(errorResult)
     return this
   }
 
@@ -105,6 +110,7 @@ export class ValidationResult implements IInternalValidationResult {
   }
 
   public static coalesce(root: ValidationResult, values: ValidationResult[]): ValidationResult {
+    assertions.ok(!root.isFinished, 'cannot coalesce on a finished ValidationResult')
     const conforms = every(values, 'conforms')
     const errors = flatten(values.map(value => value.errors))
 
@@ -112,8 +118,8 @@ export class ValidationResult implements IInternalValidationResult {
       conforms,
       errors,
       value: root.value,
-      isFinished: root.isFinished,
-      rootValue: root.value,
+      isFinished: !conforms,
+      rootValue: root.rootValue,
       pathToValue: root.pathToValue,
     })
   }
