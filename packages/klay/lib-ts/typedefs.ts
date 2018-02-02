@@ -88,6 +88,16 @@ export interface IInternalValidationResult extends IIntermediateValidationResult
   markAsErrored(error: Error): IInternalValidationResult
 }
 
+export enum ModelType {
+  Any = 'any',
+  Boolean = 'boolean',
+  Number = 'number',
+  String = 'string',
+  Array = 'array',
+  Object = 'object',
+  Date = 'date',
+}
+
 export enum ValidationPhase {
   Parse = 'parse',
   ValidateDefinition = 'validate-definition',
