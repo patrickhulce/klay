@@ -1,9 +1,11 @@
+import {get} from 'lodash'
 import {
   assertions as validationAssertions,
   ValidationError,
 } from './errors/validation-error'
 import {
   ALL_FORMATS,
+  FALLBACK_FORMAT,
   ICoerceFunction,
   IModel,
   IModelValidationInput,
@@ -12,7 +14,6 @@ import {
   IValidationResultError,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
-  NO_FORMAT,
   ValidationPhase,
 } from './typedefs'
 import {ValidationResult} from './validation-result'
@@ -63,12 +64,18 @@ export class Validator {
     }
 
     const typeCoercions = this._options.coerce && this._options.coerce[this._model.spec.type!]
-    const formatCoercions = typeCoercions && typeCoercions[this._model.spec.format || NO_FORMAT]
-    if (formatCoercions && formatCoercions[phase]) {
-      return formatCoercions[phase]
+
+    const typeCoercion = get(typeCoercions, [ALL_FORMATS, phase] as string[])
+    const fallbackCoercion = get(typeCoercions, [FALLBACK_FORMAT, phase] as string[])
+    const formatCoercion = get(typeCoercions, [this._model.spec.format!, phase] as string[])
+    if (!fallbackCoercion && !formatCoercion) {
+      return typeCoercion
     }
 
-    return typeCoercions && typeCoercions[ALL_FORMATS] && typeCoercions[ALL_FORMATS][phase]
+    return (input: ValidationResult) => {
+      const next = this._runValidations(input, typeCoercion)
+      return this._runValidations(next, formatCoercion || fallbackCoercion)
+    }
   }
 
   private _validateDefinition(validationResult: ValidationResult): ValidationResult {
@@ -134,7 +141,8 @@ export class Validator {
     if (this._model.spec.type) {
       const validationsInOptions = this._options.validations[this._model.spec.type!]
       typeValidations = validationsInOptions[ALL_FORMATS]
-      formatValidations = validationsInOptions[this._model.spec.format || NO_FORMAT]
+      formatValidations = validationsInOptions[this._model.spec.format!]
+      formatValidations = formatValidations || validationsInOptions[FALLBACK_FORMAT]
     }
 
     const modelValidations = this._model.spec.validations || []
@@ -160,7 +168,6 @@ export class Validator {
     validationResult = runValidations(this._validateDefinition)
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.ValidateDefinition))
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.CoerceType))
-    validationResult = runValidations(this._findCoerceFn(ValidationPhase.CoerceFormat))
     validationResult = runValidations(this._validateEnum)
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.ValidateEnum))
     validationResult = runValidations(this._validateValue)
