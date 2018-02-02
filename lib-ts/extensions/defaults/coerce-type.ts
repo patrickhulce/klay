@@ -1,5 +1,5 @@
-import {IValidatorCoerce, ALL_FORMATS, ValidationPhase} from '../../typedefs'
 import {assertions} from '../../errors/validation-error'
+import {ALL_FORMATS, IValidatorCoerce, ValidationPhase} from '../../typedefs'
 
 export const coerce: IValidatorCoerce = {
   boolean: {

@@ -92,7 +92,6 @@ export enum ValidationPhase {
   Parse = 'parse',
   ValidateDefinition = 'validate-definition',
   CoerceType = 'coerce-type',
-  CoerceFormat = 'coerce-format',
   ValidateEnum = 'validate-enum',
   ValidateValue = 'validate-value',
 }
@@ -127,6 +126,6 @@ export interface IValidateOptions {
   failLoudly?: boolean
 }
 
-export const NO_FORMAT = '___NO_FORMAT___'
+export const FALLBACK_FORMAT = '___FALLBACK_FORMAT___'
 export const ALL_FORMATS = '___ALL_FORMATS___'
 export const PHASES = Object.keys(ValidationPhase).map(k => ValidationPhase[k as any])

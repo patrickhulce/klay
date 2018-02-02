@@ -1,8 +1,8 @@
 const expect = require('chai').expect
 const Options = require('../lib-ts/validator-options').ValidatorOptions
 
-const emptyObj = {___ALL_FORMATS___: {}, ___NO_FORMAT___: {}}
-const emptyArr = {___ALL_FORMATS___: [], ___NO_FORMAT___: []}
+const emptyObj = {___ALL_FORMATS___: {}, ___FALLBACK_FORMAT___: {}}
+const emptyArr = {___ALL_FORMATS___: [], ___FALLBACK_FORMAT___: []}
 describe('lib/validator-options.ts', () => {
   describe('#constructor', () => {
     it('creates successfully', () => {
@@ -38,10 +38,10 @@ describe('lib/validator-options.ts', () => {
       expect(options.types).to.eql(['string'])
       expect(options.formats).to.eql({string: []})
       expect(options.coerce).to.eql({
-        string: {___ALL_FORMATS___: {parse: parseFn}, ___NO_FORMAT___: {}},
+        string: {___ALL_FORMATS___: {parse: parseFn}, ___FALLBACK_FORMAT___: {}},
       })
       expect(options.validations).to.eql({
-        string: {___ALL_FORMATS___: [1], ___NO_FORMAT___: []},
+        string: {___ALL_FORMATS___: [1], ___FALLBACK_FORMAT___: []},
       })
     })
 
