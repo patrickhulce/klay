@@ -1,8 +1,8 @@
 const expect = require('chai').expect
 const ValidationResult = require('../../../lib-ts/validation-result').ValidationResult
-const coercions = require('../../../lib-ts/extensions/defaults/type-coerce').coerce
+const coercions = require('../../../lib-ts/extensions/defaults/coerce-type').coerce
 
-describe('lib/extensions/defaults/type-coerce.ts', () => {
+describe('lib/extensions/defaults/coerce-type.ts', () => {
   function vr(value) {
     return new ValidationResult({
       value,
@@ -15,7 +15,7 @@ describe('lib/extensions/defaults/type-coerce.ts', () => {
   }
 
   describe('#boolean', () => {
-    const coerce = coercions.boolean.___ALL_FORMATS___['type-coerce']
+    const coerce = coercions.boolean.___ALL_FORMATS___['coerce-type']
 
     it('should coerce type', () => {
       expect(coerce(vr(true), {})).to.include({conforms: true, value: true})
@@ -42,7 +42,7 @@ describe('lib/extensions/defaults/type-coerce.ts', () => {
   })
 
   describe('#number', () => {
-    const coerce = coercions.number.___ALL_FORMATS___['type-coerce']
+    const coerce = coercions.number.___ALL_FORMATS___['coerce-type']
 
     it('should coerce type', () => {
       expect(coerce(vr(1.2), {})).to.include({conforms: true, value: 1.2})
@@ -71,7 +71,7 @@ describe('lib/extensions/defaults/type-coerce.ts', () => {
   })
 
   describe('#string', () => {
-    const coerce = coercions.string.___ALL_FORMATS___['type-coerce']
+    const coerce = coercions.string.___ALL_FORMATS___['coerce-type']
 
     it('should coerce type', () => {
       expect(coerce(vr(1.2), {})).to.include({conforms: true, value: '1.2'})
@@ -98,7 +98,7 @@ describe('lib/extensions/defaults/type-coerce.ts', () => {
   })
 
   describe('#object', () => {
-    const coerce = coercions.object.___ALL_FORMATS___['type-coerce']
+    const coerce = coercions.object.___ALL_FORMATS___['coerce-type']
 
     it('should coerce type', () => {
       expect(coerce(vr(null), {})).to.include({conforms: true, value: null})
@@ -129,7 +129,7 @@ describe('lib/extensions/defaults/type-coerce.ts', () => {
   })
 
   describe('#array', () => {
-    const coerce = coercions.array.___ALL_FORMATS___['type-coerce']
+    const coerce = coercions.array.___ALL_FORMATS___['coerce-type']
 
     it('should coerce type', () => {
       expect(coerce(vr([]), {})).to.deep.include({conforms: true, value: []})

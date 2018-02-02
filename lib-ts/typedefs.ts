@@ -91,8 +91,8 @@ export interface IInternalValidationResult extends IIntermediateValidationResult
 export enum ValidationPhase {
   Parse = 'parse',
   ValidateDefinition = 'validate-definition',
-  TypeCoerce = 'type-coerce',
-  FormatCoerce = 'format-coerce',
+  CoerceType = 'coerce-type',
+  CoerceFormat = 'coerce-format',
   ValidateEnum = 'validate-enum',
   ValidateValue = 'validate-value',
 }
