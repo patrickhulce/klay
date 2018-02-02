@@ -1,4 +1,3 @@
-/* eslint-disable no-undef, space-before-function-paren, no-extra-semi */
 const _ = require('lodash')
 const expect = require('chai').expect
 const Model = require('../lib-ts/model').Model
