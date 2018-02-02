@@ -1,10 +1,10 @@
+import {IValidatorCoerce, ALL_FORMATS, ValidationPhase} from '../../typedefs'
 import {assertions} from '../../errors/validation-error'
-import {ALL_FORMATS, IValidatorCoerce, ValidationPhase} from '../../typedefs'
 
 export const coerce: IValidatorCoerce = {
   boolean: {
     [ALL_FORMATS]: {
-      [ValidationPhase.TypeCoerce]: (validationResult, spec) => {
+      [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
         if (!spec.strict) {
           if (value === 'true') {
@@ -21,7 +21,7 @@ export const coerce: IValidatorCoerce = {
   },
   number: {
     [ALL_FORMATS]: {
-      [ValidationPhase.TypeCoerce]: (validationResult, spec) => {
+      [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
         if (!spec.strict && typeof value === 'string') {
           const cast = Number(value)
@@ -37,7 +37,7 @@ export const coerce: IValidatorCoerce = {
   },
   string: {
     [ALL_FORMATS]: {
-      [ValidationPhase.TypeCoerce]: (validationResult, spec) => {
+      [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
         if (!spec.strict && typeof value !== 'object' && typeof value !== 'undefined') {
           value = String(value)
@@ -50,7 +50,7 @@ export const coerce: IValidatorCoerce = {
   },
   object: {
     [ALL_FORMATS]: {
-      [ValidationPhase.TypeCoerce]: (validationResult, spec) => {
+      [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
         if (!spec.strict && typeof value === 'string') {
           try {
@@ -65,7 +65,7 @@ export const coerce: IValidatorCoerce = {
   },
   array: {
     [ALL_FORMATS]: {
-      [ValidationPhase.TypeCoerce]: (validationResult, spec) => {
+      [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
         if (!spec.strict && typeof value === 'string') {
           try {

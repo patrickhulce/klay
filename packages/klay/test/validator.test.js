@@ -464,13 +464,13 @@ describe('lib/validator.ts', () => {
             coerce: {
               string: {
                 ___ALL_FORMATS___: {
-                  'type-coerce': v => v.setValue(String(v.value)),
+                  'coerce-type': v => v.setValue(String(v.value)),
                 },
                 ___NO_FORMAT___: {
-                  'format-coerce': v => v.setValue(`format: ${v.value}`),
+                  'coerce-format': v => v.setValue(`format: ${v.value}`),
                 },
                 phone: {
-                  'format-coerce': v => v.setValue(v.value.replace(/[^\d]+/g, '')),
+                  'coerce-format': v => v.setValue(v.value.replace(/[^\d]+/g, '')),
                 },
               },
             },
