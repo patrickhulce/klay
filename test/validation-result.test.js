@@ -6,7 +6,7 @@ const defaults = {
   rootValue: undefined,
   conforms: true,
   errors: [],
-  isFinished: true,
+  isFinished: false,
   pathToValue: [],
 }
 
@@ -74,23 +74,51 @@ describe('lib/validation-result.ts', () => {
   })
 
   describe('#coalesce', () => {
+    it('throws when used on an already finished validationResult', () => {
+      const original = new ValidationResult(create({isFinished: true}))
+      expect(() => ValidationResult.coalesce(original, [])).to.throw(/cannot coalesce/)
+    })
+
+    it('reuses base values from original', () => {
+      const original = new ValidationResult({
+        value: 1,
+        rootValue: {x: 1},
+        conforms: true,
+        isFinished: false,
+        pathToValue: ['x'],
+        errors: [],
+      })
+
+      const result = ValidationResult.coalesce(original, [])
+      expect(result).to.eql({
+        value: 1,
+        rootValue: {x: 1},
+        conforms: true,
+        isFinished: false,
+        pathToValue: ['x'],
+        errors: [],
+      })
+    })
+
     it('merges all conforming values', () => {
       const valueA = new ValidationResult(create({value: 1, conforms: true}))
       const valueB = new ValidationResult(create({value: 2, conforms: true}))
       const result = ValidationResult.coalesce(valueA, [valueA, valueB])
       expect(result).to.have.property('value', 1)
       expect(result).to.have.property('conforms', true)
+      expect(result).to.have.property('isFinished', false)
       expect(result).to.have.property('errors').with.length(0)
     })
 
     it('merges mixed conforming values', () => {
-      const error = {message: 'it was an error!'}
+      const error = new Error('it was an error!')
       const valueA = new ValidationResult(create({value: 1, conforms: true}))
-      const valueB = new ValidationResult(create({conforms: false, errors: [error]}))
+      const valueB = new ValidationResult(create()).markAsErrored(error)
       const result = ValidationResult.coalesce(valueA, [valueA, valueB])
       expect(result).to.have.property('conforms', false)
+      expect(result).to.have.property('isFinished', true)
       expect(result).to.have.property('errors').with.length(1)
-      expect(result.errors[0]).to.eql(error)
+      expect(result.errors[0].error).to.eql(error)
     })
 
     it('concats errors', () => {
