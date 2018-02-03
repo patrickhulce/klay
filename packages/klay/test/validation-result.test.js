@@ -73,6 +73,20 @@ describe('lib/validation-result.ts', () => {
     })
   })
 
+  describe('#fromValue', () => {
+    it('should create a new validation result', () => {
+      const result = ValidationResult.fromValue(1, {x: 1}, ['x'])
+      expect(result).to.eql({
+        value: 1,
+        conforms: true,
+        errors: [],
+        isFinished: false,
+        rootValue: {x: 1},
+        pathToValue: ['x'],
+      })
+    })
+  })
+
   describe('#coalesce', () => {
     it('throws when used on an already finished validationResult', () => {
       const original = create({isFinished: true})
