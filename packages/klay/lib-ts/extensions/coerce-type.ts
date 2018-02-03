@@ -1,8 +1,8 @@
-import {assertions} from '../../errors/validation-error'
-import {ALL_FORMATS, IValidatorCoerce, ValidationPhase} from '../../typedefs'
+import {assertions} from '../errors/validation-error'
+import {ALL_FORMATS, IValidatorCoerce, ModelType, ValidationPhase} from '../typedefs'
 
 export const coerce: IValidatorCoerce = {
-  boolean: {
+  [ModelType.Boolean]: {
     [ALL_FORMATS]: {
       [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
@@ -19,7 +19,7 @@ export const coerce: IValidatorCoerce = {
       },
     },
   },
-  number: {
+  [ModelType.Number]: {
     [ALL_FORMATS]: {
       [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
@@ -35,7 +35,7 @@ export const coerce: IValidatorCoerce = {
       },
     },
   },
-  string: {
+  [ModelType.String]: {
     [ALL_FORMATS]: {
       [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
@@ -48,7 +48,7 @@ export const coerce: IValidatorCoerce = {
       },
     },
   },
-  object: {
+  [ModelType.Object]: {
     [ALL_FORMATS]: {
       [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
@@ -63,7 +63,7 @@ export const coerce: IValidatorCoerce = {
       },
     },
   },
-  array: {
+  [ModelType.Array]: {
     [ALL_FORMATS]: {
       [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
