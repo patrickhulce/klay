@@ -102,6 +102,7 @@ export enum ValidationPhase {
   Parse = 'parse',
   ValidateDefinition = 'validate-definition',
   CoerceType = 'coerce-type',
+  ValidateChildren = 'validate-children',
   ValidateEnum = 'validate-enum',
   ValidateValue = 'validate-value',
 }
