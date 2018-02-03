@@ -152,7 +152,7 @@ describe('lib/validation-result.ts', () => {
       const valueA = create({value: 1, pathToValue: ['x']})
       const valueB = create({value: 2, pathToValue: ['y']})
       const result = ValidationResult.coalesce(rootValue, [valueA, valueB])
-      expect(result).to.have.property('value').eql({x: 1, y: 2, z:3})
+      expect(result).to.have.property('value').eql({x: 1, y: 2, z: 3})
     })
 
     it('merges into value array', () => {

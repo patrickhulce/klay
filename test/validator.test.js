@@ -6,7 +6,7 @@ const assert = require('../lib-ts/errors/validation-error').assertions
 
 describe('lib/validator.ts', () => {
   const defaultOptions = {
-    types: ['number', 'string', 'object'],
+    types: ['number', 'string', 'object', 'array'],
     validations: {
       number: {___ALL_FORMATS___: v => assert.typeof(v.value, 'number')},
       string: {___ALL_FORMATS___: v => assert.typeof(v.value, 'string')},
@@ -184,7 +184,9 @@ describe('lib/validator.ts', () => {
         const validation = validate('other')
         expect(validation).to.have.property('conforms', false)
         expect(validation).to.have.property('value', 'other')
-        expect(validation).to.have.nested.property('errors.0.expected').eql(['hello', 'bar'])
+        expect(validation)
+          .to.have.nested.property('errors.0.expected')
+          .eql(['hello', 'bar'])
       })
 
       it('should support complex types', () => {
@@ -204,13 +206,96 @@ describe('lib/validator.ts', () => {
         const validation = validate(1)
         expect(validation).to.have.property('conforms', false)
         expect(validation).to.have.property('value', 1)
-        expect(validation).to.have.property('errors').with.length(1)
+        expect(validation)
+          .to.have.property('errors')
+          .with.length(1)
 
         const error = validation.errors[0]
-        expect(error).to.have.property('message').match(/match.*enum/)
-        expect(error).to.have.property('details').with.length(2)
+        expect(error)
+          .to.have.property('message')
+          .match(/match.*enum/)
+        expect(error)
+          .to.have.property('details')
+          .with.length(2)
         expect(error.details[0]).to.have.property('expected', 'string')
         expect(error.details[1]).to.have.property('expected', 'object')
+      })
+    })
+
+    context('children', () => {
+      let mkModel
+
+      beforeEach(() => {
+        mkModel = () => new Model({}, validatorOptions)
+        validatorOptions.coerce = {
+          number: {
+            ___ALL_FORMATS___: {
+              'coerce-type': result => result.setValue(Number(result.value)),
+            },
+          },
+        }
+      })
+
+      it('should validate arrays', () => {
+        const childModel = new Model({}, validatorOptions).type('number').required()
+        model = model.type('array').children(childModel)
+        expect(validate([1, '2', null, undefined, 5])).to.eql({
+          conforms: false,
+          value: [1, 2, null, undefined, 5],
+          errors: [
+            {message: 'expected value to be non-null', actual: null, path: ['2']},
+            {message: 'expected value to be defined', actual: undefined, path: ['3']},
+          ],
+        })
+      })
+
+      it('should validate objects', () => {
+        model = model.type('object').children({
+          id: mkModel()
+            .type('number')
+            .required(),
+          name: mkModel().type('string'),
+          age: mkModel().type('number'),
+          meta: mkModel()
+            .type('object')
+            .children({
+              type: mkModel().type('string'),
+              other: mkModel().type('number'),
+            }),
+        })
+
+        expect(
+          validate({
+            id: '123',
+            name: 12,
+            age: 123,
+            meta: {type: 123},
+            extra: 'foo',
+          })
+        ).to.eql({
+          conforms: false,
+          value: {
+            id: 123,
+            name: 12,
+            age: 123,
+            meta: {type: 123, other: undefined},
+            extra: 'foo',
+          },
+          errors: [
+            {
+              message: 'expected value (12) to have typeof string',
+              actual: 'number',
+              expected: 'string',
+              path: ['name'],
+            },
+            {
+              message: 'expected value (123) to have typeof string',
+              actual: 'number',
+              expected: 'string',
+              path: ['meta', 'type'],
+            },
+          ],
+        })
       })
     })
 
