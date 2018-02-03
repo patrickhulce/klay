@@ -95,17 +95,13 @@ export class ValidationResult implements IInternalValidationResult {
   }
 
   public static fromValue(value: any, rootValue: any, pathToValue: string[]): ValidationResult {
-    if (ValidationResult.is(value)) {
-      return value as ValidationResult
-    }
-
     return new ValidationResult({
       value,
       conforms: true,
       errors: [],
       isFinished: false,
-      rootValue: value,
-      pathToValue: [],
+      rootValue,
+      pathToValue,
     })
   }
 
