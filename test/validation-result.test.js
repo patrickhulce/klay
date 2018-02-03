@@ -11,7 +11,7 @@ const defaults = {
 }
 
 function create(obj) {
-  return Object.assign({}, defaults, obj)
+  return new ValidationResult(Object.assign({}, defaults, obj))
 }
 
 describe('lib/validation-result.ts', () => {
@@ -40,12 +40,12 @@ describe('lib/validation-result.ts', () => {
 
   describe('.setConforms', () => {
     it('sets conforms true', () => {
-      const result = new ValidationResult(create({conforms: false, isFinished: false}))
+      const result = create({conforms: false, isFinished: false})
       expect(result.setConforms(true)).to.include({conforms: true, isFinished: false})
     })
 
     it('sets conforms false', () => {
-      const result = new ValidationResult(create({conforms: false, isFinished: false}))
+      const result = create({conforms: false, isFinished: false})
       expect(result.setConforms(false)).to.include({conforms: false, isFinished: true})
     })
   })
@@ -75,7 +75,7 @@ describe('lib/validation-result.ts', () => {
 
   describe('#coalesce', () => {
     it('throws when used on an already finished validationResult', () => {
-      const original = new ValidationResult(create({isFinished: true}))
+      const original = create({isFinished: true})
       expect(() => ValidationResult.coalesce(original, [])).to.throw(/cannot coalesce/)
     })
 
@@ -101,8 +101,8 @@ describe('lib/validation-result.ts', () => {
     })
 
     it('merges all conforming values', () => {
-      const valueA = new ValidationResult(create({value: 1, conforms: true}))
-      const valueB = new ValidationResult(create({value: 2, conforms: true}))
+      const valueA = create({value: 1, conforms: true})
+      const valueB = create({value: 2, conforms: true})
       const result = ValidationResult.coalesce(valueA, [valueA, valueB])
       expect(result).to.have.property('value', 1)
       expect(result).to.have.property('conforms', true)
@@ -112,8 +112,8 @@ describe('lib/validation-result.ts', () => {
 
     it('merges mixed conforming values', () => {
       const error = new Error('it was an error!')
-      const valueA = new ValidationResult(create({value: 1, conforms: true}))
-      const valueB = new ValidationResult(create()).markAsErrored(error)
+      const valueA = create({value: 1, conforms: true})
+      const valueB = create().markAsErrored(error)
       const result = ValidationResult.coalesce(valueA, [valueA, valueB])
       expect(result).to.have.property('conforms', false)
       expect(result).to.have.property('isFinished', true)
@@ -125,12 +125,54 @@ describe('lib/validation-result.ts', () => {
       const errorA = {message: 'error A'}
       const errorB = {message: 'error B'}
       const errorC = {message: 'error C'}
-      const valueA = new ValidationResult(create({conforms: false, errors: [errorA]}))
-      const valueB = new ValidationResult(create({conforms: false, errors: [errorB]}))
-      const valueC = new ValidationResult(create({conforms: false, errors: [errorC]}))
+      const valueA = create({conforms: false, errors: [errorA]})
+      const valueB = create({conforms: false, errors: [errorB]})
+      const valueC = create({conforms: false, errors: [errorC]})
       const result = ValidationResult.coalesce(valueA, [valueA, valueB, valueC])
       expect(result).to.have.property('conforms', false)
       expect(result).to.have.property('errors').that.eqls([errorA, errorB, errorC])
+    })
+
+    it('merges values into object', () => {
+      const rootValue = create({value: {x: null, z: 3}})
+      const valueA = create({value: 1, pathToValue: ['x']})
+      const valueB = create({value: 2, pathToValue: ['y']})
+      const result = ValidationResult.coalesce(rootValue, [valueA, valueB])
+      expect(result).to.have.property('value').eql({x: 1, y: 2, z:3})
+    })
+
+    it('merges into value array', () => {
+      const rootValue = create({value: []})
+      const valueA = create({value: 1, pathToValue: ['0']})
+      const valueB = create({value: 2, pathToValue: ['1']})
+      const result = ValidationResult.coalesce(rootValue, [valueA, valueB])
+      expect(result).to.have.property('value').eql([1, 2])
+    })
+
+    it('throws when pathToValue is nonsense for array', () => {
+      const rootValue = create({value: []})
+      const valueA = create({value: 1, pathToValue: ['x', 'y']})
+      const valueB = create({value: 2, pathToValue: ['one']})
+      const valueC = create({value: 3, pathToValue: ['1.2']})
+      expect(() => ValidationResult.coalesce(rootValue, [valueA])).to.throw()
+      expect(() => ValidationResult.coalesce(rootValue, [valueB])).to.throw()
+      expect(() => ValidationResult.coalesce(rootValue, [valueC])).to.throw()
+    })
+
+    it('throws when pathToValue is nonsense for object', () => {
+      const rootValue = create({value: {}})
+      const valueA = create({value: 1, pathToValue: ['x', 'y']})
+      const valueB = create({value: 2, pathToValue: []})
+      expect(() => ValidationResult.coalesce(rootValue, [valueA])).to.throw()
+      expect(() => ValidationResult.coalesce(rootValue, [valueB])).to.throw()
+    })
+
+    it('throws when pathToValue is nonsense', () => {
+      const rootValue = create({value: 1})
+      const valueA = create({value: 1, pathToValue: ['x', 'y']})
+      const valueB = create({value: 2, pathToValue: ['x']})
+      expect(() => ValidationResult.coalesce(rootValue, [valueA])).to.throw()
+      expect(() => ValidationResult.coalesce(rootValue, [valueB])).to.throw()
     })
   })
 })

@@ -109,10 +109,38 @@ export class ValidationResult implements IInternalValidationResult {
     })
   }
 
-  public static coalesce(root: ValidationResult, values: ValidationResult[]): ValidationResult {
+  public static coalesce(
+    root: ValidationResult,
+    validationResults: ValidationResult[],
+  ): ValidationResult {
     assertions.ok(!root.isFinished, 'cannot coalesce on a finished ValidationResult')
-    const conforms = every(values, 'conforms')
-    const errors = flatten(values.map(value => value.errors))
+    const conforms = every(validationResults, 'conforms')
+    const errors = flatten(validationResults.map(value => value.errors))
+
+    const value = root.value
+    if (Array.isArray(value)) {
+      validationResults.forEach(result => {
+        const remainingKeys = result.pathToValue.slice(root.pathToValue.length)
+        assertions.ok(remainingKeys.length === 1, 'invalid child pathToValue')
+        const key = Number(remainingKeys[0])
+        assertions.ok(Number.isInteger(key), 'invalid child pathToValue')
+        value[key] = result.value
+      })
+    } else if (typeof value === 'object' && value) {
+      validationResults.forEach(result => {
+        const remainingKeys = result.pathToValue.slice(root.pathToValue.length)
+        assertions.ok(remainingKeys.length === 1, 'invalid child pathToValue')
+        const key = remainingKeys[0]
+        value[key] = result.value
+      })
+    } else {
+      validationResults.forEach(result => {
+        assertions.ok(
+          result.pathToValue.length === root.pathToValue.length,
+          'invalid child pathToValue',
+        )
+      })
+    }
 
     return new ValidationResult({
       conforms,
