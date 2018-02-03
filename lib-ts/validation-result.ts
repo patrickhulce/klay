@@ -117,9 +117,9 @@ export class ValidationResult implements IInternalValidationResult {
     if (Array.isArray(value)) {
       validationResults.forEach(result => {
         const remainingKeys = result.pathToValue.slice(root.pathToValue.length)
-        assertions.ok(remainingKeys.length === 1, 'invalid child pathToValue')
+        assertions.ok(remainingKeys.length === 1, `invalid child pathToValue: ${remainingKeys}`)
         const key = Number(remainingKeys[0])
-        assertions.ok(Number.isInteger(key), 'invalid child pathToValue')
+        assertions.ok(Number.isInteger(key), `invalid child pathToValue: ${key}`)
         value[key] = result.value
       })
     } else if (typeof value === 'object' && value) {

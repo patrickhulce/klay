@@ -1,19 +1,18 @@
-import {get} from 'lodash'
-import {
-  assertions as validationAssertions,
-  ValidationError,
-} from './errors/validation-error'
+import {get, omit} from 'lodash'
+import {assertions as validationAssertions, ValidationError} from './errors/validation-error'
 import {
   ALL_FORMATS,
   FALLBACK_FORMAT,
   ICoerceFunction,
   IModel,
+  IModelChild,
   IModelValidationInput,
   IValidateOptions,
   IValidationResult,
   IValidationResultError,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
+  ModelType,
   ValidationPhase,
 } from './typedefs'
 import {ValidationResult} from './validation-result'
@@ -135,6 +134,50 @@ export class Validator {
       .setIsFinished(true)
   }
 
+  private _validateChildren(validationResult: ValidationResult): ValidationResult {
+    if (!this._model.spec.children) {
+      return validationResult
+    }
+
+    if (this._model.spec.type === ModelType.Array) {
+      const validationResults: ValidationResult[] = []
+      const childModel = this._model.spec.children as IModel
+      const validator = new Validator(childModel, this._options)
+      for (let i = 0; i < validationResult.value.length; i++) {
+        const item = validationResult.value[i]
+        const initial = ValidationResult.fromValue(
+          item,
+          validationResult.rootValue,
+          validationResult.pathToValue.concat(String(i)),
+        )
+
+        validationResults.push(validator._validate(initial))
+      }
+
+      const base = validationResult.clone().setValue([])
+      return ValidationResult.coalesce(base, validationResults)
+    } else if (this._model.spec.type === ModelType.Object) {
+      const validationResults: ValidationResult[] = []
+      const childModels = this._model.spec.children as IModelChild[]
+      for (const child of childModels) {
+        const item = validationResult.value[child.path]
+        const validator = new Validator(child.model, this._options)
+        const initial = ValidationResult.fromValue(
+          item,
+          validationResult.rootValue,
+          validationResult.pathToValue.concat(child.path),
+        )
+        validationResults.push(validator._validate(initial))
+      }
+
+      const leftovers = omit(validationResult.value, childModels.map(item => item.path))
+      const base = validationResult.clone().setValue(leftovers)
+      return ValidationResult.coalesce(base, validationResults)
+    }
+
+    return validationResult
+  }
+
   private _validateValue(validationResult: ValidationResult): ValidationResult {
     let typeValidations: IModelValidationInput[] = []
     let formatValidations: IModelValidationInput[] = []
@@ -168,6 +211,8 @@ export class Validator {
     validationResult = runValidations(this._validateDefinition)
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.ValidateDefinition))
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.CoerceType))
+    validationResult = runValidations(this._validateChildren)
+    validationResult = runValidations(this._findCoerceFn(ValidationPhase.ValidateChildren))
     validationResult = runValidations(this._validateEnum)
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.ValidateEnum))
     validationResult = runValidations(this._validateValue)
