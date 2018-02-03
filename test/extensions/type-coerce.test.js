@@ -1,8 +1,8 @@
 const expect = require('chai').expect
-const ValidationResult = require('../../../lib-ts/validation-result').ValidationResult
-const coercions = require('../../../lib-ts/extensions/defaults/coerce-type').coerce
+const ValidationResult = require('../../lib-ts/validation-result').ValidationResult
+const coercions = require('../../lib-ts/extensions/coerce-type').coerce
 
-describe('lib/extensions/defaults/coerce-type.ts', () => {
+describe('lib/extensions/coerce-type.ts', () => {
   function vr(value) {
     return new ValidationResult({
       value,
