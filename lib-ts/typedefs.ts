@@ -1,3 +1,5 @@
+import { values } from 'lodash'
+
 export interface IModel {
   isKlayModel: boolean
   spec: IModelSpecification
@@ -147,4 +149,4 @@ export interface IValidatorMethods {
 
 export const FALLBACK_FORMAT = '___FALLBACK_FORMAT___'
 export const ALL_FORMATS = '___ALL_FORMATS___'
-export const PHASES = Object.keys(ValidationPhase).map(k => ValidationPhase[k as any])
+export const PHASES = values(ValidationPhase)

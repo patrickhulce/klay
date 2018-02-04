@@ -1,5 +1,8 @@
+import {values} from 'lodash'
 import {assertions} from '../errors/validation-error'
 import {ALL_FORMATS, IValidatorCoerce, ModelType, ValidationPhase} from '../typedefs'
+
+export const types = values(ModelType)
 
 export const coerce: IValidatorCoerce = {
   [ModelType.Boolean]: {
