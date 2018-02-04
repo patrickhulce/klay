@@ -124,6 +124,7 @@ export interface IValidatorOptionsUnsafe {
   formats?: IValidatorFormats
   coerce?: IValidatorCoerce
   validations?: IValidatorValidations
+  methods?: IValidatorMethods
 }
 
 export interface IValidatorOptions {
@@ -131,10 +132,17 @@ export interface IValidatorOptions {
   formats: IValidatorFormats
   coerce: IValidatorCoerce
   validations: IValidatorValidations
+  methods: IValidatorMethods
 }
 
 export interface IValidateOptions {
   failLoudly?: boolean
+}
+
+export type IModelMethod = (model: IModel, ...args: any[]) => IModel
+
+export interface IValidatorMethods {
+  [methodName: string]: IModelMethod
 }
 
 export const FALLBACK_FORMAT = '___FALLBACK_FORMAT___'

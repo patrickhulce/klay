@@ -101,12 +101,15 @@ describe('lib/validator-options.ts', () => {
 
   describe('#merge', () => {
     it('merges two options without touching original', () => {
-      const inputA = {types: ['string']}
-      const inputB = {types: ['number']}
+      const methodA = () => 1
+      const methodB = () => 2
+      const inputA = {types: ['string'], methods: {methodA}}
+      const inputB = {types: ['number'], methods: {methodB}}
       const options = Options.merge(inputA, inputB)
       expect(options).to.eql({
         types: ['string', 'number'],
         formats: {string: [], number: []},
+        methods: {methodA, methodB},
         coerce: {
           string: emptyObj,
           number: emptyObj,
@@ -117,8 +120,8 @@ describe('lib/validator-options.ts', () => {
         },
       })
 
-      expect(inputA).to.eql({types: ['string']})
-      expect(inputB).to.eql({types: ['number']})
+      expect(inputA).to.eql({types: ['string'], methods: {methodA}})
+      expect(inputB).to.eql({types: ['number'], methods: {methodB}})
     })
   })
 })
