@@ -99,9 +99,17 @@ export class ValidatorOptions {
   public static merge(
     optionsUnsafeA: IValidatorOptionsUnsafe,
     optionsUnsafeB: IValidatorOptionsUnsafe,
+    ...others: IValidatorOptionsUnsafe[],
   ): IValidatorOptions {
+    let optionsToMerge = optionsUnsafeB
+    if (others.length) {
+      for (const otherOption of others) {
+        optionsToMerge = ValidatorOptions.merge(optionsToMerge, otherOption)
+      }
+    }
+
     const optionsA = ValidatorOptions.from(optionsUnsafeA).clone()
-    const optionsB = ValidatorOptions.from(optionsUnsafeB).clone()
+    const optionsB = ValidatorOptions.from(optionsToMerge).clone()
 
     function combineArrays(dst: any, src: any): any[] | undefined {
       if (isArray(dst)) {
