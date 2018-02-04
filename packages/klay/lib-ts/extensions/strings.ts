@@ -16,6 +16,8 @@ export enum StringFormat {
   CreditCard = 'credit-card',
 }
 
+export const types = [ModelType.String]
+
 export const formats: IValidatorFormats = {
   [ModelType.String]: values(StringFormat),
 }
