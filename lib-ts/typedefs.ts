@@ -1,3 +1,5 @@
+import { values } from 'lodash'
+
 export interface IModel {
   isKlayModel: boolean
   spec: IModelSpecification
@@ -8,6 +10,9 @@ export interface IModel {
   nullable(nullable?: boolean): IModel
   strict(strict?: boolean): IModel
   default(value?: any): IModel
+  min(min: number | Date): IModel
+  max(max: number | Date): IModel
+  size(size: number): IModel
   enum(options: any[]): IModel
   children(children: IModelChildrenInput): IModel
   pick(paths: string[]): IModel
@@ -30,6 +35,8 @@ export interface IModelSpecification {
   validations?: IModelValidationInput[]
   enum?: any[]
 
+  min?: number | Date
+  max?: number | Date
   strict?: boolean
   children?: IModel | IModelChild[]
 }
@@ -124,6 +131,7 @@ export interface IValidatorOptionsUnsafe {
   formats?: IValidatorFormats
   coerce?: IValidatorCoerce
   validations?: IValidatorValidations
+  methods?: IValidatorMethods
 }
 
 export interface IValidatorOptions {
@@ -131,12 +139,19 @@ export interface IValidatorOptions {
   formats: IValidatorFormats
   coerce: IValidatorCoerce
   validations: IValidatorValidations
+  methods: IValidatorMethods
 }
 
 export interface IValidateOptions {
   failLoudly?: boolean
 }
 
+export type IModelMethod = (model: IModel, ...args: any[]) => IModel
+
+export interface IValidatorMethods {
+  [methodName: string]: IModelMethod
+}
+
 export const FALLBACK_FORMAT = '___FALLBACK_FORMAT___'
 export const ALL_FORMATS = '___ALL_FORMATS___'
-export const PHASES = Object.keys(ValidationPhase).map(k => ValidationPhase[k as any])
+export const PHASES = values(ValidationPhase)

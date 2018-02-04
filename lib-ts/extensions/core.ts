@@ -1,8 +1,32 @@
-import {assertions} from '../../errors/validation-error'
-import {ALL_FORMATS, IValidatorCoerce, ValidationPhase} from '../../typedefs'
+import {size, values} from 'lodash'
+import {assertions} from '../errors/validation-error'
+import {
+  ALL_FORMATS,
+  IModelSpecification,
+  IValidationFunction,
+  IValidatorCoerce,
+  IValidatorValidations,
+  ModelType,
+  ValidationPhase,
+} from '../typedefs'
+import {ValidationResult} from '../validation-result'
+
+function validateMinMax(getValue: (value: any) => number): IValidationFunction {
+  return (result: ValidationResult, spec: IModelSpecification) => {
+    if (typeof spec.min === 'number') {
+      assertions.ok(getValue(result.value) >= spec.min, `expected value to be at least ${spec.min}`)
+    }
+
+    if (typeof spec.max === 'number') {
+      assertions.ok(getValue(result.value) <= spec.max, `expected value to be at most ${spec.max}`)
+    }
+  }
+}
+
+export const types = values(ModelType)
 
 export const coerce: IValidatorCoerce = {
-  boolean: {
+  [ModelType.Boolean]: {
     [ALL_FORMATS]: {
       [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
@@ -19,7 +43,7 @@ export const coerce: IValidatorCoerce = {
       },
     },
   },
-  number: {
+  [ModelType.Number]: {
     [ALL_FORMATS]: {
       [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
@@ -35,7 +59,7 @@ export const coerce: IValidatorCoerce = {
       },
     },
   },
-  string: {
+  [ModelType.String]: {
     [ALL_FORMATS]: {
       [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
@@ -48,7 +72,7 @@ export const coerce: IValidatorCoerce = {
       },
     },
   },
-  object: {
+  [ModelType.Object]: {
     [ALL_FORMATS]: {
       [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
@@ -63,7 +87,7 @@ export const coerce: IValidatorCoerce = {
       },
     },
   },
-  array: {
+  [ModelType.Array]: {
     [ALL_FORMATS]: {
       [ValidationPhase.CoerceType]: (validationResult, spec) => {
         let value = validationResult.value
@@ -77,5 +101,20 @@ export const coerce: IValidatorCoerce = {
         return validationResult.setValue(value)
       },
     },
+  },
+}
+
+export const validations: IValidatorValidations = {
+  [ModelType.Number]: {
+    [ALL_FORMATS]: [validateMinMax(value => value as number)],
+  },
+  [ModelType.String]: {
+    [ALL_FORMATS]: [validateMinMax(value => (value as string).length)],
+  },
+  [ModelType.Object]: {
+    [ALL_FORMATS]: [validateMinMax(value => size(value as object))],
+  },
+  [ModelType.Array]: {
+    [ALL_FORMATS]: [validateMinMax(value => size(value as any[]))],
   },
 }
