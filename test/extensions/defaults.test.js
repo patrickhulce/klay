@@ -1,24 +1,13 @@
 /* eslint-disable max-nested-callbacks */
 const expect = require('chai').expect
-const ValidationResult = require('../../lib-ts/validation-result').ValidationResult
 const defaults = require('../../lib-ts/extensions/defaults')
+const vr = require('../utils').createValidationResult
 
 const coercions = defaults.coerce
 
 describe('lib/extensions/defaults.ts', () => {
-  function vr(value) {
-    return new ValidationResult({
-      value,
-      conforms: true,
-      isFinished: false,
-      errors: [],
-      rootValue: value,
-      pathToValue: [],
-    })
-  }
-
-  describe('#coerce', () => {
-    describe('#boolean', () => {
+  describe('coerce', () => {
+    describe('boolean', () => {
       const coerce = coercions.boolean.___ALL_FORMATS___['coerce-type']
 
       it('should coerce type', () => {
@@ -45,7 +34,7 @@ describe('lib/extensions/defaults.ts', () => {
       })
     })
 
-    describe('#number', () => {
+    describe('number', () => {
       const coerce = coercions.number.___ALL_FORMATS___['coerce-type']
 
       it('should coerce type', () => {
@@ -74,7 +63,7 @@ describe('lib/extensions/defaults.ts', () => {
       })
     })
 
-    describe('#string', () => {
+    describe('string', () => {
       const coerce = coercions.string.___ALL_FORMATS___['coerce-type']
 
       it('should coerce type', () => {
@@ -101,7 +90,7 @@ describe('lib/extensions/defaults.ts', () => {
       })
     })
 
-    describe('#object', () => {
+    describe('object', () => {
       const coerce = coercions.object.___ALL_FORMATS___['coerce-type']
 
       it('should coerce type', () => {
@@ -132,7 +121,7 @@ describe('lib/extensions/defaults.ts', () => {
       })
     })
 
-    describe('#array', () => {
+    describe('array', () => {
       const coerce = coercions.array.___ALL_FORMATS___['coerce-type']
 
       it('should coerce type', () => {
