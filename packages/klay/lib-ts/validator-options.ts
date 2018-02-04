@@ -5,6 +5,7 @@ import {
   FALLBACK_FORMAT,
   IValidatorCoerce,
   IValidatorFormats,
+  IValidatorMethods,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
   IValidatorValidations,
@@ -16,12 +17,14 @@ export class ValidatorOptions {
   public formats: IValidatorFormats
   public coerce: IValidatorCoerce
   public validations: IValidatorValidations
+  public methods: IValidatorMethods
 
   public constructor(options: IValidatorOptionsUnsafe) {
     const types = cloneDeep(options.types || [])
     const formats = cloneDeep(options.formats || {})
     const coerce = cloneDeep(options.coerce || {})
     const validations = cloneDeep(options.validations || {})
+    const methods = cloneDeep(options.methods || {})
 
     assertions.typeof(types, 'array')
     forEach(types, type => assertions.typeof(type, 'string'))
@@ -64,10 +67,16 @@ export class ValidatorOptions {
       })
     })
 
+    assertions.typeof(methods, 'object')
+    forEach(methods, func => {
+      assertions.typeof(func, 'function')
+    })
+
     this.types = types
     this.formats = formats
     this.coerce = coerce
     this.validations = validations
+    this.methods = methods
   }
 
   public clone(): IValidatorOptions {
