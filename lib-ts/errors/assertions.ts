@@ -1,9 +1,5 @@
 import * as _ from 'lodash'
 
-interface IV8Error extends ErrorConstructor {
-  captureStackTrace?(e: Error): void
-}
-
 export interface IExtraErrorProperties {
   path?: string
   actual?: any
@@ -23,7 +19,7 @@ export class Assertions {
     const error = this._createError(message)
     _.assign(error, extra)
 
-    const v8error = Error as IV8Error
+    const v8error = Error as any
     if (typeof v8error.captureStackTrace === 'function') {
       v8error.captureStackTrace(error)
     }
