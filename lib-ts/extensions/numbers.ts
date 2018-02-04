@@ -88,7 +88,7 @@ export const methods = {
   },
   size(model: IModel, value: number): IModel {
     modelAssertions.ok(model.spec.type !== 'number', 'cannot call size on number model')
-    modelAssertions.typeof(value, 'number', 'min')
+    modelAssertions.typeof(value, 'number', 'size')
     model.spec.min = value
     model.spec.max = value
     return model
