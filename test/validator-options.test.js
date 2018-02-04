@@ -130,8 +130,14 @@ describe('lib/validator-options.ts', () => {
       const inputC = {types: ['array']}
       const inputD = {types: ['object']}
       const options = Options.merge(inputA, inputB, inputC, inputD)
-      const types = ['string', 'number', 'array', 'object']
-      expect(options).to.have.property('types').eql(types)
+      expect(options.types).to.eql(['string', 'number', 'array', 'object'])
+    })
+
+    it('dedupes types', () => {
+      const inputA = {types: ['string']}
+      const inputB = {types: ['number', 'string']}
+      const options = Options.merge(inputA, inputB)
+      expect(options.types).to.eql(['string', 'number'])
     })
   })
 })

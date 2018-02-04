@@ -1,4 +1,4 @@
-import {cloneDeep, forEach, isArray, mergeWith} from 'lodash'
+import {cloneDeep, forEach, isArray, mergeWith, uniq} from 'lodash'
 import {assertions} from './errors/model-error'
 import {
   ALL_FORMATS,
@@ -113,7 +113,7 @@ export class ValidatorOptions {
 
     function combineArrays(dst: any, src: any): any[] | undefined {
       if (isArray(dst)) {
-        return dst.concat(src)
+        return uniq(dst.concat(src))
       }
     }
 
