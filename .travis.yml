@@ -14,8 +14,6 @@ deploy:
 node_js:
   - v9
   - v8
-  - v7
-  - v6
 before_install:
   - npm install -g coveralls
 script:
