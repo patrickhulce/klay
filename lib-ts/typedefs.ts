@@ -1,4 +1,9 @@
-import { values } from 'lodash'
+import {values} from 'lodash'
+
+export interface IModelContext {
+  use(extension: IValidatorOptionsUnsafe): IModelContext
+  create(): IModel
+}
 
 export interface IModel {
   isKlayModel: boolean

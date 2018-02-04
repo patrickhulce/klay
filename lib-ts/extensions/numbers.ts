@@ -11,6 +11,8 @@ export enum NumberFormat {
   Finite = 'finite',
 }
 
+export const types = [ModelType.Number]
+
 export const formats: IValidatorFormats = {
   [ModelType.Number]: values(NumberFormat),
 }

@@ -12,6 +12,8 @@ export enum DateFormat {
   UnixTimestamp = 'unix-timestamp',
 }
 
+export const types = [ModelType.Date]
+
 export const formats: IValidatorFormats = {
   [ModelType.Date]: values(DateFormat),
 }
