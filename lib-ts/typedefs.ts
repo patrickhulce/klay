@@ -10,6 +10,9 @@ export interface IModel {
   nullable(nullable?: boolean): IModel
   strict(strict?: boolean): IModel
   default(value?: any): IModel
+  min(min: number | Date): IModel
+  max(max: number | Date): IModel
+  size(size: number): IModel
   enum(options: any[]): IModel
   children(children: IModelChildrenInput): IModel
   pick(paths: string[]): IModel
@@ -32,6 +35,8 @@ export interface IModelSpecification {
   validations?: IModelValidationInput[]
   enum?: any[]
 
+  min?: number | Date
+  max?: number | Date
   strict?: boolean
   children?: IModel | IModelChild[]
 }

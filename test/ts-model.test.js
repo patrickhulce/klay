@@ -112,6 +112,28 @@ describe('model.ts', () => {
     })
   })
 
+  describe('.min', () => {
+    it('should set min', () => {
+      const model = new Model({}, defaultOptions).min(2)
+      expect(model).to.have.nested.property('spec.min', 2)
+    })
+  })
+
+  describe('.max', () => {
+    it('should set max', () => {
+      const model = new Model({}, defaultOptions).max(2)
+      expect(model).to.have.nested.property('spec.max', 2)
+    })
+  })
+
+  describe('.size', () => {
+    it('should set size', () => {
+      const model = new Model({}, defaultOptions).size(2)
+      expect(model).to.have.nested.property('spec.min', 2)
+      expect(model).to.have.nested.property('spec.max', 2)
+    })
+  })
+
   describe('.enum', () => {
     it('should set enum when simple types', () => {
       const model = new Model({}, defaultOptions).enum([1, 2])
