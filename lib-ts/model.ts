@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+import {forEach, uniq} from 'lodash'
 import {assertions} from './errors/model-error'
 import {ValidatorOptions} from './validator-options'
 
@@ -27,6 +27,11 @@ export class Model implements IModel {
     this.spec = spec || {}
     this.isKlayModel = true
     this._options = ValidatorOptions.from(options)
+
+    forEach(this._options.methods, (method, name) => {
+      const model = this as any
+      model[name] = (...args: any[]) => method(this, ...args)
+    })
   }
 
   public type(type: string): IModel {
@@ -68,6 +73,26 @@ export class Model implements IModel {
 
   public default(value: any): IModel {
     this.spec.default = value
+    return this
+  }
+
+  public min(value: number | Date): IModel {
+    assertions.typeof(value, 'number', 'min')
+    this.spec.min = value
+    return this
+  }
+
+  public max(value: number | Date): IModel {
+    assertions.typeof(value, 'number', 'min')
+    this.spec.max = value
+    return this
+  }
+
+  public size(value: number): IModel {
+    assertions.ok(this.spec.type !== 'number', 'cannot call size on number model')
+    assertions.typeof(value, 'number', 'size')
+    this.spec.min = value
+    this.spec.max = value
     return this
   }
 
@@ -165,9 +190,9 @@ export class Model implements IModel {
     const thisChildren = (this.spec.children as IModelChild[]) || []
     const otherChildren = (model.spec.children as IModelChild[]) || []
     const merged = thisChildren.concat(otherChildren)
-    const uniq = _.uniq(merged.map(item => item.path))
+    const unique = uniq(merged.map(item => item.path))
 
-    assertions.ok(uniq.length === merged.length, 'cannot merge conflicting models')
+    assertions.ok(unique.length === merged.length, 'cannot merge conflicting models')
     return this.children(merged)
   }
 
