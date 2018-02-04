@@ -1,12 +1,12 @@
 /* eslint-disable max-nested-callbacks */
 const expect = require('chai').expect
-const extension = require('../../lib-ts/extensions/defaults')
+const extension = require('../../lib-ts/extensions/core')
 const vr = require('../utils').createValidationResult
 
 const coercions = extension.coerce
 const validations = extension.validations
 
-describe('lib/extensions/defaults.ts', () => {
+describe('lib/extensions/core.ts', () => {
   describe('coerce', () => {
     describe('boolean', () => {
       const coerce = coercions.boolean.___ALL_FORMATS___['coerce-type']
