@@ -8,6 +8,17 @@ describe('lib/model-context.ts', () => {
       const types = context._options.types
       expect(types).to.eql(['any', 'boolean', 'number', 'string', 'array', 'object', 'date'])
     })
+
+    it('adds builder functions', () => {
+      const context = new ModelContext()
+      expect(context.string).to.be.a('function')
+      expect(context.creditCard).to.be.a('function')
+      expect(context.unixTimestamp).to.be.a('function')
+      let model = context.creditCard()
+      expect(model.spec).to.include({type: 'string', format: 'credit-card'})
+      model = context.unixTimestamp()
+      expect(model.spec).to.include({type: 'date', format: 'unix-timestamp'})
+    })
   })
 
   describe('.use', () => {
