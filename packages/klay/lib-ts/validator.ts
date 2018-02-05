@@ -6,6 +6,7 @@ import {
   ICoerceFunction,
   IModel,
   IModelChild,
+  IModelSpecification,
   IModelValidationInput,
   IValidateOptions,
   IValidationResult,
@@ -19,11 +20,11 @@ import {ValidationResult} from './validation-result'
 import {ValidatorOptions} from './validator-options'
 
 export class Validator {
-  private readonly _model: IModel
+  private readonly _spec: IModelSpecification
   private readonly _options: IValidatorOptions
 
-  public constructor(model: IModel, options: IValidatorOptionsUnsafe) {
-    this._model = model
+  public constructor(spec: IModelSpecification, options: IValidatorOptionsUnsafe) {
+    this._spec = spec
     this._options = ValidatorOptions.from(options)
   }
 
@@ -45,7 +46,7 @@ export class Validator {
         return finalResult
       } else {
         // tslint:disable-next-line
-        return ValidationResult.fromResult(fn.call(this, validationResult, this._model.spec))
+        return ValidationResult.fromResult(fn.call(this, validationResult, this._spec))
       }
     } catch (err) {
       // tslint:disable-next-line
@@ -58,15 +59,15 @@ export class Validator {
   }
 
   private _findCoerceFn(phase: ValidationPhase): ICoerceFunction | undefined {
-    if (this._model.spec.coerce && this._model.spec.coerce[phase]) {
-      return this._model.spec.coerce[phase]
+    if (this._spec.coerce && this._spec.coerce[phase]) {
+      return this._spec.coerce[phase]
     }
 
-    const typeCoercions = this._options.coerce && this._options.coerce[this._model.spec.type!]
+    const typeCoercions = this._options.coerce && this._options.coerce[this._spec.type!]
 
     const typeCoercion = get(typeCoercions, [ALL_FORMATS, phase] as string[])
     const fallbackCoercion = get(typeCoercions, [FALLBACK_FORMAT, phase] as string[])
-    const formatCoercion = get(typeCoercions, [this._model.spec.format!, phase] as string[])
+    const formatCoercion = get(typeCoercions, [this._spec.format!, phase] as string[])
     if (!fallbackCoercion && !formatCoercion) {
       return typeCoercion
     }
@@ -80,17 +81,17 @@ export class Validator {
   private _validateDefinition(validationResult: ValidationResult): ValidationResult {
     const {value} = validationResult
 
-    if (this._model.spec.required) {
+    if (this._spec.required) {
       validationAssertions.defined(value)
     }
 
-    const defaultValue = this._model.spec.default
+    const defaultValue = this._spec.default
     const hasDefault = typeof defaultValue !== 'undefined'
     const useDefault = hasDefault && typeof value === 'undefined'
     const finalValue = useDefault ? defaultValue : value
     validationResult.setValue(finalValue)
 
-    if (!this._model.spec.nullable) {
+    if (!this._spec.nullable) {
       validationAssertions.nonNull(finalValue)
     }
 
@@ -100,20 +101,20 @@ export class Validator {
   }
 
   private _validateEnum(validationResult: ValidationResult): ValidationResult {
-    if (!this._model.spec.enum) {
+    if (!this._spec.enum) {
       return validationResult
     }
 
-    const enumType = typeof this._model.spec.enum[0]
+    const enumType = typeof this._spec.enum[0]
     if (enumType === 'string' || enumType === 'number') {
-      validationAssertions.oneOf(validationResult.value, this._model.spec.enum)
+      validationAssertions.oneOf(validationResult.value, this._spec.enum)
       return validationResult
     }
 
     const failedValidationResults: ValidationResult[] = []
-    for (const option of this._model.spec.enum) {
+    for (const option of this._spec.enum) {
       const potentialModel = option as IModel
-      const potentialValidator = new Validator(potentialModel, this._options)
+      const potentialValidator = new Validator(potentialModel.spec, this._options)
       const potentialResult = potentialValidator._validate(validationResult)
       if (potentialResult.conforms) {
         return validationResult.setValue(potentialResult.value)
@@ -135,14 +136,14 @@ export class Validator {
   }
 
   private _validateChildren(validationResult: ValidationResult): ValidationResult {
-    if (!this._model.spec.children) {
+    if (!this._spec.children) {
       return validationResult
     }
 
-    if (this._model.spec.type === ModelType.Array) {
+    if (this._spec.type === ModelType.Array) {
       const validationResults: ValidationResult[] = []
-      const childModel = this._model.spec.children as IModel
-      const validator = new Validator(childModel, this._options)
+      const childModel = this._spec.children as IModel
+      const validator = new Validator(childModel.spec, this._options)
       for (let i = 0; i < validationResult.value.length; i++) {
         const item = validationResult.value[i]
         const initial = ValidationResult.fromValue(
@@ -156,12 +157,12 @@ export class Validator {
 
       const base = validationResult.clone().setValue([])
       return ValidationResult.coalesce(base, validationResults)
-    } else if (this._model.spec.type === ModelType.Object) {
+    } else if (this._spec.type === ModelType.Object) {
       const validationResults: ValidationResult[] = []
-      const childModels = this._model.spec.children as IModelChild[]
+      const childModels = this._spec.children as IModelChild[]
       for (const child of childModels) {
         const item = validationResult.value[child.path]
-        const validator = new Validator(child.model, this._options)
+        const validator = new Validator(child.model.spec, this._options)
         const initial = ValidationResult.fromValue(
           item,
           validationResult.rootValue,
@@ -181,19 +182,19 @@ export class Validator {
   private _validateValue(validationResult: ValidationResult): ValidationResult {
     let typeValidations: IModelValidationInput[] = []
     let formatValidations: IModelValidationInput[] = []
-    if (this._model.spec.type) {
-      const validationsInOptions = this._options.validations[this._model.spec.type!]
+    if (this._spec.type) {
+      const validationsInOptions = this._options.validations[this._spec.type!]
       typeValidations = validationsInOptions[ALL_FORMATS]
-      formatValidations = validationsInOptions[this._model.spec.format!]
+      formatValidations = validationsInOptions[this._spec.format!]
       formatValidations = formatValidations || validationsInOptions[FALLBACK_FORMAT]
     }
 
-    const modelValidations = this._model.spec.validations || []
+    const modelValidations = this._spec.validations || []
     const allValidations = [...typeValidations, ...formatValidations, ...modelValidations]
 
     allValidations.forEach(validation => {
       if (typeof validation === 'function') {
-        validation(validationResult, this._model.spec)
+        validation(validationResult, this._spec)
       } else {
         validationAssertions.typeof(validationResult.value, 'string')
         validationAssertions.match(validationResult.value, validation)
