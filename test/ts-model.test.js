@@ -11,6 +11,22 @@ describe('model.ts', () => {
     it('should construct a model', () => {
       expect(() => new Model({}, {types: []})).to.not.throw()
     })
+
+    it('should add methods to model', () => {
+      const fooArgs = []
+      const methods = {
+        foo(...args) {
+          fooArgs.push(args)
+          return 'return value'
+        }
+      }
+
+      const options = {types: ['string'], methods}
+      const model = new Model({}, options).type('string')
+      expect(model.foo).to.be.a('function')
+      expect(model.foo(1, 2, 'woot')).to.equal('return value')
+      expect(fooArgs).to.eql([[model, 1, 2, 'woot']])
+    })
   })
 
   describe('.type', () => {
