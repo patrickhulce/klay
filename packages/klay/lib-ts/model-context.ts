@@ -47,7 +47,7 @@ export class ModelContext {
   public use(extension: IValidatorOptionsUnsafe): IModelContext {
     this._options = ValidatorOptions.merge(this._options, extension)
     this._setAllBuilders()
-    return this
+    return this as any as IModelContext
   }
 
   public create(): IModel {
