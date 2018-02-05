@@ -3,6 +3,25 @@ import {values} from 'lodash'
 export interface IModelContext {
   use(extension: IValidatorOptionsUnsafe): IModelContext
   create(): IModel
+
+  any(): IModel
+  boolean(): IModel
+  number(): IModel
+  integer(): IModel
+  finite(): IModel
+  string(): IModel
+  uuid(): IModel
+  alphanumeric(): IModel
+  hex(): IModel
+  ip(): IModel
+  uri(): IModel
+  domain(): IModel
+  email(): IModel
+  creditCard(): IModel
+  array(): IModel
+  object(): IModel
+  date(): IModel
+  unixTimestamp(): IModel
 }
 
 export interface IModel {

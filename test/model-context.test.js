@@ -26,6 +26,14 @@ describe('lib/model-context.ts', () => {
       const context = new ModelContext().use({types: ['foobar']})
       expect(context._options.types).to.include('foobar')
       expect(context._options.types).to.include('number')
+      expect(context.foobar).to.be.a('function')
+    })
+
+    it('does not override built-ins', () => {
+      const context = new ModelContext().use({types: ['use']})
+      expect(context._options.types).to.include('use')
+      const result = context.use({})
+      expect(result.constructor.name).to.equal('ModelContext')
     })
   })
 
