@@ -1,5 +1,6 @@
+import {camelCase, forEach} from 'lodash'
 import {Model} from './model'
-import {IModel, IValidatorOptions, IValidatorOptionsUnsafe} from './typedefs'
+import {IModel, IModelContext, IValidatorOptions, IValidatorOptionsUnsafe} from './typedefs'
 import {ValidatorOptions} from './validator-options'
 
 import * as core from './extensions/core'
@@ -12,10 +13,40 @@ export class ModelContext {
 
   public constructor() {
     this._options = ValidatorOptions.merge(core, strings, numbers, dates)
+    this._setAllBuilders()
   }
 
-  public use(extension: IValidatorOptionsUnsafe): ModelContext {
+  private _setAllBuilders(): void {
+    forEach(this._options.formats, (formats, type) => {
+      this._setBuilder(type, type)
+      forEach(formats, format => {
+        this._setBuilder(camelCase(format), type, format)
+      })
+    })
+  }
+
+  private _setBuilder(name: string, type: string, format?: string): void {
+    const modelContext = this as any
+    if (typeof modelContext[name] !== 'undefined') {
+      return
+    }
+
+    // TODO: update once model can handle type/format undefined
+    const builder = () => {
+      let model = this.create().type(type)
+      if (format) {
+        model = model.format(format)
+      }
+
+      return model
+    }
+
+    modelContext[name] = builder
+  }
+
+  public use(extension: IValidatorOptionsUnsafe): IModelContext {
     this._options = ValidatorOptions.merge(this._options, extension)
+    this._setAllBuilders()
     return this
   }
 

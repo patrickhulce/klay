@@ -18,7 +18,7 @@ describe('model.ts', () => {
         foo(...args) {
           fooArgs.push(args)
           return 'return value'
-        }
+        },
       }
 
       const options = {types: ['string'], methods}
