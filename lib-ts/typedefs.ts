@@ -46,6 +46,7 @@ export interface IModel {
   coerce(coerce: ICoerceFunction, phase?: ValidationPhase): IModel
   coerce(coerce: IModelCoercionMap): IModel
   validations(validations: IModelValidationInput | IModelValidationInput[]): IModel
+  validate(value: any, options?: IValidateOptions): IValidationResult
 }
 
 export interface IModelSpecification {
