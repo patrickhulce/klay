@@ -12,6 +12,12 @@ describe('model.ts', () => {
       expect(() => new Model({}, {types: []})).to.not.throw()
     })
 
+    it('should use the defaults provided', () => {
+      const options = {...defaultOptions, defaults: {required: true, type: 'string'}}
+      const model = new Model({type: 'number'}, options)
+      expect(model.spec).to.eql({required: true, type: 'number'})
+    })
+
     it('should add methods to model', () => {
       const fooArgs = []
       const methods = {

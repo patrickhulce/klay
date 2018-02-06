@@ -1,4 +1,4 @@
-import {forEach, uniq} from 'lodash'
+import {cloneDeep, forEach, uniq} from 'lodash'
 import {assertions} from './errors/model-error'
 import {Validator} from './validator'
 import {ValidatorOptions} from './validator-options'
@@ -27,9 +27,10 @@ export class Model implements IModel {
   private readonly _options: IValidatorOptions
 
   public constructor(spec: IModelSpecification, options: IValidatorOptionsUnsafe) {
-    this.spec = spec || {}
-    this.isKlayModel = true
     this._options = ValidatorOptions.from(options)
+
+    this.isKlayModel = true
+    this.spec = Object.assign(cloneDeep(this._options.defaults), spec)
 
     forEach(this._options.methods, (method, name) => {
       const model = this as any
