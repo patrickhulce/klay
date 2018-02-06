@@ -23,10 +23,10 @@ describe('lib/model-context.ts', () => {
 
   describe('.use', () => {
     it('merges in extensions', () => {
-      const context = new ModelContext().use({types: ['foobar']})
-      expect(context._options.types).to.include('foobar')
+      const context = new ModelContext().use({types: ['foo-bar']})
+      expect(context._options.types).to.include('foo-bar')
       expect(context._options.types).to.include('number')
-      expect(context.foobar).to.be.a('function')
+      expect(context.fooBar).to.be.a('function')
     })
 
     it('does not override built-ins', () => {
