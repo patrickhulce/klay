@@ -1,5 +1,6 @@
 import {forEach, uniq} from 'lodash'
 import {assertions} from './errors/model-error'
+import {Validator} from './validator'
 import {ValidatorOptions} from './validator-options'
 
 import {
@@ -11,6 +12,8 @@ import {
   IModelCoercionMap,
   IModelSpecification,
   IModelValidationInput,
+  IValidateOptions,
+  IValidationResult,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
   ModelType,
@@ -240,5 +243,10 @@ export class Model implements IModel {
     this.spec.validations = validationsToAssign
 
     return this
+  }
+
+  public validate(value: any, options?: IValidateOptions): IValidationResult {
+    const validator = new Validator(this.spec, this._options)
+    return validator.validate(value, options)
   }
 }

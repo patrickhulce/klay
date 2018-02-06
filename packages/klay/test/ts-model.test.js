@@ -133,10 +133,20 @@ describe('model.ts', () => {
       const model = new Model({}, defaultOptions).min(2)
       expect(model).to.have.nested.property('spec.min', 2)
     })
+
+    it.skip('should set date min', () => {
+      const model = new Model({}, defaultOptions).min(2)
+      expect(model).to.have.nested.property('spec.min', 2)
+    })
   })
 
   describe('.max', () => {
     it('should set max', () => {
+      const model = new Model({}, defaultOptions).max(2)
+      expect(model).to.have.nested.property('spec.max', 2)
+    })
+
+    it.skip('should set date max', () => {
       const model = new Model({}, defaultOptions).max(2)
       expect(model).to.have.nested.property('spec.max', 2)
     })
@@ -366,6 +376,17 @@ describe('model.ts', () => {
       expect(() => model.validations({})).to.throw()
       expect(() => model.validations([() => {}, 'foo'])).to.throw()
       expect(() => model.validations([/foo/, {}])).to.throw()
+    })
+  })
+
+  describe('.validate', () => {
+    it('should validate value', () => {
+      const model = new Model({}, defaultOptions).required()
+      expect(model.validate(undefined)).to.eql({
+        conforms: false,
+        value: undefined,
+        errors: [{actual: undefined, message: 'expected value to be defined'}],
+      })
     })
   })
 })
