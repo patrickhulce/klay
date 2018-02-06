@@ -140,9 +140,10 @@ describe('model.ts', () => {
       expect(model).to.have.nested.property('spec.min', 2)
     })
 
-    it.skip('should set date min', () => {
-      const model = new Model({}, defaultOptions).min(2)
-      expect(model).to.have.nested.property('spec.min', 2)
+    it('should set date min', () => {
+      const date = new Date(2018, 1, 1)
+      const model = new Model({}, defaultOptions).min(date)
+      expect(model).to.have.nested.property('spec.min', date.getTime())
     })
   })
 
@@ -152,9 +153,10 @@ describe('model.ts', () => {
       expect(model).to.have.nested.property('spec.max', 2)
     })
 
-    it.skip('should set date max', () => {
-      const model = new Model({}, defaultOptions).max(2)
-      expect(model).to.have.nested.property('spec.max', 2)
+    it('should set date max', () => {
+      const date = new Date(2018, 1, 1)
+      const model = new Model({}, defaultOptions).max(date)
+      expect(model).to.have.nested.property('spec.max', date.getTime())
     })
   })
 
