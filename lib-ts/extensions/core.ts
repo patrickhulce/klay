@@ -1,4 +1,4 @@
-import {size, values} from 'lodash'
+import {difference, size, values} from 'lodash'
 import {assertions} from '../errors/validation-error'
 import {
   ALL_FORMATS,
@@ -112,7 +112,19 @@ export const validations: IValidatorValidations = {
     [ALL_FORMATS]: [validateMinMax(value => (value as string).length)],
   },
   [ModelType.Object]: {
-    [ALL_FORMATS]: [validateMinMax(value => size(value as object))],
+    [ALL_FORMATS]: [
+      validateMinMax(value => size(value as object)),
+      (result, spec) => {
+        if (!spec.strict || !Array.isArray(spec.children)) {
+          return
+        }
+
+        const expectedKeys = spec.children.map(child => child.path)
+        const actualKeys = Object.keys(result.value)
+        const extraKeys = difference(actualKeys, expectedKeys)
+        assertions.ok(extraKeys.length === 0, `unexpected keys ${extraKeys.join(', ')}`)
+      },
+    ],
   },
   [ModelType.Array]: {
     [ALL_FORMATS]: [validateMinMax(value => size(value as any[]))],
