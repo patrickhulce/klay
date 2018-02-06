@@ -197,20 +197,33 @@ describe('lib/extensions/core.ts', () => {
     })
 
     describe('object', () => {
-      beforeEach(() => {
-        validate = validations.object.___ALL_FORMATS___[0]
-      })
+      const validateMinMax = validations.object.___ALL_FORMATS___[0]
+      const validateKeys = validations.object.___ALL_FORMATS___[1]
 
       it('should validate min', () => {
-        expect(() => validate({value: {}}, {min: 2})).to.throw()
-        expect(() => validate({value: {x: 1, y: 2}}, {min: 2})).to.not.throw()
-        expect(() => validate({value: {x: 1, y: 2, z: 3}}, {min: 2})).to.not.throw()
+        expect(() => validateMinMax({value: {}}, {min: 2})).to.throw()
+        expect(() => validateMinMax({value: {x: 1, y: 2}}, {min: 2})).to.not.throw()
+        expect(() => validateMinMax({value: {x: 1, y: 2, z: 3}}, {min: 2})).to.not.throw()
       })
 
       it('should validate max', () => {
-        expect(() => validate({value: {}}, {max: 2})).to.not.throw()
-        expect(() => validate({value: {x: 1, y: 2}}, {max: 2})).to.not.throw()
-        expect(() => validate({value: {x: 1, y: 2, z: 3}}, {max: 2})).to.throw()
+        expect(() => validateMinMax({value: {}}, {max: 2})).to.not.throw()
+        expect(() => validateMinMax({value: {x: 1, y: 2}}, {max: 2})).to.not.throw()
+        expect(() => validateMinMax({value: {x: 1, y: 2, z: 3}}, {max: 2})).to.throw()
+      })
+
+      it('should not validate keys when strict is true', () => {
+        expect(() => validateKeys({value: {x: 1}}, {})).to.not.throw()
+        expect(() => validateKeys({value: {x: 1}}, {strict: true})).to.not.throw()
+      })
+
+      it('should validate keys when strict is true and children exist', () => {
+        const children = [{path: 'x'}, {path: 'y'}, {path: 'z'}]
+        const options = {strict: true, children}
+        expect(() => validateKeys({value: {x: 1}}, options)).to.not.throw()
+        expect(() => validateKeys({value: {x: 1, y: 2, z: 3}}, options)).to.not.throw()
+        const msg = 'unexpected keys a, b'
+        expect(() => validateKeys({value: {x: 1, a: 1, b: 2}}, options)).to.throw(msg)
       })
     })
 
