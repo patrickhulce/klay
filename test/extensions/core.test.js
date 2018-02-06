@@ -231,5 +231,31 @@ describe('lib/extensions/core.ts', () => {
         expect(() => validate({value: [1, 2, 3]}, {max: 2})).to.throw()
       })
     })
+
+    describe('date', () => {
+      beforeEach(() => {
+        validate = validations.date.___ALL_FORMATS___[0]
+      })
+
+      it('should validate min', () => {
+        const dateJan = new Date(2018, 1, 1)
+        const dateFeb = new Date(2018, 2, 1)
+        const dateMar = new Date(2018, 3, 1)
+        const min = dateFeb.getTime()
+        expect(() => validate({value: dateJan}, {min})).to.throw()
+        expect(() => validate({value: dateFeb}, {min})).to.not.throw()
+        expect(() => validate({value: dateMar}, {min})).to.not.throw()
+      })
+
+      it('should validate max', () => {
+        const dateJan = new Date(2018, 1, 1)
+        const dateFeb = new Date(2018, 2, 1)
+        const dateMar = new Date(2018, 3, 1)
+        const max = dateFeb.getTime()
+        expect(() => validate({value: dateJan}, {max})).to.not.throw()
+        expect(() => validate({value: dateFeb}, {max})).to.not.throw()
+        expect(() => validate({value: dateMar}, {max})).to.throw()
+      })
+    })
   })
 })

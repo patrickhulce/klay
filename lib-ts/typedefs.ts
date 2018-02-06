@@ -61,8 +61,8 @@ export interface IModelSpecification {
   validations?: IModelValidationInput[]
   enum?: any[]
 
-  min?: number | Date
-  max?: number | Date
+  min?: number
+  max?: number
   strict?: boolean
   children?: IModel | IModelChild[]
 }
