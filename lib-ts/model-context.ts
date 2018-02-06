@@ -11,7 +11,7 @@ import * as strings from './extensions/strings'
 export class ModelContext {
   private _options: IValidatorOptions
 
-  public constructor() {
+  private constructor() {
     this.reset()
   }
 
@@ -58,5 +58,9 @@ export class ModelContext {
 
   public create(): IModel {
     return new Model({}, this._options)
+  }
+
+  public static create(): IModelContext {
+    return new ModelContext() as any as IModelContext
   }
 }
