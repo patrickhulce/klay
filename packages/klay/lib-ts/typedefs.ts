@@ -2,6 +2,7 @@ import {values} from 'lodash'
 
 export interface IModelContext {
   use(extension: IValidatorOptionsUnsafe): IModelContext
+  reset(): void
   create(): IModel
 
   any(): IModel
