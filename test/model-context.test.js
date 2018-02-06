@@ -46,4 +46,27 @@ describe('lib/model-context.ts', () => {
       expect(model.spec).to.have.property('type', 'string')
     })
   })
+
+  describe('.reset', () => {
+    let context
+    beforeEach(() => context = new ModelContext())
+
+    it('resets options', () => {
+      context = context.use({types: ['my-type']})
+      expect(context._options.types).to.include('string')
+      expect(context._options.types).to.include('my-type')
+      context.reset()
+      expect(context._options.types).to.include('string')
+      expect(context._options.types).to.not.include('my-type')
+    })
+
+    it('deletes builders', () => {
+      context = context.use({types: ['my-type']})
+      expect(context.string).to.be.a('function')
+      expect(context.myType).to.be.a('function')
+      context.reset()
+      expect(context.string).to.be.a('function')
+      expect(context.myType).to.not.be.a('function')
+    })
+  })
 })

@@ -12,6 +12,12 @@ export class ModelContext {
   private _options: IValidatorOptions
 
   public constructor() {
+    this.reset()
+  }
+
+  public reset(): void {
+    // tslint:disable-next-line
+    Object.keys(this).forEach(key => delete (this as any)[key])
     this._options = ValidatorOptions.merge(core, strings, numbers, dates)
     this._setAllBuilders()
   }
