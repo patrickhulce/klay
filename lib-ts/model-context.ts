@@ -18,7 +18,7 @@ export class ModelContext {
 
   private _setAllBuilders(): void {
     forEach(this._options.formats, (formats, type) => {
-      this._setBuilder(type, type)
+      this._setBuilder(camelCase(type), type)
       forEach(formats, format => {
         this._setBuilder(camelCase(format), type, format)
       })
