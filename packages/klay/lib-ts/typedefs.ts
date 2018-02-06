@@ -158,6 +158,7 @@ export interface IValidatorOptionsUnsafe {
   coerce?: IValidatorCoerce
   validations?: IValidatorValidations
   methods?: IValidatorMethods
+  defaults?: IModelSpecification
 }
 
 export interface IValidatorOptions {
@@ -166,6 +167,7 @@ export interface IValidatorOptions {
   coerce: IValidatorCoerce
   validations: IValidatorValidations
   methods: IValidatorMethods
+  defaults: IModelSpecification
 }
 
 export interface IValidateOptions {

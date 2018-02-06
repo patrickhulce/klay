@@ -3,6 +3,7 @@ import {assertions} from './errors/model-error'
 import {
   ALL_FORMATS,
   FALLBACK_FORMAT,
+  IModelSpecification,
   IValidatorCoerce,
   IValidatorFormats,
   IValidatorMethods,
@@ -12,12 +13,13 @@ import {
   PHASES,
 } from './typedefs'
 
-export class ValidatorOptions {
+export class ValidatorOptions implements IValidatorOptions {
   public types: string[]
   public formats: IValidatorFormats
   public coerce: IValidatorCoerce
   public validations: IValidatorValidations
   public methods: IValidatorMethods
+  public defaults: IModelSpecification
 
   public constructor(options: IValidatorOptionsUnsafe) {
     const types = cloneDeep(options.types || [])
@@ -25,6 +27,7 @@ export class ValidatorOptions {
     const coerce = cloneDeep(options.coerce || {})
     const validations = cloneDeep(options.validations || {})
     const methods = cloneDeep(options.methods || {})
+    const defaults = cloneDeep(options.defaults || {})
 
     assertions.typeof(types, 'array')
     forEach(types, type => assertions.typeof(type, 'string'))
@@ -77,6 +80,7 @@ export class ValidatorOptions {
     this.coerce = coerce
     this.validations = validations
     this.methods = methods
+    this.defaults = defaults
   }
 
   public clone(): IValidatorOptions {

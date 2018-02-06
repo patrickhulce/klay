@@ -107,6 +107,7 @@ describe('lib/validator-options.ts', () => {
       const inputB = {types: ['number'], methods: {methodB}}
       const options = Options.merge(inputA, inputB)
       expect(options).to.eql({
+        defaults: {},
         types: ['string', 'number'],
         formats: {string: [], number: []},
         methods: {methodA, methodB},
@@ -122,6 +123,14 @@ describe('lib/validator-options.ts', () => {
 
       expect(inputA).to.eql({types: ['string'], methods: {methodA}})
       expect(inputB).to.eql({types: ['number'], methods: {methodB}})
+    })
+
+    it('merges defaults', () => {
+      const inputA = {defaults: {required: true, type: 'object'}}
+      const inputB = {defaults: {required: false, type: 'string'}}
+      const inputC = {defaults: {type: 'number'}}
+      const options = Options.merge(inputA, inputB, inputC)
+      expect(options.defaults).to.eql({required: false, type: 'number'})
     })
 
     it('merges more than two options', () => {
