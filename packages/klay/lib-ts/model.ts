@@ -81,14 +81,24 @@ export class Model implements IModel {
   }
 
   public min(value: number | Date): IModel {
-    assertions.typeof(value, 'number', 'min')
-    this.spec.min = value
+    let valueAsNumber = value as number
+    if (value instanceof Date) {
+      valueAsNumber = value.getTime()
+    }
+
+    assertions.typeof(valueAsNumber, 'number', 'min')
+    this.spec.min = valueAsNumber
     return this
   }
 
   public max(value: number | Date): IModel {
-    assertions.typeof(value, 'number', 'min')
-    this.spec.max = value
+    let valueAsNumber = value as number
+    if (value instanceof Date) {
+      valueAsNumber = value.getTime()
+    }
+
+    assertions.typeof(valueAsNumber, 'number', 'max')
+    this.spec.max = valueAsNumber
     return this
   }
 
