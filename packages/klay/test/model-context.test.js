@@ -4,13 +4,13 @@ const ModelContext = require('../lib-ts/model-context').ModelContext
 describe('lib/model-context.ts', () => {
   describe('#constructor', () => {
     it('creates context with default options', () => {
-      const context = new ModelContext()
+      const context = ModelContext.create()
       const types = context._options.types
       expect(types).to.eql(['any', 'boolean', 'number', 'string', 'array', 'object', 'date'])
     })
 
     it('adds builder functions', () => {
-      const context = new ModelContext()
+      const context = ModelContext.create()
       expect(context.string).to.be.a('function')
       expect(context.creditCard).to.be.a('function')
       expect(context.unixTimestamp).to.be.a('function')
@@ -23,33 +23,23 @@ describe('lib/model-context.ts', () => {
 
   describe('.use', () => {
     it('merges in extensions', () => {
-      const context = new ModelContext().use({types: ['foo-bar']})
+      const context = ModelContext.create().use({types: ['foo-bar']})
       expect(context._options.types).to.include('foo-bar')
       expect(context._options.types).to.include('number')
       expect(context.fooBar).to.be.a('function')
     })
 
     it('does not override built-ins', () => {
-      const context = new ModelContext().use({types: ['use']})
+      const context = ModelContext.create().use({types: ['use']})
       expect(context._options.types).to.include('use')
       const result = context.use({})
       expect(result.constructor.name).to.equal('ModelContext')
     })
   })
 
-  describe('.create', () => {
-    const context = new ModelContext()
-
-    it('creates a model', () => {
-      const model = context.create().type('string')
-      expect(model.constructor.name).to.equal('Model')
-      expect(model.spec).to.have.property('type', 'string')
-    })
-  })
-
   describe('.reset', () => {
     let context
-    beforeEach(() => context = new ModelContext())
+    beforeEach(() => context = ModelContext.create())
 
     it('resets options', () => {
       context = context.use({types: ['my-type']})
