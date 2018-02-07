@@ -58,12 +58,17 @@ export interface IModelSpecification {
   default?: any
   coerce?: IModelCoercionMap
   validations?: IModelValidationInput[]
-  enum?: any[]
+  enum?: IModelEnumOption[]
 
   min?: number
   max?: number
   strict?: boolean
   children?: IModel | IModelChild[]
+}
+
+export interface IModelEnumOption {
+  option: any,
+  applies?: IModelEnumAppliesFunction,
 }
 
 export interface IModelChild {
@@ -74,6 +79,8 @@ export interface IModelChild {
 export interface IModelChildrenMap {
   [key: string]: IModel
 }
+
+export type IModelEnumAppliesFunction = (result: IValidationResult) => boolean
 
 export type IModelChildrenInput = IModelChildrenMap | IModel | IModelChild[]
 
