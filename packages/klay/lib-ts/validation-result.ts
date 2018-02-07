@@ -3,14 +3,14 @@ import {assertions} from './errors/model-error'
 import {ValidationError} from './errors/validation-error'
 import {
   IIntermediateValidationResult,
-  IInternalValidationResult,
   IValidationResult,
   IValidationResultError,
+  IValidationResultJSON,
 } from './typedefs'
 
 const KEYS = ['value', 'conforms', 'errors', 'isFinished', 'rootValue', 'pathToValue']
 
-export class ValidationResult implements IInternalValidationResult {
+export class ValidationResult implements IValidationResult {
   public value: any
   public conforms: boolean
   public errors: IValidationResultError[]
@@ -67,7 +67,7 @@ export class ValidationResult implements IInternalValidationResult {
     return new ValidationResult(this)
   }
 
-  public toJSON(): IValidationResult {
+  public toJSON(): IValidationResultJSON {
     const json = pick(this, ['value', 'conforms', 'errors'])
     json.errors = json.errors.map(err => omit(err, ['error']) as IValidationResultError)
     return json
@@ -106,9 +106,9 @@ export class ValidationResult implements IInternalValidationResult {
   }
 
   public static coalesce(
-    root: ValidationResult,
-    validationResults: ValidationResult[],
-  ): ValidationResult {
+    root: IValidationResult,
+    validationResults: IValidationResult[],
+  ): IValidationResult {
     assertions.ok(!root.isFinished, 'cannot coalesce on a finished ValidationResult')
     const conforms = every(validationResults, 'conforms')
     const errors = flatten(validationResults.map(value => value.errors))
