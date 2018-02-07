@@ -222,7 +222,7 @@ describe('lib/extensions/core.ts', () => {
         const options = {strict: true, children}
         expect(() => validateKeys({value: {x: 1}}, options)).to.not.throw()
         expect(() => validateKeys({value: {x: 1, y: 2, z: 3}}, options)).to.not.throw()
-        const msg = 'unexpected keys a, b'
+        const msg = 'unexpected properties: a, b'
         expect(() => validateKeys({value: {x: 1, a: 1, b: 2}}, options)).to.throw(msg)
       })
     })

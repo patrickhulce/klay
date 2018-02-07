@@ -1,37 +1,47 @@
-module.exports = function (klay) {
-  klay.use({defaults: {required: true, strict: true}});
-  var types = klay.builders;
+const ModelContext = require('../../lib-ts/model-context').ModelContext
 
-  var HtmlMetadata = types.object({
-    title: types.string(),
-    version: types.string(),
-  });
+module.exports = function() {
+  const context = ModelContext.create()
+  context.use({defaults: {required: true, strict: true}})
 
-  var JsonMetadata = types.object({
-    type: types.enum(['object', 'array']),
-    size: types.integer(),
-  });
+  const HtmlMetadata = context.object().children({
+    title: context.string(),
+    version: context.string(),
+  })
 
-  var HtmlSource = types.object({
-    raw: types.string().min(8),
-    text: types.string(),
-  });
+  const JsonMetadata = context.object().children({
+    type: context.string().enum(['object', 'array']),
+    size: context.integer().strict(false),
+  })
 
-  var JsonSource = types.object().strict(false);
+  const HtmlSource = context
+    .object()
+    .children({
+      raw: context.string().min(8),
+      text: context.string(),
+    })
 
-  var Document = {
-    id: types.uuid(),
-    parentId: types.uuid(),
-    type: types.enum(['html', 'json']),
-    metadata: types.conditional().
-      option(HtmlMetadata, 'type', 'html').
-      option(JsonMetadata, 'type', 'json'),
-    source: types.conditional().
-      option(HtmlSource, 'type', 'html').
-      option(JsonSource, 'type', 'json'),
-    createdAt: types.date(),
-    updatedAt: types.date(),
-  };
+  const JsonSource = context
+    .object()
+    .strict(false)
 
-  return types.object(Document);
-};
+  const appliesHtml = result => result.rootValue.type === 'html'
+  const appliesJson = result => result.rootValue.type === 'json'
+  const Document = context.object().children({
+    id: context.uuid(),
+    parentId: context.uuid(),
+    type: context.string().enum(['html', 'json']),
+    metadata: context.object().enum([
+      {option: HtmlMetadata, applies: appliesHtml},
+      {option: JsonMetadata, applies: appliesJson}
+    ]),
+    source: context.object().enum([
+      {option: HtmlSource, applies: appliesHtml},
+      {option: JsonSource, applies: appliesJson}
+    ]),
+    createdAt: context.date(),
+    updatedAt: context.date(),
+  })
+
+  return Document
+}

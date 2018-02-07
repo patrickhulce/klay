@@ -405,7 +405,7 @@ describe('model.ts', () => {
       expect(model.validate(undefined)).to.eql({
         conforms: false,
         value: undefined,
-        errors: [{actual: undefined, message: 'expected value to be defined'}],
+        errors: [{message: 'expected value to be defined'}],
       })
     })
   })
