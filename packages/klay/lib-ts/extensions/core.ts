@@ -122,7 +122,7 @@ export const validations: IValidatorValidations = {
         const expectedKeys = spec.children.map(child => child.path)
         const actualKeys = Object.keys(result.value)
         const extraKeys = difference(actualKeys, expectedKeys)
-        assertions.ok(extraKeys.length === 0, `unexpected keys ${extraKeys.join(', ')}`)
+        assertions.ok(extraKeys.length === 0, `unexpected properties: ${extraKeys.join(', ')}`)
       },
     ],
   },

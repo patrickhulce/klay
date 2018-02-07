@@ -66,7 +66,7 @@ describe('lib/validator.ts', () => {
         expect(validate(undefined)).to.eql({
           conforms: false,
           value: undefined,
-          errors: [{message: 'expected value to be defined', actual: undefined}],
+          errors: [{message: 'expected value to be defined'}],
         })
       })
     })
@@ -77,7 +77,7 @@ describe('lib/validator.ts', () => {
         expect(validate(null)).to.eql({
           conforms: false,
           value: null,
-          errors: [{message: 'expected value to be non-null', actual: null}],
+          errors: [{message: 'expected value to be non-null'}],
         })
       })
 
@@ -112,7 +112,7 @@ describe('lib/validator.ts', () => {
         expect(validate(undefined)).to.eql({
           conforms: false,
           value: undefined,
-          errors: [{message: 'expected value to be defined', actual: undefined}],
+          errors: [{message: 'expected value to be defined'}],
         })
       })
 
@@ -133,7 +133,7 @@ describe('lib/validator.ts', () => {
         expect(validate(undefined)).to.eql({
           conforms: false,
           value: null,
-          errors: [{message: 'expected value to be non-null', actual: null}],
+          errors: [{message: 'expected value to be non-null'}],
         })
       })
 
@@ -148,8 +148,6 @@ describe('lib/validator.ts', () => {
           errors: [
             {
               message: 'expected value (Hello, World) to match /skrilla/',
-              actual: 'Hello, World',
-              expected: /skrilla/,
             },
           ],
         })
@@ -185,8 +183,8 @@ describe('lib/validator.ts', () => {
         expect(validation).to.have.property('conforms', false)
         expect(validation).to.have.property('value', 'other')
         expect(validation)
-          .to.have.nested.property('errors.0.expected')
-          .eql(['hello', 'bar'])
+          .to.have.nested.property('errors.0.message')
+          .include('one of [hello, bar]')
       })
 
       it('should support complex types', () => {
@@ -230,8 +228,6 @@ describe('lib/validator.ts', () => {
           value: {type: 'b', value: 'oops'},
           errors: [
             {
-              actual: 'string',
-              expected: 'number',
               message: 'expected value (oops) to have typeof number',
               path: ['value'],
             },
@@ -257,8 +253,6 @@ describe('lib/validator.ts', () => {
         expect(error)
           .to.have.property('details')
           .with.length(2)
-        expect(error.details[0]).to.have.property('expected', 'string')
-        expect(error.details[1]).to.have.property('expected', 'object')
       })
     })
 
@@ -283,8 +277,8 @@ describe('lib/validator.ts', () => {
           conforms: false,
           value: [1, 2, null, undefined, 5],
           errors: [
-            {message: 'expected value to be non-null', actual: null, path: ['2']},
-            {message: 'expected value to be defined', actual: undefined, path: ['3']},
+            {message: 'expected value to be non-null', path: ['2']},
+            {message: 'expected value to be defined', path: ['3']},
           ],
         })
       })
@@ -324,14 +318,10 @@ describe('lib/validator.ts', () => {
           errors: [
             {
               message: 'expected value (12) to have typeof string',
-              actual: 'number',
-              expected: 'string',
               path: ['name'],
             },
             {
               message: 'expected value (123) to have typeof string',
-              actual: 'number',
-              expected: 'string',
               path: ['meta', 'type'],
             },
           ],
@@ -364,7 +354,7 @@ describe('lib/validator.ts', () => {
         expect(validate(null)).to.eql({
           conforms: false,
           value: undefined,
-          errors: [{message: 'expected value to be defined', actual: undefined}],
+          errors: [{message: 'expected value to be defined'}],
         })
       })
 
@@ -435,8 +425,6 @@ describe('lib/validator.ts', () => {
           errors: [
             {
               message: 'expected value (Anything Goes bar) to match /^foo.*bar$/',
-              actual: 'Anything Goes bar',
-              expected: /^foo.*bar$/,
             },
           ],
         })
@@ -451,8 +439,6 @@ describe('lib/validator.ts', () => {
           errors: [
             {
               message: 'expected value ({}) to have typeof string',
-              actual: 'object',
-              expected: 'string',
             },
           ],
         })
@@ -511,8 +497,6 @@ describe('lib/validator.ts', () => {
           errors: [
             {
               message: 'expected value (Hello, World) to match /missing/',
-              actual: 'Hello, World',
-              expected: /missing/,
             },
           ],
         })

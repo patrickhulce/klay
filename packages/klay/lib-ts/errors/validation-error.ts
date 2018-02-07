@@ -1,4 +1,4 @@
-import {assign, pick} from 'lodash'
+import {assign} from 'lodash'
 import {IValidationResult, IValidationResultError} from '../typedefs'
 import {Assertions} from './assertions'
 
@@ -10,11 +10,7 @@ export class ValidationError extends Error {
   }
 
   public asValidationResultError(validationResult?: IValidationResult): IValidationResultError {
-    const resultError = pick(this as any, [
-      'message',
-      'expected',
-      'actual',
-    ]) as IValidationResultError
+    const resultError: IValidationResultError = {message: this.message}
     if (validationResult && validationResult.pathToValue.length) {
       resultError.path = validationResult.pathToValue
     }
