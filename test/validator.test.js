@@ -213,6 +213,32 @@ describe('lib/validator.ts', () => {
         expect(validate('hello')).to.have.property('conforms', true)
       })
 
+      it('should support applies functions', () => {
+        const optionA = new Model({}, defaultOptions).type('string')
+        const optionB = new Model({}, defaultOptions).type('number')
+        const typeModel = new Model({}, defaultOptions).enum(['a', 'b'])
+        const valueModel = new Model({}, defaultOptions).enum([
+          {option: optionA, applies: result => result.rootValue.type === 'a'},
+          {option: optionB, applies: result => result.rootValue.type === 'b'},
+        ])
+
+        model = model.type('object').children({type: typeModel, value: valueModel})
+        expect(validate({type: 'a', value: 'hello'})).to.have.property('conforms', true)
+        expect(validate({type: 'b', value: 12})).to.have.property('conforms', true)
+        expect(validate({type: 'b', value: 'oops'})).to.eql({
+          conforms: false,
+          value: {type: 'b', value: 'oops'},
+          errors: [
+            {
+              actual: 'string',
+              expected: 'number',
+              message: 'expected value (oops) to have typeof number',
+              path: ['value'],
+            },
+          ],
+        })
+      })
+
       it('should provide useful errors when complex', () => {
         const optionA = new Model({}, defaultOptions).type('string')
         const optionB = new Model({}, defaultOptions).type('object')
@@ -285,7 +311,7 @@ describe('lib/validator.ts', () => {
             age: 123,
             meta: {type: 123},
             extra: 'foo',
-          })
+          }),
         ).to.eql({
           conforms: false,
           value: {

@@ -1,4 +1,4 @@
-import {cloneDeep, forEach, uniq} from 'lodash'
+import {cloneDeep, forEach, isNil, uniq} from 'lodash'
 import {assertions} from './errors/model-error'
 import {Validator} from './validator'
 import {ValidatorOptions} from './validator-options'
@@ -10,6 +10,7 @@ import {
   IModelChildrenInput,
   IModelChildrenMap,
   IModelCoercionMap,
+  IModelEnumOption,
   IModelSpecification,
   IModelValidationInput,
   IValidateOptions,
@@ -113,19 +114,21 @@ export class Model implements IModel {
   public enum(options: any[]): IModel {
     assertions.typeof(options, 'array', 'enum')
     const nextOptions = this.spec.enum || []
-    const isSimpleType = typeof options[0] === 'string' || typeof options[0] === 'number'
     options.forEach((option, index) => {
-      if (typeof option === 'string' || typeof option === 'number') {
-        assertions.ok(isSimpleType, 'cannot mix models and simple types in enum')
-        if (this.spec.type) {
-          assertions.typeof(option, this.spec.type, 'enum')
-        }
-      } else {
-        assertions.ok(!isSimpleType, 'cannot mix models and simpel types in enum')
-        assertions.ok(option && option.isKlayModel, 'expected enum option to be a model')
+      assertions.ok(!isNil(option), `enum.${index} must be defined`)
+      const optionToPush: IModelEnumOption =
+        typeof option.option !== 'undefined' ? option : {option}
+      const isSimpleType =
+        typeof optionToPush.option === 'number' || typeof optionToPush.option === 'string'
+      assertions.ok(
+        isSimpleType || optionToPush.option.isKlayModel,
+        'enum option must be a model or simple',
+      )
+      if (optionToPush.applies) {
+        assertions.typeof(optionToPush.applies, 'function', `enum.${index}.applies`)
       }
 
-      nextOptions.push(option)
+      nextOptions.push(optionToPush)
     })
 
     this.spec.enum = nextOptions
