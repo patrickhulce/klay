@@ -1,4 +1,4 @@
-import {get, omit} from 'lodash'
+import {get, omit, flatten} from 'lodash'
 import {assertions as validationAssertions, ValidationError} from './errors/validation-error'
 import {
   ALL_FORMATS,
@@ -123,10 +123,10 @@ export class Validator {
       failedValidationResults.push(potentialResult)
     }
 
-    const coalesced = ValidationResult.coalesce(validationResult, failedValidationResults)
+    const coalesced = failedValidationResults.map(result => result.toJSON().errors)
     const error: IValidationResultError = {
       message: 'expected value to match an enum option',
-      details: coalesced.toJSON().errors,
+      details: flatten(coalesced),
     }
 
     return validationResult
