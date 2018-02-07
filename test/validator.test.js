@@ -199,6 +199,20 @@ describe('lib/validator.ts', () => {
         expect(validate('hello')).to.have.property('conforms', true)
       })
 
+      it('should support deep complex types', () => {
+        const optionA = new Model({}, defaultOptions).type('string')
+        const optionB = new Model({}, defaultOptions).type('object')
+        const optionChildB = new Model({}, defaultOptions).type('object').required()
+        optionB.children({x: optionChildB})
+
+        model = model.enum([optionA, optionB])
+        expect(validate(true)).to.have.property('conforms', false)
+        expect(validate(1)).to.have.property('conforms', false)
+        expect(validate({x: {}})).to.have.property('conforms', true)
+        expect(validate({x: 1})).to.have.property('conforms', false)
+        expect(validate('hello')).to.have.property('conforms', true)
+      })
+
       it('should provide useful errors when complex', () => {
         const optionA = new Model({}, defaultOptions).type('string')
         const optionB = new Model({}, defaultOptions).type('object')
