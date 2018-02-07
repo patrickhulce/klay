@@ -1,4 +1,4 @@
-import {flatten, get, omit} from 'lodash'
+import {get, omit} from 'lodash'
 import {assertions as validationAssertions, ValidationError} from './errors/validation-error'
 import {
   ALL_FORMATS,
@@ -6,6 +6,7 @@ import {
   ICoerceFunction,
   IModel,
   IModelChild,
+  IModelEnumOption,
   IModelSpecification,
   IModelValidationInput,
   IValidateOptions,
@@ -79,9 +80,7 @@ export class Validator {
     }
   }
 
-  private _validateDefinition(
-    validationResult: IValidationResult,
-  ): IValidationResult {
+  private _validateDefinition(validationResult: IValidationResult): IValidationResult {
     const {value} = validationResult
 
     if (this._spec.required) {
@@ -103,33 +102,59 @@ export class Validator {
       .setIsFinished(finalValue === undefined || finalValue === null)
   }
 
+  private _validateEnumOption(
+    validationResult: IValidationResult,
+    option: IModelEnumOption,
+  ): IValidationResult {
+    if (typeof option.option === 'number' || typeof option.option === 'string') {
+      return this._runValidations(validationResult.clone(), result => {
+        validationAssertions.equal(result.value, option.option)
+        return result
+      })
+    }
+
+    const potentialModel = option.option as IModel
+    const potentialValidator = new Validator(potentialModel.spec, this._options)
+    return potentialValidator._validate(validationResult)
+  }
+
   private _validateEnum(validationResult: IValidationResult): IValidationResult {
     if (!this._spec.enum) {
       return validationResult
     }
 
-    const enumType = typeof this._spec.enum[0]
-    if (enumType === 'string' || enumType === 'number') {
-      validationAssertions.oneOf(validationResult.value, this._spec.enum)
+    const applicableOption = this._spec.enum.find(
+      option => !!option.applies && option.applies(validationResult),
+    )
+    if (applicableOption) {
+      return this._validateEnumOption(validationResult, applicableOption)
+    }
+
+    const remainingOptions = this._spec.enum
+      .filter(option => !option.applies)
+      .map(item => item.option)
+    const areAllSimpleTypes = remainingOptions.every(
+      item => typeof item === 'string' || typeof item === 'number',
+    )
+
+    if (areAllSimpleTypes) {
+      validationAssertions.oneOf(validationResult.value, remainingOptions)
       return validationResult
     }
 
-    const failedValidationResults: IValidationResult[] = []
-    for (const option of this._spec.enum) {
-      const potentialModel = option as IModel
-      const potentialValidator = new Validator(potentialModel.spec, this._options)
-      const potentialResult = potentialValidator._validate(validationResult)
+    const failedValidationResults: IValidationResultError[] = []
+    for (const item of this._spec.enum) {
+      const potentialResult = this._validateEnumOption(validationResult, item)
       if (potentialResult.conforms) {
         return validationResult.setValue(potentialResult.value)
       }
 
-      failedValidationResults.push(potentialResult)
+      failedValidationResults.push(...potentialResult.toJSON().errors)
     }
 
-    const coalesced = failedValidationResults.map(result => result.toJSON().errors)
     const error: IValidationResultError = {
       message: 'expected value to match an enum option',
-      details: flatten(coalesced),
+      details: failedValidationResults,
     }
 
     return validationResult
@@ -138,9 +163,7 @@ export class Validator {
       .setIsFinished(true)
   }
 
-  private _validateChildren(
-    validationResult: IValidationResult,
-  ): IValidationResult {
+  private _validateChildren(validationResult: IValidationResult): IValidationResult {
     if (!this._spec.children) {
       return validationResult
     }
