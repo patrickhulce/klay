@@ -1,5 +1,6 @@
 const expect = require('chai').expect
 const ValidationResult = require('../lib-ts/validation-result').ValidationResult
+const ValidationError = require('../lib-ts/errors/validation-error').ValidationError
 
 const defaults = {
   value: undefined,
@@ -47,6 +48,15 @@ describe('lib/validation-result.ts', () => {
     it('sets conforms false', () => {
       const result = create({conforms: false, isFinished: false})
       expect(result.setConforms(false)).to.include({conforms: false, isFinished: true})
+    })
+  })
+
+  describe('.assert', () => {
+    it('should throw validation error', () => {
+      const result = create({})
+      expect(result.assert(true, 'is fine')).to.equal(result)
+      expect(() => result.assert(false, '')).to.throw(ValidationError)
+      expect(() => result.assert(false, 'hello')).to.throw('hello')
     })
   })
 
