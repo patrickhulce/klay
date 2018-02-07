@@ -1,6 +1,6 @@
 import {assign, cloneDeep, difference, every, flatten, omit, pick} from 'lodash'
 import {assertions} from './errors/model-error'
-import {ValidationError} from './errors/validation-error'
+import {assertions as validationAssertions, ValidationError} from './errors/validation-error'
 import {
   IIntermediateValidationResult,
   IValidationResult,
@@ -56,6 +56,11 @@ export class ValidationResult implements IValidationResult {
     this.conforms = false
     this.isFinished = true
     this.errors = this.errors.concat(errorResult)
+    return this
+  }
+
+  public assert(value: boolean, message: string): ValidationResult {
+    validationAssertions.ok(value, message)
     return this
   }
 
