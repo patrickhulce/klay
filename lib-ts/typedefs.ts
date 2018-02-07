@@ -45,7 +45,7 @@ export interface IModel {
   coerce(coerce: ICoerceFunction, phase?: ValidationPhase): IModel
   coerce(coerce: IModelCoercionMap): IModel
   validations(validations: IModelValidationInput | IModelValidationInput[]): IModel
-  validate(value: any, options?: IValidateOptions): IValidationResult
+  validate(value: any, options?: IValidateOptions): IValidationResultJSON
 }
 
 export interface IModelSpecification {
@@ -84,12 +84,12 @@ export interface IModelCoercionMap {
 }
 
 export type ICoerceFunction = (
-  value: IInternalValidationResult,
+  value: IValidationResult,
   spec: IModelSpecification,
 ) => IIntermediateValidationResult
 
 export type IValidationFunction = (
-  value: IInternalValidationResult,
+  value: IValidationResult,
   spec: IModelSpecification,
 ) => void
 
@@ -102,22 +102,28 @@ export interface IValidationResultError {
   details?: any
 }
 
-export interface IValidationResult {
+export interface IValidationResultJSON {
   value: any
   conforms: boolean
   errors: IValidationResultError[]
 }
 
-export interface IIntermediateValidationResult extends IValidationResult {
+export interface IIntermediateValidationResult extends IValidationResultJSON {
   rootValue: any
   pathToValue: string[]
   isFinished: boolean
 }
 
-export interface IInternalValidationResult extends IIntermediateValidationResult {
-  setValue(value: any): IInternalValidationResult
-  setIsFinished(value: boolean): IInternalValidationResult
-  markAsErrored(error: Error): IInternalValidationResult
+export interface IValidationResult extends IIntermediateValidationResult {
+  setConforms(conforms: boolean): IValidationResult
+  setValue(value: any): IValidationResult
+  setIsFinished(value: boolean): IValidationResult
+  setErrors(errors: IValidationResultError[]): IValidationResult
+  markAsErrored(error: Error): IValidationResult
+
+  assert(value: boolean, message: string): IValidationResult
+  clone(): IValidationResult
+  toJSON(): IValidationResultJSON
 }
 
 export enum ModelType {
