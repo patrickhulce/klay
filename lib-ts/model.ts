@@ -13,7 +13,7 @@ import {
   IModelSpecification,
   IModelValidationInput,
   IValidateOptions,
-  IValidationResult,
+  IValidationResultJSON,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
   ModelType,
@@ -256,7 +256,7 @@ export class Model implements IModel {
     return this
   }
 
-  public validate(value: any, options?: IValidateOptions): IValidationResult {
+  public validate(value: any, options?: IValidateOptions): IValidationResultJSON {
     const validator = new Validator(this.spec, this._options)
     return validator.validate(value, options)
   }

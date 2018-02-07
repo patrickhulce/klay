@@ -1,4 +1,4 @@
-import {get, omit, flatten} from 'lodash'
+import {flatten, get, omit} from 'lodash'
 import {assertions as validationAssertions, ValidationError} from './errors/validation-error'
 import {
   ALL_FORMATS,
@@ -11,6 +11,7 @@ import {
   IValidateOptions,
   IValidationResult,
   IValidationResultError,
+  IValidationResultJSON,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
   ModelType,
@@ -29,9 +30,9 @@ export class Validator {
   }
 
   private _runValidations(
-    validationResult: ValidationResult,
+    validationResult: IValidationResult,
     fn?: ICoerceFunction | ICoerceFunction[],
-  ): ValidationResult {
+  ): IValidationResult {
     const fnIsEmptyArray = Array.isArray(fn) && !fn.length
     if (validationResult.isFinished || !fn || fnIsEmptyArray) {
       return validationResult
@@ -72,13 +73,15 @@ export class Validator {
       return typeCoercion
     }
 
-    return (input: ValidationResult) => {
+    return (input: IValidationResult) => {
       const next = this._runValidations(input, typeCoercion)
       return this._runValidations(next, formatCoercion || fallbackCoercion)
     }
   }
 
-  private _validateDefinition(validationResult: ValidationResult): ValidationResult {
+  private _validateDefinition(
+    validationResult: IValidationResult,
+  ): IValidationResult {
     const {value} = validationResult
 
     if (this._spec.required) {
@@ -100,7 +103,7 @@ export class Validator {
       .setIsFinished(finalValue === undefined || finalValue === null)
   }
 
-  private _validateEnum(validationResult: ValidationResult): ValidationResult {
+  private _validateEnum(validationResult: IValidationResult): IValidationResult {
     if (!this._spec.enum) {
       return validationResult
     }
@@ -111,7 +114,7 @@ export class Validator {
       return validationResult
     }
 
-    const failedValidationResults: ValidationResult[] = []
+    const failedValidationResults: IValidationResult[] = []
     for (const option of this._spec.enum) {
       const potentialModel = option as IModel
       const potentialValidator = new Validator(potentialModel.spec, this._options)
@@ -135,13 +138,15 @@ export class Validator {
       .setIsFinished(true)
   }
 
-  private _validateChildren(validationResult: ValidationResult): ValidationResult {
+  private _validateChildren(
+    validationResult: IValidationResult,
+  ): IValidationResult {
     if (!this._spec.children) {
       return validationResult
     }
 
     if (this._spec.type === ModelType.Array) {
-      const validationResults: ValidationResult[] = []
+      const validationResults: IValidationResult[] = []
       const childModel = this._spec.children as IModel
       const validator = new Validator(childModel.spec, this._options)
       for (let i = 0; i < validationResult.value.length; i++) {
@@ -158,7 +163,7 @@ export class Validator {
       const base = validationResult.clone().setValue([])
       return ValidationResult.coalesce(base, validationResults)
     } else if (this._spec.type === ModelType.Object) {
-      const validationResults: ValidationResult[] = []
+      const validationResults: IValidationResult[] = []
       const childModels = this._spec.children as IModelChild[]
       for (const child of childModels) {
         const item = validationResult.value[child.path]
@@ -179,7 +184,7 @@ export class Validator {
     return validationResult
   }
 
-  private _validateValue(validationResult: ValidationResult): ValidationResult {
+  private _validateValue(validationResult: IValidationResult): IValidationResult {
     let typeValidations: IModelValidationInput[] = []
     let formatValidations: IModelValidationInput[] = []
     if (this._spec.type) {
@@ -204,7 +209,7 @@ export class Validator {
     return validationResult
   }
 
-  private _validate(initialValidationResult: ValidationResult): ValidationResult {
+  private _validate(initialValidationResult: IValidationResult): IValidationResult {
     let validationResult = initialValidationResult.clone()
     const runValidations = (fn?: ICoerceFunction) => this._runValidations(validationResult, fn)
 
@@ -222,7 +227,7 @@ export class Validator {
     return validationResult.setIsFinished(true)
   }
 
-  public validate(value: any, options?: IValidateOptions): IValidationResult {
+  public validate(value: any, options?: IValidateOptions): IValidationResultJSON {
     const result = this._validate(ValidationResult.fromValue(value, value, []))
     if (!result.conforms && options && options.failLoudly) {
       throw ValidationError.fromResultError(result.errors[0])

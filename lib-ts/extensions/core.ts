@@ -4,15 +4,15 @@ import {
   ALL_FORMATS,
   IModelSpecification,
   IValidationFunction,
+  IValidationResult,
   IValidatorCoerce,
   IValidatorValidations,
   ModelType,
   ValidationPhase,
 } from '../typedefs'
-import {ValidationResult} from '../validation-result'
 
 function validateMinMax(getValue: (value: any) => number): IValidationFunction {
-  return (result: ValidationResult, spec: IModelSpecification) => {
+  return (result: IValidationResult, spec: IModelSpecification) => {
     if (typeof spec.min === 'number') {
       assertions.ok(getValue(result.value) >= spec.min, `expected value to be at least ${spec.min}`)
     }
