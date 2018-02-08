@@ -6,7 +6,6 @@ import {
   ICoerceFunction,
   IModel,
   IModelChild,
-  IModelEnumOption,
   IModelSpecification,
   IModelValidationInput,
   IValidateOptions,
@@ -102,49 +101,32 @@ export class Validator {
       .setIsFinished(finalValue === undefined || finalValue === null)
   }
 
-  private _validateEnumOption(
-    validationResult: IValidationResult,
-    option: IModelEnumOption,
-  ): IValidationResult {
-    if (typeof option.option === 'number' || typeof option.option === 'string') {
-      return this._runValidations(validationResult.clone(), result => {
-        validationAssertions.equal(result.value, option.option)
-        return result
-      })
-    }
-
-    const potentialModel = option.option as IModel
-    const potentialValidator = new Validator(potentialModel.spec, this._options)
-    return potentialValidator._validate(validationResult)
-  }
-
   private _validateEnum(validationResult: IValidationResult): IValidationResult {
     if (!this._spec.enum) {
       return validationResult
     }
 
-    const applicableOption = this._spec.enum.find(
-      option => !!option.applies && option.applies(validationResult),
-    )
-    if (applicableOption) {
-      return this._validateEnumOption(validationResult, applicableOption)
-    }
-
-    const remainingOptions = this._spec.enum
-      .filter(option => !option.applies)
-      .map(item => item.option)
-    const areAllSimpleTypes = remainingOptions.every(
-      item => typeof item === 'string' || typeof item === 'number',
-    )
-
-    if (areAllSimpleTypes) {
-      validationAssertions.oneOf(validationResult.value, remainingOptions)
+    const type = typeof this._spec.enum[0]
+    if (type === 'string' || type === 'number') {
+      validationAssertions.oneOf(validationResult.value, this._spec.enum)
       return validationResult
     }
 
+    const options = this._spec.enum as IModel[]
+    const applicableModel = options.find(
+      option => !!option.spec.applies && option.spec.applies(validationResult),
+    )
+
+    if (applicableModel) {
+      const validator = new Validator(applicableModel.spec, this._options)
+      return validator._validate(validationResult)
+    }
+
+    const remainingModels = options.filter(option => !option.spec.applies)
     const failedValidationResults: IValidationResultError[] = []
-    for (const item of this._spec.enum) {
-      const potentialResult = this._validateEnumOption(validationResult, item)
+    for (const model of remainingModels) {
+      const validator = new Validator(model.spec, this._options)
+      const potentialResult = validator._validate(validationResult)
       if (potentialResult.conforms) {
         return validationResult.setValue(potentialResult.value)
       }

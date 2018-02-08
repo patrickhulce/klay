@@ -37,7 +37,8 @@ export interface IModel {
   min(min: number | Date): IModel
   max(max: number | Date): IModel
   size(size: number): IModel
-  enum(options: any[]): IModel
+  enum(options: IModelEnumOption[]): IModel
+  applies(appliesFunc?: IModelAppliesFunction): IModel
   children(children: IModelChildrenInput): IModel
   pick(paths: string[]): IModel
   omit(paths: string[]): IModel
@@ -59,6 +60,7 @@ export interface IModelSpecification {
   coerce?: IModelCoercionMap
   validations?: IModelValidationInput[]
   enum?: IModelEnumOption[]
+  applies?: IModelAppliesFunction
 
   min?: number
   max?: number
@@ -66,10 +68,7 @@ export interface IModelSpecification {
   children?: IModel | IModelChild[]
 }
 
-export interface IModelEnumOption {
-  option: any,
-  applies?: IModelEnumAppliesFunction,
-}
+export type IModelEnumOption = string | number | IModel
 
 export interface IModelChild {
   path: string
@@ -80,7 +79,7 @@ export interface IModelChildrenMap {
   [key: string]: IModel
 }
 
-export type IModelEnumAppliesFunction = (result: IValidationResult) => boolean
+export type IModelAppliesFunction = (result: IValidationResult) => boolean
 
 export type IModelChildrenInput = IModelChildrenMap | IModel | IModelChild[]
 

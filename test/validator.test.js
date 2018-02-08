@@ -212,13 +212,14 @@ describe('lib/validator.ts', () => {
       })
 
       it('should support applies functions', () => {
-        const optionA = new Model({}, defaultOptions).type('string')
-        const optionB = new Model({}, defaultOptions).type('number')
+        const optionA = new Model({}, defaultOptions)
+          .type('string')
+          .applies(result => result.rootValue.type === 'a')
+        const optionB = new Model({}, defaultOptions)
+          .type('number')
+          .applies(result => result.rootValue.type === 'b')
         const typeModel = new Model({}, defaultOptions).enum(['a', 'b'])
-        const valueModel = new Model({}, defaultOptions).enum([
-          {option: optionA, applies: result => result.rootValue.type === 'a'},
-          {option: optionB, applies: result => result.rootValue.type === 'b'},
-        ])
+        const valueModel = new Model({}, defaultOptions).enum([optionA, optionB])
 
         model = model.type('object').children({type: typeModel, value: valueModel})
         expect(validate({type: 'a', value: 'hello'})).to.have.property('conforms', true)
