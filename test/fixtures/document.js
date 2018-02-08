@@ -4,15 +4,21 @@ module.exports = function() {
   const context = ModelContext.create()
   context.use({defaults: {required: true, strict: true}})
 
-  const HtmlMetadata = context.object().children({
-    title: context.string(),
-    version: context.string(),
-  })
+  const HtmlMetadata = context
+    .object()
+    .children({
+      title: context.string(),
+      version: context.string(),
+    })
+    .applies(result => result.rootValue.type === 'html')
 
-  const JsonMetadata = context.object().children({
-    type: context.string().enum(['object', 'array']),
-    size: context.integer().strict(false),
-  })
+  const JsonMetadata = context
+    .object()
+    .children({
+      type: context.string().enum(['object', 'array']),
+      size: context.integer().strict(false),
+    })
+    .applies(result => result.rootValue.type === 'json')
 
   const HtmlSource = context
     .object()
@@ -20,25 +26,19 @@ module.exports = function() {
       raw: context.string().min(8),
       text: context.string(),
     })
+    .applies(result => result.rootValue.type === 'html')
 
   const JsonSource = context
     .object()
     .strict(false)
+    .applies(result => result.rootValue.type === 'json')
 
-  const appliesHtml = result => result.rootValue.type === 'html'
-  const appliesJson = result => result.rootValue.type === 'json'
   const Document = context.object().children({
     id: context.uuid(),
     parentId: context.uuid(),
     type: context.string().enum(['html', 'json']),
-    metadata: context.object().enum([
-      {option: HtmlMetadata, applies: appliesHtml},
-      {option: JsonMetadata, applies: appliesJson}
-    ]),
-    source: context.object().enum([
-      {option: HtmlSource, applies: appliesHtml},
-      {option: JsonSource, applies: appliesJson}
-    ]),
+    metadata: context.object().enum([HtmlMetadata, JsonMetadata]),
+    source: context.object().enum([HtmlSource, JsonSource]),
     createdAt: context.date(),
     updatedAt: context.date(),
   })

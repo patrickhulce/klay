@@ -1,4 +1,4 @@
-import {cloneDeep, forEach, isNil, uniq} from 'lodash'
+import {cloneDeep, forEach, uniq} from 'lodash'
 import {assertions} from './errors/model-error'
 import {Validator} from './validator'
 import {ValidatorOptions} from './validator-options'
@@ -6,6 +6,7 @@ import {ValidatorOptions} from './validator-options'
 import {
   ICoerceFunction,
   IModel,
+  IModelAppliesFunction,
   IModelChild,
   IModelChildrenInput,
   IModelChildrenMap,
@@ -111,27 +112,30 @@ export class Model implements IModel {
     return this
   }
 
-  public enum(options: any[]): IModel {
+  public enum(options: IModelEnumOption[]): IModel {
     assertions.typeof(options, 'array', 'enum')
     const nextOptions = this.spec.enum || []
+
+    const type = typeof options[0]
     options.forEach((option, index) => {
-      assertions.ok(!isNil(option), `enum.${index} must be defined`)
-      const optionToPush: IModelEnumOption =
-        typeof option.option !== 'undefined' ? option : {option}
-      const isSimpleType =
-        typeof optionToPush.option === 'number' || typeof optionToPush.option === 'string'
-      assertions.ok(
-        isSimpleType || optionToPush.option.isKlayModel,
-        'enum option must be a model or simple',
-      )
-      if (optionToPush.applies) {
-        assertions.typeof(optionToPush.applies, 'function', `enum.${index}.applies`)
+      assertions.typeof(option, type, `enum.${index}`)
+      if (typeof option === 'object') {
+        assertions.ok(option && option.isKlayModel, 'expected enum to be a model')
       }
 
-      nextOptions.push(optionToPush)
+      nextOptions.push(option)
     })
 
     this.spec.enum = nextOptions
+    return this
+  }
+
+  public applies(applies?: IModelAppliesFunction): IModel {
+    if (typeof applies !== 'undefined') {
+      assertions.typeof(applies, 'function', 'applies')
+    }
+
+    this.spec.applies = applies
     return this
   }
 

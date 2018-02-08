@@ -171,36 +171,20 @@ describe('model.ts', () => {
   describe('.enum', () => {
     it('should set enum when simple types', () => {
       const model = new Model({}, defaultOptions).enum([1, 2])
-      expect(model.spec.enum).to.eql([{option: 1}, {option: 2}])
+      expect(model.spec.enum).to.eql([1, 2])
     })
 
     it('should set enum when models', () => {
       const optionA = new Model({}, defaultOptions).type('string')
       const optionB = new Model({}, defaultOptions).type('number')
       const model = new Model({}, defaultOptions).enum([optionA, optionB])
-      const options = [{option: optionA}, {option: optionB}]
-      expect(model.spec.enum).to.eql(options)
-    })
-
-    it('should set enum when model with applies', () => {
-      const optionA = new Model({}, defaultOptions).type('string')
-      const optionB = new Model({}, defaultOptions).type('number')
-      const options = [
-        {option: optionA},
-        {option: optionB, applies: () => true},
-      ]
-      const model = new Model({}, defaultOptions).enum(options)
-      expect(model.spec.enum).to.eql(options)
+      expect(model.spec.enum).to.eql([optionA, optionB])
     })
 
     it('should throw when non-model', () => {
       const model = new Model({}, defaultOptions)
-      expect(() => model.enum([1, {}])).to.throw()
-    })
-
-    it('should throw when applies is non-function', () => {
-      const model = new Model({}, defaultOptions)
-      expect(() => model.enum([1, {option: 1, applies: true}])).to.throw()
+      expect(() => model.enum([1, {}])).to.throw(/expected.*typeof number/)
+      expect(() => model.enum(['', 1])).to.throw(/expected.*typeof string/)
     })
   })
 
