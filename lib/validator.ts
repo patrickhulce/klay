@@ -11,7 +11,6 @@ import {
   IValidateOptions,
   IValidationResult,
   IValidationResultError,
-  IValidationResultJSON,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
   ModelType,
