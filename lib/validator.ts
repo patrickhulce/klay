@@ -232,12 +232,12 @@ export class Validator {
     return validationResult.setIsFinished(true)
   }
 
-  public validate(value: any, options?: IValidateOptions): IValidationResultJSON {
+  public validate(value: any, options?: IValidateOptions): IValidationResult {
     const result = this._validate(ValidationResult.fromValue(value, value, []))
     if (!result.conforms && options && options.failLoudly) {
       throw ValidationError.fromResultError(result.errors[0])
     }
 
-    return result.toJSON()
+    return result
   }
 }
