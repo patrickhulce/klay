@@ -1,6 +1,6 @@
-const ModelContext = require('../../lib-ts/model-context').ModelContext
+const ModelContext = require('../../lib/model-context').ModelContext
 
-module.exports = function() {
+module.exports = function () {
   const context = ModelContext.create()
   context.use({defaults: {required: true, strict: true}})
 
