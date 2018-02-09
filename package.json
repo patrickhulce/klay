@@ -2,7 +2,8 @@
   "name": "klay",
   "version": "0.0.0",
   "description": "Isomorphic and extensible validation library for JavaScript.",
-  "main": "./lib/klay.js",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "directories": {
     "example": "examples",
     "test": "test"
@@ -51,14 +52,6 @@
     "typescript": "^2.6.2"
   },
   "config": {
-    "eslint": {
-      "globals": [
-        "defineTest",
-        "relativeRequire",
-        "testPassingValues",
-        "testFailingValues"
-      ]
-    },
     "tslint": {
       "rules": {
         "whitespace": false,
