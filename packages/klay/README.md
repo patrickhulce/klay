@@ -7,6 +7,8 @@
 
 Isomorphic and extensible validation library for JavaScript.
 
+## [API Documentation](https://patrickhulce.github.io/klay/)
+
 ## Usage
 
 ### Install
