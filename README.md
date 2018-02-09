@@ -53,3 +53,25 @@ console.log(results.toJSON())
      { message: 'expected value (eleven) to have typeof number',
        path: ['age'] } ] }
 ```
+
+### Extend
+
+```js
+const klay = require('klay').defaultModelContext
+
+klay.use({
+  types: ['custom-type'],
+  defaults: {required: true, strict: true}
+})
+
+const myModel = klay
+  .object()
+  .children({
+    firstName: klay.string(),
+    lastName: klay.string(),
+    email: klay.email(),
+    age: klay.integer().optional(),
+    custom: klay.customType(),
+  })
+  .strict()
+```
