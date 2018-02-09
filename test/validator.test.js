@@ -23,7 +23,7 @@ describe('lib/validator.ts', () => {
     })
 
     const validate = (value, opts) => {
-      return new Validator(model.spec, validatorOptions).validate(value, opts)
+      return new Validator(model.spec, validatorOptions).validate(value, opts).toJSON()
     }
 
     it('should work with no type', () => {
