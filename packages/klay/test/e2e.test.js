@@ -1,13 +1,46 @@
 const expect = require('chai').expect
+const klay = require('../lib').defaultModelContext
+const documentModel = require('./fixtures/document')
 
 describe('klay', () => {
-  context('fixtures/document.js', () => {
-    const fixture = require('./fixtures/document.js')
-    let model
+  context('simple object', () => {
+    const model = klay
+      .object()
+      .children({
+        firstName: klay.string().required(),
+        lastName: klay.string().required(),
+        email: klay.email().required(),
+        age: klay.integer(),
+      })
+      .strict()
 
-    beforeEach(() => {
-      model = fixture()
+    it('should validate', () => {
+      const value = {
+        firstName: 'John',
+        lastName: 42,
+        email: 'invalid.com',
+        age: 'eleven',
+      }
+
+      const result = model.validate(value).toJSON()
+      expect(result).to.deep.include({
+        conforms: false,
+        value: {
+          firstName: 'John',
+          lastName: '42',
+          email: 'invalid.com',
+          age: 'eleven',
+        },
+        errors: [
+          {message: 'expected value (invalid.com) to be email', path: ['email']},
+          {message: 'expected value (eleven) to have typeof number', path: ['age']},
+        ],
+      })
     })
+  })
+
+  context('fixtures/document.js', () => {
+    const model = documentModel
 
     it('should pass valid html document', () => {
       const obj = {
@@ -20,7 +53,7 @@ describe('klay', () => {
         updatedAt: '2016-07-27T04:51:22.820Z',
       }
 
-      const validated = model.validate(obj)
+      const validated = model.validate(obj).toJSON()
       expect(validated).to.have.property('conforms', true)
       expect(validated)
         .to.have.property('value')
@@ -42,7 +75,7 @@ describe('klay', () => {
         updatedAt: '2016-07-27T04:51:22.820Z',
       }
 
-      const validated = model.validate(obj)
+      const validated = model.validate(obj).toJSON()
       expect(validated).to.have.property('conforms', true)
       expect(validated)
         .to.have.property('value')
@@ -65,7 +98,7 @@ describe('klay', () => {
         updatedAt: '2016-07-27T04:51:22.820Z',
       }
 
-      const validated = model.validate(obj)
+      const validated = model.validate(obj).toJSON()
       expect(validated).to.have.property('conforms', false)
       expect(validated)
         .to.have.property('errors')
@@ -96,7 +129,7 @@ describe('klay', () => {
         updatedAt: '2016-07-27T04:51:22.820Z',
       }
 
-      const validated = model.validate(obj)
+      const validated = model.validate(obj).toJSON()
       expect(validated).to.have.property('conforms', false)
       expect(validated)
         .to.have.property('errors')
