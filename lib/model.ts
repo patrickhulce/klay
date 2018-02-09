@@ -15,7 +15,7 @@ import {
   IModelSpecification,
   IModelValidationInput,
   IValidateOptions,
-  IValidationResultJSON,
+  IValidationResult,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
   ModelType,

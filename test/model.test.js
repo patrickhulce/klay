@@ -386,7 +386,7 @@ describe('lib/model.ts', () => {
   describe('.validate', () => {
     it('should validate value', () => {
       const model = new Model({}, defaultOptions).required()
-      expect(model.validate(undefined)).to.eql({
+      expect(model.validate(undefined).toJSON()).to.eql({
         conforms: false,
         value: undefined,
         errors: [{message: 'expected value to be defined'}],
