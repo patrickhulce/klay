@@ -1,7 +1,7 @@
 const expect = require('chai').expect
 const Model = require('../lib/model').Model
 
-describe('model.ts', () => {
+describe('lib/model.ts', () => {
   const defaultOptions = {
     types: ['number', 'string', 'array', 'object'],
     formats: {string: ['lowercase']},
