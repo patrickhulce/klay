@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const extension = require('../../lib-ts/extensions/strings')
+const extension = require('../../lib/extensions/strings')
 
 const testValues = shouldPass => (values, regexes) => {
   for (const value of values) {

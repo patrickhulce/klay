@@ -1,6 +1,6 @@
 const expect = require('chai').expect
-const ValidationResult = require('../lib-ts/validation-result').ValidationResult
-const ValidationError = require('../lib-ts/errors/validation-error').ValidationError
+const ValidationResult = require('../lib/validation-result').ValidationResult
+const ValidationError = require('../lib/errors/validation-error').ValidationError
 
 const defaults = {
   value: undefined,

@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const extension = require('../../lib-ts/extensions/dates')
+const extension = require('../../lib/extensions/dates')
 const utils = require('../utils')
 
 describe('lib/extensions/dates.ts', () => {
