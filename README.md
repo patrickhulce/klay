@@ -16,15 +16,15 @@ Isomorphic and extensible validation library for JavaScript.
 ### Validate
 
 ```js
-const klay = require('klay')
+const klay = require('klay').defaultModelContext
 
-const builders = klay().builders
-const myModel = builders
-  .object({
-    firstName: builders.string().required(),
-    lastName: builders.string().required(),
-    email: builders.email().required(),
-    age: builders.integer(),
+const myModel = klay
+  .object()
+  .children({
+    firstName: klay.string().required(),
+    lastName: klay.string().required(),
+    email: klay.email().required(),
+    age: klay.integer(),
   })
   .strict()
 
@@ -35,19 +35,19 @@ const results = myModel.validate({
   age: 'eleven',
 })
 
-console.log(results)
+console.log(results.toJSON())
+```
 
-// ValidationResult {
-//   value:
-//    { firstName: 'John',
-//      lastName: 42,
-//      email: 'invalid.com',
-//      age: 'eleven' },
-//   conforms: false,
-//   errors:
-//    [ { path: 'lastName',
-//        message: 'expected 42 to have typeof string' },
-//      { path: 'email',
-//        message: 'value should match /^\\S+@([0-9a-z-]+\\.?)+(\\.)?[0-9a-z-]+$/' },
-//      { path: 'age', message: 'value must be an integer' } ] }
+```js
+{ value:
+   { firstName: 'John',
+     lastName: '42',
+     email: 'invalid.com',
+     age: 'eleven' },
+  conforms: false,
+  errors:
+   [ { message: 'expected value (invalid.com) to be email',
+       path: ['email'] },
+     { message: 'expected value (eleven) to have typeof number',
+       path: ['age'] } ] }
 ```
