@@ -95,6 +95,12 @@ export class Assertions {
     })
   }
 
+  // tslint:disable
+  public getRepresentation(value: any, limit: number = 3): string {
+    return Assertions.getRepresentation(value, limit)
+  }
+  // tslint:enable
+
   public static getRepresentation(value: any, limit: number = 3): string {
     if (!value || typeof value !== 'object' || limit <= 0 || value instanceof RegExp) {
       return String(value)

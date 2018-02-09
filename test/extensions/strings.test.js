@@ -1,10 +1,12 @@
 const expect = require('chai').expect
 const extension = require('../../lib/extensions/strings')
 
-const testValues = shouldPass => (values, regexes) => {
+const testValues = shouldPass => (values, funcs) => {
   for (const value of values) {
-    for (const regex of regexes) {
-      shouldPass ? expect(value).to.match(regex) : expect(value).to.not.match(regex)
+    for (const func of funcs) {
+      shouldPass ?
+        expect(() => func({value})).to.not.throw() :
+        expect(() => func({value})).to.throw()
     }
   }
 }
