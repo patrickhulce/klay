@@ -15,7 +15,7 @@ node_js:
   - v9
   - v8
 before_install:
-  - npm install -g coveralls
+  - npm install -g coveralls nyc
 script:
   - npm run build
   - npm run test:lint
@@ -23,6 +23,6 @@ script:
   - npm run test:coverage
 after_success:
   - npm run build:docs
-  - cat ./coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
+  - nyc report --reporter=text-lcov | coveralls || echo 'Failed to upload to coveralls...'
   # Disabled while working on TS rewrite
   # - npm run semantic-release
