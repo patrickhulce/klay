@@ -1,5 +1,6 @@
-import {values} from 'lodash'
-import {IValidatorFormats, IValidatorValidations, ModelType} from '../typedefs'
+import {forEach, values} from 'lodash'
+import {assertions, ValidationError} from '../errors/validation-error'
+import {IValidationResult, IValidatorFormats, IValidatorValidations, ModelType} from '../typedefs'
 
 function composeRegexes(regexes: RegExp[]): RegExp {
   return regexes.reduce((regexp, part) => new RegExp(regexp.source + part.source))
@@ -44,3 +45,15 @@ export const validations: IValidatorValidations = {
     ],
   },
 }
+
+forEach(validations[ModelType.String], (regexes, format) => {
+  const regex = regexes[0] as RegExp
+  regexes[0] = (result: IValidationResult) => {
+    if (!regex.test(result.value)) {
+      const repr = assertions.getRepresentation(result.value)
+      throw new ValidationError(`expected value (${repr}) to be ${format}`)
+    }
+
+    return result
+  }
+})
