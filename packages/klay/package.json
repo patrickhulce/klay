@@ -10,13 +10,13 @@
   "scripts": {
     "build": "npm run build:ts",
     "build:ts": "tsc",
-    "build:docs": "typedoc --mode file --out ./docs ./lib-ts",
+    "build:docs": "typedoc --mode file --out ./docs ./lib",
     "test": "npm run test:lint && npm run test:tslint && npm run test:unit",
-    "test:lint": "lint",
-    "test:tslint": "lint -t typescript './lib-ts/**/*.ts' --ignore './lib-ts/**/*.d.ts'",
-    "test:unit": "mocha --reporter spec --require source-map-support/register --require test/bootstrap 'test/**/*.test.js'",
+    "test:lint": "lint -t test './test/**/*.js'",
+    "test:tslint": "lint -t typescript './lib/**/*.ts' --ignore './lib/**/*.d.ts'",
+    "test:unit": "mocha --reporter spec --require source-map-support/register 'test/**/*.test.js'",
     "test:coverage": "nyc npm run test:unit",
-    "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
+    "test:watch": "npm run test:unit -- --watch",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {

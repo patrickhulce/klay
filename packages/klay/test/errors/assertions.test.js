@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const Assertions = require('../../lib-ts/errors/assertions').Assertions
+const Assertions = require('../../lib/errors/assertions').Assertions
 
 describe('errors/assertions.ts', () => {
   const assertions = new Assertions(msg => new Error(msg))

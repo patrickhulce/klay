@@ -1,4 +1,4 @@
-const ValidationResult = require('../lib-ts/validation-result').ValidationResult
+const ValidationResult = require('../lib/validation-result').ValidationResult
 
 module.exports = {
   createValidationResult(value) {
@@ -10,5 +10,5 @@ module.exports = {
       rootValue: value,
       pathToValue: [],
     })
-  }
+  },
 }

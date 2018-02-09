@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 const expect = require('chai').expect
-const extension = require('../../lib-ts/extensions/core')
+const extension = require('../../lib/extensions/core')
 const vr = require('../utils').createValidationResult
 
 const coercions = extension.coerce
