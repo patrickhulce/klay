@@ -1,4 +1,3 @@
-import {ValidationPhase} from 'klay'
 
 export interface IDatabaseOptions {
   spec: IDatabaseSpecification

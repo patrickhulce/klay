@@ -12,7 +12,8 @@ defineTest('helpers/gatherDbOptions.js', gatherDbOptions => {
       {name: 'id', model: types.integer().primaryKey().autoincrement().unique()},
       {name: 'email', model: types.string().unique()},
       {name: 'name', model: types.string().required()},
-      {name: 'createdAt', model: types.date().dbindex('desc').dbautomanage('create', 'isotimestamp')},
+      {name: 'createdAt', model: types.date().dbindex('desc')
+        .dbautomanage('create', 'isotimestamp')},
     ]
   })
 

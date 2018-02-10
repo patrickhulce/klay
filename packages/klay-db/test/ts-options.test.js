@@ -120,7 +120,7 @@ describe.only('lib/options.ts', () => {
     })
   })
 
-  describe.only('.constraint', () => {
+  describe('.constraint', () => {
     let opts
 
     beforeEach(() => {
@@ -209,7 +209,7 @@ describe.only('lib/options.ts', () => {
     })
   })
 
-  describe.only('.index', () => {
+  describe('.index', () => {
     let opts
 
     beforeEach(() => {
@@ -242,7 +242,7 @@ describe.only('lib/options.ts', () => {
     })
   })
 
-  describe('.toObject', () => {
+  describe.skip('.toObject', () => {
     const now = () => new Date()
     const checksum = item => item.id * Math.random()
 

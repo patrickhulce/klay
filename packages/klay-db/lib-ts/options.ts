@@ -1,21 +1,21 @@
+// tslint:disable-next-line
 import {assertions, ModelError} from 'klay/lib/errors/model-error'
-import {
-  IDatabaseSpecification,
-  IDatabaseOptions,
-  IAutomanageProperty,
-  IConstraint,
-  PropertyPath,
-  DatabaseEvent,
-  DatabasePhase,
-  SupplyWithPreset,
-  ISupplyWithFunction,
-  ConstraintType,
-  IIndexProperty,
-  IndexDirection,
-  IIndexPropertyInput,
-} from './typedefs'
 import {values} from 'lodash'
 import {v4 as uuid} from 'uuid'
+import {
+  ConstraintType,
+  DatabaseEvent,
+  DatabasePhase,
+  IAutomanageProperty,
+  IConstraint,
+  IDatabaseOptions,
+  IDatabaseSpecification,
+  IIndexProperty,
+  IIndexPropertyInput,
+  IndexDirection,
+  ISupplyWithFunction,
+  SupplyWithPreset,
+} from './typedefs'
 
 export class DatabaseOptions implements IDatabaseOptions {
   public spec: IDatabaseSpecification
@@ -30,7 +30,6 @@ export class DatabaseOptions implements IDatabaseOptions {
     assertions.typeof(property.property, 'array', 'automanage.propertyPath')
     assertions.oneOf(property.event, values(DatabaseEvent), 'automanage.event')
     assertions.oneOf(property.phase, values(DatabasePhase), 'automanage.phase')
-
 
     const automanage = this.spec.automanage || []
     automanage.push(property)
@@ -71,7 +70,7 @@ export class DatabaseOptions implements IDatabaseOptions {
   }
 
   private static _determineSupplyWith(
-    supplyWith: ISupplyWithFunction | SupplyWithPreset
+    supplyWith: ISupplyWithFunction | SupplyWithPreset,
   ): ISupplyWithFunction | SupplyWithPreset {
     if (supplyWith === SupplyWithPreset.Autoincrement || typeof supplyWith === 'function') {
       return supplyWith
@@ -83,7 +82,7 @@ export class DatabaseOptions implements IDatabaseOptions {
       case SupplyWithPreset.ISOTimestamp:
         return () => new Date().toISOString()
       case SupplyWithPreset.UUID:
-        return () => uuid()
+        return uuid
       default:
         throw new ModelError('invalid automanage supplyWith')
     }
