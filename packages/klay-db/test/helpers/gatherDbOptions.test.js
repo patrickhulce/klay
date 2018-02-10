@@ -2,15 +2,19 @@ const klay = require('klay')
 const klayDb = require('../../lib/extension')
 
 defineTest('helpers/gatherDbOptions.js', gatherDbOptions => {
-  const inst = klay().use(klayDb())
-  const types = inst.builders
+  let types, children
 
-  const children = [
-    {name: 'id', model: types.integer().primaryKey().autoincrement().unique()},
-    {name: 'email', model: types.string().unique()},
-    {name: 'name', model: types.string().required()},
-    {name: 'createdAt', model: types.date().dbindex('desc').dbautomanage('create', 'isotimestamp')},
-  ]
+  beforeEach(() => {
+    const inst = klay().use(klayDb())
+    types = inst.builders
+
+    children = [
+      {name: 'id', model: types.integer().primaryKey().autoincrement().unique()},
+      {name: 'email', model: types.string().unique()},
+      {name: 'name', model: types.string().required()},
+      {name: 'createdAt', model: types.date().dbindex('desc').dbautomanage('create', 'isotimestamp')},
+    ]
+  })
 
   it('should not fail when values are undefined', () => {
     gatherDbOptions(undefined, undefined).toObject().should.eql({})

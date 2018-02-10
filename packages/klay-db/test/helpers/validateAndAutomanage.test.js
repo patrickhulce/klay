@@ -4,25 +4,29 @@ const klay = require('klay')
 const klayDb = require('../../lib/extension')
 
 defineTest('helpers/validateAndAutomanage.js', validateAndAutomanageFactory => {
-  const inst = klay().use(klayDb())
-  const types = inst.builders
+  let types, children, model
 
-  const children = [
-    {name: 'id', model: types.integerId().required()},
-    {name: 'longId', model: types.uuid().dbautomanage('create', 'uuid')},
-    {name: 'email', model: types.string()},
-    {name: 'age', model: types.integer().required()},
-    {name: 'name', model: types.string().required()},
-    {name: 'checksum', model: types.string().required()
-      .dbautomanage('*', 'post-validate', item => (item.age * 5) + item.name)},
-    {name: 'changed', model: types.boolean()
-      .dbautomanage('create', () => false)
-      .dbautomanage('update', () => true)},
-    {name: 'createdAt', model: types.createdAt()},
-    {name: 'updatedAt', model: types.updatedAt()},
-  ]
+  beforeEach(() => {
+    const inst = klay().use(klayDb())
+    types = inst.builders
 
-  const model = types.object(children)
+    children = [
+      {name: 'id', model: types.integerId().required()},
+      {name: 'longId', model: types.uuid().dbautomanage('create', 'uuid')},
+      {name: 'email', model: types.string()},
+      {name: 'age', model: types.integer().required()},
+      {name: 'name', model: types.string().required()},
+      {name: 'checksum', model: types.string().required()
+        .dbautomanage('*', 'post-validate', item => (item.age * 5) + item.name)},
+      {name: 'changed', model: types.boolean()
+        .dbautomanage('create', () => false)
+        .dbautomanage('update', () => true)},
+      {name: 'createdAt', model: types.createdAt()},
+      {name: 'updatedAt', model: types.updatedAt()},
+    ]
+
+    model = types.object(children)
+  })
 
   context('when event is create', () => {
     let validateAndAutomanage
