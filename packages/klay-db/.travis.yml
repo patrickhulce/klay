@@ -15,4 +15,4 @@ script:
 after_success:
   - cat ./coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
   - npm run build:aliases
-  - npm run semantic-release
+  # - npm run semantic-release

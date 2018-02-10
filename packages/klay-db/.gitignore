@@ -1,3 +1,10 @@
-node_modules/
 coverage/
+node_modules/
+.nyc_output/
+
+lib-ts/**/*.js
+lib-ts/**/*.js.map
+lib-ts/**/*.d.ts
+
+yarn-error.log
 npm-debug.log
