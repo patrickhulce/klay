@@ -4184,9 +4184,9 @@ samsam@1.x:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/samsam/-/samsam-1.3.0.tgz#8d1d9350e25622da30de3e44ba692b5221ab7c50"
 
-semantic-release@v11.1.0:
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/semantic-release/-/semantic-release-11.1.0.tgz#db0316065d7612d1db5a2e26aaa0c3f7edebb6c3"
+semantic-release@^11.1.0:
+  version "11.2.0"
+  resolved "https://registry.yarnpkg.com/semantic-release/-/semantic-release-11.2.0.tgz#d607a821a0b31dfaf60f7af4fef169334653da43"
   dependencies:
     "@semantic-release/commit-analyzer" "^5.0.0"
     "@semantic-release/condition-travis" "^7.0.0"
