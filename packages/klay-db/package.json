@@ -5,12 +5,12 @@
   "main": "./lib/extension.js",
   "scripts": {
     "test": "npm run test:lint && npm run test:unit",
-    "test:lint": "xo 'lib/**/*.js' 'test/**/*.js'",
+    "test:lint": "lint",
     "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
     "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**/*.test.js'",
     "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
-    "prepublish": "./node_modules/.bin/generate-export-aliases",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "build:aliases": "generate-export-aliases",
+    "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",
@@ -22,16 +22,6 @@
     "url": "https://github.com/patrickhulce/klay-db/issues"
   },
   "homepage": "https://github.com/patrickhulce/klay-db#readme",
-  "xo": {
-    "env": [
-      "node",
-      "mocha",
-      "es6"
-    ],
-    "global": [
-      "defineTest"
-    ]
-  },
   "config": {
     "exportAliases": {
       "helpers": "./lib/helpers/index.js",
@@ -39,6 +29,11 @@
     },
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
+    },
+    "eslint": {
+      "globals": [
+        "defineTest"
+      ]
     }
   },
   "dependencies": {
@@ -46,16 +41,16 @@
     "uuid": "^3.0.0"
   },
   "devDependencies": {
+    "@patrickhulce/lint": "^2.0.2",
     "chai": "^3.5.0",
     "cz-conventional-changelog": "^1.2.0",
     "generate-export-aliases": "^1.0.0",
     "istanbul": "^0.4.5",
     "klay": "^1.2.0",
     "mocha": "^3.0.2",
-    "semantic-release": "^6.3.2",
+    "semantic-release": "^11.2.0",
     "sinon": "^1.17.5",
-    "sinon-chai": "^2.8.0",
-    "xo": "patrickhulce/xo#master"
+    "sinon-chai": "^2.8.0"
   },
   "peerDependencies": {
     "klay": "^1.2.0"

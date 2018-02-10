@@ -87,9 +87,10 @@ function validateAutomanaged(automanage) {
 function validateConstraint(constraint) {
   let properties = constraint.properties
   const allowedTypes = ['primary', 'unique', 'reference', 'immutable', 'custom']
-  properties = constraint.properties = _.isArray(properties) ? properties : [properties];
+  constraint.properties = _.isArray(properties) ? properties : [properties]
+  properties = constraint.properties
 
-  [
+  ;[
     [_.every(properties, property => typeof property === 'string'), 'properties'],
     [_.includes(allowedTypes, constraint.type), 'type'],
     [typeof constraint.meta === 'object', 'meta'],

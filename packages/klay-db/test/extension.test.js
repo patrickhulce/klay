@@ -25,7 +25,9 @@ defineTest('extension.js', extension => {
         model.spec.should.have.property('type', 'number')
         model.spec.should.have.property('format', 'integer')
         model.spec.should.have.property('db').eql({
-          automanaged: [{event: 'create', step: 'insert', supplyWith: 'autoincrement', property: n}],
+          automanaged: [
+            {event: 'create', step: 'insert', supplyWith: 'autoincrement', property: n},
+          ],
           constraints: [{name: `primary:${n}`, properties: [n], type: 'primary', meta: {}}],
         })
       })
@@ -129,7 +131,8 @@ defineTest('extension.js', extension => {
     })
 
     it('should update the db property of the spec', () => {
-      const model = inst.builders.object()
+      const model = inst.builders
+        .object()
         .dbindexChildren('id')
         .dbindexChildren('created_at', 'desc')
         .dbautomanageChildren('created_at', 'create', generateDate)
@@ -153,9 +156,9 @@ defineTest('extension.js', extension => {
     describe('#dbindex', () => {
       it('should update the index property of db options', () => {
         const model = inst.builders.object().dbindex('desc')
-        model.spec.should.have.deep.property('db.indexes.0').eql([
-          {property: '__childplaceholder__', direction: 'desc'},
-        ])
+        model.spec.should.have.deep
+          .property('db.indexes.0')
+          .eql([{property: '__childplaceholder__', direction: 'desc'}])
       })
     })
 
@@ -163,8 +166,10 @@ defineTest('extension.js', extension => {
       it('should update the constraints property of db options', () => {
         const model = inst.builders.object().dbconstrain('primary')
         model.spec.should.have.deep.property('db.constraints.0').eql({
-          properties: ['__childplaceholder__'], type: 'primary',
-          name: 'primary:__childplaceholder__', meta: {},
+          properties: ['__childplaceholder__'],
+          type: 'primary',
+          name: 'primary:__childplaceholder__',
+          meta: {},
         })
       })
     })
@@ -172,17 +177,18 @@ defineTest('extension.js', extension => {
     describe('#dbautomanage', () => {
       it('should update the automanaged property of db options', () => {
         const model = inst.builders.object().dbautomanage('create', () => null)
-        model.spec.should.have.deep.property('db.automanaged.0.property').eql('__childplaceholder__')
+        model.spec.should.have.deep
+          .property('db.automanaged.0.property')
+          .eql('__childplaceholder__')
       })
     })
 
     describe('#dbindexChildren', () => {
       it('should update the index property of db options', () => {
         const model = inst.builders.object().dbindexChildren(['foo', '-bar'])
-        model.spec.should.have.deep.property('db.indexes.0').eql([
-          {property: 'foo', direction: 'asc'},
-          {property: 'bar', direction: 'desc'},
-        ])
+        model.spec.should.have.deep
+          .property('db.indexes.0')
+          .eql([{property: 'foo', direction: 'asc'}, {property: 'bar', direction: 'desc'}])
       })
     })
 
@@ -190,14 +196,19 @@ defineTest('extension.js', extension => {
       it('should update the constraints property of db options', () => {
         const model = inst.builders.object().dbconstrainChildren('id', 'primary')
         model.spec.should.have.deep.property('db.constraints.0').eql({
-          properties: ['id'], type: 'primary', name: 'primary:id', meta: {},
+          properties: ['id'],
+          type: 'primary',
+          name: 'primary:id',
+          meta: {},
         })
       })
     })
 
     describe('#dbautomanageChildren', () => {
       it('should update the automanaged property of db options', () => {
-        const model = inst.builders.object().dbautomanageChildren('created_at', 'create', () => null)
+        const model = inst.builders
+          .object()
+          .dbautomanageChildren('created_at', 'create', () => null)
         model.spec.should.have.deep.property('db.automanaged.0.property').eql('created_at')
       })
     })
@@ -206,8 +217,10 @@ defineTest('extension.js', extension => {
       it('should add primary constraint', () => {
         const model = inst.builders.string().primaryKey()
         model.spec.should.have.deep.property('db.constraints.0').eql({
-          properties: ['__childplaceholder__'], type: 'primary',
-          name: 'primary:__childplaceholder__', meta: {},
+          properties: ['__childplaceholder__'],
+          type: 'primary',
+          name: 'primary:__childplaceholder__',
+          meta: {},
         })
       })
     })
@@ -216,8 +229,10 @@ defineTest('extension.js', extension => {
       it('should add unique constraint', () => {
         const model = inst.builders.string().unique()
         model.spec.should.have.deep.property('db.constraints.0').eql({
-          properties: ['__childplaceholder__'], type: 'unique',
-          name: 'unique:__childplaceholder__', meta: {},
+          properties: ['__childplaceholder__'],
+          type: 'unique',
+          name: 'unique:__childplaceholder__',
+          meta: {},
         })
       })
     })
@@ -226,8 +241,10 @@ defineTest('extension.js', extension => {
       it('should add immutable constraint', () => {
         const model = inst.builders.string().immutable()
         model.spec.should.have.deep.property('db.constraints.0').eql({
-          properties: ['__childplaceholder__'], type: 'immutable',
-          name: 'immutable:__childplaceholder__', meta: {},
+          properties: ['__childplaceholder__'],
+          type: 'immutable',
+          name: 'immutable:__childplaceholder__',
+          meta: {},
         })
       })
     })
@@ -236,8 +253,10 @@ defineTest('extension.js', extension => {
       it('should add autoincrement automanaged', () => {
         const model = inst.builders.string().autoincrement()
         model.spec.should.have.deep.property('db.automanaged.0').eql({
-          property: '__childplaceholder__', event: 'create',
-          step: 'insert', supplyWith: 'autoincrement',
+          property: '__childplaceholder__',
+          event: 'create',
+          step: 'insert',
+          supplyWith: 'autoincrement',
         })
       })
     })
