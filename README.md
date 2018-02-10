@@ -67,11 +67,10 @@ klay.use({
 const myModel = klay
   .object()
   .children({
-    firstName: klay.string(),
-    lastName: klay.string(),
-    email: klay.email(),
+    firstName: klay.string(), // required by default
+    lastName: klay.string(), // required by default
+    email: klay.email(), // required by default
     age: klay.integer().optional(),
     custom: klay.customType(),
   })
-  .strict()
 ```
