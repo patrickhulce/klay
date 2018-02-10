@@ -24,5 +24,4 @@ script:
 after_success:
   - npm run build:docs
   - nyc report --reporter=text-lcov | coveralls || echo 'Failed to upload to coveralls...'
-  # Disabled while working on TS rewrite
-  # - npm run semantic-release
+  - npm run semantic-release
