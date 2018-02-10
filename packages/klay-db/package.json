@@ -4,12 +4,15 @@
   "description": "Extensions for klay to add generic information typically used for database interactions.",
   "main": "./lib/extension.js",
   "scripts": {
-    "test": "npm run test:lint && npm run test:unit",
+    "build": "npm run build:ts",
+    "build:aliases": "generate-export-aliases",
+    "build:ts": "tsc",
+    "test": "npm run test:lint && npm run test:tslint && npm run test:unit",
     "test:lint": "lint",
-    "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
+    "test:tslint": "lint -t typescript './lib-ts/**/*.ts' --ignore './lib-ts/**/*.d.ts'",
+    "test:unit": "mocha --reporter spec --require source-map-support/register --require test/bootstrap 'test/**/*.test.js'",
     "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**/*.test.js'",
     "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
-    "build:aliases": "generate-export-aliases",
     "semantic-release": "semantic-release"
   },
   "repository": {
@@ -25,7 +28,7 @@
   "config": {
     "exportAliases": {
       "helpers": "./lib/helpers/index.js",
-      "options": "./lib/Options.js"
+      "options": "./lib/options.js"
     },
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
@@ -42,6 +45,7 @@
   },
   "devDependencies": {
     "@patrickhulce/lint": "^2.0.2",
+    "@types/uuid": "^3.4.3",
     "chai": "^4.1.2",
     "cz-conventional-changelog": "^1.2.0",
     "generate-export-aliases": "^1.0.0",
@@ -51,6 +55,9 @@
     "semantic-release": "^11.2.0",
     "sinon": "^4.2.3",
     "sinon-chai": "^2.14.0",
+    "source-map-support": "^0.5.3",
+    "tslint": "^5.9.1",
+    "typescript": "^2.7.1"
   },
   "peerDependencies": {
     "klay": "^1.2.0"
