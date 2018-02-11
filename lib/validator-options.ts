@@ -3,6 +3,7 @@ import {assertions} from './errors/model-error'
 import {
   ALL_FORMATS,
   FALLBACK_FORMAT,
+  IModelHooks,
   IModelSpecification,
   IValidatorCoerce,
   IValidatorFormats,
@@ -20,6 +21,7 @@ export class ValidatorOptions implements IValidatorOptions {
   public validations: IValidatorValidations
   public methods: IValidatorMethods
   public defaults: IModelSpecification
+  public hooks: IModelHooks
 
   public constructor(options: IValidatorOptionsUnsafe) {
     const types = cloneDeep(options.types || [])
@@ -28,6 +30,7 @@ export class ValidatorOptions implements IValidatorOptions {
     const validations = cloneDeep(options.validations || {})
     const methods = cloneDeep(options.methods || {})
     const defaults = cloneDeep(options.defaults || {})
+    const hooks = cloneDeep(options.hooks || {} as IModelHooks) // tslint:disable-line
 
     assertions.typeof(types, 'array')
     forEach(types, type => assertions.typeof(type, 'string'))
@@ -75,12 +78,19 @@ export class ValidatorOptions implements IValidatorOptions {
       assertions.typeof(func, 'function')
     })
 
+    assertions.typeof(hooks, 'object')
+    forEach(hooks, funcs => {
+      assertions.typeof(funcs, 'array')
+      forEach(funcs, func => assertions.typeof(func, 'function'))
+    })
+
     this.types = types
     this.formats = formats
     this.coerce = coerce
     this.validations = validations
     this.methods = methods
     this.defaults = defaults
+    this.hooks = hooks
   }
 
   public clone(): IValidatorOptions {

@@ -51,6 +51,7 @@ describe('lib/validator-options.ts', () => {
       expect(() => new Options({types: ['string'], formats: {whaa: []}})).to.throw()
       expect(() => new Options({types: ['string'], validations: {whaa: []}})).to.throw()
       expect(() => new Options({types: ['string'], validations: {string: []}})).to.throw()
+      expect(() => new Options({hooks: {value: 1}})).to.throw()
     })
   })
 
@@ -108,6 +109,7 @@ describe('lib/validator-options.ts', () => {
       const options = Options.merge(inputA, inputB)
       expect(options).to.eql({
         defaults: {},
+        hooks: {},
         types: ['string', 'number'],
         formats: {string: [], number: []},
         methods: {methodA, methodB},
@@ -131,6 +133,19 @@ describe('lib/validator-options.ts', () => {
       const inputC = {defaults: {type: 'number'}}
       const options = Options.merge(inputA, inputB, inputC)
       expect(options.defaults).to.eql({required: false, type: 'number'})
+    })
+
+    it('merges hooks', () => {
+      const hookA = () => 1
+      const hookB = () => 2
+      const inputA = {hooks: {construction: [hookA]}}
+      const inputB = {hooks: {construction: [hookB]}}
+      const inputC = {hooks: {'set-children': [hookB]}}
+      const options = Options.merge(inputA, inputB, inputC)
+      expect(options.hooks).to.eql({
+        'construction': [hookA, hookB],
+        'set-children': [hookB],
+      })
     })
 
     it('merges more than two options', () => {

@@ -33,6 +33,13 @@ describe('lib/model.ts', () => {
       expect(model.foo(1, 2, 'woot')).to.equal('return value')
       expect(fooArgs).to.eql([[model, 1, 2, 'woot']])
     })
+
+    it('should run hooks', () => {
+      const hooks = {construction: [model => model.spec.foo = 'bar']}
+      const options = {...defaultOptions, hooks}
+      const model = new Model({}, options)
+      expect(model.spec.foo).to.eql('bar')
+    })
   })
 
   describe('.type', () => {
@@ -199,6 +206,28 @@ describe('lib/model.ts', () => {
       const childModel = new Model({}, defaultOptions).type('string')
       const model = new Model({}, defaultOptions).type('object').children({id: childModel})
       expect(model.spec.children).to.eql([{path: 'id', model: childModel}])
+    })
+
+    it('should run hooks when array', () => {
+      const childModel = new Model({}, defaultOptions).type('string')
+      const hooks = {'set-children': [model => model.spec.foo = 'bar']}
+      const options = {...defaultOptions, hooks}
+
+      let model = new Model({}, options).type('array')
+      expect(model.spec.foo).to.eql(undefined)
+      model = model.children(childModel)
+      expect(model.spec.foo).to.eql('bar')
+    })
+
+    it('should run hooks when object', () => {
+      const childModel = new Model({}, defaultOptions).type('string')
+      const hooks = {'set-children': [model => model.spec.foo = 'bar']}
+      const options = {...defaultOptions, hooks}
+
+      let model = new Model({}, options).type('object')
+      expect(model.spec.foo).to.eql(undefined)
+      model = model.children({thing: childModel})
+      expect(model.spec.foo).to.eql('bar')
     })
 
     it('should throw when type is array and input is not valid', () => {
