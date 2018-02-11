@@ -37,10 +37,14 @@ export class Model {
 
     forEach(this._options.methods, (method, name) => {
       const model = this as any
-      model[name] = (...args: any[]) => method(this, ...args)
+      model[name] = (...args: any[]) => method(model, ...args)
     })
 
     this._runHooks(ModelHookPhase.Construction)
+  }
+
+  public clone(): IModel {
+    return new Model(cloneDeep(this.spec), this._options)
   }
 
   public type(type: string): IModel {

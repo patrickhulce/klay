@@ -27,6 +27,10 @@ export interface IModelContext {
 export interface IModel {
   isKlayModel: boolean
   spec: IModelSpecification
+
+  clone(): IModel
+  validate(value: any, options?: IValidateOptions): IValidationResult
+
   type(type: string): IModel
   format(format: string): IModel
   required(required?: boolean): IModel
@@ -46,7 +50,6 @@ export interface IModel {
   coerce(coerce: ICoerceFunction, phase?: ValidationPhase): IModel
   coerce(coerce: IModelCoercionMap): IModel
   validations(validations: IModelValidationInput | IModelValidationInput[]): IModel
-  validate(value: any, options?: IValidateOptions): IValidationResult
 }
 
 export interface IModelSpecification {

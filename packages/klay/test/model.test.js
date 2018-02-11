@@ -42,6 +42,15 @@ describe('lib/model.ts', () => {
     })
   })
 
+  describe('.clone', () => {
+    it('should create a deep copy', () => {
+      const modelA = new Model({}, defaultOptions).type('string')
+      const modelB = modelA.clone().type('number')
+      expect(modelA.spec).to.eql({type: 'string'})
+      expect(modelB.spec).to.eql({type: 'number'})
+    })
+  })
+
   describe('.type', () => {
     it('should set spec.type', () => {
       const model = new Model({}, defaultOptions).type('string')
