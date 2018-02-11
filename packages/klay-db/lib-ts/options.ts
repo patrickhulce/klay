@@ -50,6 +50,7 @@ export class DatabaseOptions implements IDatabaseOptions {
     assertions.typeof(constraint, 'object', 'constraint')
     constraint.meta = constraint.meta || {}
     assertions.typeof(constraint.properties, 'array', 'constraint.propertyPaths')
+    assertions.ok(constraint.properties.length, 'must specify at least 1 property for constraint')
     assertions.oneOf(constraint.type, values(ConstraintType), 'constraint.type')
     assertions.typeof(constraint.meta, 'object')
     const propertiesAsString = constraint.properties.map(prop => prop.join('.')).join(',')
@@ -64,6 +65,7 @@ export class DatabaseOptions implements IDatabaseOptions {
 
   public index(properties: IIndexPropertyInput[]): IDatabaseOptions {
     assertions.typeof(properties, 'array', 'index')
+    assertions.ok(properties.length, 'must specify at least 1 property for index')
     properties.forEach((item, i) => {
       properties[i] = DatabaseOptions._determineIndex(item, i)
     })

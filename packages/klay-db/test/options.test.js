@@ -212,6 +212,11 @@ describe.only('lib-ts/options.ts', () => {
       opts = opts.constraint({properties: [['id']], type: 'primary', meta: {name: 'foo'}})
       expect(opts.spec).to.have.nested.property('constraint.0.name', 'foo')
     })
+
+    it('should throw when given empty properties', () => {
+      const constraint = {properties: [], type: 'primary'}
+      expect(() => opts.constraint(constraint)).to.throw(/at least 1 property/)
+    })
   })
 
   describe('.index', () => {
@@ -244,6 +249,10 @@ describe.only('lib-ts/options.ts', () => {
       expect(opts.spec)
         .to.have.nested.property('index.0')
         .eql([{property: ['some'], direction: 'asc'}, {property: ['foo'], direction: 'desc'}])
+    })
+
+    it('should throw when given empty properties', () => {
+      expect(() => opts.index([])).to.throw(/at least 1 property/)
     })
   })
 
