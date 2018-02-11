@@ -23,10 +23,6 @@ const supplyWithPresets = {
 }
 
 function concat<T>(arrA?: T[], arrB?: T[]): T[] | undefined {
-  if (!arrA && !arrB) {
-    return undefined
-  }
-
   return uniqWith((arrA || []).concat(arrB || []), isEqual)
 }
 
@@ -120,10 +116,6 @@ export class DatabaseOptions implements IDatabaseOptions {
     const automanage = concat(specA.automanage, specToMerge.automanage)
     const constraint = concat(specA.constraint, specToMerge.constraint)
     const index = concat(specA.index, specToMerge.index)
-    const output: IDatabaseSpecification = {}
-    if (automanage) output.automanage = automanage
-    if (constraint) output.constraint = constraint
-    if (index) output.index = index
-    return output
+    return {automanage, constraint, index}
   }
 }

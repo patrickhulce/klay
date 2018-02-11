@@ -296,7 +296,7 @@ describe.only('lib/options.ts', () => {
       const specA = {index: [indexA, indexB]}
       const specB = {index: [indexB, indexC]}
       const merged = Options.merge(specA, specB)
-      expect(merged).to.eql({index: [indexA, indexB, indexC]})
+      expect(merged.index).to.eql([indexA, indexB, indexC])
     })
   })
 
