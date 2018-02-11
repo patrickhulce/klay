@@ -53,9 +53,7 @@ export class DatabaseOptions implements IDatabaseOptions {
     assertions.ok(constraint.properties.length, 'must specify at least 1 property for constraint')
     assertions.oneOf(constraint.type, values(ConstraintType), 'constraint.type')
     assertions.typeof(constraint.meta, 'object')
-    const propertiesAsString = constraint.properties.map(prop => prop.join('.')).join(',')
-    constraint.name =
-      constraint.name || constraint.meta.name || `${constraint.type}:${propertiesAsString}`
+    constraint.name = DatabaseOptions.computeConstraintName(constraint)
 
     const constraints = this.spec.constraint || []
     constraints.push(constraint)
@@ -79,6 +77,11 @@ export class DatabaseOptions implements IDatabaseOptions {
   public reset(): IDatabaseOptions {
     this.spec = {}
     return this
+  }
+
+  public static computeConstraintName(constraint: IConstraint): string {
+    const propertiesAsString = constraint.properties.map(prop => prop.join('.')).join(',')
+    return constraint.meta.name || `${constraint.type}:${propertiesAsString}`
   }
 
   private static _determineSupplyWith(

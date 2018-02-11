@@ -8,7 +8,7 @@ describe.only('lib-ts/extension.ts', () => {
 
   beforeEach(() => {
     const extension = new DatabaseExtension()
-    modelContext = new ModelContext().use(extension)
+    modelContext = ModelContext.create().use(extension)
   })
 
   describe('.db', () => {
