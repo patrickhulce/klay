@@ -18,6 +18,7 @@ import {
   IValidationResult,
   IValidatorOptions,
   IValidatorOptionsUnsafe,
+  ModelHookPhase,
   ModelType,
   PHASES,
   ValidationPhase,
@@ -38,6 +39,8 @@ export class Model implements IModel {
       const model = this as any
       model[name] = (...args: any[]) => method(this, ...args)
     })
+
+    this._runHooks(ModelHookPhase.Construction)
   }
 
   public type(type: string): IModel {
@@ -146,6 +149,7 @@ export class Model implements IModel {
         'model type must be array when children is a model',
       )
       this.spec.children = children as IModel
+      this._runHooks(ModelHookPhase.SetChildren)
       return this
     }
 
@@ -173,6 +177,7 @@ export class Model implements IModel {
     })
 
     this.spec.children = modelChildren
+    this._runHooks(ModelHookPhase.SetChildren)
     return this
   }
 
@@ -266,5 +271,11 @@ export class Model implements IModel {
   public validate(value: any, options?: IValidateOptions): IValidationResult {
     const validator = new Validator(this.spec, this._options)
     return validator.validate(value, options)
+  }
+
+  private _runHooks(phase: ModelHookPhase): void {
+    if (this._options.hooks[phase]) {
+      this._options.hooks[phase].forEach(func => func(this))
+    }
   }
 }

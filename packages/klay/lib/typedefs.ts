@@ -151,6 +151,11 @@ export enum ValidationPhase {
   ValidateValue = 'validate-value',
 }
 
+export enum ModelHookPhase {
+  Construction = 'construction',
+  SetChildren = 'set-children',
+}
+
 export interface IValidatorFormats {
   [typeName: string]: string[]
 }
@@ -170,6 +175,7 @@ export interface IValidatorOptionsUnsafe {
   validations?: IValidatorValidations
   methods?: IValidatorMethods
   defaults?: IModelSpecification
+  hooks?: IModelHooks
 }
 
 export interface IValidatorOptions {
@@ -179,6 +185,7 @@ export interface IValidatorOptions {
   validations: IValidatorValidations
   methods: IValidatorMethods
   defaults: IModelSpecification
+  hooks: IModelHooks
 }
 
 export interface IKlayExtension extends IValidatorOptionsUnsafe {
@@ -191,7 +198,13 @@ export interface IValidateOptions {
 
 export type IContextExtensionMethod = (context: IModelContext) => void
 
+export type IModelHook = (model: IModel) => void
+
 export type IModelMethod = (model: IModel, ...args: any[]) => IModel
+
+export type IModelHooks = {
+  [phase in ModelHookPhase]: IModelHook[]
+}
 
 export interface IValidatorMethods {
   [methodName: string]: IModelMethod
