@@ -58,7 +58,7 @@ export type PropertyPath = string[]
 export type ISupplyWithFunction = (original: any) => any
 
 export enum SupplyWithPreset {
-  Autoincrement = 'autoincrement',
+  AutoIncrement = 'auto-increment',
   Date = 'date',
   ISOTimestamp = 'iso-timestamp',
   UUID = 'uuid',

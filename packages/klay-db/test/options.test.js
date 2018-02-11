@@ -64,12 +64,12 @@ describe.only('lib/options.ts', () => {
         })
     })
 
-    it('should support autoincrement supplyWith', () => {
+    it('should support auto-increment supplyWith', () => {
       opts = opts.automanage({
         property: ['mypropA'],
         event: 'create',
         phase: 'delegate',
-        supplyWith: 'autoincrement',
+        supplyWith: 'auto-increment',
       })
 
       expect(opts.spec)
@@ -78,7 +78,7 @@ describe.only('lib/options.ts', () => {
           property: ['mypropA'],
           event: 'create',
           phase: 'delegate',
-          supplyWith: 'autoincrement',
+          supplyWith: 'auto-increment',
         })
     })
 

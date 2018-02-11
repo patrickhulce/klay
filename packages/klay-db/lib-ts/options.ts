@@ -81,7 +81,7 @@ export class DatabaseOptions implements IDatabaseOptions {
   private static _determineSupplyWith(
     supplyWith: ISupplyWithFunction | SupplyWithPreset,
   ): ISupplyWithFunction | SupplyWithPreset {
-    if (supplyWith === SupplyWithPreset.Autoincrement || typeof supplyWith === 'function') {
+    if (supplyWith === SupplyWithPreset.AutoIncrement || typeof supplyWith === 'function') {
       return supplyWith
     }
 
