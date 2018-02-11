@@ -22,7 +22,7 @@ describe.only('lib-ts/options.ts', () => {
       opts = opts.automanage({
         property: ['myprop'],
         event: 'create',
-        phase: 'post-validate',
+        phase: 'validate-value',
         supplyWith,
       })
 
@@ -32,7 +32,7 @@ describe.only('lib-ts/options.ts', () => {
           {
             property: ['myprop'],
             event: 'create',
-            phase: 'post-validate',
+            phase: 'validate-value',
             supplyWith,
           },
         ])
@@ -44,13 +44,13 @@ describe.only('lib-ts/options.ts', () => {
         .automanage({
           property: ['mypropA'],
           event: 'create',
-          phase: 'post-validate',
+          phase: 'validate-value',
           supplyWith: () => 1,
         })
         .automanage({
           property: ['mypropB'],
           event: 'update',
-          phase: 'pre-validate',
+          phase: 'parse',
           supplyWith,
         })
 
@@ -59,7 +59,7 @@ describe.only('lib-ts/options.ts', () => {
         .eql({
           property: ['mypropB'],
           event: 'update',
-          phase: 'pre-validate',
+          phase: 'parse',
           supplyWith,
         })
     })
@@ -68,7 +68,7 @@ describe.only('lib-ts/options.ts', () => {
       opts = opts.automanage({
         property: ['mypropA'],
         event: 'create',
-        phase: 'delegate',
+        phase: 'database',
         supplyWith: 'auto-increment',
       })
 
@@ -77,7 +77,7 @@ describe.only('lib-ts/options.ts', () => {
         .eql({
           property: ['mypropA'],
           event: 'create',
-          phase: 'delegate',
+          phase: 'database',
           supplyWith: 'auto-increment',
         })
     })
@@ -86,7 +86,7 @@ describe.only('lib-ts/options.ts', () => {
       opts = opts.automanage({
         property: ['mypropA'],
         event: 'create',
-        phase: 'delegate',
+        phase: 'database',
         supplyWith: 'date',
       })
 
@@ -100,7 +100,7 @@ describe.only('lib-ts/options.ts', () => {
       opts = opts.automanage({
         property: ['mypropA'],
         event: 'create',
-        phase: 'delegate',
+        phase: 'database',
         supplyWith: 'iso-timestamp',
       })
 
@@ -111,7 +111,7 @@ describe.only('lib-ts/options.ts', () => {
     })
 
     it('should fail when given invalid input', () => {
-      const valid = {property: [], event: '*', phase: 'delegate', supplyWith: () => 1}
+      const valid = {property: [], event: '*', phase: 'database', supplyWith: () => 1}
       expect(() => opts.automanage('old')).to.throw()
       expect(() => opts.automanage({...valid, property: 'foo'})).to.throw(/property/)
       expect(() => opts.automanage({...valid, event: ''})).to.throw(/event/)
@@ -261,7 +261,7 @@ describe.only('lib-ts/options.ts', () => {
         .automanage({
           property: ['x'],
           event: 'create',
-          phase: 'post-validate',
+          phase: 'validate-value',
           supplyWith: 'date',
         })
         .constraint({properties: [['y']], type: 'primary'})
@@ -270,7 +270,7 @@ describe.only('lib-ts/options.ts', () => {
         .automanage({
           property: ['w'],
           event: 'create',
-          phase: 'post-validate',
+          phase: 'validate-value',
           supplyWith: 'iso-timestamp',
         })
         .constraint({properties: [['z']], type: 'unique'})
@@ -287,14 +287,14 @@ describe.only('lib-ts/options.ts', () => {
         .automanage({
           property: ['x'],
           event: 'create',
-          phase: 'post-validate',
+          phase: 'validate-value',
           supplyWith: 'date',
         })
       const optsB = new Options()
         .automanage({
           property: ['x'],
           event: 'create',
-          phase: 'post-validate',
+          phase: 'validate-value',
           supplyWith: 'date',
         })
 
@@ -322,7 +322,7 @@ describe.only('lib-ts/options.ts', () => {
       const opts = new Options()
         .index('type')
         .index(['type', 'size', '-created_at'])
-        .automanage('checksum', 'update', 'post-validate', checksum)
+        .automanage('checksum', 'update', 'validate-value', checksum)
         .automanage('created_at', 'create', now)
         .automanage('updated_at', 'update', now)
         .constraint('id', 'primary')
@@ -339,9 +339,9 @@ describe.only('lib-ts/options.ts', () => {
           ],
         ],
         automanage: [
-          {property: ['checksum'], event: 'update', phase: 'post-validate', supplyWith: checksum},
-          {property: ['created_at'], event: 'create', phase: 'pre-validate', supplyWith: now},
-          {property: ['updated_at'], event: 'update', phase: 'pre-validate', supplyWith: now},
+          {property: ['checksum'], event: 'update', phase: 'validate-value', supplyWith: checksum},
+          {property: ['created_at'], event: 'create', phase: 'parse', supplyWith: now},
+          {property: ['updated_at'], event: 'update', phase: 'parse', supplyWith: now},
         ],
         constraints: [
           {name: 'primary:id', properties: ['id'], type: 'primary', meta: {}},

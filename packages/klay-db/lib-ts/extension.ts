@@ -1,9 +1,8 @@
-import {IKlayExtension, IModel, IValidatorMethods} from 'klay'
+import {IKlayExtension, IModel, IValidatorMethods, ValidationPhase} from 'klay'
 import {DatabaseOptions} from './options'
 import {
   ConstraintType,
   DatabaseEvent,
-  DatabasePhase,
   IAutomanageProperty,
   IConstraint,
   IConstraintMeta,
@@ -52,7 +51,7 @@ export class DatabaseExtension implements IKlayExtension {
         const database = new DatabaseOptions().automanage({
           property: [],
           event: DatabaseEvent.Create,
-          phase: DatabasePhase.DelegateToDatabase,
+          phase: ValidationPhase.Database,
           supplyWith: SupplyWithPreset.AutoIncrement,
         })
 

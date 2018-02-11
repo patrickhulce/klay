@@ -1,6 +1,7 @@
+import {ValidationPhase} from 'klay'
 
 declare module 'klay/lib/typedefs' {
-  interface IModel {
+  export interface IModel {
     db(spec?: IDatabaseSpecification, options?: IDatabaseSetterOptions): IModel
     automanage(property: IAutomanageProperty): IModel
     constraint(constraint: IConstraint): IModel
@@ -11,8 +12,12 @@ declare module 'klay/lib/typedefs' {
     autoIncrement(): IModel
   }
 
-  interface IModelSpecification {
+  export interface IModelSpecification {
     db?: IDatabaseSpecification
+  }
+
+  export enum ValidationPhase {
+    Database = 'database'
   }
 }
 
@@ -38,7 +43,7 @@ export interface IDatabaseSpecification {
 export interface IAutomanageProperty {
   property: PropertyPath
   event: DatabaseEvent
-  phase: DatabasePhase
+  phase: ValidationPhase
   supplyWith: ISupplyWithFunction | SupplyWithPreset
 }
 
@@ -66,12 +71,6 @@ export enum DatabaseEvent {
   All = '*',
   Create = 'create',
   Update = 'update',
-}
-
-export enum DatabasePhase {
-  PreValidate = 'pre-validate',
-  PostValidate = 'post-validate',
-  DelegateToDatabase = 'delegate',
 }
 
 export type PropertyPath = string[]

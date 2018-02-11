@@ -48,7 +48,7 @@ describe.only('lib-ts/extension.ts', () => {
       const model = modelContext.create().automanage({
         property: ['x'],
         event: 'create',
-        phase: 'delegate',
+        phase: 'database',
         supplyWith: 'auto-increment',
       })
 
@@ -56,7 +56,7 @@ describe.only('lib-ts/extension.ts', () => {
         {
           property: ['x'],
           event: 'create',
-          phase: 'delegate',
+          phase: 'database',
           supplyWith: 'auto-increment',
         },
       ])

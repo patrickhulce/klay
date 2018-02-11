@@ -1,10 +1,9 @@
-import {modelAssertions as assertions} from 'klay'
+import {modelAssertions as assertions, ValidationPhase} from 'klay'
 import {cloneDeep, isEqual, uniqWith, values} from 'lodash'
 import {v4 as uuid} from 'uuid'
 import {
   ConstraintType,
   DatabaseEvent,
-  DatabasePhase,
   IAutomanageProperty,
   IConstraint,
   IDatabaseOptions,
@@ -38,7 +37,7 @@ export class DatabaseOptions implements IDatabaseOptions {
     property.supplyWith = DatabaseOptions._determineSupplyWith(property.supplyWith)
     assertions.typeof(property.property, 'array', 'automanage.propertyPath')
     assertions.oneOf(property.event, values(DatabaseEvent), 'automanage.event')
-    assertions.oneOf(property.phase, values(DatabasePhase), 'automanage.phase')
+    assertions.oneOf(property.phase, values(ValidationPhase), 'automanage.phase')
 
     const automanage = this.spec.automanage || []
     automanage.push(property)

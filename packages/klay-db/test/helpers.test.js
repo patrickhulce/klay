@@ -4,7 +4,7 @@ const helpers = require('../lib-ts/helpers')
 const DatabaseExtension = require('../lib-ts/extension').DatabaseExtension
 const DatabaseOptions = require('../lib-ts/options').DatabaseOptions
 
-const AUTOMANAGE = {property: [], event: '*', phase: 'delegate', supplyWith: 'auto-increment'}
+const AUTOMANAGE = {property: [], event: '*', phase: 'database', supplyWith: 'auto-increment'}
 const CONSTRAINT = {properties: [[]], type: 'unique'}
 
 describe.only('lib/helpers.ts', () => {
