@@ -1,3 +1,8 @@
 coverage/
 .nyc_output/
 test/
+
+# exclude the typescript
+*.ts
+# but include the typings
+!*.d.ts

@@ -24,7 +24,7 @@ import {
   ValidationPhase,
 } from './typedefs'
 
-export class Model implements IModel {
+export class Model {
   public readonly spec: IModelSpecification
   public readonly isKlayModel: boolean
   private readonly _options: IValidatorOptions
