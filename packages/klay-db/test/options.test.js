@@ -207,6 +207,11 @@ describe.only('lib/options.ts', () => {
           meta: {foo: 'bar'},
         })
     })
+
+    it('should use meta.name when set', () => {
+      opts = opts.constraint({properties: [['id']], type: 'primary', meta: {name: 'foo'}})
+      expect(opts.spec).to.have.nested.property('constraint.0.name', 'foo')
+    })
   })
 
   describe('.index', () => {

@@ -53,7 +53,7 @@ export class DatabaseOptions implements IDatabaseOptions {
     assertions.oneOf(constraint.type, values(ConstraintType), 'constraint.type')
     assertions.typeof(constraint.meta, 'object')
     const propertiesAsString = constraint.properties.map(prop => prop.join('.')).join(',')
-    constraint.name = constraint.name || `${constraint.type}:${propertiesAsString}`
+    constraint.name = constraint.name || constraint.meta.name || `${constraint.type}:${propertiesAsString}`
 
     const constraints = this.spec.constraint || []
     constraints.push(constraint)
