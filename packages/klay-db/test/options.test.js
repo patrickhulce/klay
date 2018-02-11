@@ -242,6 +242,64 @@ describe.only('lib/options.ts', () => {
     })
   })
 
+  describe('#merge', () => {
+    it('should merge specs', () => {
+      const optsA = new Options()
+        .automanage({
+          property: ['x'],
+          event: 'create',
+          phase: 'post-validate',
+          supplyWith: 'date',
+        })
+        .constraint({properties: [['y']], type: 'primary'})
+        .index([['z']])
+      const optsB = new Options()
+        .automanage({
+          property: ['w'],
+          event: 'create',
+          phase: 'post-validate',
+          supplyWith: 'iso-timestamp',
+        })
+        .constraint({properties: [['z']], type: 'unique'})
+        .index([['w']])
+
+      const merged = Options.merge(optsA.spec, optsB.spec)
+      expect(merged.automanage).to.have.length(2)
+      expect(merged.constraint).to.have.length(2)
+      expect(merged.index).to.have.length(2)
+    })
+
+    it('should de-dupe automanage', () => {
+      const optsA = new Options()
+        .automanage({
+          property: ['x'],
+          event: 'create',
+          phase: 'post-validate',
+          supplyWith: 'date',
+        })
+      const optsB = new Options()
+        .automanage({
+          property: ['x'],
+          event: 'create',
+          phase: 'post-validate',
+          supplyWith: 'date',
+        })
+
+      const merged = Options.merge(optsA.spec, optsB.spec)
+      expect(merged.automanage).to.have.length(1)
+    })
+
+    it('should de-dupe indexes', () => {
+      const indexA = [{property: ['x'], direction: 'asc'}, {property: ['y'], direction: 'desc'}]
+      const indexB = [{property: ['z', 'x'], direction: 'asc'}]
+      const indexC = [{property: ['w'], direction: 'desc'}]
+      const specA = {index: [indexA, indexB]}
+      const specB = {index: [indexB, indexC]}
+      const merged = Options.merge(specA, specB)
+      expect(merged).to.eql({index: [indexA, indexB, indexC]})
+    })
+  })
+
   describe.skip('.toObject', () => {
     const now = () => new Date()
     const checksum = item => item.id * Math.random()

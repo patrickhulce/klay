@@ -1,5 +1,5 @@
-import {modelAssertions as assertions, ModelError} from 'klay'
-import {values} from 'lodash'
+import {modelAssertions as assertions} from 'klay'
+import {cloneDeep, isEqual, uniqWith, values} from 'lodash'
 import {v4 as uuid} from 'uuid'
 import {
   ConstraintType,
@@ -16,11 +16,25 @@ import {
   SupplyWithPreset,
 } from './typedefs'
 
+const supplyWithPresets = {
+  [SupplyWithPreset.Date]: () => new Date(),
+  [SupplyWithPreset.ISOTimestamp]: () => new Date().toISOString(),
+  [SupplyWithPreset.UUID]: () => uuid(), // tslint:disable-line
+}
+
+function concat<T>(arrA?: T[], arrB?: T[]): T[] | undefined {
+  if (!arrA && !arrB) {
+    return undefined
+  }
+
+  return uniqWith((arrA || []).concat(arrB || []), isEqual)
+}
+
 export class DatabaseOptions implements IDatabaseOptions {
   public spec: IDatabaseSpecification
 
   public constructor(spec?: IDatabaseSpecification) {
-    this.spec = spec || {}
+    this.spec = cloneDeep(spec || {})
   }
 
   public automanage(property: IAutomanageProperty): IDatabaseOptions {
@@ -75,16 +89,9 @@ export class DatabaseOptions implements IDatabaseOptions {
       return supplyWith
     }
 
-    switch (supplyWith) {
-      case SupplyWithPreset.Date:
-        return () => new Date()
-      case SupplyWithPreset.ISOTimestamp:
-        return () => new Date().toISOString()
-      case SupplyWithPreset.UUID:
-        return uuid
-      default:
-        throw new ModelError('invalid automanage supplyWith')
-    }
+    const supplyWithFunc = supplyWithPresets[supplyWith]
+    assertions.ok(supplyWithFunc, 'invalid automanage supplyWith')
+    return supplyWithFunc
   }
 
   private static _determineIndex(property: IIndexPropertyInput, i: number): IIndexProperty {
@@ -96,5 +103,27 @@ export class DatabaseOptions implements IDatabaseOptions {
     assertions.typeof(property.property, 'array', `index.${i}.property`)
     assertions.oneOf(property.direction, values(IndexDirection), `index.${i}.property`)
     return property
+  }
+
+  public static merge(
+    specA: IDatabaseSpecification,
+    specB: IDatabaseSpecification,
+    ...others: IDatabaseSpecification[],
+  ): IDatabaseSpecification {
+    let specToMerge = specB
+    if (others.length) {
+      for (const option of others) {
+        specToMerge = DatabaseOptions.merge(specToMerge, option)
+      }
+    }
+
+    const automanage = concat(specA.automanage, specToMerge.automanage)
+    const constraint = concat(specA.constraint, specToMerge.constraint)
+    const index = concat(specA.index, specToMerge.index)
+    const output: IDatabaseSpecification = {}
+    if (automanage) output.automanage = automanage
+    if (constraint) output.constraint = constraint
+    if (index) output.index = index
+    return output
   }
 }

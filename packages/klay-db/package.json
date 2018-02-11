@@ -28,6 +28,7 @@
   "config": {
     "tslint": {
       "rules": {
+        "curly": false,
         "whitespace": false,
         "newline-per-chained-call": false,
         "only-arrow-functions": false,
