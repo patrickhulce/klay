@@ -1,4 +1,3 @@
-import * as klay from 'klay'
 
 declare module 'klay/lib/typedefs' {
   interface IModel {

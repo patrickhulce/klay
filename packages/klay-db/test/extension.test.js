@@ -108,4 +108,11 @@ describe.only('lib-ts/extension.ts', () => {
       expect(model.spec.db).to.have.nested.property('constraint[0].type', 'unique')
     })
   })
+
+  describe('.autoIncrement', () => {
+    it('should set constraint on model', () => {
+      const model = modelContext.create().autoIncrement()
+      expect(model.spec.db).to.have.nested.property('automanage[0].supplyWith', 'auto-increment')
+    })
+  })
 })

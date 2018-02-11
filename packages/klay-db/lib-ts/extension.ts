@@ -1,26 +1,24 @@
 import {IKlayExtension, IModel, IValidatorMethods} from 'klay'
-import {PropertyPath} from 'lodash'
 import {DatabaseOptions} from './options'
 import {
-  IDatabaseSpecification,
-  IAutomanageProperty,
-  IDatabaseSetterOptions,
-  IConstraint,
-  IIndexPropertyInput,
-  IConstraintMeta,
   ConstraintType,
   DatabaseEvent,
   DatabasePhase,
+  IAutomanageProperty,
+  IConstraint,
+  IConstraintMeta,
+  IDatabaseSetterOptions,
+  IDatabaseSpecification,
+  IIndexPropertyInput,
   SupplyWithPreset,
 } from './typedefs'
-
 
 export class DatabaseExtension implements IKlayExtension {
   public methods: IValidatorMethods
 
   public constructor() {
     this.methods = {
-      db(model: IModel, spec?: IDatabaseSpecification, options?: IDatabaseSetterOptions) {
+      db(model: IModel, spec?: IDatabaseSpecification, options?: IDatabaseSetterOptions): IModel {
         let finalSpec = spec
         if (spec && options && options.shouldMerge) {
           finalSpec = DatabaseOptions.merge(model.spec.db || {}, spec)
@@ -29,28 +27,28 @@ export class DatabaseExtension implements IKlayExtension {
         model.spec.db = finalSpec
         return model
       },
-      automanage(model: IModel, property: IAutomanageProperty) {
+      automanage(model: IModel, property: IAutomanageProperty): IModel {
         const database = new DatabaseOptions().automanage(property)
         return model.db(database.spec, {shouldMerge: true})
       },
-      constraint(model: IModel, constraint: IConstraint) {
+      constraint(model: IModel, constraint: IConstraint): IModel {
         const database = new DatabaseOptions().constraint(constraint)
         return model.db(database.spec, {shouldMerge: true})
       },
-      index(model: IModel, properties: IIndexPropertyInput[]) {
+      index(model: IModel, properties: IIndexPropertyInput[]): IModel {
         const database = new DatabaseOptions().index(properties)
         return model.db(database.spec, {shouldMerge: true})
       },
-      primaryKey(model: IModel, meta?: IConstraintMeta) {
+      primaryKey(model: IModel, meta?: IConstraintMeta): IModel {
         return DatabaseExtension._constrain(model, ConstraintType.Primary, meta)
       },
-      unique(model: IModel, meta?: IConstraintMeta) {
+      unique(model: IModel, meta?: IConstraintMeta): IModel {
         return DatabaseExtension._constrain(model, ConstraintType.Unique, meta)
       },
-      immutable(model: IModel, meta?: IConstraintMeta) {
+      immutable(model: IModel, meta?: IConstraintMeta): IModel {
         return DatabaseExtension._constrain(model, ConstraintType.Immutable, meta)
       },
-      autoIncrement(model: IModel) {
+      autoIncrement(model: IModel): IModel {
         const database = new DatabaseOptions().automanage({
           property: [],
           event: DatabaseEvent.Create,
@@ -59,7 +57,7 @@ export class DatabaseExtension implements IKlayExtension {
         })
 
         return model.db(database.spec, {shouldMerge: true})
-      }
+      },
     }
   }
 
