@@ -1,5 +1,4 @@
-// tslint:disable-next-line
-import {assertions, ModelError} from 'klay/lib/errors/model-error'
+import {modelAssertions as assertions, ModelError} from 'klay'
 import {values} from 'lodash'
 import {v4 as uuid} from 'uuid'
 import {
