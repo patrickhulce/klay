@@ -1,4 +1,9 @@
-import {modelAssertions as assertions, ValidationPhase} from 'klay'
+import {
+  modelAssertions as assertions,
+  ICoerceFunction,
+  IValidationResult,
+  ValidationPhase,
+} from 'klay'
 import {cloneDeep, isEqual, uniqWith, values} from 'lodash'
 import {v4 as uuid} from 'uuid'
 import {
@@ -16,12 +21,12 @@ import {
 } from './typedefs'
 
 const supplyWithPresets = {
-  [SupplyWithPreset.Date]: () => new Date(),
-  [SupplyWithPreset.ISOTimestamp]: () => new Date().toISOString(),
-  [SupplyWithPreset.UUID]: () => uuid(), // tslint:disable-line
+  [SupplyWithPreset.Date]: (vr: IValidationResult) => vr.setValue(new Date()),
+  [SupplyWithPreset.ISOTimestamp]: (vr: IValidationResult) => vr.setValue(new Date().toISOString()),
+  [SupplyWithPreset.UUID]: (vr: IValidationResult) => vr.setValue(uuid()),
 }
 
-function concat<T>(arrA?: T[], arrB?: T[]): T[] | undefined {
+function concat<T>(arrA?: T[], arrB?: T[]): T[] {
   return uniqWith((arrA || []).concat(arrB || []), isEqual)
 }
 

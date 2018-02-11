@@ -1,7 +1,15 @@
 const expect = require('chai').expect
+const sinon = require('sinon')
 const Options = require('../lib-ts/options').DatabaseOptions
 
 describe.only('lib-ts/options.ts', () => {
+  let validationResult, setValue
+
+  beforeEach(() => {
+    setValue = sinon.stub()
+    validationResult = {setValue}
+  })
+
   describe('#constructor', () => {
     it('should set spec properties', () => {
       const opts = new Options({index: [{property: 'foo', direction: 'asc'}]})
@@ -93,7 +101,9 @@ describe.only('lib-ts/options.ts', () => {
       expect(opts.spec)
         .to.have.nested.property('automanage.0.supplyWith')
         .a('function')
-      opts.spec.automanage[0].supplyWith().should.be.an.instanceof(Date)
+
+      opts.spec.automanage[0].supplyWith(validationResult)
+      expect(setValue.firstCall.args[0]).to.be.instanceOf(Date)
     })
 
     it('should support isotimestamp supplyWith', () => {
@@ -107,7 +117,9 @@ describe.only('lib-ts/options.ts', () => {
       expect(opts.spec)
         .to.have.nested.property('automanage.0.supplyWith')
         .a('function')
-      expect(opts.spec.automanage[0].supplyWith()).to.match(/^\d{4}-\d{2}-\d{2}/)
+
+      opts.spec.automanage[0].supplyWith(validationResult)
+      expect(setValue.firstCall.args[0]).to.match(/^\d{4}-\d{2}-\d{2}/)
     })
 
     it('should fail when given invalid input', () => {
