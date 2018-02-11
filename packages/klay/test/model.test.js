@@ -43,11 +43,31 @@ describe('lib/model.ts', () => {
   })
 
   describe('.clone', () => {
-    it('should create a deep copy', () => {
+    it('should create a copy', () => {
       const modelA = new Model({}, defaultOptions).type('string')
       const modelB = modelA.clone().type('number')
       expect(modelA.spec).to.eql({type: 'string'})
       expect(modelB.spec).to.eql({type: 'number'})
+    })
+
+    it('should deep copy children', () => {
+      const child = new Model({}, defaultOptions).type('string')
+      const model = new Model({}, defaultOptions).type('object').children({id: child})
+      const clone = model.clone()
+      clone.spec.children[0].model.type('number')
+      expect(model.spec.children[0].model).to.not.equal(clone.spec.children[0].model)
+      expect(model.spec.children[0].model.spec).to.eql({type: 'string'})
+      expect(clone.spec.children[0].model.spec).to.eql({type: 'number'})
+    })
+
+    it('should deep copy enum', () => {
+      const child = new Model({}, defaultOptions).type('string')
+      const model = new Model({}, defaultOptions).type('object').enum([child])
+      const clone = model.clone()
+      clone.spec.enum[0].type('number')
+      expect(model.spec.enum[0]).to.not.equal(clone.spec.enum[0])
+      expect(model.spec.enum[0].spec).to.eql({type: 'string'})
+      expect(clone.spec.enum[0].spec).to.eql({type: 'number'})
     })
   })
 
