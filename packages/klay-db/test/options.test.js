@@ -1,7 +1,7 @@
 const expect = require('chai').expect
 const Options = require('../lib-ts/options').DatabaseOptions
 
-describe.only('lib/options.ts', () => {
+describe.only('lib-ts/options.ts', () => {
   describe('#constructor', () => {
     it('should set spec properties', () => {
       const opts = new Options({index: [{property: 'foo', direction: 'asc'}]})
