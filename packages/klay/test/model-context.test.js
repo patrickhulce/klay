@@ -29,6 +29,19 @@ describe('lib/model-context.ts', () => {
       expect(context.fooBar).to.be.a('function')
     })
 
+    it('calls extendContext', () => {
+      const extension = {
+        type: ['super-custom'],
+        extendContext(context) {
+          context.superCustom = () => 1
+        },
+      }
+
+      const context = ModelContext.create().use(extension)
+      expect(context.superCustom).to.be.a('function')
+      expect(context.superCustom()).to.equal(1)
+    })
+
     it('does not override built-ins', () => {
       const context = ModelContext.create().use({types: ['use']})
       expect(context._options.types).to.include('use')

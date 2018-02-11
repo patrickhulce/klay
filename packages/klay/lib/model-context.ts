@@ -1,6 +1,11 @@
 import {camelCase, forEach} from 'lodash'
 import {Model} from './model'
-import {IModel, IModelContext, IValidatorOptions, IValidatorOptionsUnsafe} from './typedefs'
+import {
+  IKlayExtension,
+  IModel,
+  IModelContext,
+  IValidatorOptions,
+} from './typedefs'
 import {ValidatorOptions} from './validator-options'
 
 import * as core from './extensions/core'
@@ -50,10 +55,15 @@ export class ModelContext {
     modelContext[name] = builder
   }
 
-  public use(extension: IValidatorOptionsUnsafe): IModelContext {
+  public use(extension: IKlayExtension): IModelContext {
+    const modelContext = (this as any) as IModelContext
     this._options = ValidatorOptions.merge(this._options, extension)
+    if (extension.extendContext) {
+      extension.extendContext(modelContext)
+    }
+
     this._setAllBuilders()
-    return this as any as IModelContext
+    return modelContext
   }
 
   public create(): IModel {
@@ -61,6 +71,6 @@ export class ModelContext {
   }
 
   public static create(): IModelContext {
-    return new ModelContext() as any as IModelContext
+    return (new ModelContext() as any) as IModelContext
   }
 }

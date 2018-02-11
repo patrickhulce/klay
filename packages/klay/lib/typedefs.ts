@@ -1,7 +1,7 @@
 import {values} from 'lodash'
 
 export interface IModelContext {
-  use(extension: IValidatorOptionsUnsafe): IModelContext
+  use(extension: IKlayExtension): IModelContext
   reset(): void
 
   any(): IModel
@@ -181,9 +181,15 @@ export interface IValidatorOptions {
   defaults: IModelSpecification
 }
 
+export interface IKlayExtension extends IValidatorOptionsUnsafe {
+  extendContext?: IContextExtensionMethod
+}
+
 export interface IValidateOptions {
   failLoudly?: boolean
 }
+
+export type IContextExtensionMethod = (context: IModelContext) => void
 
 export type IModelMethod = (model: IModel, ...args: any[]) => IModel
 
