@@ -1,4 +1,5 @@
 const expect = require('chai').expect
+const _ = require('lodash')
 const ModelContext = require('klay').ModelContext
 const helpers = require('../lib-ts/helpers')
 const DatabaseExtension = require('../lib-ts/extension').DatabaseExtension
@@ -101,6 +102,111 @@ describe.only('lib/helpers.ts', () => {
       expect(results)
         .to.have.nested.property('automanage.1.property')
         .eql(['updatedAt'])
+    })
+  })
+
+  describe('#getModelForEvent', () => {
+    let model
+
+    beforeEach(() => {
+      const extension = new DatabaseExtension()
+      const context = ModelContext.create()
+        .use(extension)
+        .use({defaults: {required: true}})
+      const checksum = value => (value.age * 5) + value.name
+      model = context.object().children({
+        id: context
+          .integer()
+          .primaryKey()
+          .autoIncrement(),
+        email: context.email().unique(),
+        age: context.integer(),
+        name: context.string(),
+        checksum: context
+          .string()
+          .automanage({
+            property: [],
+            event: '*',
+            phase: 'parse',
+            supplyWith: value => value.setValue(checksum(value.rootValue)),
+          })
+          .optional(),
+        pristine: context
+          .boolean()
+          .automanage({
+            property: [],
+            event: 'create',
+            phase: 'parse',
+            supplyWith: value => value.setValue(true),
+          })
+          .automanage({
+            property: [],
+            event: 'update',
+            phase: 'parse',
+            supplyWith: value => value.setValue(false),
+          }),
+        createdAt: context.date().automanage({
+          property: [],
+          event: 'create',
+          phase: 'parse',
+          supplyWith: 'iso-timestamp',
+        }).optional(),
+        updatedAt: context.date().automanage({
+          property: [],
+          event: '*',
+          phase: 'parse',
+          supplyWith: 'iso-timestamp',
+        }).optional(),
+      })
+    })
+
+    it('should build the create model', () => {
+      const createModel = helpers.getModelForEvent(model, 'create')
+      const results = createModel
+        .validate({
+          name: 'John',
+          age: '17',
+          email: 'john@example.com',
+        })
+        .toJSON()
+
+      expect(results.value.createdAt).to.be.instanceof(Date)
+      expect(results.value.updatedAt).to.be.instanceof(Date)
+
+      const value = _.omit(results.value, ['createdAt', 'updatedAt'])
+      expect(value).to.eql({
+        id: undefined, // should be filled by database
+        name: 'John',
+        age: 17,
+        email: 'john@example.com', // invalid
+        checksum: '85John',
+        pristine: true,
+      })
+    })
+
+    it('should build the update model', () => {
+      const updateModel = helpers.getModelForEvent(model, 'update')
+      const results = updateModel
+        .validate({
+          id: 12,
+          name: 'John',
+          age: '17',
+        })
+        .toJSON()
+
+      expect(results.errors).to.have.length(1)
+      expect(results.errors[0]).to.eql({path: ['email'], message: 'expected value to be defined'})
+      expect(results.value.updatedAt).to.be.instanceof(Date)
+
+      const value = _.omit(results.value, ['createdAt', 'updatedAt'])
+      expect(value).to.eql({
+        id: 12,
+        name: 'John',
+        age: 17,
+        email: undefined, // invalid
+        checksum: '85John',
+        pristine: false,
+      })
     })
   })
 })

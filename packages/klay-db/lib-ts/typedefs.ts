@@ -1,4 +1,4 @@
-import {ValidationPhase, ICoerceFunction} from 'klay'
+import {ICoerceFunction, ValidationPhase} from 'klay'
 
 declare module 'klay/lib/typedefs' {
   export interface IModel {
@@ -17,7 +17,7 @@ declare module 'klay/lib/typedefs' {
   }
 
   export enum ValidationPhase {
-    Database = 'database'
+    Database = 'database',
   }
 }
 

@@ -1,7 +1,6 @@
 import {
-  modelAssertions as assertions,
-  ICoerceFunction,
   IValidationResult,
+  modelAssertions as assertions,
   ValidationPhase,
 } from 'klay'
 import {cloneDeep, isEqual, uniqWith, values} from 'lodash'
