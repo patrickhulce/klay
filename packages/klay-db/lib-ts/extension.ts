@@ -1,5 +1,6 @@
-import {IKlayExtension, IModel, IValidatorMethods, ValidationPhase} from 'klay'
+import {IKlayExtension, IModel, IValidatorMethods, ValidationPhase, IModelHooks} from 'klay'
 import {DatabaseOptions} from './options'
+import * as helpers from './helpers'
 import {
   ConstraintType,
   DatabaseEvent,
@@ -13,9 +14,21 @@ import {
 } from './typedefs'
 
 export class DatabaseExtension implements IKlayExtension {
+  public hooks: IModelHooks
   public methods: IValidatorMethods
 
   public constructor() {
+    this.hooks = {
+      construction: [],
+      'set-children': [
+        model => {
+          if (Array.isArray(model.spec.children)) {
+            model.spec.db = helpers.mergeChildrenIntoRoot(model.spec.db || {}, model.spec.children)
+          }
+        },
+      ],
+    }
+
     this.methods = {
       db(model: IModel, spec?: IDatabaseSpecification, options?: IDatabaseSetterOptions): IModel {
         let finalSpec = spec

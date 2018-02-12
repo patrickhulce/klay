@@ -11,6 +11,25 @@ describe.only('lib-ts/extension.ts', () => {
     modelContext = ModelContext.create().use(extension)
   })
 
+  describe('hooks', () => {
+    it('should gather child db specifications', () => {
+      const child = modelContext.string().primaryKey()
+      const model = modelContext.object().children({id: child})
+      expect(model.spec.db).to.eql({
+        automanage: [],
+        index: [],
+        constraint: [
+          {
+            properties: [['id']],
+            type: 'primary',
+            name: 'primary:id',
+            meta: {},
+          },
+        ],
+      })
+    })
+  })
+
   describe('.db', () => {
     it('should set db specification', () => {
       const optionsA = new DatabaseOptions().index([['x']])
