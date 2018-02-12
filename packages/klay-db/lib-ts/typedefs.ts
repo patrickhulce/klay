@@ -1,4 +1,4 @@
-import {ValidationPhase} from 'klay'
+import {ValidationPhase, ICoerceFunction} from 'klay'
 
 declare module 'klay/lib/typedefs' {
   export interface IModel {
@@ -20,6 +20,8 @@ declare module 'klay/lib/typedefs' {
     Database = 'database'
   }
 }
+
+(ValidationPhase as any).Database = 'database'
 
 export interface IDatabaseSetterOptions {
   shouldMerge: boolean
@@ -75,7 +77,7 @@ export enum DatabaseEvent {
 
 export type PropertyPath = string[]
 
-export type ISupplyWithFunction = (original: any) => any
+export type ISupplyWithFunction = ICoerceFunction
 
 export enum SupplyWithPreset {
   AutoIncrement = 'auto-increment',
