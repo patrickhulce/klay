@@ -25,7 +25,7 @@ import {
 } from './typedefs'
 
 export class Model {
-  public readonly spec: IModelSpecification
+  public spec: IModelSpecification
   public readonly isKlayModel: boolean
   private readonly _options: IValidatorOptions
 
@@ -54,6 +54,11 @@ export class Model {
     })
 
     this._runHooks(ModelHookPhase.Construction)
+  }
+
+  public reset(): IModel {
+    this.spec = {}
+    return this
   }
 
   public clone(): IModel {
