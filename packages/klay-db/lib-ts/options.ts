@@ -9,9 +9,12 @@ import {
   ConstraintType,
   DatabaseEvent,
   IAutomanageProperty,
+  IAutomanagePropertyInput,
   IConstraint,
+  IConstraintInput,
   IDatabaseOptions,
   IDatabaseSpecification,
+  IDatabaseSpecificationUnsafe,
   IIndexProperty,
   IIndexPropertyInput,
   IndexDirection,
@@ -32,35 +35,37 @@ function concat<T>(arrA?: T[], arrB?: T[]): T[] {
 export class DatabaseOptions implements IDatabaseOptions {
   public spec: IDatabaseSpecification
 
-  public constructor(spec?: IDatabaseSpecification) {
-    this.spec = cloneDeep(spec || {})
+  public constructor(spec?: IDatabaseSpecificationUnsafe) {
+    this.spec = cloneDeep(Object.assign(DatabaseOptions.empty(), spec))
   }
 
-  public automanage(property: IAutomanageProperty): IDatabaseOptions {
+  public automanage(property: IAutomanagePropertyInput): IDatabaseOptions {
     assertions.typeof(property, 'object', 'automanage')
+    property.property = property.property || []
+    property.phase = property.phase || ValidationPhase.Parse
     property.supplyWith = DatabaseOptions._determineSupplyWith(property.supplyWith)
+
     assertions.typeof(property.property, 'array', 'automanage.propertyPath')
     assertions.oneOf(property.event, values(DatabaseEvent), 'automanage.event')
     assertions.oneOf(property.phase, values(ValidationPhase), 'automanage.phase')
 
-    const automanage = this.spec.automanage || []
-    automanage.push(property)
-    this.spec.automanage = automanage
+    this.spec.automanage.push(property as IAutomanageProperty)
     return this
   }
 
-  public constraint(constraint: IConstraint): IDatabaseOptions {
-    assertions.typeof(constraint, 'object', 'constraint')
-    constraint.meta = constraint.meta || {}
-    assertions.typeof(constraint.properties, 'array', 'constraint.propertyPaths')
-    assertions.ok(constraint.properties.length, 'must specify at least 1 property for constraint')
-    assertions.oneOf(constraint.type, values(ConstraintType), 'constraint.type')
-    assertions.typeof(constraint.meta, 'object')
-    constraint.name = DatabaseOptions.computeConstraintName(constraint)
+  public constraint(input: IConstraintInput): IDatabaseOptions {
+    assertions.typeof(input, 'object', 'constraint')
+    input.properties = input.properties || [[]]
+    input.meta = input.meta || {}
 
-    const constraints = this.spec.constraint || []
-    constraints.push(constraint)
-    this.spec.constraint = constraints
+    assertions.typeof(input.properties, 'array', 'constraint.propertyPaths')
+    assertions.ok(input.properties.length, 'must specify at least 1 property for constraint')
+    assertions.oneOf(input.type, values(ConstraintType), 'constraint.type')
+    assertions.typeof(input.meta, 'object')
+
+    const constraint = input as IConstraint
+    constraint.name = DatabaseOptions.computeConstraintName(constraint)
+    this.spec.constraint.push(constraint)
     return this
   }
 
@@ -71,14 +76,12 @@ export class DatabaseOptions implements IDatabaseOptions {
       properties[i] = DatabaseOptions._determineIndex(item, i)
     })
 
-    const indexes = this.spec.index || []
-    indexes.push(properties as IIndexProperty[])
-    this.spec.index = indexes
+    this.spec.index.push(properties as IIndexProperty[])
     return this
   }
 
   public reset(): IDatabaseOptions {
-    this.spec = {}
+    this.spec = DatabaseOptions.empty()
     return this
   }
 
@@ -110,10 +113,14 @@ export class DatabaseOptions implements IDatabaseOptions {
     return property
   }
 
+  public static empty(): IDatabaseSpecification {
+    return {automanage: [], constraint: [], index: []}
+  }
+
   public static merge(
-    specA: IDatabaseSpecification,
-    specB: IDatabaseSpecification,
-    ...others: IDatabaseSpecification[],
+    specA: IDatabaseSpecificationUnsafe,
+    specB: IDatabaseSpecificationUnsafe,
+    ...others: IDatabaseSpecificationUnsafe[],
   ): IDatabaseSpecification {
     let specToMerge = specB
     if (others.length) {

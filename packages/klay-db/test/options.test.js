@@ -72,6 +72,11 @@ describe.only('lib-ts/options.ts', () => {
         })
     })
 
+    it('should fill default property and phase', () => {
+      opts = opts.automanage({event: 'create', supplyWith: 'date'})
+      expect(opts.spec.automanage[0]).to.deep.include({phase: 'parse', property: []})
+    })
+
     it('should support auto-increment supplyWith', () => {
       opts = opts.automanage({
         property: ['mypropA'],
@@ -91,12 +96,7 @@ describe.only('lib-ts/options.ts', () => {
     })
 
     it('should support date supplyWith', () => {
-      opts = opts.automanage({
-        property: ['mypropA'],
-        event: 'create',
-        phase: 'database',
-        supplyWith: 'date',
-      })
+      opts = opts.automanage({event: 'create', supplyWith: 'date'})
 
       expect(opts.spec)
         .to.have.nested.property('automanage.0.supplyWith')
@@ -107,12 +107,7 @@ describe.only('lib-ts/options.ts', () => {
     })
 
     it('should support isotimestamp supplyWith', () => {
-      opts = opts.automanage({
-        property: ['mypropA'],
-        event: 'create',
-        phase: 'database',
-        supplyWith: 'iso-timestamp',
-      })
+      opts = opts.automanage({event: 'create', supplyWith: 'iso-timestamp'})
 
       expect(opts.spec)
         .to.have.nested.property('automanage.0.supplyWith')
@@ -126,9 +121,9 @@ describe.only('lib-ts/options.ts', () => {
       const valid = {property: [], event: '*', phase: 'database', supplyWith: () => 1}
       expect(() => opts.automanage('old')).to.throw()
       expect(() => opts.automanage({...valid, property: 'foo'})).to.throw(/property/)
-      expect(() => opts.automanage({...valid, event: ''})).to.throw(/event/)
-      expect(() => opts.automanage({...valid, phase: ''})).to.throw(/phase/)
-      expect(() => opts.automanage({...valid, supplyWith: ''})).to.throw(/supplyWith/)
+      expect(() => opts.automanage({...valid, event: '1'})).to.throw(/event/)
+      expect(() => opts.automanage({...valid, phase: '2'})).to.throw(/phase/)
+      expect(() => opts.automanage({...valid, supplyWith: '3'})).to.throw(/supplyWith/)
     })
   })
 
@@ -167,6 +162,15 @@ describe.only('lib-ts/options.ts', () => {
           type: 'unique',
           meta: {behavior: 'reject'},
         })
+    })
+
+    it('should default properties, meta, and name', () => {
+      opts = opts.constraint({type: 'primary'})
+      expect(opts.spec.constraint[0]).to.deep.include({
+        name: 'primary:',
+        properties: [[]],
+        meta: {},
+      })
     })
 
     it('should add a reference constraint property', () => {

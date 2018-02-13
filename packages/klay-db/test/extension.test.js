@@ -62,10 +62,18 @@ describe.only('lib-ts/extension.ts', () => {
     it('should set db specification', () => {
       const optionsA = new DatabaseOptions().index([['x']])
       let model = modelContext.create().db(optionsA.spec)
-      expect(model.spec.db).to.eql({index: [[{property: ['x'], direction: 'asc'}]]})
+      expect(model.spec.db).to.eql({
+        automanage: [],
+        constraint: [],
+        index: [[{property: ['x'], direction: 'asc'}]],
+      })
       const optionsB = new DatabaseOptions().index([['y']])
       model = model.db(optionsB.spec)
-      expect(model.spec.db).to.eql({index: [[{property: ['y'], direction: 'asc'}]]})
+      expect(model.spec.db).to.eql({
+        automanage: [],
+        constraint: [],
+        index: [[{property: ['y'], direction: 'asc'}]],
+      })
     })
 
     it('should clear db specification', () => {
@@ -79,7 +87,11 @@ describe.only('lib-ts/extension.ts', () => {
     it('should merge db specifications', () => {
       const optionsA = new DatabaseOptions().index([['x']])
       let model = modelContext.create().db(optionsA.spec)
-      expect(model.spec.db).to.eql({index: [[{property: ['x'], direction: 'asc'}]]})
+      expect(model.spec.db).to.eql({
+        automanage: [],
+        constraint: [],
+        index: [[{property: ['x'], direction: 'asc'}]],
+      })
       const optionsB = new DatabaseOptions().index([['y']])
       model = model.db(optionsB.spec, {shouldMerge: true})
       expect(model.spec.db).to.eql({

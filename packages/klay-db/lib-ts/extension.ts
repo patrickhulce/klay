@@ -30,7 +30,8 @@ export class DatabaseExtension implements IKlayExtension {
       'set-children': [
         model => {
           if (Array.isArray(model.spec.children)) {
-            model.spec.db = helpers.mergeChildrenIntoRoot(model.spec.db || {}, model.spec.children)
+            const spec = model.spec.db || DatabaseOptions.empty()
+            model.spec.db = helpers.mergeChildrenIntoRoot(spec, model.spec.children)
           }
         },
       ],

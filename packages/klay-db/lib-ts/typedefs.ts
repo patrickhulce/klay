@@ -38,16 +38,29 @@ export interface IDatabaseSetterOptions {
 export interface IDatabaseOptions {
   spec: IDatabaseSpecification
 
-  automanage(property: IAutomanageProperty): IDatabaseOptions
-  constraint(property: IConstraint): IDatabaseOptions
+  automanage(property: IAutomanagePropertyInput): IDatabaseOptions
+  constraint(property: IConstraintInput): IDatabaseOptions
   index(property: IIndexPropertyInput[]): IDatabaseOptions
   reset(): IDatabaseOptions
 }
 
-export interface IDatabaseSpecification {
+export interface IDatabaseSpecificationUnsafe {
   automanage?: IAutomanageProperty[]
   constraint?: IConstraint[]
   index?: IIndexProperty[][]
+}
+
+export interface IDatabaseSpecification {
+  automanage: IAutomanageProperty[]
+  constraint: IConstraint[]
+  index: IIndexProperty[][]
+}
+
+export interface IAutomanagePropertyInput {
+  property?: PropertyPath
+  phase?: ValidationPhase
+  event: DatabaseEvent
+  supplyWith: ISupplyWithFunction | SupplyWithPreset
 }
 
 export interface IAutomanageProperty {
@@ -57,8 +70,14 @@ export interface IAutomanageProperty {
   supplyWith: ISupplyWithFunction | SupplyWithPreset
 }
 
+export interface IConstraintInput {
+  properties?: PropertyPath[]
+  type: ConstraintType
+  meta: IConstraintMeta
+}
+
 export interface IConstraint {
-  name?: string
+  name: string
   properties: PropertyPath[]
   type: ConstraintType
   meta: IConstraintMeta
