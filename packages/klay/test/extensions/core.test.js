@@ -8,6 +8,19 @@ const validations = extension.validations
 
 describe('lib/extensions/core.ts', () => {
   describe('coerce', () => {
+    describe('undefined', () => {
+      const coerce = coercions.undefined.___ALL_FORMATS___['coerce-type']
+
+      it('should coerce type', () => {
+        expect(coerce(vr(undefined), {})).to.include({conforms: true, value: undefined})
+        expect(() => coerce(vr('hello'), {})).to.throw()
+        expect(() => coerce(vr({}), {})).to.throw()
+        expect(() => coerce(vr(0), {})).to.throw()
+        expect(() => coerce(vr(''), {})).to.throw()
+        expect(() => coerce(vr(null), {})).to.throw()
+      })
+    })
+
     describe('boolean', () => {
       const coerce = coercions.boolean.___ALL_FORMATS___['coerce-type']
 
