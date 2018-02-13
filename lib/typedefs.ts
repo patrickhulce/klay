@@ -28,6 +28,7 @@ export interface IModel {
   isKlayModel: boolean
   spec: IModelSpecification
 
+  reset(): IModel
   clone(): IModel
   validate(value: any, options?: IValidateOptions): IValidationResult
 

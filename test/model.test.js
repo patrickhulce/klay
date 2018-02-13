@@ -60,6 +60,15 @@ describe('lib/model.ts', () => {
     })
   })
 
+  describe('.reset', () => {
+    it('should clear out the spec', () => {
+      const model = new Model({type: 'string'}, defaultOptions)
+      expect(model.spec).to.eql({type: 'string'})
+      model.reset()
+      expect(model.spec).to.eql({})
+    })
+  })
+
   describe('.clone', () => {
     it('should create a copy', () => {
       const modelA = new Model({}, defaultOptions).type('string')
