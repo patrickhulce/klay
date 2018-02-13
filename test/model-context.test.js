@@ -6,7 +6,10 @@ describe('lib/model-context.ts', () => {
     it('creates context with default options', () => {
       const context = ModelContext.create()
       const types = context._options.types
-      expect(types).to.eql(['any', 'boolean', 'number', 'string', 'array', 'object', 'date'])
+      expect(types).to.contain('any')
+      expect(types).to.contain('boolean')
+      expect(types).to.contain('string')
+      expect(types).to.contain('object')
     })
 
     it('adds builder functions', () => {

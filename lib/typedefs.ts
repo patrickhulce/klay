@@ -137,6 +137,7 @@ export interface IValidationResult extends IIntermediateValidationResult {
 
 export enum ModelType {
   Any = 'any',
+  Undefined = 'undefined',
   Boolean = 'boolean',
   Number = 'number',
   String = 'string',

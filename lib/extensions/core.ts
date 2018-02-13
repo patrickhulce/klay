@@ -26,6 +26,14 @@ function validateMinMax(getValue: (value: any) => number): IValidationFunction {
 export const types = values(ModelType)
 
 export const coerce: IValidatorCoerce = {
+  [ModelType.Undefined]: {
+    [ALL_FORMATS]: {
+      [ValidationPhase.CoerceType]: validationResult => {
+        assertions.typeof(validationResult.value, 'undefined')
+        return validationResult
+      },
+    },
+  },
   [ModelType.Boolean]: {
     [ALL_FORMATS]: {
       [ValidationPhase.CoerceType]: (validationResult, spec) => {
