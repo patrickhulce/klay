@@ -34,6 +34,24 @@ describe('lib/model.ts', () => {
       expect(fooArgs).to.eql([[model, 1, 2, 'woot']])
     })
 
+    it('should validate the spec', () => {
+      const methods = {
+        foo(model, x) {
+          if (x < 5) {
+            throw new Error('too low')
+          }
+          model.spec.foo = x
+          return 'return value'
+        },
+      }
+
+      const options = {types: ['string'], methods}
+      const model = new Model({foo: 10, type: 'string', extra: 1}, options)
+      expect(model.spec).to.eql({foo: 10, type: 'string', extra: 1})
+      expect(() => new Model({type: 'foo'}, options)).to.throw(/type.*one of/)
+      expect(() => new Model({foo: 2}, options)).to.throw(/too low/)
+    })
+
     it('should run hooks', () => {
       const hooks = {construction: [model => model.spec.foo = 'bar']}
       const options = {...defaultOptions, hooks}
