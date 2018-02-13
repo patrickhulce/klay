@@ -328,6 +328,62 @@ describe('lib/validator.ts', () => {
           ],
         })
       })
+
+      it('should update nested root values as it goes', () => {
+        let calledRootValue
+        const stub = vr => {
+          calledRootValue = _.cloneDeep(vr.rootValue)
+          return vr.setValue(vr.rootValue.z.zz.xxx + vr.rootValue.z.zz.yyy)
+        }
+
+        model = model.type('object').children({
+          x: mkModel().coerce(vr => vr.setValue(1)),
+          y: mkModel().coerce(vr => vr.setValue(2)),
+          z: mkModel()
+            .type('object')
+            .children({
+              xx: mkModel().coerce(vr => vr.setValue(3)),
+              yy: mkModel().coerce(vr => vr.setValue(4)),
+              zz: mkModel()
+                .type('object')
+                .children({
+                  xxx: mkModel().coerce(vr => vr.setValue(5)),
+                  yyy: mkModel().coerce(vr => vr.setValue(6)),
+                  zzz: mkModel().coerce(stub),
+                }),
+            }),
+        })
+
+        const result = validate({
+          x: 'x',
+          y: 'y',
+          z: {
+            xx: 'xx',
+            yy: 'yy',
+            zz: {
+              xxx: 'xxx',
+              yyy: 'yyy',
+              zzz: 'zzz',
+            },
+          },
+        })
+
+        expect(calledRootValue).to.eql({
+          x: 1,
+          y: 2,
+          z: {
+            xx: 3,
+            yy: 4,
+            zz: {
+              xxx: 5,
+              yyy: 6,
+              zzz: 'zzz',
+            },
+          },
+        })
+
+        expect(result.value.z.zz.zzz).to.equal(11)
+      })
     })
 
     context('coerce', () => {
