@@ -33,11 +33,24 @@ export class Model {
     this._options = ValidatorOptions.from(options)
 
     this.isKlayModel = true
-    this.spec = Object.assign(cloneDeep(this._options.defaults), spec)
+    this.spec = cloneDeep(this._options.defaults)
 
     forEach(this._options.methods, (method, name) => {
       const model = this as any
       model[name] = (...args: any[]) => method(model, ...args)
+    })
+
+    if (spec.type) {
+      this.type(spec.type)
+    }
+
+    forEach(spec, (value, key) => {
+      const model = this as any
+      if (typeof model[key] === 'function') {
+        model[key](value)
+      } else {
+        model.spec[key] = value
+      }
     })
 
     this._runHooks(ModelHookPhase.Construction)
