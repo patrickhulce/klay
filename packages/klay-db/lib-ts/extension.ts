@@ -1,4 +1,11 @@
-import {IKlayExtension, IModel, IModelHooks, IValidatorMethods, ValidationPhase} from 'klay'
+import {
+  IKlayExtension,
+  IModel,
+  IModelContext,
+  IModelHooks,
+  IValidatorMethods,
+  ValidationPhase,
+} from 'klay'
 import * as helpers from './helpers'
 import {DatabaseOptions} from './options'
 import {
@@ -74,6 +81,46 @@ export class DatabaseExtension implements IKlayExtension {
         return helpers.getModelForEvent(model, event)
       },
     }
+  }
+
+  // tslint:disable-next-line
+  public extendContext(context: IModelContext): void {
+    context.integerID = () =>
+      context
+        .integer()
+        .primaryKey()
+        .autoIncrement()
+    context.uuidID = () =>
+      context
+        .uuid()
+        .primaryKey()
+        .automanage({
+          property: [],
+          event: DatabaseEvent.Create,
+          phase: ValidationPhase.Parse,
+          supplyWith: SupplyWithPreset.UUID,
+        })
+    context.createdAt = () =>
+      context
+        .date()
+        .required()
+        .immutable()
+        .automanage({
+          property: [],
+          event: DatabaseEvent.Create,
+          phase: ValidationPhase.Parse,
+          supplyWith: SupplyWithPreset.Date,
+        })
+    context.updatedAt = () =>
+      context
+        .date()
+        .required()
+        .automanage({
+          property: [],
+          event: DatabaseEvent.All,
+          phase: ValidationPhase.Parse,
+          supplyWith: SupplyWithPreset.Date,
+        })
   }
 
   private static _constrain(model: IModel, type: ConstraintType, meta?: IConstraintMeta): IModel {

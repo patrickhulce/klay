@@ -30,6 +30,34 @@ describe.only('lib-ts/extension.ts', () => {
     })
   })
 
+  describe('builders', () => {
+    it('should add integerID', () => {
+      const model = modelContext.integerID()
+      expect(model.spec.db.constraint).to.have.length(1)
+      expect(model.spec.db.automanage).to.have.length(1)
+      expect(model.spec.db.constraint[0].type).to.equal('primary')
+    })
+
+    it('should add uuidID', () => {
+      const model = modelContext.uuidID()
+      expect(model.spec.db.constraint).to.have.length(1)
+      expect(model.spec.db.automanage).to.have.length(1)
+      expect(model.spec.db.constraint[0].type).to.equal('primary')
+    })
+
+    it('should add createdAt', () => {
+      const model = modelContext.createdAt()
+      expect(model.spec.db.constraint).to.have.length(1)
+      expect(model.spec.db.automanage).to.have.length(1)
+      expect(model.spec.db.constraint[0].type).to.equal('immutable')
+    })
+
+    it('should add updatedAt', () => {
+      const model = modelContext.updatedAt()
+      expect(model.spec.db.automanage).to.have.length(1)
+    })
+  })
+
   describe('.db', () => {
     it('should set db specification', () => {
       const optionsA = new DatabaseOptions().index([['x']])

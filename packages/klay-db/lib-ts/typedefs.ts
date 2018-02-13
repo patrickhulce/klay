@@ -1,6 +1,13 @@
 import {ICoerceFunction, ValidationPhase} from 'klay'
 
 declare module 'klay/lib/typedefs' {
+  export interface IModelContext {
+    integerID(): IModel
+    uuidID(): IModel
+    createdAt(): IModel
+    updatedAt(): IModel
+  }
+
   export interface IModel {
     db(spec?: IDatabaseSpecification, options?: IDatabaseSetterOptions): IModel
     automanage(property: IAutomanageProperty): IModel
