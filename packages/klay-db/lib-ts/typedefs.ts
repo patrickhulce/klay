@@ -10,6 +10,7 @@ declare module 'klay/lib/typedefs' {
     unique(meta?: IConstraintMeta): IModel
     immutable(meta?: IConstraintMeta): IModel
     autoIncrement(): IModel
+    asModelForEvent(event: DatabaseEvent): IModel
   }
 
   export interface IModelSpecification {

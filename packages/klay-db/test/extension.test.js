@@ -134,4 +134,20 @@ describe.only('lib-ts/extension.ts', () => {
       expect(model.spec.db).to.have.nested.property('automanage[0].supplyWith', 'auto-increment')
     })
   })
+
+  describe('.asModelForEvent', () => {
+    it('should get the appropriate model for the event', () => {
+      const model = modelContext.create().automanage({
+        property: [],
+        event: 'create',
+        phase: 'parse',
+        supplyWith: 'date',
+      })
+
+      const createModel = model.asModelForEvent('create')
+      expect(createModel.validate().value).to.be.instanceof(Date)
+      const updateModel = model.asModelForEvent('update')
+      expect(updateModel.validate().value).to.equal(undefined)
+    })
+  })
 })
