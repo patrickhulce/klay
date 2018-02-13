@@ -20,7 +20,9 @@ export class ValidationResult implements IValidationResult {
 
   public constructor(result: IIntermediateValidationResult) {
     assertions.ok(ValidationResult.isLike(result), 'coerce functions must return ValidationResults')
-    assign(this, cloneDeep(pick(result, KEYS)))
+    assign(this, pick(result, KEYS))
+    this.value = cloneDeep(result.value)
+    this.rootValue = result.rootValue
   }
 
   public setValue(value: any): ValidationResult {

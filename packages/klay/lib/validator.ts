@@ -1,4 +1,4 @@
-import {get, omit} from 'lodash'
+import {cloneDeep, get, omit, set} from 'lodash'
 import {assertions as validationAssertions, ValidationError} from './errors/validation-error'
 import {
   ALL_FORMATS,
@@ -228,11 +228,12 @@ export class Validator {
     validationResult = runValidations(this._validateValue)
     validationResult = runValidations(this._findCoerceFn(ValidationPhase.ValidateValue))
 
+    set(validationResult.rootValue, validationResult.pathToValue, validationResult.value)
     return validationResult.setIsFinished(true)
   }
 
   public validate(value: any, options?: IValidateOptions): IValidationResult {
-    const result = this._validate(ValidationResult.fromValue(value, value, []))
+    const result = this._validate(ValidationResult.fromValue(value, cloneDeep(value), []))
     if (!result.conforms && options && options.failLoudly) {
       throw ValidationError.fromResultError(result.errors[0])
     }
