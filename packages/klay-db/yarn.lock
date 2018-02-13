@@ -2755,9 +2755,9 @@ kind-of@^3.0.2:
   dependencies:
     is-buffer "^1.0.2"
 
-klay@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/klay/-/klay-2.3.0.tgz#865644362a26e80f45437dcfced8a80228fa32fc"
+klay@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/klay/-/klay-2.4.0.tgz#ef0e0d186742d2a3050413d9f171bda019475aaa"
   dependencies:
     "@types/lodash" "^4.14.93"
     lodash "^4.14.93"
