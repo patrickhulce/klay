@@ -328,43 +328,4 @@ describe.only('lib-ts/options.ts', () => {
       expect(merged.index).to.eql([indexA, indexB, indexC])
     })
   })
-
-  describe.skip('.toObject', () => {
-    const now = () => new Date()
-    const checksum = item => item.id * Math.random()
-
-    it('should return all of the settings', () => {
-      const meta = {lookupTable: 'parents', name: 'reference:parent'}
-      const opts = new Options()
-        .index('type')
-        .index(['type', 'size', '-created_at'])
-        .automanage('checksum', 'update', 'validate-value', checksum)
-        .automanage('created_at', 'create', now)
-        .automanage('updated_at', 'update', now)
-        .constraint('id', 'primary')
-        .constraint(['type', 'version'], 'unique')
-        .constraint(['parent_id'], 'reference', meta)
-
-      expect(opts.spec).to.eql({
-        indexes: [
-          [{property: ['type'], direction: 'asc'}],
-          [
-            {property: ['type'], direction: 'asc'},
-            {property: ['size'], direction: 'asc'},
-            {property: ['created_at'], direction: 'desc'},
-          ],
-        ],
-        automanage: [
-          {property: ['checksum'], event: 'update', phase: 'validate-value', supplyWith: checksum},
-          {property: ['created_at'], event: 'create', phase: 'parse', supplyWith: now},
-          {property: ['updated_at'], event: 'update', phase: 'parse', supplyWith: now},
-        ],
-        constraints: [
-          {name: 'primary:id', properties: ['id'], type: 'primary', meta: {}},
-          {name: 'unique:type,version', properties: ['type', 'version'], type: 'unique', meta: {}},
-          {name: 'reference:parent', properties: ['parent_id'], type: 'reference', meta},
-        ],
-      })
-    })
-  })
 })
