@@ -175,7 +175,7 @@ describe.only('lib-ts/extension.ts', () => {
     })
   })
 
-  describe('.asModelForEvent', () => {
+  describe('.toDatabaseEventModel', () => {
     it('should get the appropriate model for the event', () => {
       const model = modelContext.create().automanage({
         property: [],
@@ -184,9 +184,9 @@ describe.only('lib-ts/extension.ts', () => {
         supplyWith: 'date',
       })
 
-      const createModel = model.asModelForEvent('create')
+      const createModel = model.toDatabaseEventModel('create')
       expect(createModel.validate().value).to.be.instanceof(Date)
-      const updateModel = model.asModelForEvent('update')
+      const updateModel = model.toDatabaseEventModel('update')
       expect(updateModel.validate().value).to.equal(undefined)
     })
   })

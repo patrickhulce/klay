@@ -9,6 +9,8 @@ declare module 'klay/lib/typedefs' {
   }
 
   export interface IModel {
+    toDatabaseEventModel(event: DatabaseEvent): IModel
+
     db(spec?: IDatabaseSpecification, options?: IDatabaseSetterOptions): IModel
     automanage(property: IAutomanageProperty): IModel
     constraint(constraint: IConstraint): IModel
@@ -17,7 +19,6 @@ declare module 'klay/lib/typedefs' {
     unique(meta?: IConstraintMeta): IModel
     immutable(meta?: IConstraintMeta): IModel
     autoIncrement(): IModel
-    asModelForEvent(event: DatabaseEvent): IModel
   }
 
   export interface IModelSpecification {

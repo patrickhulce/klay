@@ -78,7 +78,7 @@ export class DatabaseExtension implements IKlayExtension {
 
         return model.db(database.spec, {shouldMerge: true})
       },
-      asModelForEvent(model: IModel, event: DatabaseEvent): IModel {
+      toDatabaseEventModel(model: IModel, event: DatabaseEvent): IModel {
         return helpers.getModelForEvent(model, event)
       },
     }
