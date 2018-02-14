@@ -69,6 +69,6 @@
     "typescript": "^2.7.1"
   },
   "peerDependencies": {
-    "klay": "^1.2.0"
+    "klay": "^2.4.0"
   }
 }
