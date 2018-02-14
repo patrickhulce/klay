@@ -13,7 +13,7 @@ declare module 'klay/lib/typedefs' {
 
     db(spec?: IDatabaseSpecification, options?: IDatabaseSetterOptions): IModel
     automanage(property: IAutomanagePropertyInput): IModel
-    constraint(constraint: IConstraintInput): IModel
+    constrain(constraint: IConstraintInput): IModel
     index(properties: IIndexPropertyInput[]): IModel
     autoIncrement(): IModel
   }
@@ -37,20 +37,20 @@ export interface IDatabaseOptions {
   spec: IDatabaseSpecification
 
   automanage(property: IAutomanagePropertyInput): IDatabaseOptions
-  constraint(property: IConstraintInput): IDatabaseOptions
+  constrain(property: IConstraintInput): IDatabaseOptions
   index(property: IIndexPropertyInput[]): IDatabaseOptions
   reset(): IDatabaseOptions
 }
 
 export interface IDatabaseSpecificationUnsafe {
   automanage?: IAutomanageProperty[]
-  constraint?: IConstraint[]
+  constrain?: IConstraint[]
   index?: IIndexProperty[][]
 }
 
 export interface IDatabaseSpecification {
   automanage: IAutomanageProperty[]
-  constraint: IConstraint[]
+  constrain: IConstraint[]
   index: IIndexProperty[][]
 }
 

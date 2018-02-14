@@ -50,8 +50,8 @@ export class DatabaseExtension implements IKlayExtension {
         const database = new DatabaseOptions().automanage(property)
         return model.db(database.spec, {shouldMerge: true})
       },
-      constraint(model: IModel, constraint: IConstraint): IModel {
-        const database = new DatabaseOptions().constraint(constraint)
+      constrain(model: IModel, constrain: IConstraint): IModel {
+        const database = new DatabaseOptions().constrain(constrain)
         return model.db(database.spec, {shouldMerge: true})
       },
       index(model: IModel, properties: IIndexPropertyInput[]): IModel {
@@ -79,12 +79,12 @@ export class DatabaseExtension implements IKlayExtension {
     context.integerID = () =>
       context
         .integer()
-        .constraint({type: ConstraintType.Primary})
+        .constrain({type: ConstraintType.Primary})
         .autoIncrement()
     context.uuidID = () =>
       context
         .uuid()
-        .constraint({type: ConstraintType.Primary})
+        .constrain({type: ConstraintType.Primary})
         .automanage({
           property: [],
           event: DatabaseEvent.Create,
@@ -95,7 +95,7 @@ export class DatabaseExtension implements IKlayExtension {
       context
         .date()
         .required()
-        .constraint({type: ConstraintType.Immutable})
+        .constrain({type: ConstraintType.Immutable})
         .automanage({
           property: [],
           event: DatabaseEvent.Create,

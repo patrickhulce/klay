@@ -13,12 +13,12 @@ describe.only('lib-ts/extension.ts', () => {
 
   describe('hooks', () => {
     it('should gather child db specifications', () => {
-      const child = modelContext.string().constraint({type: 'primary'})
+      const child = modelContext.string().constrain({type: 'primary'})
       const model = modelContext.object().children({id: child})
       expect(model.spec.db).to.eql({
         automanage: [],
         index: [],
-        constraint: [
+        constrain: [
           {
             properties: [['id']],
             type: 'primary',
@@ -33,23 +33,23 @@ describe.only('lib-ts/extension.ts', () => {
   describe('builders', () => {
     it('should add integerID', () => {
       const model = modelContext.integerID()
-      expect(model.spec.db.constraint).to.have.length(1)
+      expect(model.spec.db.constrain).to.have.length(1)
       expect(model.spec.db.automanage).to.have.length(1)
-      expect(model.spec.db.constraint[0].type).to.equal('primary')
+      expect(model.spec.db.constrain[0].type).to.equal('primary')
     })
 
     it('should add uuidID', () => {
       const model = modelContext.uuidID()
-      expect(model.spec.db.constraint).to.have.length(1)
+      expect(model.spec.db.constrain).to.have.length(1)
       expect(model.spec.db.automanage).to.have.length(1)
-      expect(model.spec.db.constraint[0].type).to.equal('primary')
+      expect(model.spec.db.constrain[0].type).to.equal('primary')
     })
 
     it('should add createdAt', () => {
       const model = modelContext.createdAt()
-      expect(model.spec.db.constraint).to.have.length(1)
+      expect(model.spec.db.constrain).to.have.length(1)
       expect(model.spec.db.automanage).to.have.length(1)
-      expect(model.spec.db.constraint[0].type).to.equal('immutable')
+      expect(model.spec.db.constrain[0].type).to.equal('immutable')
     })
 
     it('should add updatedAt', () => {
@@ -64,14 +64,14 @@ describe.only('lib-ts/extension.ts', () => {
       let model = modelContext.create().db(optionsA.spec)
       expect(model.spec.db).to.eql({
         automanage: [],
-        constraint: [],
+        constrain: [],
         index: [[{property: ['x'], direction: 'asc'}]],
       })
       const optionsB = new DatabaseOptions().index([['y']])
       model = model.db(optionsB.spec)
       expect(model.spec.db).to.eql({
         automanage: [],
-        constraint: [],
+        constrain: [],
         index: [[{property: ['y'], direction: 'asc'}]],
       })
     })
@@ -89,14 +89,14 @@ describe.only('lib-ts/extension.ts', () => {
       let model = modelContext.create().db(optionsA.spec)
       expect(model.spec.db).to.eql({
         automanage: [],
-        constraint: [],
+        constrain: [],
         index: [[{property: ['x'], direction: 'asc'}]],
       })
       const optionsB = new DatabaseOptions().index([['y']])
       model = model.db(optionsB.spec, {shouldMerge: true})
       expect(model.spec.db).to.eql({
         automanage: [],
-        constraint: [],
+        constrain: [],
         index: [[{property: ['x'], direction: 'asc'}], [{property: ['y'], direction: 'asc'}]],
       })
     })
@@ -122,14 +122,14 @@ describe.only('lib-ts/extension.ts', () => {
     })
   })
 
-  describe('.constraint', () => {
-    it('should set constraint of model', () => {
-      const model = modelContext.create().constraint({
+  describe('.constrain', () => {
+    it('should set constrain of model', () => {
+      const model = modelContext.create().constrain({
         properties: [['x']],
         type: 'primary',
       })
 
-      expect(model.spec.db.constraint).to.eql([
+      expect(model.spec.db.constrain).to.eql([
         {
           name: 'primary:x',
           properties: [['x']],
@@ -148,7 +148,7 @@ describe.only('lib-ts/extension.ts', () => {
   })
 
   describe('.autoIncrement', () => {
-    it('should set constraint on model', () => {
+    it('should set constrain on model', () => {
       const model = modelContext.create().autoIncrement()
       expect(model.spec.db).to.have.nested.property('automanage[0].supplyWith', 'auto-increment')
     })

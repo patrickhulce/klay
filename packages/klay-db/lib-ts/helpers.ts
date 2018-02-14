@@ -13,7 +13,7 @@ export function addPropertyNames(
     property.property = [name].concat(property.property)
   })
 
-  forEach(cloned.constraint, constraint => {
+  forEach(cloned.constrain, constraint => {
     constraint.properties = constraint.properties.map(property => [name].concat(property))
     constraint.name = DatabaseOptions.computeConstraintName(constraint)
   })

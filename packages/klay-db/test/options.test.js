@@ -127,18 +127,18 @@ describe.only('lib-ts/options.ts', () => {
     })
   })
 
-  describe('.constraint', () => {
+  describe('.constrain', () => {
     let opts
 
     beforeEach(() => {
       opts = new Options()
     })
 
-    it('should add the first constraint property', () => {
-      opts = opts.constraint({properties: [['id']], type: 'primary'})
+    it('should add the first constrain property', () => {
+      opts = opts.constrain({properties: [['id']], type: 'primary'})
 
       expect(opts.spec)
-        .to.have.property('constraint')
+        .to.have.property('constrain')
         .eql([
           {
             name: 'primary:id',
@@ -149,13 +149,13 @@ describe.only('lib-ts/options.ts', () => {
         ])
     })
 
-    it('should add the second constraint property', () => {
+    it('should add the second constrain property', () => {
       opts = opts
-        .constraint({properties: [['id']], type: 'primary'})
-        .constraint({properties: [['day'], ['other']], type: 'unique', meta: {behavior: 'reject'}})
+        .constrain({properties: [['id']], type: 'primary'})
+        .constrain({properties: [['day'], ['other']], type: 'unique', meta: {behavior: 'reject'}})
 
       expect(opts.spec)
-        .to.have.nested.property('constraint.1')
+        .to.have.nested.property('constrain.1')
         .eql({
           name: 'unique:day,other',
           properties: [['day'], ['other']],
@@ -165,24 +165,24 @@ describe.only('lib-ts/options.ts', () => {
     })
 
     it('should default properties, meta, and name', () => {
-      opts = opts.constraint({type: 'primary'})
-      expect(opts.spec.constraint[0]).to.deep.include({
+      opts = opts.constrain({type: 'primary'})
+      expect(opts.spec.constrain[0]).to.deep.include({
         name: 'primary:',
         properties: [[]],
         meta: {},
       })
     })
 
-    it('should add a reference constraint property', () => {
+    it('should add a reference constrain property', () => {
       const meta = {lookupTable: 'parents', name: 'reference:parent'}
-      opts = opts.constraint({properties: [['id']], type: 'primary'}).constraint({
+      opts = opts.constrain({properties: [['id']], type: 'primary'}).constrain({
         properties: [['parent_id']],
         type: 'reference',
         meta,
       })
 
       expect(opts.spec)
-        .to.have.nested.property('constraint.1')
+        .to.have.nested.property('constrain.1')
         .eql({
           name: 'reference:parent',
           properties: [['parent_id']],
@@ -191,13 +191,13 @@ describe.only('lib-ts/options.ts', () => {
         })
     })
 
-    it('should add an immutable constraint property', () => {
+    it('should add an immutable constrain property', () => {
       opts = opts
-        .constraint({properties: [['id']], type: 'primary'})
-        .constraint({properties: [['canonical_id'], ['created_on']], type: 'immutable'})
+        .constrain({properties: [['id']], type: 'primary'})
+        .constrain({properties: [['canonical_id'], ['created_on']], type: 'immutable'})
 
       expect(opts.spec)
-        .to.have.nested.property('constraint.1')
+        .to.have.nested.property('constrain.1')
         .eql({
           name: 'immutable:canonical_id,created_on',
           properties: [['canonical_id'], ['created_on']],
@@ -206,15 +206,15 @@ describe.only('lib-ts/options.ts', () => {
         })
     })
 
-    it('should add a custom constraint property', () => {
-      opts = opts.constraint({
+    it('should add a custom constrain property', () => {
+      opts = opts.constrain({
         properties: [['something'], ['other']],
         type: 'custom',
         meta: {foo: 'bar'},
       })
 
       expect(opts.spec)
-        .to.have.nested.property('constraint.0')
+        .to.have.nested.property('constrain.0')
         .eql({
           name: 'custom:something,other',
           properties: [['something'], ['other']],
@@ -224,13 +224,13 @@ describe.only('lib-ts/options.ts', () => {
     })
 
     it('should use meta.name when set', () => {
-      opts = opts.constraint({properties: [['id']], type: 'primary', meta: {name: 'foo'}})
-      expect(opts.spec).to.have.nested.property('constraint.0.name', 'foo')
+      opts = opts.constrain({properties: [['id']], type: 'primary', meta: {name: 'foo'}})
+      expect(opts.spec).to.have.nested.property('constrain.0.name', 'foo')
     })
 
     it('should throw when given empty properties', () => {
-      const constraint = {properties: [], type: 'primary'}
-      expect(() => opts.constraint(constraint)).to.throw(/at least 1 property/)
+      const constrain = {properties: [], type: 'primary'}
+      expect(() => opts.constrain(constrain)).to.throw(/at least 1 property/)
     })
   })
 
@@ -280,7 +280,7 @@ describe.only('lib-ts/options.ts', () => {
           phase: 'validate-value',
           supplyWith: 'date',
         })
-        .constraint({properties: [['y']], type: 'primary'})
+        .constrain({properties: [['y']], type: 'primary'})
         .index([['z']])
       const optsB = new Options()
         .automanage({
@@ -289,12 +289,12 @@ describe.only('lib-ts/options.ts', () => {
           phase: 'validate-value',
           supplyWith: 'iso-timestamp',
         })
-        .constraint({properties: [['z']], type: 'unique'})
+        .constrain({properties: [['z']], type: 'unique'})
         .index([['w']])
 
       const merged = Options.merge(optsA.spec, optsB.spec)
       expect(merged.automanage).to.have.length(2)
-      expect(merged.constraint).to.have.length(2)
+      expect(merged.constrain).to.have.length(2)
       expect(merged.index).to.have.length(2)
     })
 

@@ -53,19 +53,19 @@ export class DatabaseOptions implements IDatabaseOptions {
     return this
   }
 
-  public constraint(input: IConstraintInput): IDatabaseOptions {
-    assertions.typeof(input, 'object', 'constraint')
+  public constrain(input: IConstraintInput): IDatabaseOptions {
+    assertions.typeof(input, 'object', 'constrain')
     input.properties = input.properties || [[]]
     input.meta = input.meta || {}
 
-    assertions.typeof(input.properties, 'array', 'constraint.propertyPaths')
-    assertions.ok(input.properties.length, 'must specify at least 1 property for constraint')
-    assertions.oneOf(input.type, values(ConstraintType), 'constraint.type')
+    assertions.typeof(input.properties, 'array', 'constrain.propertyPaths')
+    assertions.ok(input.properties.length, 'must specify at least 1 property for constrain')
+    assertions.oneOf(input.type, values(ConstraintType), 'constrain.type')
     assertions.typeof(input.meta, 'object')
 
-    const constraint = input as IConstraint
-    constraint.name = DatabaseOptions.computeConstraintName(constraint)
-    this.spec.constraint.push(constraint)
+    const constrain = input as IConstraint
+    constrain.name = DatabaseOptions.computeConstraintName(constrain)
+    this.spec.constrain.push(constrain)
     return this
   }
 
@@ -114,7 +114,7 @@ export class DatabaseOptions implements IDatabaseOptions {
   }
 
   public static empty(): IDatabaseSpecification {
-    return {automanage: [], constraint: [], index: []}
+    return {automanage: [], constrain: [], index: []}
   }
 
   public static merge(
@@ -130,8 +130,8 @@ export class DatabaseOptions implements IDatabaseOptions {
     }
 
     const automanage = concat(specA.automanage, specToMerge.automanage)
-    const constraint = concat(specA.constraint, specToMerge.constraint)
+    const constrain = concat(specA.constrain, specToMerge.constrain)
     const index = concat(specA.index, specToMerge.index)
-    return {automanage, constraint, index}
+    return {automanage, constrain, index}
   }
 }

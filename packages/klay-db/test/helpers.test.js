@@ -13,7 +13,7 @@ describe.only('lib/helpers.ts', () => {
     it('adds names to spec properties', () => {
       const options = new DatabaseOptions()
         .automanage({...AUTOMANAGE, property: ['nested']})
-        .constraint({...CONSTRAINT, properties: [['nested'], ['other']]})
+        .constrain({...CONSTRAINT, properties: [['nested'], ['other']]})
         .index([['nested']])
         .index([[]])
 
@@ -22,7 +22,7 @@ describe.only('lib/helpers.ts', () => {
         .to.have.nested.property('automanage.0.property')
         .eql(['x', 'nested'])
       expect(prefixed)
-        .to.have.nested.property('constraint.0.properties')
+        .to.have.nested.property('constrain.0.properties')
         .eql([['x', 'nested'], ['x', 'other']])
       expect(prefixed)
         .to.have.nested.property('index.0.0.property')
@@ -42,9 +42,9 @@ describe.only('lib/helpers.ts', () => {
       const model = context.object().children({
         id: context
           .integer()
-          .constraint({type: 'primary'})
+          .constrain({type: 'primary'})
           .autoIncrement(),
-        email: context.email().constraint({type: 'unique'}),
+        email: context.email().constrain({type: 'unique'}),
         updatedAt: context
           .date()
           .index([{property: [], direction: 'desc'}])
@@ -65,19 +65,19 @@ describe.only('lib/helpers.ts', () => {
     it('should collect db options from children', () => {
       const results = helpers.mergeChildrenIntoRoot({}, children)
       expect(results.automanage).to.have.length(2)
-      expect(results.constraint).to.have.length(2)
+      expect(results.constrain).to.have.length(2)
       expect(results.index).to.have.length(1)
     })
 
     it('should be idempotent', () => {
       let results = helpers.mergeChildrenIntoRoot({}, children)
       expect(results.automanage).to.have.length(2)
-      expect(results.constraint).to.have.length(2)
+      expect(results.constrain).to.have.length(2)
       expect(results.index).to.have.length(1)
 
       results = helpers.mergeChildrenIntoRoot({}, children)
       expect(results.automanage).to.have.length(2)
-      expect(results.constraint).to.have.length(2)
+      expect(results.constrain).to.have.length(2)
       expect(results.index).to.have.length(1)
     })
 
@@ -88,13 +88,13 @@ describe.only('lib/helpers.ts', () => {
         .eql(['updatedAt'])
 
       expect(results)
-        .to.have.nested.property('constraint.0.properties.0')
+        .to.have.nested.property('constrain.0.properties.0')
         .eql(['id'])
-      expect(results).to.have.nested.property('constraint.0.name', 'primary:id')
+      expect(results).to.have.nested.property('constrain.0.name', 'primary:id')
       expect(results)
-        .to.have.nested.property('constraint.1.properties.0')
+        .to.have.nested.property('constrain.1.properties.0')
         .eql(['email'])
-      expect(results).to.have.nested.property('constraint.1.name', 'unique:email')
+      expect(results).to.have.nested.property('constrain.1.name', 'unique:email')
 
       expect(results)
         .to.have.nested.property('automanage.0.property')
@@ -117,9 +117,9 @@ describe.only('lib/helpers.ts', () => {
       model = context.object().children({
         id: context
           .integer()
-          .constraint({type: 'primary'})
+          .constrain({type: 'primary'})
           .autoIncrement(),
-        email: context.email().constraint({type: 'unique'}),
+        email: context.email().constrain({type: 'unique'}),
         age: context.integer(),
         name: context.string(),
         checksum: context
