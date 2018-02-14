@@ -3,7 +3,7 @@ const ModelContext = require('klay').ModelContext
 const DatabaseExtension = require('../lib-ts/extension').DatabaseExtension
 const DatabaseOptions = require('../lib-ts/options').DatabaseOptions
 
-describe.only('lib-ts/extension.ts', () => {
+describe('lib-ts/extension.ts', () => {
   let modelContext
 
   beforeEach(() => {

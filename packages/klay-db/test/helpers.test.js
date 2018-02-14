@@ -8,7 +8,7 @@ const DatabaseOptions = require('../lib-ts/options').DatabaseOptions
 const AUTOMANAGE = {property: [], event: '*', phase: 'database', supplyWith: 'auto-increment'}
 const CONSTRAINT = {properties: [[]], type: 'unique'}
 
-describe.only('lib/helpers.ts', () => {
+describe('lib/helpers.ts', () => {
   describe('#addPropertyNames', () => {
     it('adds names to spec properties', () => {
       const options = new DatabaseOptions()

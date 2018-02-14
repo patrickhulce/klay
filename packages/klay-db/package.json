@@ -10,9 +10,9 @@
     "test": "npm run test:lint && npm run test:tslint && npm run test:unit",
     "test:lint": "lint",
     "test:tslint": "lint -t typescript './lib-ts/**/*.ts' --ignore './lib-ts/**/*.d.ts'",
-    "test:unit": "mocha --reporter spec --require source-map-support/register --require test/bootstrap 'test/**/*.test.js'",
-    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**/*.test.js'",
-    "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
+    "test:unit": "mocha --reporter spec --require source-map-support/register 'test/**/*.test.js'",
+    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- 'test/**/*.test.js'",
+    "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'",
     "semantic-release": "semantic-release"
   },
   "repository": {

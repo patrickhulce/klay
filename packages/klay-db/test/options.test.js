@@ -2,7 +2,7 @@ const expect = require('chai').expect
 const sinon = require('sinon')
 const Options = require('../lib-ts/options').DatabaseOptions
 
-describe.only('lib-ts/options.ts', () => {
+describe('lib-ts/options.ts', () => {
   let validationResult, setValue
 
   beforeEach(() => {
