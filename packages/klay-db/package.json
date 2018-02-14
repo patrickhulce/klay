@@ -5,7 +5,6 @@
   "main": "./lib/extension.js",
   "scripts": {
     "build": "npm run build:ts",
-    "build:aliases": "generate-export-aliases",
     "build:ts": "tsc",
     "test": "npm run test:lint && npm run test:tslint && npm run test:unit",
     "test:lint": "lint -t test './test/**.test.js'",
@@ -41,10 +40,6 @@
         "no-any": false
       }
     },
-    "exportAliases": {
-      "helpers": "./lib/helpers/index.js",
-      "options": "./lib/options.js"
-    },
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     },
@@ -63,7 +58,6 @@
     "@types/uuid": "^3.4.3",
     "chai": "^4.1.2",
     "cz-conventional-changelog": "^1.2.0",
-    "generate-export-aliases": "^1.0.0",
     "istanbul": "^0.4.5",
     "klay": "^2.4.0",
     "mocha": "^5.0.0",
