@@ -5,14 +5,13 @@ cache:
 notifications:
   email: false
 node_js:
-  - v7
-  - v6
+  - v9
+  - v8
 before_install:
-  - npm install -g coveralls
+  - npm install -g coveralls nyc
 script:
   - npm run test:lint
   - npm run test:coverage
 after_success:
-  - cat ./coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
-  - npm run build:aliases
+  - nyc report --reporter=text-lcov | coveralls || echo 'Failed to upload to coveralls...'
   # - npm run semantic-release
