@@ -2,9 +2,9 @@ coverage/
 node_modules/
 .nyc_output/
 
-lib-ts/**/*.js
-lib-ts/**/*.js.map
-lib-ts/**/*.d.ts
+lib/**/*.js
+lib/**/*.js.map
+lib/**/*.d.ts
 
 yarn-error.log
 npm-debug.log

@@ -1,9 +1,9 @@
 const expect = require('chai').expect
 const _ = require('lodash')
 const ModelContext = require('klay').ModelContext
-const helpers = require('../lib-ts/helpers')
-const DatabaseExtension = require('../lib-ts/extension').DatabaseExtension
-const DatabaseOptions = require('../lib-ts/options').DatabaseOptions
+const helpers = require('../lib/helpers')
+const DatabaseExtension = require('../lib/extension').DatabaseExtension
+const DatabaseOptions = require('../lib/options').DatabaseOptions
 
 const AUTOMANAGE = {property: [], event: '*', phase: 'database', supplyWith: 'auto-increment'}
 const CONSTRAINT = {properties: [[]], type: 'unique'}
