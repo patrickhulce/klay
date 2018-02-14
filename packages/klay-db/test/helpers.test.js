@@ -42,9 +42,9 @@ describe.only('lib/helpers.ts', () => {
       const model = context.object().children({
         id: context
           .integer()
-          .primaryKey()
+          .constraint({type: 'primary'})
           .autoIncrement(),
-        email: context.email().unique(),
+        email: context.email().constraint({type: 'unique'}),
         updatedAt: context
           .date()
           .index([{property: [], direction: 'desc'}])
@@ -117,9 +117,9 @@ describe.only('lib/helpers.ts', () => {
       model = context.object().children({
         id: context
           .integer()
-          .primaryKey()
+          .constraint({type: 'primary'})
           .autoIncrement(),
-        email: context.email().unique(),
+        email: context.email().constraint({type: 'unique'}),
         age: context.integer(),
         name: context.string(),
         checksum: context

@@ -13,7 +13,6 @@ import {
   DatabaseEvent,
   IAutomanageProperty,
   IConstraint,
-  IConstraintMeta,
   IDatabaseSetterOptions,
   IDatabaseSpecification,
   IIndexPropertyInput,
@@ -59,15 +58,6 @@ export class DatabaseExtension implements IKlayExtension {
         const database = new DatabaseOptions().index(properties)
         return model.db(database.spec, {shouldMerge: true})
       },
-      primaryKey(model: IModel, meta?: IConstraintMeta): IModel {
-        return DatabaseExtension._constrain(model, ConstraintType.Primary, meta)
-      },
-      unique(model: IModel, meta?: IConstraintMeta): IModel {
-        return DatabaseExtension._constrain(model, ConstraintType.Unique, meta)
-      },
-      immutable(model: IModel, meta?: IConstraintMeta): IModel {
-        return DatabaseExtension._constrain(model, ConstraintType.Immutable, meta)
-      },
       autoIncrement(model: IModel): IModel {
         const database = new DatabaseOptions().automanage({
           property: [],
@@ -89,12 +79,12 @@ export class DatabaseExtension implements IKlayExtension {
     context.integerID = () =>
       context
         .integer()
-        .primaryKey()
+        .constraint({type: ConstraintType.Primary})
         .autoIncrement()
     context.uuidID = () =>
       context
         .uuid()
-        .primaryKey()
+        .constraint({type: ConstraintType.Primary})
         .automanage({
           property: [],
           event: DatabaseEvent.Create,
@@ -105,7 +95,7 @@ export class DatabaseExtension implements IKlayExtension {
       context
         .date()
         .required()
-        .immutable()
+        .constraint({type: ConstraintType.Immutable})
         .automanage({
           property: [],
           event: DatabaseEvent.Create,
@@ -122,15 +112,5 @@ export class DatabaseExtension implements IKlayExtension {
           phase: ValidationPhase.Parse,
           supplyWith: SupplyWithPreset.Date,
         })
-  }
-
-  private static _constrain(model: IModel, type: ConstraintType, meta?: IConstraintMeta): IModel {
-    const database = new DatabaseOptions().constraint({
-      properties: [[]],
-      type,
-      meta: meta || {},
-    })
-
-    return model.db(database.spec, {shouldMerge: true})
   }
 }

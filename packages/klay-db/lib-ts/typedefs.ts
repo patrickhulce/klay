@@ -12,12 +12,9 @@ declare module 'klay/lib/typedefs' {
     toDatabaseEventModel(event: DatabaseEvent): IModel
 
     db(spec?: IDatabaseSpecification, options?: IDatabaseSetterOptions): IModel
-    automanage(property: IAutomanageProperty): IModel
-    constraint(constraint: IConstraint): IModel
+    automanage(property: IAutomanagePropertyInput): IModel
+    constraint(constraint: IConstraintInput): IModel
     index(properties: IIndexPropertyInput[]): IModel
-    primaryKey(meta?: IConstraintMeta): IModel
-    unique(meta?: IConstraintMeta): IModel
-    immutable(meta?: IConstraintMeta): IModel
     autoIncrement(): IModel
   }
 
@@ -74,7 +71,7 @@ export interface IAutomanageProperty {
 export interface IConstraintInput {
   properties?: PropertyPath[]
   type: ConstraintType
-  meta: IConstraintMeta
+  meta?: IConstraintMeta
 }
 
 export interface IConstraint {

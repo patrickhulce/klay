@@ -13,7 +13,7 @@ describe.only('lib-ts/extension.ts', () => {
 
   describe('hooks', () => {
     it('should gather child db specifications', () => {
-      const child = modelContext.string().primaryKey()
+      const child = modelContext.string().constraint({type: 'primary'})
       const model = modelContext.object().children({id: child})
       expect(model.spec.db).to.eql({
         automanage: [],
@@ -144,27 +144,6 @@ describe.only('lib-ts/extension.ts', () => {
     it('should set index of model', () => {
       const model = modelContext.create().index([['x']])
       expect(model.spec.db.index).to.eql([[{property: ['x'], direction: 'asc'}]])
-    })
-  })
-
-  describe('.primaryKey', () => {
-    it('should set constraint on model', () => {
-      const model = modelContext.create().primaryKey()
-      expect(model.spec.db).to.have.nested.property('constraint[0].type', 'primary')
-    })
-  })
-
-  describe('.immutable', () => {
-    it('should set constraint on model', () => {
-      const model = modelContext.create().immutable()
-      expect(model.spec.db).to.have.nested.property('constraint[0].type', 'immutable')
-    })
-  })
-
-  describe('.unique', () => {
-    it('should set constraint on model', () => {
-      const model = modelContext.create().unique()
-      expect(model.spec.db).to.have.nested.property('constraint[0].type', 'unique')
     })
   })
 
