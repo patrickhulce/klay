@@ -42,11 +42,6 @@
     },
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
-    },
-    "eslint": {
-      "globals": [
-        "defineTest"
-      ]
     }
   },
   "dependencies": {
