@@ -7,7 +7,7 @@
     "test": "npm run test:lint && npm run test:unit",
     "test:lint": "xo './lib/**/*.js'",
     "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
-    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**/*.test.js'",
+    "test:coverage": "nyc npm run test:unit",
     "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
@@ -38,8 +38,8 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "cz-conventional-changelog": "^1.2.0",
-    "istanbul": "^0.4.5",
     "mocha": "^3.0.2",
+    "nyc": "^11.4.1",
     "semantic-release": "^6.3.2",
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
