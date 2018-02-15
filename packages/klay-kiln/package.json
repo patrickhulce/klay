@@ -4,6 +4,7 @@
   "description": "Library for using klay models together and generating useful objects with them.",
   "main": "./lib/kiln.js",
   "scripts": {
+    "build": "tsc",
     "test": "npm run test:lint && npm run test:unit",
     "test:lint": "lint",
     "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
@@ -33,9 +34,15 @@
     "@patrickhulce/lint": "^2.0.2",
     "chai": "^3.5.0",
     "cz-conventional-changelog": "^1.2.0",
+    "klay": "^2.4.0",
     "mocha": "^3.0.2",
     "nyc": "^11.4.1",
     "semantic-release": "^11.2.0",
-    "sinon": "^1.17.5"
+    "sinon": "^1.17.5",
+    "tslint": "^5.9.1",
+    "typescript": "^2.7.1"
+  },
+  "peerDependencies": {
+    "klay": "^2.4.0"
   }
 }
