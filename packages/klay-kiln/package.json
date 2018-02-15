@@ -9,7 +9,7 @@
     "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
     "test:coverage": "nyc npm run test:unit",
     "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",
@@ -35,7 +35,7 @@
     "cz-conventional-changelog": "^1.2.0",
     "mocha": "^3.0.2",
     "nyc": "^11.4.1",
-    "semantic-release": "^6.3.2",
+    "semantic-release": "^11.2.0",
     "sinon": "^1.17.5"
   }
 }
