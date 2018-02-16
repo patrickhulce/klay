@@ -42,11 +42,6 @@ export interface IKilnExtension<T> {
   build(kilnModel: IKilnModel, options: object, kiln: IKiln): T
 }
 
-interface ICacheEntry {
-  options: object
-  result: IKilnResult<any>
-}
-
 export class Kiln implements IKiln {
   private _models: Map<string, IKilnModel>
   private _cache: Map<string, Map<string, IKilnResult<any>>>
