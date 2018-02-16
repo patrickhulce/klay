@@ -4,12 +4,12 @@ const sinon = require('sinon')
 const Kiln = require('../lib/kiln').Kiln
 
 describe('lib/kiln.ts', () => {
-  let kiln
+  let kiln, extensionA
   const model = {isKlayModel: true}
   const extensionApi = {build: _.noop, name: 'extension', options: {}}
 
   function addModels(kiln) {
-    const extensionA = _.defaults({name: 'A'}, extensionApi)
+    extensionA = _.defaults({name: 'A'}, extensionApi)
     const extensionB = _.defaults({name: 'B'}, extensionApi)
     const extensionC = _.defaults({name: 'C'}, extensionApi)
     sinon.stub(extensionA, 'build').returns({resultA: 'foo'})
@@ -24,11 +24,11 @@ describe('lib/kiln.ts', () => {
       .addExtension({modelName: 'photo', extension: extensionC})
   }
 
-  describe('.addModel', () => {
-    beforeEach(() => {
-      kiln = new Kiln()
-    })
+  beforeEach(() => {
+    kiln = new Kiln()
+  })
 
+  describe('.addModel', () => {
     it('should add a model', () => {
       kiln.addModel({name: 'user', model})
       expect(kiln.getModels()).to.eql([
@@ -63,10 +63,7 @@ describe('lib/kiln.ts', () => {
   })
 
   describe('.buildAll', () => {
-    beforeEach(() => {
-      kiln = new Kiln()
-      addModels(kiln)
-    })
+    beforeEach(() => addModels(kiln))
 
     it('should generate for all models and extensions', () => {
       expect(kiln.buildAll()).to.eql([
@@ -83,7 +80,20 @@ describe('lib/kiln.ts', () => {
       ])
     })
 
-    it('should cache results of already baked extensions')
+    it('should cache results of already baked extensions', () => {
+      const value1 = kiln.buildAll('user')[0].value
+      expect(value1).to.eql({resultA: 'foo'})
+      extensionA.build.restore()
+      sinon.stub(extensionA, 'build').returns({busted: true})
+
+      const value2 = kiln.buildAll('user')[0].value
+      expect(value2).to.equal(value1)
+      expect(value2).to.not.eql({busted: true})
+
+      const value3 = kiln.buildAll()[0].value
+      expect(value3).to.equal(value1)
+      expect(value2).to.not.eql({busted: true})
+    })
 
     it('should not cache results of already baked extensions with different options')
 
@@ -93,17 +103,23 @@ describe('lib/kiln.ts', () => {
   })
 
   describe('.build', () => {
-    beforeEach(() => {
-      kiln = new Kiln()
-      addModels(kiln)
-    })
+    beforeEach(() => addModels(kiln))
 
     it('should generate for the specified model and extension', () => {
       expect(kiln.build('user', 'A')).to.eql({resultA: 'foo'})
       expect(kiln.build('user', 'B')).to.eql({resultB: 'bar'})
     })
 
-    it('should cache results of already baked extensions')
+    it('should cache results of already baked extensions', () => {
+      const value1 = kiln.build('user', 'A')
+      expect(value1).to.eql({resultA: 'foo'})
+      extensionA.build.restore()
+      sinon.stub(extensionA, 'build').returns({busted: true})
+
+      const value2 = kiln.build('user', 'A')
+      expect(value2).to.equal(value1)
+      expect(value2).to.not.eql({busted: true})
+    })
 
     it('should not cache results of already baked extensions with different options')
 
@@ -114,6 +130,28 @@ describe('lib/kiln.ts', () => {
   })
 
   describe('.reset', () => {
-    it('should clear the models')
+    beforeEach(() => addModels(kiln))
+
+    it('should clear the models', () => {
+      expect(kiln.getModels()).to.have.length(2)
+      kiln.reset()
+      expect(kiln.getModels()).to.have.length(0)
+    })
+
+    it('should clear the cache', () => {
+      const value1 = kiln.build('user', 'A')
+      expect(value1).to.eql({resultA: 'foo'})
+
+      kiln.reset()
+      kiln.addModel({name: 'user', model})
+      kiln.addExtension({extension: extensionA})
+
+      extensionA.build.restore()
+      sinon.stub(extensionA, 'build').returns({busted: true})
+
+      const value2 = kiln.build('user', 'A')
+      expect(value2).to.not.equal(value1)
+      expect(value2).to.eql({busted: true})
+    })
   })
 })
