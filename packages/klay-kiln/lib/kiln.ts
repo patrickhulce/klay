@@ -49,7 +49,7 @@ interface ICacheEntry {
 
 export class Kiln implements IKiln {
   private _models: Map<string, IKilnModel>
-  private _cache: Map<string, Map<string, ICacheEntry[]>>
+  private _cache: Map<string, Map<string, IKilnResult<any>>>
 
   public constructor() {
     this._models = new Map()
@@ -70,18 +70,16 @@ export class Kiln implements IKiln {
   }
 
   private _getOrBuild(modelName: string, extensionName: string): IKilnResult<any> {
-    const modelCache: Map<string, ICacheEntry[]> = this._cache.get(modelName) || new Map()
-    const extensionCache = modelCache.get(extensionName) || []
-    if (extensionCache.length) {
-      return extensionCache[0].result
+    const modelCache: Map<string, IKilnResult<any>> = this._cache.get(modelName) || new Map()
+    if (modelCache.has(extensionName)) {
+      return modelCache.get(extensionName)!
     }
 
     const model = this._getModelOrThrow(modelName)
     const extension = this._getExtensionOrThrow(modelName, extensionName)
     const value = extension.build(model, extension.options, this)
     const result = {modelName, extensionName, value}
-    extensionCache.push({result, options: extension.options})
-    modelCache.set(extensionName, extensionCache)
+    modelCache.set(extensionName, result)
     this._cache.set(modelName, modelCache)
     return result
   }
