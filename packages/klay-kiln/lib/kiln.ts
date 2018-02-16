@@ -1,12 +1,11 @@
 import {IModel, modelAssertions} from 'klay'
-import {isEqual} from 'lodash'
 
 export interface IKiln {
   getModels(): IKilnModel[]
   addModel(model: IKilnModelInput): IKiln
   addExtension(extension: IKilnExtensionInput<any>): IKiln
   build<T>(modelName: string, extensionName: string): IKilnResult<T>
-  buildAll(modelName?: string): IKilnResult<any>[]
+  buildAll(modelName?: string): Array<IKilnResult<any>>
 }
 
 export interface IKilnModelInput {
@@ -22,6 +21,7 @@ export interface IKilnModel {
   extensions: Map<string, IKilnExtension<any>>
 }
 
+// tslint:disable-next-line
 export interface IKilnModelMetadata {}
 
 export interface IKilnResult<T> {
@@ -44,7 +44,7 @@ export interface IKilnExtension<T> {
 
 interface ICacheEntry {
   options: object
-  value: IKilnResult<any>
+  result: IKilnResult<any>
 }
 
 export class Kiln implements IKiln {
@@ -56,13 +56,13 @@ export class Kiln implements IKiln {
     this._cache = new Map()
   }
 
-  _getModelOrThrow(modelName: string): IKilnModel {
+  private _getModelOrThrow(modelName: string): IKilnModel {
     const kilnModel = this._models.get(modelName)
     modelAssertions.ok(kilnModel, `unable to find model "${modelName}"`)
     return kilnModel!
   }
 
-  _getExtensionOrThrow(modelName: string, extensionName: string): IKilnExtension<any> {
+  private _getExtensionOrThrow(modelName: string, extensionName: string): IKilnExtension<any> {
     const kilnModel = this._getModelOrThrow(modelName)
     const extension = kilnModel.extensions.get(extensionName)!
     modelAssertions.ok(extension, `unable to find extension "${extensionName}"`)
@@ -73,30 +73,30 @@ export class Kiln implements IKiln {
     const modelCache: Map<string, ICacheEntry[]> = this._cache.get(modelName) || new Map()
     const extensionCache = modelCache.get(extensionName) || []
     if (extensionCache.length) {
-      const value = extensionCache[0].value
-      return {modelName, extensionName, value}
+      return extensionCache[0].result
     }
 
     const model = this._getModelOrThrow(modelName)
     const extension = this._getExtensionOrThrow(modelName, extensionName)
     const value = extension.build(model, extension.options, this)
-    extensionCache.push({value, options: extension.options})
+    const result = {modelName, extensionName, value}
+    extensionCache.push({result, options: extension.options})
     modelCache.set(extensionName, extensionCache)
     this._cache.set(modelName, modelCache)
-    return {modelName, extensionName, value}
+    return result
   }
 
-  getModels(): IKilnModel[] {
+  public getModels(): IKilnModel[] {
     return Array.from(this._models.values())
   }
 
-  reset(): IKiln {
+  public reset(): IKiln {
     this._models = new Map()
     this._cache = new Map()
     return this
   }
 
-  addModel(model: IKilnModelInput): IKiln {
+  public addModel(model: IKilnModelInput): IKiln {
     modelAssertions.typeof(model.name, 'string', 'name')
     modelAssertions.ok(model.model.isKlayModel, 'model must be a klay model')
     modelAssertions.ok(!this._models.has(model.name), 'model with same name already exists')
@@ -105,7 +105,7 @@ export class Kiln implements IKiln {
     return this
   }
 
-  addExtension(input: IKilnExtensionInput<any>): IKiln {
+  public addExtension(input: IKilnExtensionInput<any>): IKiln {
     const {modelName, extension, options} = input
     modelAssertions.typeof(extension.name, 'string', 'name')
     modelAssertions.typeof(extension.options, 'object', 'options')
@@ -123,8 +123,8 @@ export class Kiln implements IKiln {
     return this
   }
 
-  buildAll(modelName?: string): IKilnResult<any>[] {
-    const results: IKilnResult<any>[] = []
+  public buildAll(modelName?: string): Array<IKilnResult<any>> {
+    const results: Array<IKilnResult<any>> = []
     if (modelName) {
       const kilnModel = this._getModelOrThrow(modelName)
       for (const extension of kilnModel.extensions.values()) {
@@ -141,7 +141,7 @@ export class Kiln implements IKiln {
     return results
   }
 
-  build<T>(modelName: string, extensionName: string): T {
-    return this._getOrBuild(modelName, extensionName).value
+  public build<T>(modelName: string, extensionName: string): T {
+    return this._getOrBuild(modelName, extensionName).value as T
   }
 }
