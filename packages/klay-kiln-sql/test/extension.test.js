@@ -1,12 +1,12 @@
-var modelsFactory = require('./fixtures/models');
+const modelsFactory = require('./fixtures/models')
 
-defineTest('extension.js', function (extensionFactory) {
-  describe('#determineDependencies', function () {
-    it('should request the foreign key dependencies', function () {
-      var extension = extensionFactory({});
-      var models = modelsFactory();
-      var dependencies = extension.determineDependencies({model: models.photo});
-      dependencies.should.eql(['user:sql']);
-    });
-  });
-});
+defineTest('extension.js', extensionFactory => {
+  describe('#determineDependencies', () => {
+    it('should request the foreign key dependencies', () => {
+      const extension = extensionFactory({})
+      const models = modelsFactory()
+      const dependencies = extension.determineDependencies({model: models.photo})
+      dependencies.should.eql(['user:sql'])
+    })
+  })
+})

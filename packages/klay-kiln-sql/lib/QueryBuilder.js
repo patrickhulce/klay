@@ -6,6 +6,7 @@ module.exports = function (klayModel, sequelizeModel, query) {
 
   const builder = {
     where(key, value) {
+      // eslint-disable-next-line no-multi-assign
       const where = query.where = query.where || {}
       if (typeof key === 'object') {
         _.assign(where, key)

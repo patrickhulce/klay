@@ -1,15 +1,15 @@
-defineTest('QueryBuilder.js', function (QueryBuilder) {
-  describe('#toObject', function () {
-    it('should return the query', function () {
+defineTest('QueryBuilder.js', QueryBuilder => {
+  describe('#toObject', () => {
+    it('should return the query', () => {
       const query = {foo: 'bar'}
       const result = new QueryBuilder(null, null, query).toObject()
       result.should.eql(query)
       result.should.not.equal(query)
-    });
-  });
+    })
+  })
 
-  describe('#where', function () {
-    it('should set objects directly', function () {
+  describe('#where', () => {
+    it('should set objects directly', () => {
       const result = new QueryBuilder(null, null)
         .where({myfield: {$lte: 15}})
         .toObject()
@@ -17,24 +17,24 @@ defineTest('QueryBuilder.js', function (QueryBuilder) {
     })
   })
 
-  describe('#fetchCount', function () {
-    it('should fail when used without a model', function () {
+  describe('#fetchCount', () => {
+    it('should fail when used without a model', () => {
       const func = () => new QueryBuilder(null, null).fetchCount()
-      (func).should.throw(/no model/)
+      func.should.throw(/no model/)
     })
   })
 
-  describe('fetchResult', function () {
-    it('should fail when used without a model', function () {
+  describe('fetchResult', () => {
+    it('should fail when used without a model', () => {
       const func = () => new QueryBuilder(null, null).fetchCount()
-      (func).should.throw(/no model/)
+      func.should.throw(/no model/)
     })
   })
 
-  describe('fetchResults', function () {
-    it('should fail when used without a model', function () {
+  describe('fetchResults', () => {
+    it('should fail when used without a model', () => {
       const func = () => new QueryBuilder(null, null).fetchCount()
-      (func).should.throw(/no model/)
+      func.should.throw(/no model/)
     })
   })
-});
+})

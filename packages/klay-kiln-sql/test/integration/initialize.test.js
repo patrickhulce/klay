@@ -1,26 +1,26 @@
-var _ = require('lodash');
-var steps = require('./steps');
+const _ = require('lodash')
+const steps = require('./steps')
 
-describesql('initialize database', function () {
-  var shared = steps.init();
+describesql('initialize database', () => {
+  const shared = steps.init()
 
   function toTable(results) {
-    return _(results).
-      map(item => {
-        var firstPass = _.pick(item, ['Type', 'Key', 'Extra']);
+    return _(results)
+      .map(item => {
+        const firstPass = _.pick(item, ['Type', 'Key', 'Extra'])
         return {
           name: item.Field,
           value: _.pickBy(firstPass, v => Boolean(v)),
-        };
-      }).
-      keyBy('name').
-      mapValues('value').
-      value();
+        }
+      })
+      .keyBy('name')
+      .mapValues('value')
+      .value()
   }
 
-  describe('users', function () {
-    it('should have created a users table', function () {
-      return shared.sequelize.query('describe users').spread(function (results, metadata) {
+  describe('users', () => {
+    it('should have created a users table', () => {
+      return shared.sequelize.query('describe users').spread(results => {
         toTable(results).should.eql({
           id: {Type: 'bigint(20)', Key: 'PRI', Extra: 'auto_increment'},
           age: {Type: 'bigint(20)'},
@@ -31,20 +31,20 @@ describesql('initialize database', function () {
           password: {Type: 'varchar(32)'},
           createdAt: {Type: 'datetime(6)'},
           updatedAt: {Type: 'datetime(6)'},
-        });
-      });
-    });
+        })
+      })
+    })
 
-    it('should have created the additional indexes', function () {
-      return shared.sequelize.query('show index from users').spread(function (results) {
-        _.filter(results, {Key_name: 'email_password'}).should.have.length(2);
-      });
-    });
-  });
+    it('should have created the additional indexes', () => {
+      return shared.sequelize.query('show index from users').spread(results => {
+        _.filter(results, {Key_name: 'email_password'}).should.have.length(2)
+      })
+    })
+  })
 
-  describe('photos', function () {
-    it('should have created a photos table', function () {
-      return shared.sequelize.query('describe photos').spread(function (results, metadata) {
+  describe('photos', () => {
+    it('should have created a photos table', () => {
+      return shared.sequelize.query('describe photos').spread(results => {
         toTable(results).should.eql({
           id: {Type: 'char(36)', Key: 'PRI'},
           ownerId: {Type: 'bigint(20)', Key: 'MUL'},
@@ -52,8 +52,8 @@ describesql('initialize database', function () {
           metadata: {Type: 'text'},
           createdAt: {Type: 'datetime(6)'},
           updatedAt: {Type: 'datetime(6)'},
-        });
-      });
-    });
-  });
-});
+        })
+      })
+    })
+  })
+})

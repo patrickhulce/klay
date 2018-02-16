@@ -75,6 +75,7 @@ module.exports = function (modelDef, options) {
     },
   }
 
+  // eslint-disable-next-line no-multi-assign
   dependencies.__self = dependencies[modelDef.name + ':sql'] = dbModel
   return dbModel
 }

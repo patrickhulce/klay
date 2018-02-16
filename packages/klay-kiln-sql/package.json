@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run test:lint && npm run test:unit",
     "test:db": "KLAY_MYSQL_DB=klay_kiln_sql KLAY_MYSQL_USER=root npm test",
-    "test:lint": "xo './lib/**/*.js'",
+    "test:lint": "lint",
     "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
     "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**/*.test.js'",
     "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
@@ -22,13 +22,16 @@
     "url": "https://github.com/patrickhulce/klay-kiln-sql/issues"
   },
   "homepage": "https://github.com/patrickhulce/klay-kiln-sql#readme",
-  "xo": {
-    "env": [
-      "node",
-      "mocha"
-    ]
-  },
   "config": {
+    "eslint": {
+      "globals": [
+        "describesql",
+        "defineTest"
+      ],
+      "rules": {
+        "camelcase": 0
+      }
+    },
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
@@ -40,6 +43,7 @@
     "sequelize": "^3.24.1"
   },
   "devDependencies": {
+    "@patrickhulce/lint": "^2.0.2",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "cz-conventional-changelog": "^1.2.0",
@@ -49,8 +53,7 @@
     "mysql": "^2.11.1",
     "semantic-release": "^6.3.2",
     "sinon": "^1.17.5",
-    "sinon-chai": "^2.8.0",
-    "xo": "patrickhulce/xo#master"
+    "sinon-chai": "^2.8.0"
   },
   "peerDependencies": {
     "klay": "^1.2.2",
