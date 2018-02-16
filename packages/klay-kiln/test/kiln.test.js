@@ -1,7 +1,7 @@
 const _ = require('lodash')
 const expect = require('chai').expect
 const sinon = require('sinon')
-const Kiln = require('../lib-ts/kiln').Kiln
+const Kiln = require('../lib/kiln').Kiln
 
 describe('lib/kiln.ts', () => {
   let kiln
