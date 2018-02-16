@@ -23,8 +23,9 @@ before_install:
 before_script:
   - mysql -e 'create database if not exists klay_kiln_sql;' -u root
 script:
-  - npm run test:lint
-  - npm run test:coverage
+  - npm run build
+  - npm run test:tslint
+  - npm run test:unit
 after_success:
   - cat ./coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
-  - npm run semantic-release
+  # - npm run semantic-release

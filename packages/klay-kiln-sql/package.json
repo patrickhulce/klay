@@ -4,12 +4,14 @@
   "description": "Kiln extension to generate SQL models from Klay models.",
   "main": "./lib/extension.js",
   "scripts": {
-    "test": "npm run test:lint && npm run test:unit",
+    "build": "tsc",
+    "test": "npm run test:tslint && npm run test:unit",
     "test:db": "KLAY_MYSQL_DB=klay_kiln_sql KLAY_MYSQL_USER=root npm test",
     "test:lint": "lint",
-    "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
+    "test:tslint": "lint -t typescript './lib-ts/**/*.ts'",
+    "test:unit": "mocha 'test-ts/**/*.test.js'",
     "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**/*.test.js'",
-    "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
+    "test:watch": "npm run test:unit -- --watch --reporter dot",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
@@ -48,12 +50,14 @@
     "chai-as-promised": "^5.3.0",
     "cz-conventional-changelog": "^1.2.0",
     "istanbul": "^0.4.5",
-    "klay": "^1.2.1",
+    "klay": "^2.4.0",
     "mocha": "^3.0.2",
     "mysql": "^2.11.1",
     "semantic-release": "^6.3.2",
     "sinon": "^1.17.5",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "tslint": "^5.9.1",
+    "typescript": "^2.7.2"
   },
   "peerDependencies": {
     "klay": "^1.2.2",
