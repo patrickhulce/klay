@@ -4,7 +4,7 @@ export interface IKiln {
   getModels(): IKilnModel[]
   addModel(model: IKilnModelInput): IKiln
   addExtension(extension: IKilnExtensionInput<any>): IKiln
-  build<T>(modelName: string, extensionName: string): IKilnResult<T>
+  build<T>(modelName: string, extensionOrName: string | IKilnExtension<T>): T
   buildAll(modelName?: string): Array<IKilnResult<any>>
 }
 
@@ -139,7 +139,13 @@ export class Kiln implements IKiln {
     return results
   }
 
-  public build<T>(modelName: string, extensionName: string): T {
-    return this._getOrBuild(modelName, extensionName).value as T
+  public build<T>(modelName: string, extensionOrName: string | IKilnExtension<T>): T {
+    if (typeof extensionOrName === 'object') {
+      const model = this._getModelOrThrow(modelName)
+      const extension = extensionOrName as IKilnExtension<T>
+      return extension.build(model, extension.options, this) as T
+    }
+
+    return this._getOrBuild(modelName, extensionOrName).value as T
   }
 }

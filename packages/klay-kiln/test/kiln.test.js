@@ -95,8 +95,6 @@ describe('lib/kiln.ts', () => {
       expect(value2).to.not.eql({busted: true})
     })
 
-    it('should not cache results of already baked extensions with different options')
-
     it('should fail when referencing an unknown model', () => {
       expect(() => kiln.buildAll('unknown')).to.throw(/model "unknown"/)
     })
@@ -108,6 +106,7 @@ describe('lib/kiln.ts', () => {
     it('should generate for the specified model and extension', () => {
       expect(kiln.build('user', 'A')).to.eql({resultA: 'foo'})
       expect(kiln.build('user', 'B')).to.eql({resultB: 'bar'})
+      expect(kiln.build('user', extensionA)).to.eql({resultA: 'foo'})
     })
 
     it('should cache results of already baked extensions', () => {
@@ -121,7 +120,23 @@ describe('lib/kiln.ts', () => {
       expect(value2).to.not.eql({busted: true})
     })
 
-    it('should not cache results of already baked extensions with different options')
+    it('should not cache results of direct build', () => {
+      const value1 = kiln.build('user', extensionA)
+      expect(value1).to.eql({resultA: 'foo'})
+      extensionA.build.restore()
+      sinon.stub(extensionA, 'build').returns({busted: 1})
+
+      const value2 = kiln.build('user', 'A')
+      expect(value2).to.not.equal(value1)
+      expect(value2).to.eql({busted: 1})
+      extensionA.build.restore()
+      sinon.stub(extensionA, 'build').returns({busted: 2})
+
+      const value3 = kiln.build('user', extensionA)
+      expect(value3).to.not.equal(value2)
+      expect(value3).to.eql({busted: 2})
+      expect(kiln.build('user', 'A')).to.eql({busted: 1})
+    })
 
     it('should fail when referencing unknowns', () => {
       expect(() => kiln.build('unknown', 'A')).to.throw(/model "unknown"/)
