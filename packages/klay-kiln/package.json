@@ -7,9 +7,9 @@
     "build": "tsc",
     "test": "npm run test:lint && npm run test:unit",
     "test:lint": "lint",
-    "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
+    "test:unit": "mocha 'test/**/*.test.js'",
     "test:coverage": "nyc npm run test:unit",
-    "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
+    "test:watch": "npm run test:unit -- --watch --reporter dot",
     "semantic-release": "semantic-release"
   },
   "repository": {
