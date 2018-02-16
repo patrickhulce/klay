@@ -1,6 +1,7 @@
 import {IModel, modelAssertions} from 'klay'
 
 export interface IKiln {
+  getModels(): IKilnModel[]
   addModel(model: IKilnModelInput): IKiln
   addExtension(extension: IKilnExtensionInput<any>): IKiln
   build<T>(modelName: string, extensionName: string): IKilnResult<T>
@@ -49,7 +50,7 @@ export class Kiln implements IKiln {
 
   _getModelOrThrow(modelName: string): IKilnModel {
     const kilnModel = this._models.get(modelName)
-    modelAssertions.ok(kilnModel, `unable to find ${modelName} model`)
+    modelAssertions.ok(kilnModel, `unable to find model "${modelName}"`)
     return kilnModel!
   }
 
@@ -81,16 +82,24 @@ export class Kiln implements IKiln {
   }
 
   buildAll(modelName?: string): IKilnResult<any>[] {
-    const results = []
+    const results: IKilnResult<any>[] = []
     if (modelName) {
       const kilnModel = this._getModelOrThrow(modelName)
       for (const extension of kilnModel.extensions.values()) {
-        results.push(extension.build(kilnModel, extension.options, this))
+        results.push({
+          modelName,
+          extensionName: extension.name,
+          value: extension.build(kilnModel, extension.options, this),
+        })
       }
     } else {
       for (const kilnModel of this._models.values()) {
         for (const extension of kilnModel.extensions.values()) {
-          results.push(extension.build(kilnModel, extension.options, this))
+          results.push({
+            modelName: kilnModel.name,
+            extensionName: extension.name,
+            value: extension.build(kilnModel, extension.options, this),
+          })
         }
       }
     }
@@ -101,7 +110,11 @@ export class Kiln implements IKiln {
   build<T>(modelName: string, extensionName: string): T {
     const kilnModel = this._getModelOrThrow(modelName)
     const extension = kilnModel.extensions.get(extensionName)!
-    modelAssertions.ok(extension, `unable to find extension ${extensionName}`)
+    modelAssertions.ok(extension, `unable to find extension "${extensionName}"`)
     return extension.build(kilnModel, extension.options, this)
+  }
+
+  getModels(): IKilnModel[] {
+    return Array.from(this._models.values())
   }
 }

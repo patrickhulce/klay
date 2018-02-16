@@ -2,3 +2,7 @@ node_modules/
 coverage/
 .nyc_output/
 npm-debug.log
+
+lib-ts/**/*.js
+lib-ts/**/*.js.map
+lib-ts/**/*.d.ts
