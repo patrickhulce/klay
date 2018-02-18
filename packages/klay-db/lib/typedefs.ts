@@ -143,7 +143,7 @@ export interface IWhereCondition {
 }
 
 export interface IQueryWhere {
-  [value: string]: IWhereCondition
+  [value: string]: WhereValue | IWhereCondition
 }
 
 export type IQueryOrder = string[][]
@@ -178,17 +178,16 @@ export interface IQueryBuilder {
   limit(value: number): IQueryBuilder
   offset(value: number): IQueryBuilder
   orderBy(value: IQueryOrder): IQueryBuilder
-  fields(vaue: IQueryFields): IQueryBuilder
-  set(query: IQuery): IQueryBuilder
-  reset(): IQueryBuilder
+  fields(value: IQueryFields): IQueryBuilder
   clone(): IQueryBuilder
-  toObject(): IQuery
 }
 
 export interface IQuery {
   where?: IQueryWhere
   order?: IQueryOrder
   fields?: IQueryFields
+  limit?: number
+  offset?: number
 }
 
 export interface IQueryExtras {
