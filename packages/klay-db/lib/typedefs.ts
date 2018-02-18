@@ -150,10 +150,21 @@ export type IQueryOrder = string[][]
 
 export type IQueryFields = string[]
 
+export enum IDatabaseExecution {
+  Count = 'count',
+  Find = 'find',
+
+  Create = 'create',
+  Update = 'update',
+  Upsert = 'upsert',
+  Patch = 'patch',
+  Destroy = 'destroy',
+}
+
 export interface IDatabaseModel {
   transaction(): Promise<IQueryTransaction>
 
-  count(query: IQuery, extras?: IQueryExtras): Promise<object[]>
+  count(query: IQuery, extras?: IQueryExtras): Promise<number>
   findById(id: PrimaryKey, extras?: IQueryExtras): Promise<object>
   find(query: IQuery, extras?: IQueryExtras): Promise<object[]>
   findOne(query: IQuery, extras?: IQueryExtras): Promise<object | undefined>
