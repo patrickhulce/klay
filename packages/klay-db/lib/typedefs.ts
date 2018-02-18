@@ -128,3 +128,72 @@ export enum IndexDirection {
   Ascending = 'asc',
   Descending = 'desc',
 }
+
+export type PrimaryKey = string | number
+
+export type WhereValue = string | number | boolean | Date
+
+export interface IWhereCondition {
+  $eq?: WhereValue
+  $neq?: WhereValue
+  $gt?: WhereValue
+  $lt?: WhereValue
+  $in?: WhereValue
+  $nin?: WhereValue
+}
+
+export interface IQueryWhere {
+  [value: string]: IWhereCondition
+}
+
+export type IQueryOrder = string[][]
+
+export type IQueryFields = string[]
+
+export interface IDatabaseModel {
+  transaction(): Promise<IQueryTransaction>
+
+  count(query: IQuery, extras?: IQueryExtras): Promise<object[]>
+  findById(id: PrimaryKey, extras?: IQueryExtras): Promise<object>
+  find(query: IQuery, extras?: IQueryExtras): Promise<object[]>
+  findOne(query: IQuery, extras?: IQueryExtras): Promise<object | undefined>
+
+  create(object: object, extras?: IQueryExtras): Promise<object>
+  create(objects: object[], extras?: IQueryExtras): Promise<object[]>
+  update(object: object, extras?: IQueryExtras): Promise<object>
+  update(objects: object[], extras?: IQueryExtras): Promise<object[]>
+  upsert(object: object, extras?: IQueryExtras): Promise<object>
+  upsert(objects: object[], extras?: IQueryExtras): Promise<object[]>
+  patch(object: object, extras?: IQueryExtras): Promise<object>
+  patch(objects: object[], extras?: IQueryExtras): Promise<object[]>
+
+  destroyById(id: PrimaryKey, extras?: IQueryExtras): Promise<void>
+  destroy(query: IQuery, extras?: IQueryExtras): Promise<void>
+  destroyOne(query: IQuery, extras?: IQueryExtras): Promise<void>
+}
+
+export interface IQueryBuilder {
+  where(key: string, value: WhereValue | IWhereCondition): IQueryBuilder
+  where(where: IQueryWhere): IQueryBuilder
+  limit(value: number): IQueryBuilder
+  offset(value: number): IQueryBuilder
+  orderBy(value: IQueryOrder): IQueryBuilder
+  fields(vaue: IQueryFields): IQueryBuilder
+  set(query: IQuery): IQueryBuilder
+  reset(): IQueryBuilder
+  clone(): IQueryBuilder
+  toObject(): IQuery
+}
+
+export interface IQuery {
+  where?: IQueryWhere
+  order?: IQueryOrder
+  fields?: IQueryFields
+}
+
+export interface IQueryExtras {
+  transaction?: IQueryTransaction
+}
+
+// tslint:disable-next-line
+export interface IQueryTransaction {}
