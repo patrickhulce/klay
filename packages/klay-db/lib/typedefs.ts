@@ -1,4 +1,4 @@
-import {ICoerceFunction, ValidationPhase} from 'klay'
+import {ICoerceFunction, IModel, ValidationPhase} from 'klay'
 
 declare module 'klay/lib/typedefs' {
   export interface IModelContext {
@@ -83,8 +83,8 @@ export interface IConstraint {
 
 export interface IConstraintMeta {
   name?: string
-  behavior?: ConstraintBehavior
   lookupTable?: string
+  evaluate?(payload: ICustomConstraintPayload): Promise<void>
 }
 
 export interface IIndexProperty {
@@ -119,9 +119,13 @@ export enum ConstraintType {
   Custom = 'custom',
 }
 
-export enum ConstraintBehavior {
-  Reject = 'reject',
-  Update = 'update',
+export interface ICustomConstraintPayload {
+  record: object,
+  model: IModel,
+  executor: IDatabaseExecutor,
+  event: DatabaseEvent,
+  constraint: IConstraint,
+  extras?: IQueryExtras,
 }
 
 export enum IndexDirection {
