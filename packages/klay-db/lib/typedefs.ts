@@ -165,24 +165,32 @@ export enum IDatabaseExecution {
   Destroy = 'destroy',
 }
 
-export interface IDatabaseModel {
-  transaction(): Promise<IQueryTransaction>
+export interface IDatabaseExecutorMinimal {
+  transaction<T>(func: (t: IQueryTransaction) => Promise<T>): Promise<T>
 
   count(query: IQuery, extras?: IQueryExtras): Promise<number>
   findById(id: PrimaryKey, extras?: IQueryExtras): Promise<object>
   find(query: IQuery, extras?: IQueryExtras): Promise<object[]>
-  findOne(query: IQuery, extras?: IQueryExtras): Promise<object | undefined>
-
-  create(object: object, extras?: IQueryExtras): Promise<object>
-  create(objects: object[], extras?: IQueryExtras): Promise<object[]>
-  update(object: object, extras?: IQueryExtras): Promise<object>
-  update(objects: object[], extras?: IQueryExtras): Promise<object[]>
-  upsert(object: object, extras?: IQueryExtras): Promise<object>
-  upsert(objects: object[], extras?: IQueryExtras): Promise<object[]>
-  patch(object: object, extras?: IQueryExtras): Promise<object>
-  patch(objects: object[], extras?: IQueryExtras): Promise<object[]>
-
+  save(object: object, extras?: IQueryExtras): Promise<object>
   destroyById(id: PrimaryKey, extras?: IQueryExtras): Promise<void>
+}
+
+export interface IDatabaseExecutor {
+  transaction<T>(func: (t: IQueryTransaction) => Promise<T>): Promise<T>
+
+  count(query: IQuery, extras?: IQueryExtras): Promise<number>
+  findById(id: PrimaryKey, extras?: IQueryExtras): Promise<object>
+  find(query: IQuery, extras?: IQueryExtras): Promise<object[]>
+  destroyById(id: PrimaryKey, extras?: IQueryExtras): Promise<void>
+
+  findOne(query: IQuery, extras?: IQueryExtras): Promise<object | undefined>
+  create(record: object, extras?: IQueryExtras): Promise<object>
+  createAll(records: object[], extras?: IQueryExtras): Promise<object[]>
+  update(record: object, extras?: IQueryExtras): Promise<object>
+  updateAll(records: object[], extras?: IQueryExtras): Promise<object[]>
+  upsert(record: object, extras?: IQueryExtras): Promise<object>
+  upsertAll(records: object[], extras?: IQueryExtras): Promise<object[]>
+  patch(id: PrimaryKey, patches: object, extras?: IQueryExtras): Promise<object>
   destroy(query: IQuery, extras?: IQueryExtras): Promise<void>
   destroyOne(query: IQuery, extras?: IQueryExtras): Promise<void>
 }
