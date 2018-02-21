@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Library for using klay models together and generating useful objects with them.",
   "main": "./lib/kiln.js",
+  "types": "./lib/kiln.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "npm run test:tslint && npm run test:lint && npm run test:unit",
