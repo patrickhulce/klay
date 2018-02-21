@@ -39,10 +39,11 @@
     }
   },
   "dependencies": {
+    "@types/sequelize": "^4.27.6",
     "bluebird": "^3.4.6",
     "klay-db": "^1.0.0",
     "lodash": "^4.15.0",
-    "sequelize": "^3.24.1"
+    "sequelize": "^4.33.4"
   },
   "devDependencies": {
     "@patrickhulce/lint": "^2.0.2",
