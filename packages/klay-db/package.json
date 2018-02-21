@@ -2,7 +2,8 @@
   "name": "klay-db",
   "version": "0.0.0",
   "description": "Extensions for klay to add generic information typically used for database interactions.",
-  "main": "./lib/extension.js",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "scripts": {
     "build": "npm run build:ts",
     "build:ts": "tsc",
