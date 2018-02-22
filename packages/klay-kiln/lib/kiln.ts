@@ -18,7 +18,7 @@ export interface IKilnModel {
   name: string
   model: IModel
   metadata: IKilnModelMetadata
-  extensions: Map<string, IKilnExtension<any>>
+  extensions: Map<string, IKilnExtensionInput<any>>
 }
 
 // tslint:disable-next-line
@@ -38,7 +38,7 @@ export interface IKilnExtensionInput<T> {
 
 export interface IKilnExtension<T> {
   name: string
-  options: object
+  defaultOptions: object
   build(kilnModel: IKilnModel, options: object, kiln: IKiln): T
 }
 
@@ -57,7 +57,10 @@ export class Kiln implements IKiln {
     return kilnModel!
   }
 
-  private _getExtensionOrThrow(modelName: string, extensionName: string): IKilnExtension<any> {
+  private _getExtensionInputOrThrow(
+    modelName: string,
+    extensionName: string,
+  ): IKilnExtensionInput<any> {
     const kilnModel = this._getModelOrThrow(modelName)
     const extension = kilnModel.extensions.get(extensionName)!
     modelAssertions.ok(extension, `unable to find extension "${extensionName}"`)
@@ -71,8 +74,9 @@ export class Kiln implements IKiln {
     }
 
     const model = this._getModelOrThrow(modelName)
-    const extension = this._getExtensionOrThrow(modelName, extensionName)
-    const value = extension.build(model, extension.options, this)
+    const {extension, options} = this._getExtensionInputOrThrow(modelName, extensionName)
+    const buildOptions = {...extension.defaultOptions, ...options}
+    const value = extension.build(model, buildOptions, this)
     const result = {modelName, extensionName, value}
     modelCache.set(extensionName, result)
     this._cache.set(modelName, modelCache)
@@ -101,15 +105,14 @@ export class Kiln implements IKiln {
   public addExtension(input: IKilnExtensionInput<any>): IKiln {
     const {modelName, extension, options} = input
     modelAssertions.typeof(extension.name, 'string', 'name')
-    modelAssertions.typeof(extension.options, 'object', 'options')
+    modelAssertions.typeof(extension.defaultOptions, 'object', 'options')
     modelAssertions.typeof(extension.build, 'function', 'build')
-    extension.options = {...extension.options, ...options}
 
     if (modelName) {
-      this._getModelOrThrow(modelName).extensions.set(extension.name, extension)
+      this._getModelOrThrow(modelName).extensions.set(extension.name, {extension, options})
     } else {
       for (const kilnModel of this._models.values()) {
-        kilnModel.extensions.set(extension.name, extension)
+        kilnModel.extensions.set(extension.name, {extension, options})
       }
     }
 
@@ -120,13 +123,13 @@ export class Kiln implements IKiln {
     const results: Array<IKilnResult<any>> = []
     if (modelName) {
       const kilnModel = this._getModelOrThrow(modelName)
-      for (const extension of kilnModel.extensions.values()) {
-        results.push(this._getOrBuild(kilnModel.name, extension.name))
+      for (const ext of kilnModel.extensions.values()) {
+        results.push(this._getOrBuild(kilnModel.name, ext.extension.name))
       }
     } else {
       for (const kilnModel of this._models.values()) {
-        for (const extension of kilnModel.extensions.values()) {
-          results.push(this._getOrBuild(kilnModel.name, extension.name))
+        for (const ext of kilnModel.extensions.values()) {
+          results.push(this._getOrBuild(kilnModel.name, ext.extension.name))
         }
       }
     }
@@ -138,7 +141,7 @@ export class Kiln implements IKiln {
     if (typeof extensionOrName === 'object') {
       const model = this._getModelOrThrow(modelName)
       const extension = extensionOrName as IKilnExtension<T>
-      return extension.build(model, extension.options, this) as T
+      return extension.build(model, extension.defaultOptions, this) as T
     }
 
     return this._getOrBuild(modelName, extensionOrName).value as T
