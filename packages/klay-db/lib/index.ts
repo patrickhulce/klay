@@ -1,5 +1,6 @@
 export {DatabaseExtension as Extension} from './extension'
 export {DatabaseExecutor} from './executor'
+export * from './constraints'
 export * from './typedefs'
 export * from './query-builder'
 export * from './helpers'
