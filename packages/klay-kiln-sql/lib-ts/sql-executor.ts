@@ -1,5 +1,5 @@
 /* tslint:disable await-promise */
-import {IQuery, IQueryExtras, IQueryTransaction} from 'klay-db'
+import {IQuery, IQueryExtras, IQueryOrderItem, IQueryTransaction} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import * as Sequelize from 'sequelize'
 import {getFlattenedPath, JSONToSQL, SQLToJSON} from './sequelize'
@@ -8,6 +8,12 @@ import {ISQLExecutor} from './typedefs'
 interface ISequelizeQueryExtras {
   transaction?: Sequelize.Transaction
 }
+
+const mapField = getFlattenedPath
+const mapOrder = (item: IQueryOrderItem) => [
+  getFlattenedPath(item.property),
+  item.direction.toUpperCase(),
+]
 
 export class SQLExectuor implements ISQLExecutor {
   public sequelize: Sequelize.Sequelize
@@ -49,9 +55,8 @@ export class SQLExectuor implements ISQLExecutor {
       ...sqlExtras,
       // TODO: handle where transformations
       where: query.where as Sequelize.WhereOptions<any>,
-      attributes: query.fields && query.fields.map(getFlattenedPath),
-      order:
-        query.order && query.order.map(item => [getFlattenedPath(item.property), item.direction]),
+      attributes: query.fields && query.fields.map(mapField),
+      order: query.order && query.order.map(mapOrder),
       limit: query.limit,
       offset: query.offset,
     })
@@ -63,7 +68,7 @@ export class SQLExectuor implements ISQLExecutor {
     const sqlExtras = SQLExectuor._extrasToSequlize(extras)
     const instance = this.sequelizeModel.build(JSONToSQL(this.kilnModel.model, object))
     const record = await instance.save(sqlExtras)
-    return SQLToJSON(this.kilnModel.model, record)
+    return SQLToJSON(this.kilnModel.model, record.toJSON())
   }
 
   public async destroyById(id: string | number, extras?: IQueryExtras): Promise<void> {
