@@ -48,6 +48,7 @@ export class QueryBuilder implements IQueryBuilder {
 
   public fields(value: IQueryFields): IQueryBuilder {
     assert.typeof(value, 'array', 'fields')
+    value.forEach(field => assert.typeof(field, 'array'))
     this.query.fields = value
     return this
   }

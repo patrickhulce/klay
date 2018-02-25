@@ -132,7 +132,7 @@ export class DatabaseExecutor implements IDatabaseExecutor {
   }
 
   public async destroy(query: IQuery, extras?: IQueryExtras): Promise<void> {
-    const cleanQuery = {where: query.where, fields: [getPrimaryKeyField(this._model)]}
+    const cleanQuery = {where: query.where, fields: [[getPrimaryKeyField(this._model)]]}
     const objects = await this.find(cleanQuery, extras)
     const deletions = objects.map(object =>
       this.destroyById(getPrimaryKey(this._model, object)!, extras),
@@ -141,7 +141,7 @@ export class DatabaseExecutor implements IDatabaseExecutor {
   }
 
   public async destroyOne(query: IQuery, extras?: IQueryExtras): Promise<void> {
-    const cleanQuery = {where: query.where, fields: [getPrimaryKeyField(this._model)]}
+    const cleanQuery = {where: query.where, fields: [[getPrimaryKeyField(this._model)]]}
     const object = await this.findOne(cleanQuery, extras)
     if (!object) {
       return

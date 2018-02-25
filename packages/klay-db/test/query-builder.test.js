@@ -7,14 +7,14 @@ describe('lib/query-builder.ts', () => {
       .limit(10)
       .offset(50)
       .orderBy([['createdAt', 'desc']])
-      .fields(['id', 'createdAt'])
+      .fields([['id'], ['createdAt']])
       .where('accountId', null)
 
     expect(builder.query).to.eql({
       limit: 10,
       offset: 50,
       order: [['createdAt', 'desc']],
-      fields: ['id', 'createdAt'],
+      fields: [['id'], ['createdAt']],
       where: {accountId: null},
     })
   })
@@ -45,11 +45,11 @@ describe('lib/query-builder.ts', () => {
   describe('.clone', () => {
     it('creates a deep copy', () => {
       const builder = new QueryBuilder({})
-      builder.limit(10).fields(['a', 'b'])
+      builder.limit(10).fields([['a'], ['b']])
       const clone = builder.clone()
-      clone.query.fields.push('c')
-      expect(builder.query).to.eql({limit: 10, fields: ['a', 'b']})
-      expect(clone.query).to.eql({limit: 10, fields: ['a', 'b', 'c']})
+      clone.query.fields.push(['c'])
+      expect(builder.query).to.eql({limit: 10, fields: [['a'], ['b']]})
+      expect(clone.query).to.eql({limit: 10, fields: [['a'], ['b'], ['c']]})
     })
   })
 })

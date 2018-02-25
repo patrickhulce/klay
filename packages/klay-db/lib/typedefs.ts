@@ -152,7 +152,7 @@ export interface IQueryWhere {
 
 export type IQueryOrder = string[][]
 
-export type IQueryFields = string[]
+export type IQueryFields = string[][]
 
 export enum IDatabaseExecution {
   Count = 'count',
