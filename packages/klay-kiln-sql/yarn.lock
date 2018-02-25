@@ -74,9 +74,9 @@
   version "9.4.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.6.tgz#d8176d864ee48753d053783e4e463aec86b8d82e"
 
-"@types/sequelize@^4.27.6":
-  version "4.27.6"
-  resolved "https://registry.yarnpkg.com/@types/sequelize/-/sequelize-4.27.6.tgz#3cfed7617eba50a764027d48adedfbebd3910d4b"
+"@types/sequelize@^4.27.7":
+  version "4.27.7"
+  resolved "https://registry.yarnpkg.com/@types/sequelize/-/sequelize-4.27.7.tgz#fac4b8363b5ffc883e233e2ffa40aebddccc7acd"
   dependencies:
     "@types/bluebird" "*"
     "@types/continuation-local-storage" "*"

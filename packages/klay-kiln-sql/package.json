@@ -25,6 +25,17 @@
   },
   "homepage": "https://github.com/patrickhulce/klay-kiln-sql#readme",
   "config": {
+    "tslint": {
+      "rules": {
+        "curly": false,
+        "whitespace": false,
+        "newline-per-chained-call": false,
+        "only-arrow-functions": false,
+        "no-void-expression": false,
+        "no-unsafe-any": false,
+        "no-any": false
+      }
+    },
     "eslint": {
       "globals": [
         "describesql",
@@ -39,9 +50,10 @@
     }
   },
   "dependencies": {
-    "@types/sequelize": "^4.27.6",
+    "@types/sequelize": "^4.27.7",
     "bluebird": "^3.4.6",
-    "klay-db": "^1.0.0",
+    "klay-db": "file:../klay-db/klay-db-0.0.0.tgz",
+    "klay-kiln": "file:../klay-kiln/klay-kiln-0.0.0.tgz",
     "lodash": "^4.15.0",
     "sequelize": "^4.33.4"
   },
