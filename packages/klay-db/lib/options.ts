@@ -17,8 +17,8 @@ import {
   IDatabaseSpecificationUnsafe,
   IIndexProperty,
   IIndexPropertyInput,
-  IndexDirection,
   ISupplyWithFunction,
+  SortDirection,
   SupplyWithPreset,
 } from './typedefs'
 
@@ -104,12 +104,12 @@ export class DatabaseOptions implements IDatabaseOptions {
 
   private static _determineIndex(property: IIndexPropertyInput, i: number): IIndexProperty {
     if (Array.isArray(property)) {
-      return {property, direction: IndexDirection.Ascending}
+      return {property, direction: SortDirection.Ascending}
     }
 
     assertions.typeof(property, 'object')
     assertions.typeof(property.property, 'array', `index.${i}.property`)
-    assertions.oneOf(property.direction, values(IndexDirection), `index.${i}.property`)
+    assertions.oneOf(property.direction, values(SortDirection), `index.${i}.property`)
     return property
   }
 

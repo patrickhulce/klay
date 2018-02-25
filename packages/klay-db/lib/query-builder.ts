@@ -41,7 +41,7 @@ export class QueryBuilder implements IQueryBuilder {
 
   public orderBy(value: IQueryOrder): IQueryBuilder {
     assert.typeof(value, 'array', 'orderBy')
-    value.forEach((item, i) => assert.typeof(item, 'array', `orderBy.${i}`))
+    value.forEach(item => assert.typeof(item, 'object'))
     this.query.order = value
     return this
   }

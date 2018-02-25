@@ -6,14 +6,14 @@ describe('lib/query-builder.ts', () => {
     const builder = new QueryBuilder()
       .limit(10)
       .offset(50)
-      .orderBy([['createdAt', 'desc']])
+      .orderBy([{property: ['createdAt'], order: 'desc'}])
       .fields([['id'], ['createdAt']])
       .where('accountId', null)
 
     expect(builder.query).to.eql({
       limit: 10,
       offset: 50,
-      order: [['createdAt', 'desc']],
+      order: [{property: ['createdAt'], order: 'desc'}],
       fields: [['id'], ['createdAt']],
       where: {accountId: null},
     })

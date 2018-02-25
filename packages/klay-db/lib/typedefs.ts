@@ -89,7 +89,7 @@ export interface IConstraintMeta {
 
 export interface IIndexProperty {
   property: PropertyPath
-  direction: IndexDirection
+  direction: SortDirection
 }
 
 export type IIndexPropertyInput = PropertyPath | IIndexProperty
@@ -128,7 +128,7 @@ export interface ICustomConstraintPayload {
   extras?: IQueryExtras,
 }
 
-export enum IndexDirection {
+export enum SortDirection {
   Ascending = 'asc',
   Descending = 'desc',
 }
@@ -150,7 +150,12 @@ export interface IQueryWhere {
   [value: string]: WhereValue | IWhereCondition
 }
 
-export type IQueryOrder = string[][]
+export interface IQueryOrderItem {
+  property: string[]
+  direction: SortDirection
+}
+
+export type IQueryOrder = IQueryOrderItem[]
 
 export type IQueryFields = string[][]
 
