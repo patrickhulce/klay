@@ -35,7 +35,7 @@ describe('lib/kiln.ts', () => {
         {
           name: 'user',
           model,
-          metadata: {},
+          meta: {},
           extensions: new Map(),
         },
       ])

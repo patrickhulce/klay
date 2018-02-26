@@ -11,13 +11,13 @@ export interface IKiln {
 export interface IKilnModelInput {
   name: string
   model: IModel
-  metadata?: IKilnModelMetadata
+  meta?: IKilnModelMetadata
 }
 
 export interface IKilnModel {
   name: string
   model: IModel
-  metadata: IKilnModelMetadata
+  meta: IKilnModelMetadata
   extensions: Map<string, IKilnExtensionInput<any>>
 }
 
@@ -98,7 +98,7 @@ export class Kiln implements IKiln {
     modelAssertions.ok(model.model.isKlayModel, 'model must be a klay model')
     modelAssertions.ok(!this._models.has(model.name), 'model with same name already exists')
 
-    this._models.set(model.name, {metadata: {}, ...model, extensions: new Map()})
+    this._models.set(model.name, {meta: {}, ...model, extensions: new Map()})
     return this
   }
 
