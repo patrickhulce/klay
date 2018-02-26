@@ -1,6 +1,8 @@
 const _ = require('lodash')
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
+const sinon = require('sinon')
+const sinonChai = require('sinon-chai')
 
 const ModelContext = require('klay').ModelContext
 const DatabaseExtension = require('../lib/extension').DatabaseExtension
@@ -8,6 +10,7 @@ const Executor = require('../lib/executor').DatabaseExecutor
 
 const expect = chai.expect
 chai.use(chaiAsPromised)
+chai.use(sinonChai)
 
 describe('lib/executor.ts', () => {
   let model, executor, executorMinimal, executorData, transaction
@@ -120,6 +123,14 @@ describe('lib/executor.ts', () => {
       await expect(executor.create({x: 200})).to.be.rejectedWith(/x is too big/)
       expect(executorData).to.eql([])
     })
+
+    it('should pass-through transaction', async () => {
+      const create = sinon.spy(executorMinimal, 'save')
+      const transaction = {x: 1}
+      const extras = {transaction}
+      await executor.create({x: 2}, extras)
+      expect(create.firstCall.args[1]).to.equal(extras)
+    })
   })
 
   describe('.update', () => {
@@ -158,6 +169,15 @@ describe('lib/executor.ts', () => {
       executorData = [{id: 1, x: 1}]
       await expect(executor.update({id: 1, x: 200})).to.be.rejectedWith(/x is too big/)
       expect(executorData).to.eql([{id: 1, x: 1}])
+    })
+
+    it('should pass-through transaction', async () => {
+      executorData = [{id: 1, x: 2, y: 1}]
+      const update = sinon.spy(executorMinimal, 'save')
+      const transaction = {x: 1}
+      const extras = {transaction}
+      await executor.update({id: 1, x: 3, y: 1}, extras)
+      expect(update.firstCall.args[1]).to.equal(extras)
     })
   })
 

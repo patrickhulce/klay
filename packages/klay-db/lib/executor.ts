@@ -62,7 +62,7 @@ export class DatabaseExecutor implements IDatabaseExecutor {
     const record = this._createModel.validate(object, {failLoudly: true}).value as object
     await evaluateUniqueConstraints(this, this._model, record, extras)
     await evaluateCustomConstraints(this, this._model, record, DatabaseEvent.Create, extras)
-    return this._executor.save(record)
+    return this._executor.save(record, extras)
   }
 
   public async update(object: object, extras?: IQueryExtras): Promise<object> {
@@ -72,7 +72,7 @@ export class DatabaseExecutor implements IDatabaseExecutor {
     await evaluateImmutableConstraints(this, this._model, record, extras)
     await evaluateUniqueConstraints(this, this._model, record, extras)
     await evaluateCustomConstraints(this, this._model, record, DatabaseEvent.Update, extras)
-    return this._executor.save(record)
+    return this._executor.save(record, extras)
   }
 
   public async upsert(object: object, extras?: IQueryExtras): Promise<object> {
