@@ -37,7 +37,7 @@ module.exports = {
       ownerId: modelContext
         .integer()
         .required()
-        .constrain({type: 'reference', meta: {lookupTable: 'user'}}),
+        .constrain({type: 'reference', meta: {referencedModel: 'user'}}),
       aspectRatio: modelContext.number().required(),
       metadata: modelContext
         .object()

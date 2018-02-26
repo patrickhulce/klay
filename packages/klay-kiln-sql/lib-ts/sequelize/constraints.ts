@@ -40,7 +40,7 @@ export function addForeignKeys(
     assert.ok(constraint.properties.length === 1, 'foreign key must be single field')
     const fkName = getFlattenedPath(constraint.properties[0])
     const fkDefinition = modelInProgress[fkName] as Sequelize.DefineAttributeColumnOptions
-    const sqlExecutor = kiln.build<ISQLExecutor>(constraint.meta.lookupTable!, EXTENSION_NAME)
+    const sqlExecutor = kiln.build<ISQLExecutor>(constraint.meta.referencedModel!, EXTENSION_NAME)
     fkDefinition.references = {
       key: getPrimaryKeyField(sqlExecutor.kilnModel.model),
       model: sqlExecutor.sequelizeModel,
