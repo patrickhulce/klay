@@ -12,9 +12,10 @@ export function getFlattenedPath(path: string[]): string {
 export function forEachColumn(model: IModel, onEach: ColumnIterator, prefix: string[] = []): void {
   const children = model.spec.children as IModelChild[]
   assert.ok(
-    model.spec.type === 'object' && model.spec.strict && children,
+    model.spec.type === 'object' && model.spec.strict,
     'can only create datatypes for strict objects',
   )
+  assert.ok(children && children.length, 'can only create datatypes for objects with children')
 
   for (const child of children) {
     const spec = child.model.spec
