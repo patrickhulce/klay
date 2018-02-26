@@ -4,6 +4,7 @@ import {QueryBuilder} from './query-builder'
 import {
   ConstraintType,
   DatabaseEvent,
+  IConstraint,
   IDatabaseExecutor,
   IQueryExtras,
   PrimaryKey,
@@ -25,32 +26,71 @@ export function getPrimaryKey(model: IModel, object: object): PrimaryKey | undef
   return get(object, getPrimaryKeyField(model))
 }
 
+export async function fetchByUniqueConstraint(
+  executor: IDatabaseExecutor,
+  constraint: IConstraint,
+  record: object,
+  extras?: IQueryExtras,
+): Promise<object | undefined> {
+  const queryBuilder = new QueryBuilder()
+  constraint.properties.forEach(propertyPath =>
+    queryBuilder.where(propertyPath.join('.'), get(record, propertyPath)),
+  )
+
+  return executor.findOne(queryBuilder.query, extras)
+}
+
+export type UniqueConstraintFn = (
+  match: object | undefined,
+  constraint: IConstraint,
+) => Promise<void>
+
+export async function forEachMatchingUnique(
+  executor: IDatabaseExecutor,
+  model: IModel,
+  record: object,
+  onEach: UniqueConstraintFn,
+  extras?: IQueryExtras,
+): Promise<void> {
+  const uniqueConstraints = model.spec.db!.constrain.filter(
+    constraint => constraint.type === ConstraintType.Unique,
+  )
+
+  const matchingQueries = uniqueConstraints.map(constraint =>
+    fetchByUniqueConstraint(executor, constraint, record, extras).then(match =>
+      onEach(match, constraint),
+    ),
+  )
+
+  await Promise.all(matchingQueries)
+}
+
 export async function fetchByUniqueConstraints(
   executor: IDatabaseExecutor,
   model: IModel,
   record: object,
   extras?: IQueryExtras,
 ): Promise<object | undefined> {
-  const uniqueConstraints = model.spec.db!.constrain.filter(
-    constraint => constraint.type === ConstraintType.Unique,
+  const matches: object[] = []
+  await forEachMatchingUnique(
+    executor,
+    model,
+    record,
+    async match => {
+      if (match) {
+        matches.push(match)
+      }
+    },
+    extras,
   )
-  const matchingQueries = uniqueConstraints.map(constraint => {
-    const queryBuilder = new QueryBuilder()
-    constraint.properties.forEach(propertyPath =>
-      queryBuilder.where(propertyPath.join('.'), get(record, propertyPath)),
-    )
 
-    return executor.findOne(queryBuilder.query, extras)
-  })
-
-  const matching = (await Promise.all(matchingQueries)).filter(Boolean)
-  if (!matching.length) {
+  if (!matches.length) {
     return undefined
   }
 
-  const first = matching[0]
-  matching.forEach(item => assert.ok(isEqual(item, first), 'conflicting unique constraints'))
-  return first
+  const existing = matches[0]
+  matches.forEach(item => assert.ok(isEqual(item, existing), 'conflicting unique constraints'))
+  return existing
 }
 
 export async function evaluateUniqueConstraints(
@@ -60,10 +100,17 @@ export async function evaluateUniqueConstraints(
   extras?: IQueryExtras,
 ): Promise<void> {
   const primaryKey = getPrimaryKey(model, record)
-  const existing = await fetchByUniqueConstraints(executor, model, record, extras)
-  assert.ok(
-    !existing || primaryKey === getPrimaryKey(model, existing),
-    'value violates unique constraints',
+  await forEachMatchingUnique(
+    executor,
+    model,
+    record,
+    async (existing, constraint) => {
+      assert.ok(
+        !existing || primaryKey === getPrimaryKey(model, existing),
+        `constraint ${constraint.name} violated`,
+      )
+    },
+    extras,
   )
 }
 

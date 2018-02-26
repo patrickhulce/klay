@@ -112,7 +112,7 @@ describe('lib/executor.ts', () => {
 
     it('should not create value with uniqueness errors', async () => {
       executorData = [{id: 1, x: 1}]
-      await expect(executor.create({x: 1})).to.be.rejectedWith(/violates unique/)
+      await expect(executor.create({x: 1})).to.be.rejectedWith(/unique.*violated/)
       expect(executorData).to.eql([{id: 1, x: 1}])
     })
 
@@ -150,7 +150,7 @@ describe('lib/executor.ts', () => {
 
     it('should not update value with uniqueness errors', async () => {
       executorData = [{id: 1, x: 1}, {id: 2, x: 2}]
-      await expect(executor.update({id: 2, x: 1})).to.be.rejectedWith(/violates unique/)
+      await expect(executor.update({id: 2, x: 1})).to.be.rejectedWith(/unique.*violated/)
       expect(executorData).to.eql([{id: 1, x: 1}, {id: 2, x: 2}])
     })
 
@@ -203,7 +203,7 @@ describe('lib/executor.ts', () => {
 
     it('should fail when violates constraints', async () => {
       executorData = [{id: 1, x: 1}, {id: 2, x: 2}]
-      await expect(executor.patch(2, {x: 1})).to.be.rejectedWith(/violates unique/)
+      await expect(executor.patch(2, {x: 1})).to.be.rejectedWith(/unique.*violated/)
       expect(executorData).to.eql([{id: 1, x: 1}, {id: 2, x: 2}])
     })
   })

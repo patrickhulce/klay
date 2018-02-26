@@ -73,9 +73,9 @@ describe('lib/constraints.ts', () => {
       const unique = {type: 'unique', properties: [['x']]}
       const model = {spec: {db: {constrain: [primary, unique]}}}
       const resultA = evaluateUniqueConstraints(executor, model, {x: 2})
-      await expect(resultA).to.be.rejectedWith(/violates unique/)
+      await expect(resultA).to.be.rejectedWith(/constraint.*violated/)
       const resultB = evaluateUniqueConstraints(executor, model, {id: 1, x: 2})
-      await expect(resultB).to.be.rejectedWith(/violates unique/)
+      await expect(resultB).to.be.rejectedWith(/constraint.*violated/)
       const resultC = await evaluateUniqueConstraints(executor, model, {id: 2, x: 2})
       expect(resultC).to.eql(undefined)
     })
