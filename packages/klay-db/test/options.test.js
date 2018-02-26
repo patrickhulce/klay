@@ -174,7 +174,7 @@ describe('lib/options.ts', () => {
     })
 
     it('should add a reference constrain property', () => {
-      const meta = {lookupTable: 'parents', name: 'reference:parent'}
+      const meta = {referencedModel: 'parents', name: 'reference:parent'}
       opts = opts.constrain({properties: [['id']], type: 'primary'}).constrain({
         properties: [['parent_id']],
         type: 'reference',

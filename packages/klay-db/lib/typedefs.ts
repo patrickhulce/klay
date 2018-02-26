@@ -83,7 +83,7 @@ export interface IConstraint {
 
 export interface IConstraintMeta {
   name?: string
-  lookupTable?: string
+  referencedModel?: string
   evaluate?(payload: ICustomConstraintPayload): Promise<void>
 }
 
