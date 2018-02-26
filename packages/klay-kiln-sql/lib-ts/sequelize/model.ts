@@ -84,6 +84,6 @@ export function getModel(
   return sequelize.define(kilnModel.name, sequelizeDatatypes, {
     indexes: getIndexes(kilnModel.model),
     // TODO: move the plural setting up to kiln level
-    tableName: (kilnModel.metadata as any).plural || `${kilnModel.name}s`,
+    tableName: (kilnModel.meta as any).plural || `${kilnModel.name}s`,
   })
 }

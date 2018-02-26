@@ -28,7 +28,7 @@ describe('lib-ts/extension.ts', () => {
     it('should build an executor', () => {
       const extension = new Extension(utils.dbOptions)
       const model = utils.createModels().user
-      const executor = extension.build({name: 'user', model, metadata: {}})
+      const executor = extension.build({name: 'user', model, meta: {}})
       expect(executor.sequelize).to.be.an('object')
       expect(executor.create).to.be.a('function')
       expect(executor.createAll).to.be.a('function')
