@@ -12,17 +12,17 @@ function getSequelizeType(model: IModel): Sequelize.DataTypeAbstract {
   // tslint:disable-next-line
   switch (format) {
     case 'uuid':
-      return Sequelize.UUID
+      return Sequelize.UUID()
     case 'integer':
-      return Sequelize.BIGINT
+      return Sequelize.BIGINT()
   }
 
   switch (type) {
     case ModelType.String:
       const maxLength = model.spec.max
-      return maxLength ? Sequelize.STRING(maxLength) : Sequelize.TEXT
+      return maxLength ? Sequelize.STRING(maxLength) : Sequelize.TEXT()
     case ModelType.Number:
-      return Sequelize.DOUBLE
+      return Sequelize.DOUBLE()
     case ModelType.Boolean:
       return Sequelize.BOOLEAN
     case ModelType.Date:
@@ -66,7 +66,7 @@ function getIndexes(model: IModel): Sequelize.DefineIndexesOptions[] {
 
 function addSequelizeDatatypes(modelInProgress: Sequelize.DefineAttributes, model: IModel): void {
   forEachColumn(model, (childModel, path, column) => {
-    modelInProgress[column] = getSequelizeType(childModel)
+    modelInProgress[column] = {type: getSequelizeType(childModel)}
   })
 }
 
@@ -83,6 +83,7 @@ export function getModel(
 
   return sequelize.define(kilnModel.name, sequelizeDatatypes, {
     indexes: getIndexes(kilnModel.model),
-    tableName: (kilnModel.metadata as any).plural,
+    // TODO: move the plural setting up to kiln level
+    tableName: (kilnModel.metadata as any).plural || `${kilnModel.name}s`,
   })
 }

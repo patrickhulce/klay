@@ -1,9 +1,14 @@
 /* tslint:disable await-promise */
-import {IQuery, IQueryExtras, IQueryOrderItem, IQueryTransaction} from 'klay-db'
+import {
+  IDatabaseExecutorMinimal,
+  IQuery,
+  IQueryExtras,
+  IQueryOrderItem,
+  IQueryTransaction,
+} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import * as Sequelize from 'sequelize'
 import {getFlattenedPath, JSONToSQL, SQLToJSON} from './sequelize'
-import {ISQLExecutor} from './typedefs'
 
 interface ISequelizeQueryExtras {
   transaction?: Sequelize.Transaction
@@ -15,7 +20,7 @@ const mapOrder = (item: IQueryOrderItem) => [
   item.direction.toUpperCase(),
 ]
 
-export class SQLExectuor implements ISQLExecutor {
+export class SQLExectuor implements IDatabaseExecutorMinimal {
   public sequelize: Sequelize.Sequelize
   public sequelizeModel: Sequelize.Model<Sequelize.Instance<object>, object>
   public kilnModel: IKilnModel

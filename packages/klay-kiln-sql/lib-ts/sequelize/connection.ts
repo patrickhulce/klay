@@ -6,6 +6,7 @@ export function getConnection(options: ISQLOptions): Sequelize.Sequelize {
     port: options.port,
     host: options.host,
     dialect: options.dialect,
+    logging: false,
     define: {
       underscored: false,
       timestamps: false,
