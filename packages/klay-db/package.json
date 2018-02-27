@@ -1,6 +1,6 @@
 {
   "name": "klay-db",
-  "version": "0.0.0",
+  "version": "2.5.0",
   "description": "Extensions for klay to add generic information typically used for database interactions.",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -55,7 +55,7 @@
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "cz-conventional-changelog": "^1.2.0",
-    "klay": "^2.4.0",
+    "klay": "^2.5.0",
     "mocha": "^5.0.0",
     "nyc": "^11.4.1",
     "semantic-release": "^11.2.0",
@@ -66,6 +66,6 @@
     "typescript": "^2.7.1"
   },
   "peerDependencies": {
-    "klay": "^2.4.0"
+    "klay": "^2.5.0"
   }
 }

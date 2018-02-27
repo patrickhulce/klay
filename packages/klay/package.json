@@ -1,6 +1,6 @@
 {
   "name": "klay",
-  "version": "0.0.0-development",
+  "version": "2.5.0",
   "description": "Isomorphic and extensible validation library for JavaScript.",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
