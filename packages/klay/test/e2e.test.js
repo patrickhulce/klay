@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const klay = require('../lib').defaultModelContext
+const klay = require('../dist').defaultModelContext
 const documentModel = require('./fixtures/document')
 
 describe('klay', () => {

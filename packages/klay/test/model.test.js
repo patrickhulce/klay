@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const Model = require('../lib/model').Model
+const Model = require('../dist/model').Model
 
 describe('lib/model.ts', () => {
   const defaultOptions = {

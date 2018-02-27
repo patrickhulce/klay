@@ -1,4 +1,4 @@
-const ValidationResult = require('../lib/validation-result').ValidationResult
+const ValidationResult = require('../dist/validation-result').ValidationResult
 
 module.exports = {
   createValidationResult(value) {

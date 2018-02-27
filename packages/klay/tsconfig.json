@@ -1,11 +1,12 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
+    "outDir": "./dist",
     "module": "commonjs",
     "target": "es2015",
     "sourceMap": true,
-
     "declaration": true,
+
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,

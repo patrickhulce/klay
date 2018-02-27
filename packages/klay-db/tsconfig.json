@@ -11,8 +11,5 @@
     "strictNullChecks": true,
 
     "moduleResolution": "node"
-  },
-  "include": [
-    "lib/**/*"
-  ]
+  }
 }

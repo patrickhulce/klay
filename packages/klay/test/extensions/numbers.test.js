@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 const expect = require('chai').expect
-const extension = require('../../lib/extensions/numbers')
+const extension = require('../../dist/extensions/numbers')
 
 const validations = extension.validations
 

@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const extension = require('../../lib/extensions/strings')
+const extension = require('../../dist/extensions/strings')
 
 const testValues = shouldPass => (values, funcs) => {
   for (const value of values) {

@@ -1,8 +1,8 @@
 const _ = require('lodash')
 const expect = require('chai').expect
-const Model = require('../lib/model').Model
-const Validator = require('../lib/validator').Validator
-const assert = require('../lib/errors/validation-error').assertions
+const Model = require('../dist/model').Model
+const Validator = require('../dist/validator').Validator
+const assert = require('../dist/errors/validation-error').assertions
 
 describe('lib/validator.ts', () => {
   const defaultOptions = {

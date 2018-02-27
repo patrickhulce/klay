@@ -1,4 +1,4 @@
-const ModelContext = require('../../lib/model-context').ModelContext
+const ModelContext = require('../../dist/model-context').ModelContext
 
 const context = ModelContext.create()
 context.use({defaults: {required: true, strict: true}})
