@@ -1,0 +1,12 @@
+coverage/
+node_modules/
+.nyc_output/
+dist/
+
+packages/*/lib/**/*.js
+packages/*/lib/**/*.js.map
+packages/*/lib/**/*.d.ts
+
+yarn-error.log
+npm-debug.log
+lerna-debug.log
