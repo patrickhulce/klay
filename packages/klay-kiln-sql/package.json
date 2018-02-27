@@ -53,6 +53,8 @@
     "@types/sequelize": "^4.27.7",
     "bluebird": "^3.5.1",
     "klay": "^2.5.0",
+    "klay-db": "^2.5.0",
+    "klay-kiln": "^2.5.0",
     "lodash": "^4.15.0",
     "sequelize": "^4.33.4"
   },
