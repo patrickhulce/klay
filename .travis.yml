@@ -1,0 +1,24 @@
+language: node_js
+services:
+  - mysql
+env:
+  - KLAY_MYSQL_HOST=localhost KLAY_MYSQL_DB=klay_kiln_sql KLAY_MYSQL_USER=root
+cache:
+  yarn: true
+  directories:
+    - node_modules
+notifications:
+  email: false
+node_js:
+  - v9
+  - v8
+before_install:
+  - npm install -g yarn lerna coveralls
+before_script:
+  - mysql -e 'create database if not exists klay_kiln_sql;' -u root
+install:
+  - yarn install
+script:
+  - lerna run build
+  - lerna run test:unit
+# TODO: add coveralls, release scripts
