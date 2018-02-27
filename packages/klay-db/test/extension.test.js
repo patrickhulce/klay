@@ -1,7 +1,7 @@
 const expect = require('chai').expect
 const ModelContext = require('klay').ModelContext
-const DatabaseExtension = require('../lib/extension').DatabaseExtension
-const DatabaseOptions = require('../lib/options').DatabaseOptions
+const DatabaseExtension = require('../dist/extension').DatabaseExtension
+const DatabaseOptions = require('../dist/options').DatabaseOptions
 
 describe('lib/extension.ts', () => {
   let modelContext

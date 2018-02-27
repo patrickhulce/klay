@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const QueryBuilder = require('../lib/query-builder').QueryBuilder
+const QueryBuilder = require('../dist/query-builder').QueryBuilder
 
 describe('lib/query-builder.ts', () => {
   it('builds queries', () => {

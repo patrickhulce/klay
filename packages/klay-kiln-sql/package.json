@@ -2,7 +2,7 @@
   "name": "klay-kiln-sql",
   "version": "2.5.0",
   "description": "Kiln extension to generate SQL models from Klay models.",
-  "main": "./lib/extension.js",
+  "main": "./dist/extension.js",
   "scripts": {
     "build": "tsc",
     "test": "npm run test:tslint && npm run test:lint && npm run test:unit",
@@ -52,6 +52,7 @@
   "dependencies": {
     "@types/sequelize": "^4.27.7",
     "bluebird": "^3.5.1",
+    "klay": "^2.5.0",
     "lodash": "^4.15.0",
     "sequelize": "^4.33.4"
   },
@@ -62,7 +63,6 @@
     "chai-as-promised": "^7.1.1",
     "cz-conventional-changelog": "^1.2.0",
     "istanbul": "^0.4.5",
-    "klay": "^2.5.0",
     "mocha": "^3.0.2",
     "mysql2": "^1.5.2",
     "semantic-release": "^6.3.2",
@@ -71,9 +71,5 @@
     "source-map-support": "^0.5.3",
     "tslint": "^5.9.1",
     "typescript": "^2.7.2"
-  },
-  "peerDependencies": {
-    "klay": "^1.2.2",
-    "klay-kiln": "^1.0.1"
   }
 }

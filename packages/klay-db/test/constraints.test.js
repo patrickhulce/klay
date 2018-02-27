@@ -8,7 +8,7 @@ const {
   fetchByUniqueConstraints,
   evaluateUniqueConstraints,
   evaluateCustomConstraints,
-} = require('../lib/constraints')
+} = require('../dist/constraints')
 
 const expect = chai.expect
 chai.use(chaiAsPromised)

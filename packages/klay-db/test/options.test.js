@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const sinon = require('sinon')
-const Options = require('../lib/options').DatabaseOptions
+const Options = require('../dist/options').DatabaseOptions
 
 describe('lib/options.ts', () => {
   let validationResult, setValue

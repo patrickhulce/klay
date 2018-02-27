@@ -5,8 +5,8 @@ const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 
 const ModelContext = require('klay').ModelContext
-const DatabaseExtension = require('../lib/extension').DatabaseExtension
-const Executor = require('../lib/executor').DatabaseExecutor
+const DatabaseExtension = require('../dist/extension').DatabaseExtension
+const Executor = require('../dist/executor').DatabaseExecutor
 
 const expect = chai.expect
 chai.use(chaiAsPromised)

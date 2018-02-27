@@ -1,5 +1,5 @@
 const Kiln = require('klay-kiln').Kiln
-const SQLExtension = require('../lib-ts/extension').SQLExtension
+const SQLExtension = require('../dist/extension').SQLExtension
 const fixtureData = require('./fixtures/data')
 const createModels = require('./fixtures/models').create
 

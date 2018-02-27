@@ -2,8 +2,8 @@
   "name": "klay-db",
   "version": "2.5.0",
   "description": "Extensions for klay to add generic information typically used for database interactions.",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "npm run build:ts",
     "build:ts": "tsc",
@@ -46,6 +46,7 @@
     }
   },
   "dependencies": {
+    "klay": "^2.5.0",
     "lodash": "^4.17.5",
     "uuid": "^3.2.1"
   },
@@ -64,8 +65,5 @@
     "source-map-support": "^0.5.3",
     "tslint": "^5.9.1",
     "typescript": "^2.7.1"
-  },
-  "peerDependencies": {
-    "klay": "^2.5.0"
   }
 }

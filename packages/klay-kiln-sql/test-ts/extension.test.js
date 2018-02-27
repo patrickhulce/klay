@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const Sequelize = require('sequelize')
-const Extension = require('../lib-ts/extension').SQLExtension
+const Extension = require('../dist/extension').SQLExtension
 const utils = require('./utils')
 
 describe('lib-ts/extension.ts', () => {

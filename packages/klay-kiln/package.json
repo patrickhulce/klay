@@ -2,8 +2,8 @@
   "name": "klay-kiln",
   "version": "2.5.0",
   "description": "Library for using klay models together and generating useful objects with them.",
-  "main": "./lib/kiln.js",
-  "types": "./lib/kiln.d.ts",
+  "main": "./dist/kiln.js",
+  "types": "./dist/kiln.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "npm run test:tslint && npm run test:lint && npm run test:unit",
@@ -43,21 +43,18 @@
     }
   },
   "dependencies": {
+    "klay": "^2.5.0",
     "lodash": "^4.15.0"
   },
   "devDependencies": {
     "@patrickhulce/lint": "^2.0.2",
     "chai": "^3.5.0",
     "cz-conventional-changelog": "^1.2.0",
-    "klay": "^2.5.0",
     "mocha": "^3.0.2",
     "nyc": "^11.4.1",
     "semantic-release": "^11.2.0",
     "sinon": "^1.17.5",
     "tslint": "^5.9.1",
     "typescript": "^2.7.1"
-  },
-  "peerDependencies": {
-    "klay": "^2.5.0"
   }
 }
