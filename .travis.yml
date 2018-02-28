@@ -29,3 +29,5 @@ script:
   - lerna run build
   - lerna run test:unit
 # TODO: add coveralls, release scripts
+after_success:
+  - yarn build:docs
