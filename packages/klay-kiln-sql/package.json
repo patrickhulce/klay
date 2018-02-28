@@ -1,6 +1,6 @@
 {
   "name": "klay-kiln-sql",
-  "version": "2.5.0",
+  "version": "2.4.0",
   "description": "Kiln extension to generate SQL models from Klay models.",
   "main": "./dist/extension.js",
   "scripts": {
@@ -52,9 +52,9 @@
   "dependencies": {
     "@types/sequelize": "^4.27.7",
     "bluebird": "^3.5.1",
-    "klay": "^2.5.0",
-    "klay-db": "^2.5.0",
-    "klay-kiln": "^2.5.0",
+    "klay": "^2.4.0",
+    "klay-db": "^2.4.0",
+    "klay-kiln": "^2.4.0",
     "lodash": "^4.15.0",
     "sequelize": "^4.33.4"
   },

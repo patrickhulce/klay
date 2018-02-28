@@ -1,6 +1,6 @@
 {
   "name": "klay-kiln",
-  "version": "2.5.0",
+  "version": "2.4.0",
   "description": "Library for using klay models together and generating useful objects with them.",
   "main": "./dist/kiln.js",
   "types": "./dist/kiln.d.ts",
@@ -43,7 +43,7 @@
     }
   },
   "dependencies": {
-    "klay": "^2.5.0",
+    "klay": "^2.4.0",
     "lodash": "^4.15.0"
   },
   "devDependencies": {
