@@ -29,7 +29,7 @@ function getSequelizeType(model: IModel): Sequelize.DataTypeAbstract {
       return Sequelize.DATE(6)
     default:
       // record will be JSONified
-      return Sequelize.JSON
+      return Sequelize.TEXT()
   }
 }
 

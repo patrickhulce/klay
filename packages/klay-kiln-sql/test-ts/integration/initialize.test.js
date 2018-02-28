@@ -53,7 +53,7 @@ describe('initialize database', () => {
           id: {Type: 'char(36)', Key: 'PRI'},
           ownerId: {Type: 'bigint(20)', Key: 'MUL'},
           aspectRatio: {Type: 'double'},
-          metadata: {Type: 'json'},
+          metadata: {Type: 'text'},
           createdAt: {Type: 'datetime(6)'},
           updatedAt: {Type: 'datetime(6)'},
         })
