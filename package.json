@@ -1,7 +1,13 @@
 {
 	"private": true,
-	"workspaces": ["packages/*"],
+	"workspaces": [
+		"packages/*"
+	],
+	"scripts": {
+		"build:docs": "lerna exec ../../scripts/build-docs.sh"
+	},
 	"devDependencies": {
-		"lerna": "^2.9.0"
+		"lerna": "^2.9.0",
+		"typedoc": "^0.10.0"
 	}
 }

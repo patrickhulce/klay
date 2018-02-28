@@ -9,6 +9,13 @@ cache:
     - node_modules
 notifications:
   email: false
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GH_TOKEN
+  local_dir: docs
+  on:
+    branch: master
 node_js:
   - v9
   - v8
