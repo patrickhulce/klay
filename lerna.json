@@ -5,5 +5,11 @@
   "packages": [
     "packages/*"
   ],
+  "commands": {
+    "publish": {
+      "allowBranch": "master",
+      "message": "chore(release): publish %s"
+    }
+  },
   "version": "2.4.0"
 }
