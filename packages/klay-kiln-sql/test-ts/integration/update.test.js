@@ -1,5 +1,4 @@
 const _ = require('lodash')
-const Promise = require('bluebird')
 const utils = require('../utils')
 
 const expect = utils.expect
@@ -22,7 +21,7 @@ describe('update objects', () => {
 
       const users = await state.models.user.createAll([
         user,
-        _.defaults({firstName: 'klay2', email: 'test2@klay.com'}, user)
+        _.defaults({firstName: 'klay2', email: 'test2@klay.com'}, user),
       ])
 
       state.userA = users[0]
@@ -33,8 +32,8 @@ describe('update objects', () => {
       const user = _.assign({}, state.userA, {password: '1234'})
       const updated = await state.models.user.update(user)
       expect(updated).to.have.property('password', '1234')
-      expect(updated).to.have
-        .property('updatedAt')
+      expect(updated)
+        .to.have.property('updatedAt')
         .instanceof(Date)
         .greaterThan(state.userA.updatedAt)
 
@@ -73,9 +72,11 @@ describe('update objects', () => {
       const photo = _.assign({}, state.photoA, {aspectRatio: 2, metadata})
       const updated = await state.models.photo.update(photo)
       expect(updated).to.have.property('aspectRatio', 2)
-      expect(updated).to.have.property('metadata').eql(metadata)
-      expect(updated).to.have
-        .property('updatedAt')
+      expect(updated)
+        .to.have.property('metadata')
+        .eql(metadata)
+      expect(updated)
+        .to.have.property('updatedAt')
         .instanceof(Date)
         .greaterThan(photo.updatedAt)
 

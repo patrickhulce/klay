@@ -63,7 +63,6 @@ export class DatabaseExecutor implements IDatabaseExecutor {
   }
 
   public async create(object: object, extras?: IQueryExtras): Promise<object> {
-    const primaryKey = getPrimaryKey(this._model, object)
     const record = this._createModel.validate(object, {failLoudly: true}).value as object
     await evaluateUniqueConstraints(this, this._model, record, extras)
     await evaluateCustomConstraints(this, this._model, record, DatabaseEvent.Create, extras)
