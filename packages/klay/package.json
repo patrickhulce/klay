@@ -15,9 +15,9 @@
     "test": "npm run test:lint && npm run test:tslint && npm run test:unit",
     "test:lint": "lint -t test './test/**/*.js'",
     "test:tslint": "lint -t typescript './lib/**/*.ts' --ignore './lib/**/*.d.ts'",
-    "test:unit": "mocha --reporter spec --require source-map-support/register 'test/**/*.test.js'",
+    "test:unit": "mocha --require source-map-support/register 'test/**/*.test.js'",
     "test:coverage": "nyc npm run test:unit",
-    "test:watch": "npm run test:unit -- --watch",
+    "test:watch": "npm run test:unit -- --watch --reporter dot",
     "semantic-release": "semantic-release"
   },
   "repository": {
