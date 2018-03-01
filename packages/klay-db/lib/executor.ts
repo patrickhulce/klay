@@ -41,8 +41,14 @@ export class DatabaseExecutor implements IDatabaseExecutor {
     return this._executor.count(query, extras)
   }
 
-  public findById(id: PrimaryKey, extras?: IQueryExtras): Promise<object> {
+  public findById(id: PrimaryKey, extras?: IQueryExtras): Promise<object | null> {
     return this._executor.findById(id, extras)
+  }
+
+  public async findByIdOrThrow(id: PrimaryKey, extras?: IQueryExtras): Promise<object> {
+    const result = await this._executor.findById(id, extras)
+    assert.ok(result, `unable to find record with ID ${id}`)
+    return result!
   }
 
   public find(query: IQuery, extras?: IQueryExtras): Promise<object[]> {

@@ -174,7 +174,7 @@ export interface IDatabaseExecutorMinimal {
   transaction<T>(func: (t: IQueryTransaction) => Promise<T>): Promise<T>
 
   count(query: IQuery, extras?: IQueryExtras): Promise<number>
-  findById(id: PrimaryKey, extras?: IQueryExtras): Promise<object>
+  findById(id: PrimaryKey, extras?: IQueryExtras): Promise<object | null>
   find(query: IQuery, extras?: IQueryExtras): Promise<object[]>
   save(object: object, extras?: IQueryExtras): Promise<object>
   destroyById(id: PrimaryKey, extras?: IQueryExtras): Promise<void>
@@ -184,7 +184,8 @@ export interface IDatabaseExecutor {
   transaction<T>(func: (t: IQueryTransaction) => Promise<T>): Promise<T>
 
   count(query: IQuery, extras?: IQueryExtras): Promise<number>
-  findById(id: PrimaryKey, extras?: IQueryExtras): Promise<object>
+  findById(id: PrimaryKey, extras?: IQueryExtras): Promise<object | null>
+  findByIdOrThrow(id: PrimaryKey, extras?: IQueryExtras): Promise<object>
   find(query: IQuery, extras?: IQueryExtras): Promise<object[]>
   destroyById(id: PrimaryKey, extras?: IQueryExtras): Promise<void>
 

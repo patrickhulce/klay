@@ -44,14 +44,10 @@ export class SQLExectuor implements IDatabaseExecutorMinimal {
     return this.sequelizeModel.count({...sqlExtras, where: query.where})
   }
 
-  public async findById(id: string | number, extras?: IQueryExtras): Promise<object> {
+  public async findById(id: string | number, extras?: IQueryExtras): Promise<object | null> {
     const sqlExtras = SQLExectuor._extrasToSequlize(extras)
     const instance = await this.sequelizeModel.findById(id, sqlExtras)
-    if (!instance) {
-      throw new Error(`No such record with ID ${id}`)
-    }
-
-    return SQLToJSON(this.kilnModel.model, instance.toJSON())
+    return instance && SQLToJSON(this.kilnModel.model, instance.toJSON())
   }
 
   public async find(query: IQuery, extras?: IQueryExtras): Promise<object[]> {
