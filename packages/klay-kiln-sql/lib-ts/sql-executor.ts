@@ -1,5 +1,6 @@
 /* tslint:disable await-promise */
 import {
+  getPrimaryKey,
   IDatabaseExecutorMinimal,
   IQuery,
   IQueryExtras,
@@ -67,8 +68,16 @@ export class SQLExectuor implements IDatabaseExecutorMinimal {
 
   public async save(object: object, extras?: IQueryExtras): Promise<object> {
     const sqlExtras = SQLExectuor._extrasToSequlize(extras)
-    const instance = this.sequelizeModel.build(JSONToSQL(this.kilnModel.model, object))
-    const record = await instance.save(sqlExtras)
+    const primaryKey = getPrimaryKey(this.kilnModel.model, object)
+    const sqlValues = JSONToSQL(this.kilnModel.model, object)
+    let instance = await this.sequelizeModel.findById(primaryKey)
+    if (instance) {
+      instance!.set(sqlValues)
+    } else {
+      instance = this.sequelizeModel.build(sqlValues)
+    }
+
+    const record = await instance!.save(sqlExtras)
     return SQLToJSON(this.kilnModel.model, record.toJSON())
   }
 

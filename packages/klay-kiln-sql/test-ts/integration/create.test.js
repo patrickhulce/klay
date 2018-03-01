@@ -1,10 +1,7 @@
-const chai = require('chai')
-const chaiPromise = require('chai-as-promised')
 const _ = require('lodash')
 const utils = require('../utils')
 
-const expect = chai.expect
-chai.use(chaiPromise)
+const expect = utils.expect
 
 describe('create objects', () => {
   const state = utils.state()
