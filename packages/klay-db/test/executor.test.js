@@ -104,7 +104,7 @@ describe('lib/executor.ts', () => {
     })
 
     it('should not create value with primary key', async () => {
-      await expect(executor.create({id: 1, x: 1})).to.be.rejectedWith(/existing ID/)
+      await expect(executor.create({id: 1, x: 1})).to.be.rejectedWith(/expected.*undefined/)
       expect(executorData).to.eql([])
     })
 
@@ -143,7 +143,7 @@ describe('lib/executor.ts', () => {
     })
 
     it('should not update non-existent value', async () => {
-      await expect(executor.update({id: 1, x: 1})).to.be.rejectedWith(/cannot find/)
+      await expect(executor.update({id: 1, x: 1})).to.be.rejectedWith(/unable to find/)
       expect(executorData).to.have.length(0)
     })
 
@@ -217,7 +217,7 @@ describe('lib/executor.ts', () => {
 
     it('should fail when id does not exist', async () => {
       executorData = [{id: 1, x: 1}]
-      await expect(executor.patch(2, {x: 2})).to.be.rejectedWith(/without ID/)
+      await expect(executor.patch(2, {x: 2})).to.be.rejectedWith(/unable to find/)
       expect(executorData).to.eql([{id: 1, x: 1}])
     })
 

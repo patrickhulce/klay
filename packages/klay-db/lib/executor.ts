@@ -64,7 +64,6 @@ export class DatabaseExecutor implements IDatabaseExecutor {
 
   public async create(object: object, extras?: IQueryExtras): Promise<object> {
     const primaryKey = getPrimaryKey(this._model, object)
-    assert.ok(!primaryKey, 'cannot create record with existing ID')
     const record = this._createModel.validate(object, {failLoudly: true}).value as object
     await evaluateUniqueConstraints(this, this._model, record, extras)
     await evaluateCustomConstraints(this, this._model, record, DatabaseEvent.Create, extras)
@@ -73,9 +72,9 @@ export class DatabaseExecutor implements IDatabaseExecutor {
 
   public async update(object: object, extras?: IQueryExtras): Promise<object> {
     const primaryKey = getPrimaryKey(this._model, object)
-    assert.ok(primaryKey, 'cannot update record without ID')
     const record = this._updateModel.validate(object, {failLoudly: true}).value as object
-    await evaluateImmutableConstraints(this, this._model, record, extras)
+    const existing = await this.findByIdOrThrow(primaryKey!)
+    await evaluateImmutableConstraints(this, this._model, record, existing, extras)
     await evaluateUniqueConstraints(this, this._model, record, extras)
     await evaluateCustomConstraints(this, this._model, record, DatabaseEvent.Update, extras)
     return this._executor.save(record, extras)

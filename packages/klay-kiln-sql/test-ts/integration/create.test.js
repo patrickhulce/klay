@@ -93,7 +93,7 @@ describe('create objects', () => {
 
     it('should prevent creation of user with preset id', async () => {
       const user = _.assign({}, defaultUser, {id: 15, firstName: 'missing'})
-      await expect(state.models.user.create(user)).to.be.rejectedWith(/existing ID/)
+      await expect(state.models.user.create(user)).to.be.rejectedWith(/expected.*undefined/)
     })
 
     it('should prevent creation of user with invalid values', async () => {

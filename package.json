@@ -4,7 +4,9 @@
 		"packages/*"
 	],
 	"scripts": {
-		"build:docs": "lerna exec ../../scripts/build-docs.sh"
+		"build:watch": "lerna exec --parallel 'tsc -w'",
+		"build:docs": "lerna exec ../../scripts/build-docs.sh",
+		"test:watch": "lerna run --parallel test:watch"
 	},
 	"devDependencies": {
 		"lerna": "^2.9.0",

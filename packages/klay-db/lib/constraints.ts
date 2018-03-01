@@ -118,12 +118,9 @@ export async function evaluateImmutableConstraints(
   executor: IDatabaseExecutor,
   model: IModel,
   record: object,
+  existing: object,
   extras?: IQueryExtras,
 ): Promise<void> {
-  const primaryKey = getPrimaryKey(model, record)!
-  assert.ok(primaryKey, 'cannot find record without ID')
-  const existing = await executor.findById(primaryKey, extras)
-  assert.ok(existing, `cannot find record ID ${primaryKey}`)
   const immutableConstraints = model.spec.db!.constrain.filter(
     constraint => constraint.type === ConstraintType.Immutable,
   )
