@@ -155,7 +155,7 @@ describe('lib/executor.ts', () => {
 
     it('should not update value with immutable errors', async () => {
       executorData = [{id: 1, x: 1, y: 1}]
-      await expect(executor.update({id: 1, x: 1, y: 2})).to.be.rejectedWith(/violates immutable/)
+      await expect(executor.update({id: 1, x: 1, y: 2})).to.be.rejectedWith(/immutable.*violated/)
       expect(executorData).to.eql([{id: 1, x: 1, y: 1}])
     })
 
@@ -210,6 +210,14 @@ describe('lib/executor.ts', () => {
     it('should update values specified', async () => {
       executorData = [{id: 1, x: 1, y: 1}]
       const result = await executor.patch(1, {x: 2})
+      const expected = {id: 1, x: 2, y: 1, z: 2}
+      expect(result).to.eql(expected)
+      expect(executorData).to.eql([expected])
+    })
+
+    it('should update values specified', async () => {
+      executorData = [{id: 1, x: 1, y: 1}]
+      const result = await executor.patch({id: 1, x: 2})
       const expected = {id: 1, x: 2, y: 1, z: 2}
       expect(result).to.eql(expected)
       expect(executorData).to.eql([expected])

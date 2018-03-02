@@ -48,7 +48,7 @@ describe('update objects', () => {
 
     it('should prevent changing immutable properties', async () => {
       const user = _.assign({}, state.userA, {createdAt: new Date()})
-      await expect(state.models.user.update(user)).to.be.rejectedWith(/violates immutable/)
+      await expect(state.models.user.update(user)).to.be.rejectedWith(/immutable.*violated/)
     })
 
     it('should prevent violating a unique constraint', async () => {

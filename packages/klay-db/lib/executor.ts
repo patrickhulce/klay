@@ -89,9 +89,22 @@ export class DatabaseExecutor implements IDatabaseExecutor {
     return existing ? this.update({...existing, ...object}, extras) : this.create(object, extras)
   }
 
-  public async patch(id: PrimaryKey, object: object, extras?: IQueryExtras): Promise<object> {
+  public async patch(
+    idOrPatches: PrimaryKey | object,
+    patchesOrExtras?: object | IQueryExtras,
+    maybeExtras?: IQueryExtras,
+  ): Promise<object> {
+    let id = idOrPatches as PrimaryKey
+    let patches = patchesOrExtras as object
+    let extras = maybeExtras as IQueryExtras
+    if (typeof idOrPatches === 'object') {
+      id = getPrimaryKey(this._model, idOrPatches)!
+      patches = idOrPatches
+      extras = patchesOrExtras as IQueryExtras
+    }
+
     const existing = await this.findById(id, extras)
-    return this.update({...existing, ...object}, extras)
+    return this.update({...existing, ...patches}, extras)
   }
 
   protected async _withAll(
@@ -104,7 +117,8 @@ export class DatabaseExecutor implements IDatabaseExecutor {
     }
 
     return this._executor.transaction(transaction =>
-      DatabaseExecutor._withAllTransaction(onEach, objects, {...extras, transaction}))
+      DatabaseExecutor._withAllTransaction(onEach, objects, {...extras, transaction}),
+    )
   }
 
   public async createAll(objects: object[], extras?: IQueryExtras): Promise<object[]> {

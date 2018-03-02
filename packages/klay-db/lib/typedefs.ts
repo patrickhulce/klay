@@ -197,6 +197,7 @@ export interface IDatabaseExecutor {
   upsert(record: object, extras?: IQueryExtras): Promise<object>
   upsertAll(records: object[], extras?: IQueryExtras): Promise<object[]>
   patch(id: PrimaryKey, patches: object, extras?: IQueryExtras): Promise<object>
+  patch(patches: object, extras?: IQueryExtras): Promise<object>
   destroy(query: IQuery, extras?: IQueryExtras): Promise<void>
   destroyOne(query: IQuery, extras?: IQueryExtras): Promise<void>
 }

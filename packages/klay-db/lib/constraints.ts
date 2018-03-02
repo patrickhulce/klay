@@ -130,7 +130,7 @@ export async function evaluateImmutableConstraints(
       const previous = get(existing, propertyPath)
       const next = get(record, propertyPath)
       const name = propertyPath.join('.')
-      assert.ok(isEqual(previous, next), `${name} violates immutable`)
+      assert.ok(isEqual(previous, next), `immutable constraint ${name} violated`)
     })
   })
 }
