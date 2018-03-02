@@ -13,8 +13,7 @@
     "build:ts": "tsc",
     "build:docs": "typedoc --mode file --out ./docs ./lib",
     "test": "npm run test:lint && npm run test:tslint && npm run test:unit",
-    "test:lint": "lint -t test './test/**/*.js'",
-    "test:tslint": "lint -t typescript './lib/**/*.ts' --ignore './lib/**/*.d.ts'",
+    "test:lint": "lint",
     "test:unit": "mocha --require source-map-support/register 'test/**/*.test.js'",
     "test:coverage": "nyc npm run test:unit",
     "test:watch": "npm run test:unit -- --watch --reporter dot",
@@ -38,7 +37,7 @@
     "lodash": "^4.14.93"
   },
   "devDependencies": {
-    "@patrickhulce/lint": "^2.0.2",
+    "@patrickhulce/lint": "^2.0.3",
     "chai": "^4.1.2",
     "cz-conventional-changelog": "^2.1.0",
     "mocha": "^5.0.0",

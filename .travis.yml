@@ -27,7 +27,6 @@ install:
   - yarn install
 script:
   - yarn build
-  - yarn test:tslint
   - yarn test:lint
   - yarn test:unit
 # TODO: add coveralls, release scripts

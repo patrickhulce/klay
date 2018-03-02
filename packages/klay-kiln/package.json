@@ -7,8 +7,7 @@
   "scripts": {
     "build": "tsc",
     "test": "npm run test:tslint && npm run test:lint && npm run test:unit",
-    "test:lint": "lint -t test 'test/**/*.test.js'",
-    "test:tslint": "lint -t typescript 'lib/**/*.ts' --ignore './lib/**/*.d.ts'",
+    "test:lint": "lint",
     "test:unit": "mocha 'test/**/*.test.js'",
     "test:coverage": "nyc npm run test:unit",
     "test:watch": "npm run test:unit -- --watch --reporter dot",
@@ -47,7 +46,7 @@
     "lodash": "^4.15.0"
   },
   "devDependencies": {
-    "@patrickhulce/lint": "^2.0.2",
+    "@patrickhulce/lint": "^2.0.3",
     "chai": "^3.5.0",
     "cz-conventional-changelog": "^1.2.0",
     "mocha": "^3.0.2",

@@ -7,7 +7,8 @@
     "build": "tsc",
     "test": "npm run test:tslint && npm run test:lint && npm run test:unit",
     "test:db": "KLAY_MYSQL_DB=klay_kiln_sql KLAY_MYSQL_USER=root npm test",
-    "test:lint": "lint -t test './test-ts/**/*.test.js'",
+    "test:lint": "npm run test:jslint && npm run test:tslint",
+    "test:jslint": "lint -t test './test-ts/**/*.test.js'",
     "test:tslint": "lint -t typescript './lib-ts/**/*.ts'",
     "test:unit": "mocha --require source-map-support/register 'test-ts/**/*.test.js'",
     "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**/*.test.js'",
@@ -59,7 +60,7 @@
     "sequelize": "^4.33.4"
   },
   "devDependencies": {
-    "@patrickhulce/lint": "^2.0.2",
+    "@patrickhulce/lint": "^2.0.3",
     "@types/bluebird": "^3.5.20",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
