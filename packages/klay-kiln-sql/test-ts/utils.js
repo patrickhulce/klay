@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const chai = require('chai')
 const chaiPromise = require('chai-as-promised')
 const Kiln = require('klay-kiln').Kiln
@@ -48,7 +49,7 @@ module.exports = {
         const userPromises = fixtureData.users.map(user => state.models.user.create(user))
         const users = await Promise.all(userPromises)
         const photosByUser = _.groupBy(fixtureData.photos, 'ownerId')
-        const photoGroups = _.values(photoGroups)
+        const photoGroups = _.values(photosByUser)
 
         const photoPromises = photoGroups.map((group, index) => {
           const user = users[index]
