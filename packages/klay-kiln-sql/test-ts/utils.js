@@ -26,9 +26,10 @@ module.exports = {
     return {}
   },
   steps: {
-    cleanAndSync(state) {
+    cleanAndSync(state, mutateModels) {
       it('should initialize properly', async () => {
         const klayModels = createModels()
+        if (mutateModels) mutateModels(klayModels)
         const kiln = new Kiln()
         const extension = new SQLExtension(dbOptions)
         const sequelize = extension.sequelize

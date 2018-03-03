@@ -121,6 +121,7 @@ export enum ConstraintType {
 
 export interface ICustomConstraintPayload {
   record: object,
+  existing?: object,
   model: IModel,
   executor: IDatabaseExecutor,
   event: DatabaseEvent,

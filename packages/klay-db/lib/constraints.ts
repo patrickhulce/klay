@@ -139,6 +139,7 @@ export async function evaluateCustomConstraints(
   executor: IDatabaseExecutor,
   model: IModel,
   record: object,
+  existing: object | undefined,
   event: DatabaseEvent,
   extras?: IQueryExtras,
 ): Promise<void> {
@@ -151,7 +152,16 @@ export async function evaluateCustomConstraints(
 
   const customQueries = customConstraints.map(constraint => {
     assert.ok(constraint.meta.evaluate, 'custom constraint missing evaluation function')
-    return constraint.meta!.evaluate!({record, model, executor, extras, event, constraint})
+
+    return constraint.meta!.evaluate!({
+      record,
+      existing,
+      model,
+      executor,
+      extras,
+      event,
+      constraint,
+    })
   })
 
   await Promise.all(customQueries)

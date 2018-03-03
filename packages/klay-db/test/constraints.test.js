@@ -88,12 +88,13 @@ describe('lib/constraints.ts', () => {
       const customA = {type: 'custom', properties: [[]], meta: {evaluate: evaluateA}}
       const customB = {type: 'custom', properties: [[]], meta: {evaluate: evaluateB}}
       const model = {spec: {db: {constrain: [customA, customB]}}}
-      await evaluateCustomConstraints(executor, model, {x: 2}, 'create')
+      await evaluateCustomConstraints(executor, model, {x: 2}, {x: 1}, 'create')
       expect(evaluateA.callCount).to.equal(1)
       expect(evaluateB.callCount).to.equal(1)
 
       const args = evaluateA.firstCall.args[0]
       expect(args.record).to.eql({x: 2})
+      expect(args.existing).to.eql({x: 1})
       expect(args.model).to.equal(model)
       expect(args.executor).to.equal(executor)
       expect(args.event).to.equal('create')

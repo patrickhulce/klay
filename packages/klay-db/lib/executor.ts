@@ -65,7 +65,15 @@ export class DatabaseExecutor implements IDatabaseExecutor {
   public async create(object: object, extras?: IQueryExtras): Promise<object> {
     const record = this._createModel.validate(object, {failLoudly: true}).value as object
     await evaluateUniqueConstraints(this, this._model, record, extras)
-    await evaluateCustomConstraints(this, this._model, record, DatabaseEvent.Create, extras)
+    await evaluateCustomConstraints(
+      this,
+      this._model,
+      record,
+      undefined,
+      DatabaseEvent.Create,
+      extras,
+    )
+
     return this._executor.save(record, extras)
   }
 
@@ -75,7 +83,15 @@ export class DatabaseExecutor implements IDatabaseExecutor {
     const existing = await this.findByIdOrThrow(primaryKey!)
     await evaluateImmutableConstraints(this, this._model, record, existing, extras)
     await evaluateUniqueConstraints(this, this._model, record, extras)
-    await evaluateCustomConstraints(this, this._model, record, DatabaseEvent.Update, extras)
+    await evaluateCustomConstraints(
+      this,
+      this._model,
+      record,
+      existing,
+      DatabaseEvent.Update,
+      extras,
+    )
+
     return this._executor.save(record, extras)
   }
 
