@@ -16,14 +16,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/patrickhulce/klay-db.git"
+    "url": "https://github.com/patrickhulce/klay.git"
   },
   "author": "Patrick Hulce <patrick.hulce@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/patrickhulce/klay-db/issues"
+    "url": "https://github.com/patrickhulce/klay/issues"
   },
-  "homepage": "https://github.com/patrickhulce/klay-db#readme",
+  "homepage": "https://github.com/patrickhulce/klay/tree/master/packages/klay-db#readme",
   "config": {
     "tslint": {
       "rules": {

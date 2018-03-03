@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/patrickhulce/klay-kiln-sql.git"
+    "url": "https://github.com/patrickhulce/klay.git"
   },
   "author": "Patrick Hulce <patrick.hulce@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/patrickhulce/klay-kiln-sql/issues"
+    "url": "https://github.com/patrickhulce/klay/issues"
   },
-  "homepage": "https://github.com/patrickhulce/klay-kiln-sql#readme",
+  "homepage": "https://github.com/patrickhulce/klay/tree/master/packages/klay-kiln-sql#readme",
   "config": {
     "tslint": {
       "rules": {
