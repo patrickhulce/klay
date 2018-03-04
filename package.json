@@ -9,8 +9,8 @@
 		"build:docs": "lerna exec ../../scripts/build-docs.sh",
 		"test": "npm run test:lint && npm run test:unit",
 		"test:lint": "lerna run test:lint --concurrency 1",
-		"test:unit": "lerna run test:unit",
-		"test:watch": "lerna run --parallel test:watch"
+		"test:unit": "mocha --exit --require source-map-support/register './packages/*/test/**/*.test.js'",
+		"test:watch": "npm run test:unit -- --watch --reporter dot"
 	},
 	"devDependencies": {
 		"lerna": "^2.9.0",
