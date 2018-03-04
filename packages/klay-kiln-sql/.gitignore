@@ -2,6 +2,6 @@ node_modules/
 coverage/
 npm-debug.log
 
-lib-ts/**/*.js
-lib-ts/**/*.js.map
-lib-ts/**/*.d.ts
+lib/**/*.js
+lib/**/*.js.map
+lib/**/*.d.ts

@@ -3,7 +3,7 @@ const Sequelize = require('sequelize')
 const Extension = require('../dist/extension').SQLExtension
 const utils = require('./utils')
 
-describe('lib-ts/extension.ts', () => {
+describe('lib/extension.ts', () => {
   describe('.sync', () => {
     it('should sync the database', async () => {
       const extension = new Extension(utils.dbOptions)
