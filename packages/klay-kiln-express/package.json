@@ -1,14 +1,17 @@
 {
   "name": "klay-kiln-express",
+  "version": "2.4.0",
   "description": "Kiln extension to generate express middleware from klay models.",
-  "main": "./lib/index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
     "test": "npm run test:lint && npm run test:unit",
     "test:lint": "lint",
-    "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
+    "test:unit": "mocha --reporter spec 'test/**/*.test.js'",
     "test:db": "KLAY_MYSQL_DB=klay_kiln_express KLAY_MYSQL_USER=root npm test",
-    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**/*.test.js'",
-    "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'"
+    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- 'test/**/*.test.js'",
+    "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'"
   },
   "repository": {
     "type": "git",
@@ -29,10 +32,12 @@
     "bluebird": "^3.5.1",
     "express": "^4.16.2",
     "klay": "^2.4.0",
+    "klay-kiln": "^2.4.0",
     "lodash": "^4.16.2"
   },
   "devDependencies": {
     "@patrickhulce/lint": "^2.0.3",
+    "@types/express": "^4.11.1",
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
     "cz-conventional-changelog": "^1.2.0",
@@ -40,6 +45,8 @@
     "mysql": "^2.11.1",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
-    "supertest": "patrickhulce/supertest"
+    "supertest": "patrickhulce/supertest",
+    "tslint": "^5.9.1",
+    "typescript": "^2.7.2"
   }
 }
