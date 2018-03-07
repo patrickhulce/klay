@@ -39,9 +39,13 @@ export enum ValidateIn {
   Body = 'body',
 }
 
-export interface IAnontatedHandler extends Handler {
-  model?: IModel
-  in?: ValidateIn
+export interface IModelSet {
+  queryModel?: IModel
+  paramsModel?: IModel
+  bodyModel?: IModel
+}
+
+export interface IAnontatedHandler extends Handler, IModelSet {
 }
 
 export interface IAction {
@@ -50,7 +54,7 @@ export interface IAction {
   queryModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   paramsModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   bodyModel(model: IKilnModel, options: IActionOptions): IModel | undefined
-  handler(model: IKilnModel, options: IActionOptions, kiln: IKiln): Handler
+  handler(model: IKilnModel, options: IActionOptions, kiln: IKiln): IAnontatedHandler
 }
 
 export interface IActionOptions {
@@ -59,9 +63,9 @@ export interface IActionOptions {
 }
 
 export interface IAdditionalMiddleware {
-  preValidation: Handler | Handler[]
-  postValidation: Handler | Handler[]
-  postResponse: Handler | Handler[]
+  preValidation?: IAnontatedHandler | IAnontatedHandler[]
+  postValidation?: IAnontatedHandler | IAnontatedHandler[]
+  postResponse?: IAnontatedHandler | IAnontatedHandler[]
 }
 
 export type ValidationErrorHandler = (
@@ -77,17 +81,12 @@ export interface IValidationMiddlewareOptions {
   handleError?: ValidationErrorHandler
 }
 
-export interface IRouteInput {
-  queryModel?: IModel
-  paramsModel?: IModel
-  bodyModel?: IModel
+export interface IRouteInput extends IModelSet {
+  handler: IAnontatedHandler
   middleware?: IAdditionalMiddleware
 }
 
-export interface IRoute {
-  queryModel?: IModel
-  paramsModel?: IModel
-  bodyModel?: IModel
+export interface IRoute extends IModelSet {
   middleware: IAnontatedHandler[]
 }
 
