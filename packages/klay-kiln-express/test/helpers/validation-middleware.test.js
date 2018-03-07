@@ -1,8 +1,9 @@
 const expect = require('chai').expect
 const sinon = require('sinon')
 const ModelContext = require('klay').ModelContext
-const createMiddleware = require('../../dist/helpers/validation-middleware')
-  .createValidationMiddleware
+const middlewareModule = require('../../dist/helpers/validation-middleware')
+
+const createMiddleware = middlewareModule.createValidationMiddleware
 
 describe('lib/helpers/validation-middleware.ts', () => {
   let context, model, next
@@ -37,6 +38,22 @@ describe('lib/helpers/validation-middleware.ts', () => {
 
   it('should validate against model', () => {
     const middleware = createMiddleware(model)
+    const req = {body: {id: 'one'}}
+    const res = {}
+
+    middleware(req, res, next)
+    expect(next.callCount).to.equal(1)
+    const err = next.firstCall.args[0]
+    expect(err.value).to.eql({id: 'one'})
+    expect(err.errors).to.have.length(1)
+    expect(err.errors[0].path).to.eql(['id'])
+    expect(err.errors[0].message).to.match(/expected.*number/)
+  })
+
+  it('should validate against model with custom resolver', () => {
+    const middleware = createMiddleware(model, 'body', {
+      handleError: middlewareModule.defaultJSONHandler,
+    })
     const req = {body: {id: 'one'}}
     const res = {
       json: sinon.stub(),

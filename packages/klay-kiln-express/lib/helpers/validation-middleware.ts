@@ -1,5 +1,5 @@
 /* tslint:disable no-unsafe-any */
-import {Request, Response} from 'express'
+import {NextFunction, Request, Response} from 'express'
 import {IModel, IValidationResult} from 'klay'
 import {
   IAnontatedHandler,
@@ -8,7 +8,16 @@ import {
   ValidationErrorHandler,
 } from '../typedefs'
 
-function defaultErrorHandler(result: IValidationResult, req: Request, res: Response): void {
+function defaultErrorHandler(
+  result: IValidationResult,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  next(result.toError())
+}
+
+export function defaultJSONHandler(result: IValidationResult, req: Request, res: Response): void {
   res.status(400)
   res.json(result.toJSON())
 }
@@ -18,10 +27,8 @@ export function createValidationMiddleware(
   pathInReq: ValidateIn = ValidateIn.Body,
   options: IValidationMiddlewareOptions = {},
 ): IAnontatedHandler {
-  const errorHandler = options.handleError || defaultErrorHandler
-
-  // tslint:disable-next-line
-  return function(req, res, next) {
+  return function(req: Request, res: Response, next: NextFunction): void {
+    const errorHandler = options.handleError || defaultErrorHandler
     const sourceData = req[pathInReq]
     const validated = req.validated || {}
     const result = model.validate(sourceData)
