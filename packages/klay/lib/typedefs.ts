@@ -112,6 +112,14 @@ export interface IValidationResultError {
   details?: any
 }
 
+export interface IValidationError {
+  isKlayValidationError: boolean
+  message: string
+  value: any
+  conforms: boolean
+  errors: IValidationResultError[]
+}
+
 export interface IValidationResultJSON {
   value: any
   conforms: boolean
@@ -134,6 +142,7 @@ export interface IValidationResult extends IIntermediateValidationResult {
   assert(value: boolean, message: string): IValidationResult
   clone(): IValidationResult
   toJSON(): IValidationResultJSON
+  toError(): IValidationError | undefined
 }
 
 export enum ModelType {

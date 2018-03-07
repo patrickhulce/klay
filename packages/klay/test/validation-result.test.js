@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const ValidationResult = require('../dist/validation-result').ValidationResult
-const ValidationError = require('../dist/errors/validation-error').ValidationError
+const AssertionError = require('../dist/errors/assertion-error').AssertionError
 
 const defaults = {
   value: undefined,
@@ -55,7 +55,7 @@ describe('lib/validation-result.ts', () => {
     it('should throw validation error', () => {
       const result = create({})
       expect(result.assert(true, 'is fine')).to.equal(result)
-      expect(() => result.assert(false, '')).to.throw(ValidationError)
+      expect(() => result.assert(false, '')).to.throw(AssertionError)
       expect(() => result.assert(false, 'hello')).to.throw('hello')
     })
   })

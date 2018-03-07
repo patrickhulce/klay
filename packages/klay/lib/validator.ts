@@ -1,5 +1,5 @@
 import {cloneDeep, get, omit, set} from 'lodash'
-import {assertions as validationAssertions, ValidationError} from './errors/validation-error'
+import {AssertionError, assertions} from './errors/assertion-error'
 import {
   ALL_FORMATS,
   FALLBACK_FORMAT,
@@ -50,11 +50,11 @@ export class Validator {
       }
     } catch (err) {
       // tslint:disable-next-line
-      if (err.name !== 'ValidationError') {
+      if (err.name !== 'AssertionError') {
         throw err
       }
 
-      return validationResult.markAsErrored(err as ValidationError)
+      return validationResult.markAsErrored(err as AssertionError)
     }
   }
 
@@ -82,7 +82,7 @@ export class Validator {
     const {value} = validationResult
 
     if (this._spec.required) {
-      validationAssertions.defined(value)
+      assertions.defined(value)
     }
 
     const defaultValue = this._spec.default
@@ -92,7 +92,7 @@ export class Validator {
     validationResult.setValue(finalValue)
 
     if (!this._spec.nullable) {
-      validationAssertions.nonNull(finalValue)
+      assertions.nonNull(finalValue)
     }
 
     return validationResult
@@ -107,7 +107,7 @@ export class Validator {
 
     const type = typeof this._spec.enum[0]
     if (type === 'string' || type === 'number') {
-      validationAssertions.oneOf(validationResult.value, this._spec.enum)
+      assertions.oneOf(validationResult.value, this._spec.enum)
       return validationResult
     }
 
@@ -205,8 +205,8 @@ export class Validator {
       if (typeof validation === 'function') {
         validation(validationResult, this._spec)
       } else {
-        validationAssertions.typeof(validationResult.value, 'string')
-        validationAssertions.match(validationResult.value, validation)
+        assertions.typeof(validationResult.value, 'string')
+        assertions.match(validationResult.value, validation)
       }
     })
 
@@ -235,7 +235,7 @@ export class Validator {
   public validate(value: any, options?: IValidateOptions): IValidationResult {
     const result = this._validate(ValidationResult.fromValue(value, cloneDeep(value), []))
     if (!result.conforms && options && options.failLoudly) {
-      throw ValidationError.fromResultError(result.errors[0])
+      throw result.toError()
     }
 
     return result

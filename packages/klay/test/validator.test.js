@@ -2,7 +2,10 @@ const _ = require('lodash')
 const expect = require('chai').expect
 const Model = require('../dist/model').Model
 const Validator = require('../dist/validator').Validator
-const assert = require('../dist/errors/validation-error').assertions
+const assertionErrorModule = require('../dist/errors/assertion-error')
+
+const assert = assertionErrorModule.assertions
+const AssertionError = assertionErrorModule.AssertionError
 
 describe('lib/validator.ts', () => {
   const defaultOptions = {
@@ -36,7 +39,18 @@ describe('lib/validator.ts', () => {
 
     it('should fail loudly when told to', () => {
       model = model.type('number')
-      expect(() => validate('not a number', {failLoudly: true})).to.throw(/expected.*number/)
+
+      try {
+        validate('not a number', {failLoudly: true})
+        expect(false).to.equal(true)
+      } catch (err) {
+        expect(err).to.have.property('value', 'not a number')
+        expect(err).to.have.property('message', 'value failed validation')
+        expect(err).to.have.property('errors')
+        expect(err.errors).to.have.length(1)
+        expect(err.errors[0].message).to.match(/expected.*number/)
+        expect(err.errors[0].error).to.be.instanceOf(AssertionError)
+      }
     })
 
     context('required', () => {

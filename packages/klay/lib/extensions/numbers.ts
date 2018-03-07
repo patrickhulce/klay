@@ -1,5 +1,5 @@
 import {values} from 'lodash'
-import {assertions as validationAssertions} from '../errors/validation-error'
+import {assertions} from '../errors/assertion-error'
 import {
   IValidatorFormats,
   IValidatorValidations,
@@ -21,11 +21,11 @@ export const validations: IValidatorValidations = {
   [ModelType.Number]: {
     [NumberFormat.Integer]: [
       result =>
-        validationAssertions.ok(Number.isInteger(result.value), 'expected value to be an integer'),
+        assertions.ok(Number.isInteger(result.value), 'expected value to be an integer'),
     ],
     [NumberFormat.Finite]: [
       result =>
-        validationAssertions.ok(Number.isFinite(result.value), 'expected value to be finite'),
+        assertions.ok(Number.isFinite(result.value), 'expected value to be finite'),
     ],
   },
 }

@@ -1,5 +1,5 @@
 import {values} from 'lodash'
-import {assertions} from '../errors/validation-error'
+import {assertions} from '../errors/assertion-error'
 import {
   FALLBACK_FORMAT,
   IValidatorCoerce,

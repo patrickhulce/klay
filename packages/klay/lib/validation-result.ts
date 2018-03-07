@@ -1,8 +1,10 @@
 import {assign, cloneDeep, difference, every, flatten, omit, pick} from 'lodash'
-import {assertions} from './errors/model-error'
-import {assertions as validationAssertions, ValidationError} from './errors/validation-error'
+import {AssertionError, assertions} from './errors/assertion-error'
+import {assertions as modelAssertions} from './errors/model-error'
+import {ValidationError} from './errors/validation-error'
 import {
   IIntermediateValidationResult,
+  IValidationError,
   IValidationResult,
   IValidationResultError,
   IValidationResultJSON,
@@ -19,7 +21,11 @@ export class ValidationResult implements IValidationResult {
   public pathToValue: string[]
 
   public constructor(result: IIntermediateValidationResult) {
-    assertions.ok(ValidationResult.isLike(result), 'coerce functions must return ValidationResults')
+    modelAssertions.ok(
+      ValidationResult.isLike(result),
+      'coerce functions must return ValidationResults',
+    )
+
     assign(this, pick(result, KEYS))
     this.value = cloneDeep(result.value)
     this.rootValue = result.rootValue
@@ -49,11 +55,11 @@ export class ValidationResult implements IValidationResult {
     return this
   }
 
-  public markAsErrored(error: ValidationError | Error): ValidationResult {
-    const validationError = error as ValidationError
+  public markAsErrored(error: AssertionError | Error): ValidationResult {
+    const assertionError = error as AssertionError
     const errorResult =
       typeof (error as any).asValidationResultError === 'function'
-        ? validationError.asValidationResultError(this)
+        ? assertionError.asValidationResultError(this)
         : {message: error.message, error}
     this.conforms = false
     this.isFinished = true
@@ -62,7 +68,7 @@ export class ValidationResult implements IValidationResult {
   }
 
   public assert(value: boolean, message: string): ValidationResult {
-    validationAssertions.ok(value, message)
+    assertions.ok(value, message)
     return this
   }
 
@@ -78,6 +84,12 @@ export class ValidationResult implements IValidationResult {
     const json = pick(this, ['value', 'conforms', 'errors'])
     json.errors = json.errors.map(err => omit(err, ['error']) as IValidationResultError)
     return json
+  }
+
+  public toError(): IValidationError | undefined {
+    if (!this.conforms) {
+      return new ValidationError(this)
+    }
   }
 
   public static is(value: any): boolean {
@@ -116,7 +128,7 @@ export class ValidationResult implements IValidationResult {
     root: IValidationResult,
     validationResults: IValidationResult[],
   ): IValidationResult {
-    assertions.ok(!root.isFinished, 'cannot coalesce on a finished ValidationResult')
+    modelAssertions.ok(!root.isFinished, 'cannot coalesce on a finished ValidationResult')
     const conforms = every(validationResults, 'conforms')
     const errors = flatten(validationResults.map(value => value.errors))
 
@@ -124,21 +136,24 @@ export class ValidationResult implements IValidationResult {
     if (Array.isArray(value)) {
       validationResults.forEach(result => {
         const remainingKeys = result.pathToValue.slice(root.pathToValue.length)
-        assertions.ok(remainingKeys.length === 1, `invalid child pathToValue: ${remainingKeys}`)
+        modelAssertions.ok(
+          remainingKeys.length === 1,
+          `invalid child pathToValue: ${remainingKeys}`,
+        )
         const key = Number(remainingKeys[0])
-        assertions.ok(Number.isInteger(key), `invalid child pathToValue: ${key}`)
+        modelAssertions.ok(Number.isInteger(key), `invalid child pathToValue: ${key}`)
         value[key] = result.value
       })
     } else if (typeof value === 'object' && value) {
       validationResults.forEach(result => {
         const remainingKeys = result.pathToValue.slice(root.pathToValue.length)
-        assertions.ok(remainingKeys.length === 1, 'invalid child pathToValue')
+        modelAssertions.ok(remainingKeys.length === 1, 'invalid child pathToValue')
         const key = remainingKeys[0]
         value[key] = result.value
       })
     } else {
       validationResults.forEach(result => {
-        assertions.ok(
+        modelAssertions.ok(
           result.pathToValue.length === root.pathToValue.length,
           'invalid child pathToValue',
         )

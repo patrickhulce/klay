@@ -1,31 +1,17 @@
-import {assign} from 'lodash'
-import {IValidationResult, IValidationResultError} from '../typedefs'
-import {Assertions} from './assertions'
+import {IValidationError, IValidationResult, IValidationResultError} from '../typedefs'
 
-export class ValidationError extends Error {
-  public constructor(message: string, extras?: object) {
-    super(message)
+export class ValidationError extends Error implements IValidationError {
+  public readonly isKlayValidationError: boolean
+  public readonly value: any
+  public readonly conforms: boolean
+  public readonly errors: IValidationResultError[]
+
+  public constructor(result: IValidationResult) {
+    super('value failed validation')
     this.name = 'ValidationError'
-    assign(this, extras)
-  }
-
-  public asValidationResultError(validationResult?: IValidationResult): IValidationResultError {
-    const resultError: IValidationResultError = {message: this.message}
-    if (validationResult && validationResult.pathToValue.length) {
-      resultError.path = validationResult.pathToValue
-    }
-
-    resultError.error = this
-    return resultError
-  }
-
-  public static fromResultError(resultError: IValidationResultError): ValidationError {
-    if (resultError.error) {
-      return resultError.error as ValidationError
-    }
-
-    return new ValidationError(resultError.message, resultError)
+    this.isKlayValidationError = true
+    this.value = result.value
+    this.conforms = false
+    this.errors = result.errors
   }
 }
-
-export const assertions = new Assertions(msg => new ValidationError(msg))
