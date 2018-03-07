@@ -90,12 +90,12 @@ describe('create objects', () => {
 
     it('should prevent creation of user with preset id', async () => {
       const user = _.assign({}, defaultUser, {id: 15, firstName: 'missing'})
-      await expect(state.models.user.create(user)).to.be.rejectedWith(/expected.*undefined/)
+      await expect(state.models.user.create(user)).to.be.rejectedWith('value failed validation')
     })
 
     it('should prevent creation of user with invalid values', async () => {
       const user = _.assign({}, defaultUser, {age: 'what', firstName: 'missing'})
-      await expect(state.models.user.create(user)).to.be.rejectedWith(/expected.*number/)
+      await expect(state.models.user.create(user)).to.be.rejectedWith('value failed validation')
     })
 
     it('should prevent creation of users when one is invalid', async () => {

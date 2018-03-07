@@ -104,12 +104,12 @@ describe('lib/executor.ts', () => {
     })
 
     it('should not create value with primary key', async () => {
-      await expect(executor.create({id: 1, x: 1})).to.be.rejectedWith(/expected.*undefined/)
+      await expect(executor.create({id: 1, x: 1})).to.be.rejectedWith('value failed validation')
       expect(executorData).to.eql([])
     })
 
     it('should not create value with validation errors', async () => {
-      await expect(executor.create({})).to.be.rejectedWith(/be defined/)
+      await expect(executor.create({})).to.be.rejectedWith('value failed validation')
       expect(executorData).to.eql([])
     })
 
@@ -149,7 +149,7 @@ describe('lib/executor.ts', () => {
 
     it('should not update value with validation errors', async () => {
       executorData = [{id: 1, x: 2, y: 1}]
-      await expect(executor.update({id: 1, y: 1})).to.be.rejectedWith(/be defined/)
+      await expect(executor.update({id: 1, y: 1})).to.be.rejectedWith('value failed validation')
       expect(executorData).to.eql([{id: 1, x: 2, y: 1}])
     })
 
