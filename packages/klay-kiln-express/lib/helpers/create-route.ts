@@ -7,7 +7,7 @@ import {
   IRouteInput,
   ValidateIn,
 } from '../typedefs'
-import {createValidationMiddleware} from './validation-middleware'
+import {createValidationMiddleware} from './create-middleware'
 
 function extendMiddleware(
   base: IAnontatedHandler[],
