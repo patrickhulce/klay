@@ -18,6 +18,10 @@ export class ModelContext {
 
   private constructor() {
     this.reset()
+
+    if (arguments.length) {
+      throw new Error('ModelContext constructor does not accept arguments')
+    }
   }
 
   public reset(): void {
