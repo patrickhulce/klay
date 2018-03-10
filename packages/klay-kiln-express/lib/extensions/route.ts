@@ -19,12 +19,13 @@ export class RouteExtension implements IKilnExtension<IRoute> {
 
   // tslint:disable-next-line
   public build(kilnModel: IKilnModel, rawOptions: object, kiln: IKiln): IRoute {
-    const options = rawOptions as IRouteOptions
+    let options = rawOptions as IRouteOptions
     const action = actions.find(action => action.type === options.type)
     if (!action) {
       throw new Error(`Could not find action: ${options.type}`)
     }
 
+    options = {...options, ...action.defaultOptions}
     const executor = kiln.build(kilnModel.name, options.databaseExtension!) as DatabaseExecutor
     return createRoute({
       queryModel: action.queryModel(kilnModel, options),

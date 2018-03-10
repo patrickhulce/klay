@@ -2,7 +2,7 @@ import {NextFunction, Request, Response} from 'express'
 import {IModel} from 'klay'
 import {DatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
-import { updateifyModel } from '../helpers/transform-model'
+import {updateifyModel, paramifyModel} from '../helpers/transform-model'
 import {ActionType, IAction, IActionOptions, IAnontatedHandler} from '../typedefs'
 import {defaultAction} from './action'
 
@@ -11,7 +11,10 @@ export const updateAction: IAction = {
   type: ActionType.Update,
   defaultOptions: {
     byId: true,
-    idParamName: 'id',
+    idParamName: undefined,
+  },
+  paramsModel(kilnModel: IKilnModel, options: IActionOptions): IModel | undefined {
+    return options.byId ? paramifyModel(kilnModel.model, options) : undefined
   },
   bodyModel(kilnModel: IKilnModel, options: IActionOptions): IModel {
     return updateifyModel(kilnModel.model)

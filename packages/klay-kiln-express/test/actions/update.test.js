@@ -23,13 +23,14 @@ describe('lib/actions/update.ts', () => {
 
   it('should call update', async () => {
     const route = kiln.build('user', 'express-route', {type: 'update'})
+    const id = uuid()
     const payload = {
-      id: uuid(),
+      id,
       ...utils.defaultUser,
       createdAt: new Date(),
     }
 
-    const req = {body: payload}
+    const req = {params: {id}, body: payload}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).to.have.nested.property('validated.body')
     expect(req).to.have.nested.property('validated.body.updatedAt', undefined)
@@ -38,12 +39,23 @@ describe('lib/actions/update.ts', () => {
     expect(updateStub.callCount).to.equal(1)
   })
 
-  it('should validate body', async () => {
+  it('should validate params', async () => {
     const route = kiln.build('user', 'express-route', {type: 'update'})
-    const req = {body: {...utils.defaultUser, age: false}}
+    const req = {params: {id: 'foo'}, body: {...utils.defaultUser, id: uuid()}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(next.firstCall.args[0]).to.be.instanceof(Error)
-    expect(next.firstCall.args[0].value).to.include({age: false})
+    expect(next.firstCall.args[0].value).to.include({id: 'foo'})
+    expect(res.promise).to.equal(undefined)
+    expect(nextCalledAll).to.equal(false)
+    expect(updateStub.callCount).to.equal(0)
+  })
+
+  it('should validate body', async () => {
+    const route = kiln.build('user', 'express-route', {type: 'update'})
+    const req = {params: {id: uuid()}, body: {...utils.defaultUser, age: false}}
+    const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
+    expect(next.secondCall.args[0]).to.be.instanceof(Error)
+    expect(next.secondCall.args[0].value).to.include({age: false})
     expect(res.promise).to.equal(undefined)
     expect(nextCalledAll).to.equal(false)
     expect(updateStub.callCount).to.equal(0)
