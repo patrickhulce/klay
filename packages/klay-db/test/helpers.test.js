@@ -1,5 +1,4 @@
 const expect = require('chai').expect
-const _ = require('lodash')
 const ModelContext = require('klay').ModelContext
 const helpers = require('../dist/helpers')
 const DatabaseExtension = require('../dist/extension').DatabaseExtension
@@ -113,6 +112,7 @@ describe('lib/helpers.ts', () => {
       const context = ModelContext.create()
         .use(extension)
         .use({defaults: {required: true}})
+      // eslint-disable-next-line no-mixed-operators
       const checksum = value => value.age * 5 + value.name
       const nested = {prop: context.string().automanage({supplyWith: 'uuid', event: '*'})}
 
