@@ -77,9 +77,15 @@ export interface IQuerifyOptions {
   allowQueryByRange?: boolean | string[][]
 }
 
-export interface IActionOptions extends IValidationMiddlewareOptions, IQuerifyOptions {
-  byId?: boolean
+export interface IParamifyOptions {
   idParamName?: string
+}
+
+export interface IActionOptions
+  extends IValidationMiddlewareOptions,
+    IQuerifyOptions,
+    IParamifyOptions {
+  byId?: boolean
 }
 
 export interface IRouteOptions extends IActionOptions {

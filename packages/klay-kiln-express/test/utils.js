@@ -10,37 +10,27 @@ function createModel(context) {
       .uuid()
       .automanage({supplyWith: 'uuid', event: 'create'})
       .constrain({type: 'immutable'}),
-    lastVisit: context.date(),
+    lastVisit: context.date().optional(),
   }
 
   const user = {
     id: context.uuidID(),
-    age: context.integer().required(),
-    isAdmin: context.boolean().required(),
+    age: context.integer(),
+    isAdmin: context.boolean(),
     email: context
       .email()
-      .required()
       .max(250)
       .constrain({type: 'unique'}),
-    password: context
-      .string()
-      .required()
-      .max(32),
-    firstName: context
-      .string()
-      .required()
-      .max(100),
-    lastName: context
-      .string()
-      .required()
-      .max(100),
+    password: context.string().max(32),
+    firstName: context.string().max(100),
+    lastName: context.string().max(100),
     metadata: context
       .object()
+      .optional()
       .default(null)
       .nullable(),
     tracking: context
       .object()
-      .required()
       .children(tracking)
       .strict(),
     createdAt: context.createdAt(),
@@ -53,6 +43,7 @@ function createModel(context) {
 function state() {
   const kiln = new Kiln()
   const context = new ModelContext()
+  context.use({defaults: {strict: true, required: true}})
   context.use(new DatabaseExtension())
 
   const model = createModel(context)

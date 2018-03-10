@@ -1,6 +1,7 @@
-import {IModel} from 'klay'
-import {ConstraintType, DatabaseEvent, eventMatches, findModel} from 'klay-db'
+import {IModel, IModelChild, ModelType} from 'klay'
+import {ConstraintType, DatabaseEvent, eventMatches, findModel, getPrimaryKeyField} from 'klay-db'
 import {flatten} from 'lodash'
+import {IParamifyOptions} from '../typedefs'
 
 function omitAll(rootModel: IModel, paths: string[][]): IModel {
   for (const path of paths) {
@@ -11,6 +12,16 @@ function omitAll(rootModel: IModel, paths: string[][]): IModel {
   }
 
   return rootModel
+}
+
+export function paramifyModel(original: IModel, options?: IParamifyOptions): IModel {
+  const model = original.clone()
+  const pkField = getPrimaryKeyField(original)
+  const paramName = (options && options.idParamName) || pkField
+  const children = model.spec.children as IModelChild[]
+  const pkModel = children.find(child => child.path === pkField)!.model
+  model.spec = {}
+  return model.type(ModelType.Object).children({[paramName]: pkModel})
 }
 
 export function creatifyModel(original: IModel): IModel {
@@ -32,5 +43,12 @@ export function updateifyModel(original: IModel): IModel {
   const immutableProperties = constraints
     .filter(item => item.type === ConstraintType.Immutable)
     .map(item => item.properties)
-  return omitAll(model, [...automanagedPaths, ...flatten(immutableProperties)])
+
+  const mergedPaths = [...automanagedPaths, ...flatten(immutableProperties)]
+  for (const path of mergedPaths) {
+    const childModel = findModel(model, path)
+    childModel.optional()
+  }
+
+  return model
 }

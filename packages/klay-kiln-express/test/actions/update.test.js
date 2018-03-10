@@ -23,10 +23,16 @@ describe('lib/actions/update.ts', () => {
 
   it('should call update', async () => {
     const route = kiln.build('user', 'express-route', {type: 'update'})
-    const req = {body: {...utils.defaultUser, id: uuid()}}
+    const payload = {
+      id: uuid(),
+      ...utils.defaultUser,
+      createdAt: new Date(),
+    }
+
+    const req = {body: payload}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).to.have.nested.property('validated.body')
-    expect(req).to.not.have.nested.property('validated.body.updatedAt')
+    expect(req).to.have.nested.property('validated.body.updatedAt', undefined)
     expect(await res.promise).to.eql(req.validated.body)
     expect(nextCalledAll).to.equal(true)
     expect(updateStub.callCount).to.equal(1)
