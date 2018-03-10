@@ -2,7 +2,7 @@ import {NextFunction, Request, Response} from 'express'
 import {IModel} from 'klay'
 import {DatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
-import {updateifyModel, paramifyModel} from '../helpers/transform-model'
+import {paramifyModel, updateifyModel} from '../helpers/transform-model'
 import {ActionType, IAction, IActionOptions, IAnontatedHandler} from '../typedefs'
 import {defaultAction} from './action'
 
