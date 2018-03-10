@@ -51,20 +51,20 @@ describe('lib/kiln.ts', () => {
 
     it('should add an extension to specific model', () => {
       kiln.addExtension({modelName: 'user', extension: extensionApi})
-      expect(get()).to.eql({extension: extensionApi, options: undefined})
+      expect(get()).to.eql({extension: extensionApi, defaultOptions: undefined})
     })
 
     it('should add a global extension', () => {
       kiln.addModel({name: 'other', model})
       kiln.addExtension({extension: extensionApi})
-      expect(get(0)).to.eql({extension: extensionApi, options: undefined})
-      expect(get(1)).to.eql({extension: extensionApi, options: undefined})
+      expect(get(0)).to.eql({extension: extensionApi, defaultOptions: undefined})
+      expect(get(1)).to.eql({extension: extensionApi, defaultOptions: undefined})
     })
 
     it('should not mutate extension options', () => {
-      const options = {y: 1}
-      kiln.addExtension({extension: extensionApi, options})
-      expect(get()).to.eql({extension: extensionApi, options: {y: 1}})
+      const defaultOptions = {y: 1}
+      kiln.addExtension({extension: extensionApi, defaultOptions})
+      expect(get()).to.eql({extension: extensionApi, defaultOptions: {y: 1}})
       expect(extensionApi.defaultOptions).to.eql({})
     })
   })
@@ -125,9 +125,11 @@ describe('lib/kiln.ts', () => {
         },
       }
 
-      kiln.addExtension({extension, options: {y: 1}})
+      kiln.addExtension({extension, defaultOptions: {y: 1}})
       expect(kiln.build('user', 'A')).to.eql({x: 1, y: 1})
+      expect(kiln.build('user', 'A', {z: 1})).to.eql({x: 1, y: 1, z: 1})
       expect(kiln.build('user', extension)).to.eql({x: 1})
+      expect(kiln.build('user', extension, {z: 1})).to.eql({x: 1, z: 1})
     })
 
     it('should cache results of already baked extensions', () => {
