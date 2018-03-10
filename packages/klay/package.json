@@ -12,7 +12,7 @@
     "build": "npm run build:ts",
     "build:ts": "tsc",
     "build:docs": "typedoc --mode file --out ./docs ./lib",
-    "test": "npm run test:lint && npm run test:tslint && npm run test:unit",
+    "test": "npm run test:lint && npm run test:unit",
     "test:lint": "lint",
     "test:unit": "mocha --require source-map-support/register 'test/**/*.test.js'",
     "test:coverage": "nyc npm run test:unit",

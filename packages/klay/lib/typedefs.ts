@@ -118,6 +118,8 @@ export interface IValidationError {
   value: any
   conforms: boolean
   errors: IValidationResultError[]
+
+  toJSON(): IValidationResultJSON
 }
 
 export interface IValidationResultJSON {
