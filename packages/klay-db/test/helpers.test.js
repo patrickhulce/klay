@@ -113,7 +113,9 @@ describe('lib/helpers.ts', () => {
       const context = ModelContext.create()
         .use(extension)
         .use({defaults: {required: true}})
-      const checksum = value => (value.age * 5) + value.name
+      const checksum = value => value.age * 5 + value.name
+      const nested = {prop: context.string().automanage({supplyWith: 'uuid', event: '*'})}
+
       model = context.object().children({
         id: context
           .integer()
@@ -122,6 +124,11 @@ describe('lib/helpers.ts', () => {
         email: context.email().constrain({type: 'unique'}),
         age: context.integer(),
         name: context.string(),
+        nested: context
+          .object()
+          .children(nested)
+          .optional()
+          .default({}),
         checksum: context
           .string()
           .automanage({
@@ -145,18 +152,24 @@ describe('lib/helpers.ts', () => {
             phase: 'parse',
             supplyWith: value => value.setValue(false),
           }),
-        createdAt: context.date().automanage({
-          property: [],
-          event: 'create',
-          phase: 'parse',
-          supplyWith: 'iso-timestamp',
-        }).optional(),
-        updatedAt: context.date().automanage({
-          property: [],
-          event: '*',
-          phase: 'parse',
-          supplyWith: 'iso-timestamp',
-        }).optional(),
+        createdAt: context
+          .date()
+          .automanage({
+            property: [],
+            event: 'create',
+            phase: 'parse',
+            supplyWith: 'iso-timestamp',
+          })
+          .optional(),
+        updatedAt: context
+          .date()
+          .automanage({
+            property: [],
+            event: '*',
+            phase: 'parse',
+            supplyWith: 'iso-timestamp',
+          })
+          .optional(),
       })
     })
 
@@ -172,13 +185,13 @@ describe('lib/helpers.ts', () => {
 
       expect(results.value.createdAt).to.be.instanceof(Date)
       expect(results.value.updatedAt).to.be.instanceof(Date)
+      expect(results.value.nested.prop).to.be.a('string')
 
-      const value = _.omit(results.value, ['createdAt', 'updatedAt'])
-      expect(value).to.eql({
+      expect(results.value).to.include({
         id: undefined, // should be filled by database
         name: 'John',
         age: 17,
-        email: 'john@example.com', // invalid
+        email: 'john@example.com',
         checksum: '85John',
         pristine: true,
       })
@@ -191,15 +204,16 @@ describe('lib/helpers.ts', () => {
           id: 12,
           name: 'John',
           age: '17',
+          nested: {prop: 'foo'},
         })
         .toJSON()
 
       expect(results.errors).to.have.length(1)
       expect(results.errors[0]).to.eql({path: ['email'], message: 'expected value to be defined'})
       expect(results.value.updatedAt).to.be.instanceof(Date)
+      expect(results.value.nested.prop).to.match(/[a-f0-9]+/)
 
-      const value = _.omit(results.value, ['createdAt', 'updatedAt'])
-      expect(value).to.eql({
+      expect(results.value).to.include({
         id: 12,
         name: 'John',
         age: 17,

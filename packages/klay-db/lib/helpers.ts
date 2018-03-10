@@ -52,9 +52,9 @@ export function findModel(model: IModel, pathToModel: string[]): IModel {
 
   const parts = pathToModel.slice()
   while (parts.length) {
-    modelAssertions.typeof(model.spec.children, 'array', 'children')
+    modelAssertions.typeof(target.spec.children, 'array', 'children')
     const nextPath = parts.shift()
-    const found = (model.spec.children as IModelChild[]).find(child => child.path === nextPath)
+    const found = (target.spec.children as IModelChild[]).find(child => child.path === nextPath)
     modelAssertions.ok(found, `could not find model child ${nextPath}`)
     target = found!.model
   }
