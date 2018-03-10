@@ -1,6 +1,7 @@
-import {Handler, NextFunction, Request, Response, Router as ExpressRouter} from 'express'
-import {IModel, IValidationResult} from 'klay'
-import {IKiln, IKilnModel} from 'klay-kiln'
+import {Handler, Router as ExpressRouter} from 'express'
+import {IModel} from 'klay'
+import {DatabaseExecutor} from 'klay-db'
+import {IKilnModel} from 'klay-kiln'
 
 declare module 'express-serve-static-core' {
   /* tslint:disable */
@@ -12,6 +13,10 @@ declare module 'express-serve-static-core' {
 
   export interface Request {
     validated?: ValidatedPayloads
+  }
+
+  export interface Response {
+    promise?: Promise<any>
   }
   /* tslint:enable */
 }
@@ -39,14 +44,18 @@ export enum ValidateIn {
   Body = 'body',
 }
 
+export enum AutomanagedPropertyBehavior {
+  Omit = 'omit',
+  Optional = 'optional',
+}
+
 export interface IModelSet {
   queryModel?: IModel
   paramsModel?: IModel
   bodyModel?: IModel
 }
 
-export interface IAnontatedHandler extends Handler, IModelSet {
-}
+export interface IAnontatedHandler extends Handler, IModelSet {}
 
 export interface IAction {
   type: ActionType
@@ -54,12 +63,29 @@ export interface IAction {
   queryModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   paramsModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   bodyModel(model: IKilnModel, options: IActionOptions): IModel | undefined
-  handler(model: IKilnModel, options: IActionOptions, kiln: IKiln): IAnontatedHandler
+  handler(model: IKilnModel, options: IActionOptions, executor: DatabaseExecutor): IAnontatedHandler
 }
 
-export interface IActionOptions {
-  allowQueryByEquality: boolean | string[][]
-  allowQueryByRange: boolean | string[][]
+export interface IValidationMiddlewareOptions {
+  // TODO: implement list support
+  allowedAsList?: boolean
+}
+
+export interface IQuerifyOptions {
+  strict?: boolean
+  allowQueryByEquality?: boolean | string[][]
+  allowQueryByRange?: boolean | string[][]
+}
+
+export interface IActionOptions extends IValidationMiddlewareOptions, IQuerifyOptions {
+  byId?: boolean
+  idParamName?: string
+}
+
+export interface IRouteOptions extends IActionOptions {
+  type: ActionType
+  databaseExtension?: string
+  middleware?: IAdditionalMiddleware
 }
 
 export interface IAdditionalMiddleware {
@@ -86,3 +112,5 @@ export interface IRouter {
   routes: IRouterRoute[]
   router: ExpressRouter
 }
+
+export const DEFAULT_DATABASE_EXTENSION = 'sql'

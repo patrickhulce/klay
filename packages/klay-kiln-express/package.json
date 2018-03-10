@@ -26,7 +26,8 @@
   "config": {
     "tslint": {
       "rules": {
-        "no-unsafe-any": false
+        "no-unsafe-any": false,
+        "return-undefined": false
       }
     },
     "commitizen": {
