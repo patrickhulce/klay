@@ -1,0 +1,32 @@
+import {NextFunction, Request, Response} from 'express'
+import {IModel} from 'klay'
+import {DatabaseExecutor, getPrimaryKeyField} from 'klay-db'
+import {IKilnModel} from 'klay-kiln'
+import {paramifyModel} from '../helpers/transform-model'
+import {ActionType, IAction, IActionOptions, IAnontatedHandler} from '../typedefs'
+import {defaultAction} from './action'
+import { get } from 'lodash';
+
+export const readAction: IAction = {
+  ...defaultAction,
+  type: ActionType.Read,
+  defaultOptions: {
+    idParamName: undefined,
+  },
+  paramsModel(kilnModel: IKilnModel, options: IActionOptions): IModel {
+    return paramifyModel(kilnModel.model, options)
+  },
+  handler(
+    kilnModel: IKilnModel,
+    options: IActionOptions,
+    executor: DatabaseExecutor,
+  ): IAnontatedHandler {
+    const pkField = getPrimaryKeyField(kilnModel.model)
+    const pkParamName = options.idParamName || pkField
+    return function(req: Request, res: Response, next: NextFunction): void {
+      const id = get(req.validated!.params, pkParamName)
+      res.promise = executor.findByIdOrThrow(id)
+      next()
+    }
+  },
+}
