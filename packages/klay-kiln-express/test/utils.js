@@ -1,0 +1,106 @@
+const sinon = require('sinon')
+const Kiln = require('klay-kiln').Kiln
+const ModelContext = require('klay').ModelContext
+const {Extension: DatabaseExtension, DatabaseExecutor} = require('klay-db')
+const RouteExtension = require('../dist/extensions/route').RouteExtension
+
+function createModel(context) {
+  const tracking = {
+    trackingId: context
+      .uuid()
+      .automanage({supplyWith: 'uuid', event: 'create'})
+      .constrain({type: 'immutable'}),
+    lastVisit: context.date(),
+  }
+
+  const user = {
+    id: context.uuidID(),
+    age: context.integer().required(),
+    isAdmin: context.boolean().required(),
+    email: context
+      .email()
+      .required()
+      .max(250)
+      .constrain({type: 'unique'}),
+    password: context
+      .string()
+      .required()
+      .max(32),
+    firstName: context
+      .string()
+      .required()
+      .max(100),
+    lastName: context
+      .string()
+      .required()
+      .max(100),
+    metadata: context
+      .object()
+      .default(null)
+      .nullable(),
+    tracking: context
+      .object()
+      .required()
+      .children(tracking)
+      .strict(),
+    createdAt: context.createdAt(),
+    updatedAt: context.updatedAt(),
+  }
+
+  return context.object().children(user)
+}
+
+function state() {
+  const kiln = new Kiln()
+  const context = new ModelContext()
+  context.use(new DatabaseExtension())
+
+  const model = createModel(context)
+  const executor = new DatabaseExecutor(model, {})
+  const extension = {
+    name: 'db',
+    defaultOptions: {},
+    build() {
+      return executor
+    },
+  }
+
+  kiln.addModel({name: 'user', model})
+  kiln.addExtension({extension})
+  kiln.addExtension({
+    extension: new RouteExtension({databaseExtension: 'db'}),
+  })
+  return {kiln, model, extension, executor}
+}
+
+async function runMiddleware(middleware, req) {
+  req = req || {}
+  const res = {}
+  const next = sinon.stub()
+  let nextCalledAll = true
+  for (const fn of middleware) {
+    const startCallCount = next.callCount
+    await fn(req, res, next)
+
+    if (next.callCount === startCallCount || next.getCall(startCallCount).args[0]) {
+      nextCalledAll = false
+      break
+    }
+  }
+
+  return {req, res, next, nextCalledAll}
+}
+
+module.exports = {
+  state,
+  runMiddleware,
+  defaultUser: {
+    age: 24,
+    isAdmin: true,
+    email: 'klay@example.com',
+    password: 'rocko',
+    firstName: 'Klay',
+    lastName: 'Thompson',
+    tracking: {},
+  },
+}
