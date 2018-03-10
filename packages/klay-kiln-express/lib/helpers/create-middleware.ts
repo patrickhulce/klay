@@ -5,22 +5,7 @@ import {
   IAnontatedHandler,
   IValidationMiddlewareOptions,
   ValidateIn,
-  ValidationErrorHandler,
 } from '../typedefs'
-
-function defaultErrorHandler(
-  result: IValidationResult,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void {
-  next(result.toError())
-}
-
-export function defaultJSONHandler(result: IValidationResult, req: Request, res: Response): void {
-  res.status(400)
-  res.json(result.toJSON())
-}
 
 export function createValidationMiddleware(
   model: IModel,
@@ -28,7 +13,6 @@ export function createValidationMiddleware(
   options: IValidationMiddlewareOptions = {},
 ): IAnontatedHandler {
   return function(req: Request, res: Response, next: NextFunction): void {
-    const errorHandler = options.handleError || defaultErrorHandler
     const sourceData = req[pathInReq]
     const validated = req.validated || {}
     const result = model.validate(sourceData)
@@ -38,7 +22,7 @@ export function createValidationMiddleware(
     if (result.conforms) {
       next()
     } else {
-      errorHandler(result, req, res, next)
+      next(result.toError())
     }
   }
 }

@@ -3,7 +3,7 @@ const sinon = require('sinon')
 const ModelContext = require('klay').ModelContext
 const middlewareModule = require('../../dist/helpers/create-middleware')
 
-describe('lib/helpers/validation-middleware.ts', () => {
+describe('lib/helpers/create-middleware.ts', () => {
   let context, model, next
 
   beforeEach(() => {
@@ -49,27 +49,6 @@ describe('lib/helpers/validation-middleware.ts', () => {
       expect(err.errors).to.have.length(1)
       expect(err.errors[0].path).to.eql(['id'])
       expect(err.errors[0].message).to.match(/expected.*number/)
-    })
-
-    it('should validate against model with custom resolver', () => {
-      const middleware = createMiddleware(model, 'body', {
-        handleError: middlewareModule.defaultJSONHandler,
-      })
-      const req = {body: {id: 'one'}}
-      const res = {
-        json: sinon.stub(),
-        status: sinon.stub(),
-      }
-
-      middleware(req, res, next)
-      expect(next.callCount).to.equal(0)
-      expect(res.status.callCount).to.equal(1)
-      expect(res.json.callCount).to.equal(1)
-      expect(res.json.firstCall.args[0]).to.eql({
-        conforms: false,
-        value: {id: 'one'},
-        errors: [{path: ['id'], message: 'expected value (one) to have typeof number'}],
-      })
     })
   })
 })

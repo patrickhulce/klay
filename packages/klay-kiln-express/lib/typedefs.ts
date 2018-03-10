@@ -68,19 +68,6 @@ export interface IAdditionalMiddleware {
   postResponse?: IAnontatedHandler | IAnontatedHandler[]
 }
 
-export type ValidationErrorHandler = (
-  result: IValidationResult,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => void
-
-export interface IValidationMiddlewareOptions {
-  // TODO: implement list support
-  // allowedAsList?: boolean
-  handleError?: ValidationErrorHandler
-}
-
 export interface IRouteInput extends IModelSet {
   handler: IAnontatedHandler
   middleware?: IAdditionalMiddleware
