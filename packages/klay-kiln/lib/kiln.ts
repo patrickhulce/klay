@@ -4,7 +4,7 @@ export interface IKiln {
   getModels(): IKilnModel[]
   addModel(model: IKilnModelInput): IKiln
   addExtension(extension: IKilnExtensionInput<any>): IKiln
-  build<T>(modelName: string, extensionOrName: string | IKilnExtension<T>): T
+  build<T>(modelName: string, extensionOrName: string | IKilnExtension<T>, options?: object): T
   buildAll(modelName?: string): Array<IKilnResult<any>>
 }
 

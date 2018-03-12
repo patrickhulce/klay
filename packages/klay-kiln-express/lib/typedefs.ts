@@ -118,6 +118,14 @@ export interface IRoute extends IModelSet {
   middleware: IAnontatedHandler[]
 }
 
+export interface IRoutes {
+  [expressPath: string]: ActionType | IRouteOptions
+}
+
+export interface IRouterOptions extends IActionOptions {
+  routes?: IRoutes
+}
+
 export interface IRouterRoute extends IRoute {
   path: string
   method: HTTPMethod
@@ -130,3 +138,4 @@ export interface IRouter {
 
 export const DEFAULT_DATABASE_EXTENSION = 'sql'
 export const EXPRESS_ROUTE = 'express-route'
+export const EXPRESS_ROUTER = 'express-router'

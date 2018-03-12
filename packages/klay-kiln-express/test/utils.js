@@ -3,6 +3,7 @@ const Kiln = require('klay-kiln').Kiln
 const ModelContext = require('klay').ModelContext
 const {Extension: DatabaseExtension, DatabaseExecutor} = require('klay-db')
 const RouteExtension = require('../dist/extensions/route').RouteExtension
+const RouterExtension = require('../dist/extensions/router').RouterExtension
 
 function createModel(context) {
   const tracking = {
@@ -58,9 +59,8 @@ function state() {
 
   kiln.addModel({name: 'user', model})
   kiln.addExtension({extension})
-  kiln.addExtension({
-    extension: new RouteExtension({databaseExtension: 'db'}),
-  })
+  kiln.addExtension({extension: new RouteExtension({databaseExtension: 'db'})})
+  kiln.addExtension({extension: new RouterExtension()})
   return {kiln, model, extension, executor}
 }
 
