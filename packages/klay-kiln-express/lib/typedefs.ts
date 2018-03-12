@@ -129,3 +129,4 @@ export interface IRouter {
 }
 
 export const DEFAULT_DATABASE_EXTENSION = 'sql'
+export const EXPRESS_ROUTE = 'express-route'
