@@ -32,4 +32,12 @@ describe('lib/helpers/transform-model.ts', () => {
       expect(trackingId).to.have.nested.property('model.spec.required', false)
     })
   })
+
+  describe('#querifyModel', () => {
+    it('should convert values to equality filter', () => {
+      const transformed = transforms.querifyModel(model, {allowQueryByEquality: true})
+      const result = transformed.validate({age: 10})
+      expect(result.value.age).to.include({$eq: 10})
+    })
+  })
 })

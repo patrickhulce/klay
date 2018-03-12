@@ -26,6 +26,7 @@
   "config": {
     "tslint": {
       "rules": {
+        "no-parameter-reassignment": false,
         "no-unsafe-any": false,
         "return-undefined": false
       }

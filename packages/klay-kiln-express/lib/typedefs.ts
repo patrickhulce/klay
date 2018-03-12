@@ -1,6 +1,6 @@
 import {Handler, Router as ExpressRouter} from 'express'
 import {IModel} from 'klay'
-import {DatabaseExecutor} from 'klay-db'
+import {DatabaseExecutor, IQueryOrder} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 
 declare module 'express-serve-static-core' {
@@ -75,6 +75,7 @@ export interface IQuerifyOptions {
   strict?: boolean
   allowQueryByEquality?: boolean | string[][]
   allowQueryByRange?: boolean | string[][]
+  allowQueryByInclusion?: boolean | string[][]
 }
 
 export interface IParamifyOptions {
@@ -85,7 +86,11 @@ export interface IActionOptions
   extends IValidationMiddlewareOptions,
     IQuerifyOptions,
     IParamifyOptions {
+  maxLimit?: number
+  defaultLimit?: number
+  defaultOrder?: IQueryOrder
   byId?: boolean
+  expectQueryIn?: ValidateIn
 }
 
 export interface IRouteOptions extends IActionOptions {
