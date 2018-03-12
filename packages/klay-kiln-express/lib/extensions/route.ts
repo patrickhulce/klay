@@ -1,7 +1,7 @@
 import {IKiln, IKilnExtension, IKilnModel} from 'klay-kiln'
 import {DEFAULT_DATABASE_EXTENSION, IRoute, IRouteOptions} from '../typedefs'
 
-import {DatabaseExecutor} from 'klay-db'
+import {IDatabaseExecutor} from 'klay-db'
 import {actions} from '../actions'
 import {createRoute} from '../helpers/create-route'
 
@@ -26,7 +26,7 @@ export class RouteExtension implements IKilnExtension<IRoute> {
     }
 
     options = {...options, ...action.defaultOptions}
-    const executor = kiln.build(kilnModel.name, options.databaseExtension!) as DatabaseExecutor
+    const executor = kiln.build(kilnModel.name, options.databaseExtension!) as IDatabaseExecutor
     return createRoute({
       queryModel: action.queryModel(kilnModel, options),
       bodyModel: action.bodyModel(kilnModel, options),

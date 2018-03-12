@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from 'express'
 import {IModel} from 'klay'
-import {DatabaseExecutor, getPrimaryKeyField} from 'klay-db'
+import {getPrimaryKeyField, IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import {get} from 'lodash'
 import {paramifyModel} from '../helpers/transform-model'
@@ -19,7 +19,7 @@ export const readAction: IAction = {
   handler(
     kilnModel: IKilnModel,
     options: IActionOptions,
-    executor: DatabaseExecutor,
+    executor: IDatabaseExecutor,
   ): IAnontatedHandler {
     const pkField = getPrimaryKeyField(kilnModel.model)
     const pkParamName = options.idParamName || pkField

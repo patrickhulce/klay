@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from 'express'
 import {IModel} from 'klay'
-import {DatabaseExecutor} from 'klay-db'
+import {IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import {creatifyModel} from '../helpers/transform-model'
 import {ActionType, IAction, IActionOptions, IAnontatedHandler} from '../typedefs'
@@ -15,7 +15,7 @@ export const createAction: IAction = {
   handler(
     model: IKilnModel,
     options: IActionOptions,
-    executor: DatabaseExecutor,
+    executor: IDatabaseExecutor,
   ): IAnontatedHandler {
     return function(req: Request, res: Response, next: NextFunction): void {
       const payload = req.validated!.body

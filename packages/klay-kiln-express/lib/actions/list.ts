@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from 'express'
 import defaultModelContext, {IModel, IValidationResult} from 'klay'
-import {DatabaseExecutor, IQuery, IQueryOrderItem, SortDirection} from 'klay-db'
+import {IDatabaseExecutor, IQuery, IQueryOrderItem, SortDirection} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import {forEach, omit, pick} from 'lodash'
 import {querifyModel} from '../helpers/transform-model'
@@ -102,7 +102,7 @@ export const listAction: IAction = {
   handler(
     kilnModel: IKilnModel,
     options: IActionOptions,
-    executor: DatabaseExecutor,
+    executor: IDatabaseExecutor,
   ): IAnontatedHandler {
     return function(req: Request, res: Response, next: NextFunction): void {
       const rawQuery = req.validated![options.expectQueryIn!]

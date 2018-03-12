@@ -1,6 +1,6 @@
 import {Handler, Router as ExpressRouter} from 'express'
 import {IModel} from 'klay'
-import {DatabaseExecutor, IQueryOrder} from 'klay-db'
+import {IDatabaseExecutor, IQueryOrder} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 
 declare module 'express-serve-static-core' {
@@ -63,7 +63,11 @@ export interface IAction {
   queryModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   paramsModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   bodyModel(model: IKilnModel, options: IActionOptions): IModel | undefined
-  handler(model: IKilnModel, options: IActionOptions, executor: DatabaseExecutor): IAnontatedHandler
+  handler(
+    model: IKilnModel,
+    options: IActionOptions,
+    executor: IDatabaseExecutor,
+  ): IAnontatedHandler
 }
 
 export interface IValidationMiddlewareOptions {
