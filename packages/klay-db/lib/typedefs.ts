@@ -140,7 +140,7 @@ export type WhereValue = string | number | boolean | Date
 
 export interface IWhereCondition {
   $eq?: WhereValue
-  $neq?: WhereValue
+  $ne?: WhereValue
   $gt?: WhereValue
   $lt?: WhereValue
   $in?: WhereValue
