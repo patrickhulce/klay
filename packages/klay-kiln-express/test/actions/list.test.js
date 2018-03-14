@@ -22,7 +22,7 @@ describe('lib/actions/list.ts', () => {
 
   it('should call find', async () => {
     const route = kiln.build('user', 'express-route', {type: 'list'})
-    const req = {query: {age: 18}}
+    const req = {query: {age: '18'}}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).to.have.nested.property('validated.query.age.$eq', 18)
     expect(await res.promise).to.eql({data: [], total: 5, limit: 10, offset: 0})

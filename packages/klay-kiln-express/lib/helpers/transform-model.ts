@@ -1,11 +1,5 @@
 import {defaultModelContext, IModel, IModelChild, IValidationResult, ModelType} from 'klay'
-import {
-  ConstraintType,
-  DatabaseEvent,
-  eventMatches,
-  findModel,
-  getPrimaryKeyField,
-} from 'klay-db'
+import {ConstraintType, DatabaseEvent, eventMatches, findModel, getPrimaryKeyField} from 'klay-db'
 import {flatten, forEach, includes, isEqual} from 'lodash'
 import {IParamifyOptions, IQuerifyOptions} from '../typedefs'
 
@@ -27,7 +21,7 @@ export function paramifyModel(original: IModel, options?: IParamifyOptions): IMo
   const pkField = getPrimaryKeyField(original)
   const paramName = (options && options.idParamName) || pkField
   const children = model.spec.children as IModelChild[]
-  const pkModel = children.find(child => child.path === pkField)!.model
+  const pkModel = children.find(child => child.path === pkField)!.model.strict(false)
   model.spec = {}
   return model.type(ModelType.Object).children({[paramName]: pkModel})
 }
@@ -101,6 +95,7 @@ export function querifyModel(original: IModel, options: IQuerifyOptions): IModel
       .clone()
       .optional()
       .default()
+      .strict(false)
     const filterChildren = filterKeys.map(key => ({path: key, model: valueModel}))
     children[child.path] = defaultModelContext
       .object()

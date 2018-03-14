@@ -9,6 +9,18 @@ describe('lib/helpers/transform-model.ts', () => {
     model = utils.state().model
   })
 
+  describe('#paramifyModel', () => {
+    it('should use the ID', () => {
+      const modelWithInt = model.clone()
+      const idModel = modelWithInt.spec.children.find(child => child.path === 'id').model
+      idModel.type('number').format('integer')
+
+      const transformed = transforms.paramifyModel(modelWithInt)
+      const result = transformed.validate({id: '12'}).toJSON()
+      expect(result).to.eql({conforms: true, value: {id: 12}, errors: []})
+    })
+  })
+
   describe('#creatifyModel', () => {
     it('should omit automanaged properties', () => {
       const transformed = transforms.creatifyModel(model)
@@ -37,6 +49,12 @@ describe('lib/helpers/transform-model.ts', () => {
     it('should convert values to equality filter', () => {
       const transformed = transforms.querifyModel(model, {allowQueryByEquality: true})
       const result = transformed.validate({age: 10})
+      expect(result.value.age).to.include({$eq: 10})
+    })
+
+    it('should loosen strict settings', () => {
+      const transformed = transforms.querifyModel(model, {allowQueryByEquality: true})
+      const result = transformed.validate({age: '10'})
       expect(result.value.age).to.include({$eq: 10})
     })
   })
