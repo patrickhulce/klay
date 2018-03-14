@@ -2,7 +2,8 @@
   "name": "klay-kiln-sql",
   "version": "2.4.0",
   "description": "Kiln extension to generate SQL models from Klay models.",
-  "main": "./dist/extension.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "npm run test:lint && npm run test:unit",
