@@ -1,7 +1,7 @@
 const sinon = require('sinon')
 const Kiln = require('klay-kiln').Kiln
 const ModelContext = require('klay').ModelContext
-const {Extension: DatabaseExtension, DatabaseExecutor} = require('klay-db')
+const {DatabaseExtension, DatabaseExecutor} = require('klay-db')
 const RouteExtension = require('../dist/extensions/route').RouteExtension
 const RouterExtension = require('../dist/extensions/router').RouterExtension
 

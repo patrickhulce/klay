@@ -1,5 +1,5 @@
 import {ModelContext, IModelContext} from 'klay'
-import {Extension as DatabaseExtension} from 'klay-db'
+import {DatabaseExtension} from 'klay-db'
 
 export const modelContext: IModelContext = ModelContext.create()
   .use(new DatabaseExtension())
