@@ -79,10 +79,13 @@ export function querifyModel(original: IModel, options: IQuerifyOptions): IModel
 
     if (isAllowed(options.allowQueryByEquality, [child.path])) {
       filterKeys.push('$eq', '$ne')
+      if (child.model.spec.type === 'string') {
+        filterKeys.push('$match')
+      }
     }
 
     if (isAllowed(options.allowQueryByRange, [child.path])) {
-      filterKeys.push('$lt', '$gt')
+      filterKeys.push('$lt', '$gt', '$gte', '$lte')
     }
 
     if (isAllowed(options.allowQueryByInclusion, [child.path])) {
@@ -96,7 +99,24 @@ export function querifyModel(original: IModel, options: IQuerifyOptions): IModel
       .optional()
       .default()
       .strict(false)
-    const filterChildren = filterKeys.map(key => ({path: key, model: valueModel}))
+
+    const filterChildren = filterKeys.map(key => {
+      let model = valueModel
+
+      if (key === '$match') {
+        model = defaultModelContext.string().optional()
+      }
+
+      if (key === '$in' || key === '$nin') {
+        model = defaultModelContext
+          .array()
+          .children(valueModel)
+          .coerce(vr => (typeof vr.value === 'string' ? vr.setValue(vr.value.split(',')) : vr))
+      }
+
+      return {path: key, model}
+    })
+
     children[child.path] = defaultModelContext
       .object()
       .coerce(parseQueryFilter)
@@ -105,5 +125,5 @@ export function querifyModel(original: IModel, options: IQuerifyOptions): IModel
       .strict()
   })
 
-  return defaultModelContext.object().children(children)
+  return defaultModelContext.object().children(children).strict()
 }

@@ -46,9 +46,16 @@ describe('lib/helpers/transform-model.ts', () => {
   })
 
   describe('#querifyModel', () => {
+    it('should strictly validate objects', () => {
+      const transformed = transforms.querifyModel(model, {allowQueryByEquality: true})
+      const result = transformed.validate({age: {$like: 10}})
+      expect(result).to.have.property('conforms', false)
+    })
+
     it('should convert values to equality filter', () => {
       const transformed = transforms.querifyModel(model, {allowQueryByEquality: true})
       const result = transformed.validate({age: 10})
+      expect(result).to.have.property('conforms', true)
       expect(result.value.age).to.include({$eq: 10})
     })
 
@@ -56,6 +63,35 @@ describe('lib/helpers/transform-model.ts', () => {
       const transformed = transforms.querifyModel(model, {allowQueryByEquality: true})
       const result = transformed.validate({age: '10'})
       expect(result.value.age).to.include({$eq: 10})
+    })
+
+    it('should support $lt/$gt', () => {
+      const transformed = transforms.querifyModel(model, {allowQueryByRange: true})
+      const result = transformed.validate({age: {$lt: 'foo', $gte: 90}})
+      expect(result).to.include({conforms: false})
+      const resultMatch = transformed.validate({age: {$lt: '100', $gte: 90}})
+      expect(resultMatch).to.have.property('conforms', true)
+      expect(resultMatch).to.have.nested.property('value.age.$lt', 100)
+      expect(resultMatch).to.have.nested.property('value.age.$gte', 90)
+    })
+
+    it('should support $match', () => {
+      const transformed = transforms.querifyModel(model, {allowQueryByEquality: true})
+      const result = transformed.validate({id: '.*10'})
+      expect(result).to.include({conforms: false})
+      const resultMatch = transformed.validate({id: {$match: '.*10'}})
+      expect(resultMatch).to.have.property('conforms', true)
+      expect(resultMatch).to.have.nested.property('value.id.$match', '.*10')
+    })
+
+    it('should support $in/$nin', () => {
+      const transformed = transforms.querifyModel(model, {allowQueryByInclusion: true})
+      const result = transformed.validate({age: {$in: [5, 'foo']}})
+      expect(result).to.include({conforms: false})
+      const resultIn = transformed.validate({age: {$in: [2, 5], $nin: '10, 3'}})
+      expect(resultIn).to.have.property('conforms', true)
+      expect(resultIn).to.have.nested.property('value.age.$in').eql([2, 5])
+      expect(resultIn).to.have.nested.property('value.age.$nin').eql([10, 3])
     })
   })
 })
