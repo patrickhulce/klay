@@ -55,7 +55,6 @@ export class SQLExectuor implements IDatabaseExecutorMinimal {
     const sqlExtras = SQLExectuor._extrasToSequlize(extras)
     const instances: Array<Sequelize.Instance<object>> = await this.sequelizeModel.findAll({
       ...sqlExtras,
-      // TODO: handle where transformations
       where: query.where as Sequelize.WhereOptions<any>,
       attributes: query.fields && query.fields.map(mapField),
       order: query.order && query.order.map(mapOrder),

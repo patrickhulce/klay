@@ -141,10 +141,13 @@ export type WhereValue = string | number | boolean | Date
 export interface IWhereCondition {
   $eq?: WhereValue
   $ne?: WhereValue
+  $match?: string
   $gt?: WhereValue
   $lt?: WhereValue
-  $in?: WhereValue
-  $nin?: WhereValue
+  $gte?: WhereValue
+  $lte?: WhereValue
+  $in?: WhereValue[]
+  $nin?: WhereValue[]
 }
 
 export interface IQueryWhere {

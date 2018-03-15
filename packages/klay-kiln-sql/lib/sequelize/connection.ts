@@ -7,6 +7,17 @@ export function getConnection(options: ISQLOptions): Sequelize.Sequelize {
     host: options.host,
     dialect: options.dialect,
     logging: false,
+    operatorsAliases: {
+      $eq: Sequelize.Op.eq,
+      $ne: Sequelize.Op.ne,
+      $match: Sequelize.Op.regexp,
+      $gte: Sequelize.Op.gte,
+      $gt: Sequelize.Op.gt,
+      $lte: Sequelize.Op.lte,
+      $lt: Sequelize.Op.lt,
+      $in: Sequelize.Op.in,
+      $nin: Sequelize.Op.notIn,
+    },
     define: {
       underscored: false,
       timestamps: false,
