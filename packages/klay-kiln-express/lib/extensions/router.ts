@@ -25,7 +25,7 @@ export const CRUD_ROUTES: IRoutes = {
   'DELETE /:id': {type: ActionType.Destroy},
 }
 
-export class RouterExtension implements IKilnExtension<IRouter> {
+export class RouterExtension implements IKilnExtension<IRouter, IRouterOptions> {
   public name: string
   public defaultOptions: IRouterOptions
 
@@ -34,9 +34,8 @@ export class RouterExtension implements IKilnExtension<IRouter> {
     this.defaultOptions = {...options}
   }
 
-  public build(kilnModel: IKilnModel, rawOptions: object, kiln: IKiln): IRouter {
-    // tslint:disable-next-line
-    const options = {...this.defaultOptions, ...rawOptions} as IRouterOptions
+  // tslint:disable-next-line
+  public build(kilnModel: IKilnModel, options: IRouterOptions, kiln: IKiln): IRouter {
     const router = Router()
 
     const routes = map(options.routes, (typeOrOption, key) => {

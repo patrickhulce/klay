@@ -5,7 +5,7 @@ import {IDatabaseExecutor} from 'klay-db'
 import {actions} from '../actions'
 import {createRoute} from '../helpers/create-route'
 
-export class RouteExtension implements IKilnExtension<IRoute> {
+export class RouteExtension implements IKilnExtension<IRoute, IRouteOptions> {
   public name: string
   public defaultOptions: IRouteOptions
 
@@ -18,8 +18,7 @@ export class RouteExtension implements IKilnExtension<IRoute> {
   }
 
   // tslint:disable-next-line
-  public build(kilnModel: IKilnModel, rawOptions: object, kiln: IKiln): IRoute {
-    let options = rawOptions as IRouteOptions
+  public build(kilnModel: IKilnModel, options: IRouteOptions, kiln: IKiln): IRoute {
     const action = actions.find(action => action.type === options.type)
     if (!action) {
       throw new Error(`Could not find action: ${options.type}`)

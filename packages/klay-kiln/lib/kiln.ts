@@ -33,16 +33,16 @@ export interface IKilnResult<T> {
   value: T
 }
 
-export interface IKilnExtensionInput<T> {
-  defaultOptions?: object
+export interface IKilnExtensionInput<TResult, TOptions = object> {
+  defaultOptions?: TOptions
   modelName?: string
-  extension: IKilnExtension<T>
+  extension: IKilnExtension<TResult, TOptions>
 }
 
-export interface IKilnExtension<T> {
+export interface IKilnExtension<TResult, TOptions = object> {
   name: string
-  defaultOptions: object
-  build(kilnModel: IKilnModel, options: object, kiln: IKiln): T
+  defaultOptions: TOptions
+  build(kilnModel: IKilnModel, options: TOptions, kiln: IKiln): TResult
 }
 
 export class Kiln implements IKiln {

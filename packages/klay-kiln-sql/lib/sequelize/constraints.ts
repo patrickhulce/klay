@@ -2,7 +2,7 @@ import {assert, IModel} from 'klay'
 import {ConstraintType, getPrimaryKeyField, SupplyWithPreset} from 'klay-db'
 import {IKiln} from 'klay-kiln'
 import * as Sequelize from 'sequelize'
-import {EXTENSION_NAME, ISQLExecutor} from '../typedefs'
+import {ISQLExecutor, SQL_EXECUTOR} from '../typedefs'
 import {getFlattenedPath} from './serialization'
 
 export function addPrimaryKey(modelInProgress: Sequelize.DefineAttributes, model: IModel): void {
@@ -40,7 +40,7 @@ export function addForeignKeys(
     assert.ok(constraint.properties.length === 1, 'foreign key must be single field')
     const fkName = getFlattenedPath(constraint.properties[0])
     const fkDefinition = modelInProgress[fkName] as Sequelize.DefineAttributeColumnOptions
-    const sqlExecutor = kiln.build<ISQLExecutor>(constraint.meta.referencedModel!, EXTENSION_NAME)
+    const sqlExecutor = kiln.build<ISQLExecutor>(constraint.meta.referencedModel!, SQL_EXECUTOR)
     fkDefinition.references = {
       key: getPrimaryKeyField(sqlExecutor.kilnModel.model),
       model: sqlExecutor.sequelizeModel,

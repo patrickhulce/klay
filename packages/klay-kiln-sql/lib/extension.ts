@@ -5,16 +5,16 @@ import * as Sequelize from 'sequelize'
 import {DatabaseExecutor} from 'klay-db'
 import {getConnection, getModel} from './sequelize'
 import {SQLExectuor} from './sql-executor'
-import {EXTENSION_NAME, ISQLExecutor, ISQLOptions, ISyncOptions} from './typedefs'
+import {IExecutorOptions, ISQLExecutor, ISQLOptions, ISyncOptions, SQL_EXECUTOR} from './typedefs'
 
-export class SQLExtension implements IKilnExtension<ISQLExecutor> {
+export class SQLExtension implements IKilnExtension<ISQLExecutor, IExecutorOptions> {
   public name: string
-  public defaultOptions: object
+  public defaultOptions: IExecutorOptions
   public readonly sequelize: Sequelize.Sequelize
 
   public constructor(options: ISQLOptions) {
-    this.name = EXTENSION_NAME
-    this.defaultOptions = {}
+    this.name = SQL_EXECUTOR
+    this.defaultOptions = options
     this.sequelize = getConnection(options)
   }
 
@@ -22,7 +22,7 @@ export class SQLExtension implements IKilnExtension<ISQLExecutor> {
     return this.sequelize.sync(options)
   }
 
-  public build(kilnModel: IKilnModel, options: object, kiln: IKiln): ISQLExecutor {
+  public build(kilnModel: IKilnModel, options: IExecutorOptions, kiln: IKiln): ISQLExecutor {
     const baseExectuor = new SQLExectuor(
       this.sequelize,
       getModel(this.sequelize, kilnModel, kiln),

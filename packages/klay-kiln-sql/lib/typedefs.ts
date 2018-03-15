@@ -2,7 +2,7 @@ import { IDatabaseExecutor } from 'klay-db'
 import { IKilnModel } from 'klay-kiln'
 import * as Sequelize from 'sequelize'
 
-export const EXTENSION_NAME = 'sql'
+export const SQL_EXECUTOR = 'sql'
 
 export enum SQLDialect {
   MySQL = 'mysql',
