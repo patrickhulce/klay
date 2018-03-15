@@ -1,6 +1,7 @@
 import {IModel, ModelType} from 'klay'
 import {ConstraintType} from 'klay-db'
 import {IKiln, IKilnModel} from 'klay-kiln'
+import {snakeCase} from 'lodash'
 import * as Sequelize from 'sequelize'
 import * as constraints from './constraints'
 import {forEachColumn, getFlattenedPath} from './serialization'
@@ -83,7 +84,6 @@ export function getModel(
 
   return sequelize.define(kilnModel.name, sequelizeDatatypes, {
     indexes: getIndexes(kilnModel.model),
-    // TODO: move the plural setting up to kiln level
-    tableName: (kilnModel.meta as any).plural || `${kilnModel.name}s`,
+    tableName: kilnModel.meta.tableName || snakeCase(kilnModel.meta.plural!),
   })
 }

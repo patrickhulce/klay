@@ -35,7 +35,19 @@ describe('lib/kiln.ts', () => {
         {
           name: 'user',
           model,
-          meta: {},
+          meta: {plural: 'users'},
+          extensions: new Map(),
+        },
+      ])
+    })
+
+    it('should add a model with custom meta', () => {
+      kiln.addModel({name: 'activity', model, meta: {plural: 'activities'}})
+      expect(kiln.getModels()).to.eql([
+        {
+          name: 'activity',
+          model,
+          meta: {plural: 'activities'},
           extensions: new Map(),
         },
       ])

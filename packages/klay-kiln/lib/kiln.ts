@@ -22,7 +22,10 @@ export interface IKilnModel {
 }
 
 // tslint:disable-next-line
-export interface IKilnModelMetadata {}
+export interface IKilnModelMetadata {
+  plural?: string
+  tableName?: string
+}
 
 export interface IKilnResult<T> {
   modelName: string
@@ -97,12 +100,13 @@ export class Kiln implements IKiln {
     return this
   }
 
-  public addModel(model: IKilnModelInput): IKiln {
-    modelAssertions.typeof(model.name, 'string', 'name')
-    modelAssertions.ok(model.model.isKlayModel, 'model must be a klay model')
-    modelAssertions.ok(!this._models.has(model.name), 'model with same name already exists')
+  public addModel(kilnModel: IKilnModelInput): IKiln {
+    modelAssertions.typeof(kilnModel.name, 'string', 'name')
+    modelAssertions.ok(kilnModel.model.isKlayModel, 'model must be a klay model')
+    modelAssertions.ok(!this._models.has(kilnModel.name), 'model with same name already exists')
 
-    this._models.set(model.name, {meta: {}, ...model, extensions: new Map()})
+    const meta = {plural: `${kilnModel.name}s`, ...kilnModel.meta}
+    this._models.set(kilnModel.name, {...kilnModel, meta,  extensions: new Map()})
     return this
   }
 
