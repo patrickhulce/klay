@@ -1,4 +1,4 @@
-import {defaultModelContext, IModel, IModelChild, IValidationResult, ModelType} from 'klay'
+import {defaultModelContext, IModel, IModelChild, IValidationResult, ModelType} from 'klay-core'
 import {ConstraintType, DatabaseEvent, eventMatches, findModel, getPrimaryKeyField} from 'klay-db'
 import {flatten, forEach, includes, isEqual} from 'lodash'
 import {IParamifyOptions, IQuerifyOptions} from '../typedefs'

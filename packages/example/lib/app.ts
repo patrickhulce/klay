@@ -2,7 +2,7 @@ import * as express from 'express'
 import * as logger from 'morgan'
 import {json} from 'body-parser'
 
-import {IValidationError} from 'klay'
+import {IValidationError} from 'klay-core'
 import {kiln, ModelID} from './kiln'
 import {CRUD_ROUTES, EXPRESS_ROUTER, IRouter} from 'klay-kiln-express'
 

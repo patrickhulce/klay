@@ -1,4 +1,4 @@
-import {IModel} from 'klay'
+import {IModel} from 'klay-core'
 import {pick} from 'lodash'
 import {
   IAdditionalMiddleware,

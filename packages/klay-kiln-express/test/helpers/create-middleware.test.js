@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const sinon = require('sinon')
-const ModelContext = require('klay').ModelContext
+const ModelContext = require('klay-core').ModelContext
 const middlewareModule = require('../../dist/helpers/create-middleware')
 
 describe('lib/helpers/create-middleware.ts', () => {

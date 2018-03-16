@@ -4,7 +4,7 @@ const chaiAsPromised = require('chai-as-promised')
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 
-const ModelContext = require('klay').ModelContext
+const ModelContext = require('klay-core').ModelContext
 const DatabaseExtension = require('../dist/extension').DatabaseExtension
 const Executor = require('../dist/executor').DatabaseExecutor
 

@@ -13,12 +13,12 @@ Isomorphic and extensible validation library for JavaScript.
 
 ### Install
 
-`npm install --save klay`
+`npm install --save klay-core`
 
 ### Validate
 
 ```js
-const klay = require('klay').defaultModelContext
+const klay = require('klay-core').defaultModelContext
 
 const myModel = klay
   .object()
@@ -57,7 +57,7 @@ console.log(results.toJSON())
 ### Extend
 
 ```js
-const klay = require('klay').defaultModelContext
+const klay = require('klay-core').defaultModelContext
 
 klay.use({
   types: ['custom-type'],

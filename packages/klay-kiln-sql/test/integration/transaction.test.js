@@ -13,7 +13,7 @@ describe('atomic transactions', () => {
     isAdmin: true,
     email: 'test@klay.com',
     password: 'password',
-    firstName: 'Klay',
+    firstName: 'klay-core',
     lastName: 'Thompson',
   }
 

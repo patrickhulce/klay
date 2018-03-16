@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from 'express'
-import {IModel} from 'klay'
+import {IModel} from 'klay-core'
 import {getPrimaryKeyField, IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import {get} from 'lodash'

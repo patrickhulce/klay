@@ -1,4 +1,4 @@
-import {IModel, modelAssertions} from 'klay'
+import {IModel, modelAssertions} from 'klay-core'
 
 export interface IKiln {
   getModels(): IKilnModel[]

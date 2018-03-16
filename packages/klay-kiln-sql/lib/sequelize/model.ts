@@ -1,4 +1,4 @@
-import {IModel, ModelType} from 'klay'
+import {IModel, ModelType} from 'klay-core'
 import {ConstraintType} from 'klay-db'
 import {IKiln, IKilnModel} from 'klay-kiln'
 import {snakeCase} from 'lodash'

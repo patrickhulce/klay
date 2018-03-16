@@ -12,7 +12,7 @@ global.defineTest = (file, func) => {
   })
 }
 
-const klay = require('klay')
+const klay = require('klay-core')
 klay.use(require('klay-db')())
 
 global.fixtures = {

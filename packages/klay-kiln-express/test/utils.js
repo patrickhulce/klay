@@ -1,6 +1,6 @@
 const sinon = require('sinon')
 const Kiln = require('klay-kiln').Kiln
-const ModelContext = require('klay').ModelContext
+const ModelContext = require('klay-core').ModelContext
 const {DatabaseExtension, DatabaseExecutor} = require('klay-db')
 const RouteExtension = require('../dist/extensions/route').RouteExtension
 const RouterExtension = require('../dist/extensions/router').RouterExtension
@@ -90,7 +90,7 @@ module.exports = {
     isAdmin: true,
     email: 'klay@example.com',
     password: 'rocko',
-    firstName: 'Klay',
+    firstName: 'klay-core',
     lastName: 'Thompson',
     tracking: {},
   },

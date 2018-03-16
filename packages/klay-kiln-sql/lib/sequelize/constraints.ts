@@ -1,4 +1,4 @@
-import {assert, IModel} from 'klay'
+import {assert, IModel} from 'klay-core'
 import {ConstraintType, getPrimaryKeyField, SupplyWithPreset} from 'klay-db'
 import {IKiln} from 'klay-kiln'
 import * as Sequelize from 'sequelize'

@@ -10,7 +10,7 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "isomorphic-fetch": "^2.2.1",
-    "klay": "^2.4.0",
+    "klay-core": "^2.4.0",
     "klay-db": "^2.4.0",
     "klay-kiln": "^2.4.0",
     "klay-kiln-express": "^2.4.0",

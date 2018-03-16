@@ -2,7 +2,7 @@ import {
   IValidationResult,
   modelAssertions as assertions,
   ValidationPhase,
-} from 'klay'
+} from 'klay-core'
 import {cloneDeep, isEqual, uniqWith, values} from 'lodash'
 import {v4 as uuid} from 'uuid'
 import {

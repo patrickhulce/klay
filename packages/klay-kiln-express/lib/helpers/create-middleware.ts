@@ -1,6 +1,6 @@
 /* tslint:disable no-unsafe-any */
 import {NextFunction, Request, Response} from 'express'
-import {IModel} from 'klay'
+import {IModel} from 'klay-core'
 import {
   IAnontatedHandler,
   IValidationMiddlewareOptions,

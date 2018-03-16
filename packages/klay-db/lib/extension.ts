@@ -5,7 +5,7 @@ import {
   IModelHooks,
   IValidatorMethods,
   ValidationPhase,
-} from 'klay'
+} from 'klay-core'
 import * as helpers from './helpers'
 import {DatabaseOptions} from './options'
 import {

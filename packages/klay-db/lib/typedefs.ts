@@ -1,6 +1,6 @@
-import {ICoerceFunction, IModel, ValidationPhase} from 'klay'
+import {ICoerceFunction, IModel, ValidationPhase} from 'klay-core'
 
-declare module 'klay/dist/typedefs' {
+declare module 'klay-core/dist/typedefs' {
   export interface IModelContext {
     integerID(): IModel
     uuidID(): IModel

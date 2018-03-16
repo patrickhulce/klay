@@ -1,5 +1,5 @@
 {
-  "name": "klay",
+  "name": "klay-core",
   "version": "2.4.0",
   "description": "Isomorphic and extensible validation library for JavaScript.",
   "main": "./dist/index.js",
@@ -31,7 +31,7 @@
   "bugs": {
     "url": "https://github.com/patrickhulce/klay/issues"
   },
-  "homepage": "https://github.com/patrickhulce/klay/tree/master/packages/klay#readme",
+  "homepage": "https://github.com/patrickhulce/klay/tree/master/packages/klay-core#readme",
   "dependencies": {
     "lodash": "^4.14.93"
   },

@@ -1,4 +1,4 @@
-const ModelContext = require('klay').ModelContext
+const ModelContext = require('klay-core').ModelContext
 const DatabaseExtension = require('klay-db').DatabaseExtension
 
 module.exports = {

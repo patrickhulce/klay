@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from 'express'
-import defaultModelContext, {IModel, IValidationResult} from 'klay'
+import defaultModelContext, {IModel, IValidationResult} from 'klay-core'
 import {IDatabaseExecutor, IQuery, IQueryOrderItem, SortDirection} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import {forEach, omit, pick} from 'lodash'

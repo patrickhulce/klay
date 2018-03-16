@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const klay = require('klay')
+const klay = require('klay-core')
 const Promise = require('bluebird')
 const querifyModel = require('../shared/querifyModel')
 const findDbModel = require('../shared/findDbModel')

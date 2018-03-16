@@ -1,4 +1,4 @@
-var types = require('klay').builders;
+var types = require('klay-core').builders;
 
 var user = {
   id: types.integerId(),

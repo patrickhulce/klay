@@ -1,4 +1,4 @@
-import {assert} from 'klay'
+import {assert} from 'klay-core'
 import {cloneDeep} from 'lodash'
 import {
   IQuery,

@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const sinon = require('sinon')
-const ModelContext = require('klay').ModelContext
+const ModelContext = require('klay-core').ModelContext
 const createRoute = require('../../dist/helpers/create-route').createRoute
 
 describe('lib/helpers/create-route.ts', () => {

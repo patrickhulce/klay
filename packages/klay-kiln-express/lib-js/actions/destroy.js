@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const klay = require('klay')
+const klay = require('klay-core')
 
 const findDbModel = require('../shared/findDbModel')
 const paramifyModel = require('../shared/paramifyModel')

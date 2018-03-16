@@ -1,4 +1,4 @@
-import {assert, IModel} from 'klay'
+import {assert, IModel} from 'klay-core'
 import {get, isEqual} from 'lodash'
 import {QueryBuilder} from './query-builder'
 import {

@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const ModelContext = require('klay').ModelContext
+const ModelContext = require('klay-core').ModelContext
 const helpers = require('../dist/helpers')
 const DatabaseExtension = require('../dist/extension').DatabaseExtension
 const DatabaseOptions = require('../dist/options').DatabaseOptions

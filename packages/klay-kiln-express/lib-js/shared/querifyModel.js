@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const klay = require('klay')
+const klay = require('klay-core')
 
 const validTypes = ['boolean', 'string', 'number', 'date']
 

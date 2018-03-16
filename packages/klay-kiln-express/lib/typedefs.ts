@@ -1,5 +1,5 @@
 import {Handler, Router as ExpressRouter} from 'express'
-import {IModel} from 'klay'
+import {IModel} from 'klay-core'
 import {IDatabaseExecutor, IQueryOrder} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 

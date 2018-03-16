@@ -1,4 +1,4 @@
-import {assert, IModel, IModelChild} from 'klay'
+import {assert, IModel, IModelChild} from 'klay-core'
 import {get, set} from 'lodash'
 
 const PRIMITIVE_COLUMN_TYPES = new Set(['string', 'number', 'boolean', 'date'])
