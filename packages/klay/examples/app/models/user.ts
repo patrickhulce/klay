@@ -1,7 +1,7 @@
-import {modelContext} from './context'
+import {modelContext} from '../model-context'
 import {createHmac} from 'crypto'
-import {IModel, ValidationPhase} from 'klay-core'
-import {ConstraintType, SortDirection} from 'klay-db'
+import {IModel, ValidationPhase} from '../../../lib'
+import {ConstraintType, SortDirection} from '../../../lib'
 
 const SALT = 'super-secret-salt'
 

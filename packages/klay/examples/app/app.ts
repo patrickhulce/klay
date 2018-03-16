@@ -2,9 +2,9 @@ import * as express from 'express'
 import * as logger from 'morgan'
 import {json} from 'body-parser'
 
-import {IValidationError} from 'klay-core'
+import {IValidationError} from '../../lib'
 import {kiln, ModelID} from './kiln'
-import {CRUD_ROUTES, EXPRESS_ROUTER, IRouter} from 'klay-kiln-express'
+import {CRUD_ROUTES, EXPRESS_ROUTER, IRouter} from '../../lib'
 
 const userRoutes = kiln.build(ModelID.User, EXPRESS_ROUTER, {routes: CRUD_ROUTES}) as IRouter
 

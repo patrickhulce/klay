@@ -1,8 +1,8 @@
-import {IKiln, Kiln} from 'klay-kiln'
-import {SQLDialect, SQLExtension} from 'klay-kiln-sql'
-import {RouterExtension, RouteExtension, ActionType} from 'klay-kiln-express'
+import {IKiln, Kiln} from '../../lib'
+import {SQLDialect, SQLExtension} from '../../lib'
+import {RouterExtension, RouteExtension, ActionType} from '../../lib'
 
-import {userModel} from './user'
+import {userModel} from './models/user'
 
 export const kiln: IKiln = new Kiln()
 
