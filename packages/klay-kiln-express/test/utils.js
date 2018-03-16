@@ -15,7 +15,7 @@ function createModel(context) {
   }
 
   const user = {
-    id: context.uuidID(),
+    id: context.uuidId(),
     age: context.integer(),
     isAdmin: context.boolean(),
     email: context

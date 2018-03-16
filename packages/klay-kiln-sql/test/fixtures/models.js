@@ -8,7 +8,7 @@ module.exports = {
     modelContext.use({defaults: {strict: true}})
 
     const user = {
-      id: modelContext.integerID(),
+      id: modelContext.integerId(),
       age: modelContext.integer().required(),
       isAdmin: modelContext.boolean().required(),
       email: modelContext
@@ -33,7 +33,7 @@ module.exports = {
     }
 
     const photo = {
-      id: modelContext.uuidID(),
+      id: modelContext.uuidId(),
       ownerId: modelContext
         .integer()
         .required()

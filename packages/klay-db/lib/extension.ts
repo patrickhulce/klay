@@ -76,12 +76,12 @@ export class DatabaseExtension implements IKlayExtension {
 
   // tslint:disable-next-line
   public extendContext(context: IModelContext): void {
-    context.integerID = () =>
+    context.integerId = () =>
       context
         .integer()
         .constrain({type: ConstraintType.Primary})
         .autoIncrement()
-    context.uuidID = () =>
+    context.uuidId = () =>
       context
         .uuid()
         .constrain({type: ConstraintType.Primary})

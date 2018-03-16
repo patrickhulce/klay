@@ -8,7 +8,7 @@ const SALT = 'super-secret-salt'
 export const userModel: IModel = modelContext
   .object()
   .children({
-    id: modelContext.integerID(),
+    id: modelContext.integerId(),
     email: modelContext
       .email()
       .max(250)

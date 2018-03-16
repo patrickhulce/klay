@@ -3,10 +3,10 @@ import * as logger from 'morgan'
 import {json} from 'body-parser'
 
 import {IValidationError} from '../../lib'
-import {kiln, ModelID} from './kiln'
+import {kiln, ModelId} from './kiln'
 import {CRUD_ROUTES, EXPRESS_ROUTER, IRouter} from '../../lib'
 
-const userRoutes = kiln.build(ModelID.User, EXPRESS_ROUTER, {routes: CRUD_ROUTES}) as IRouter
+const userRoutes = kiln.build(ModelId.User, EXPRESS_ROUTER, {routes: CRUD_ROUTES}) as IRouter
 
 export const app: express.Express = express()
 if (typeof (global as any).it === 'undefined') app.use(logger('short'))

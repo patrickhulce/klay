@@ -31,15 +31,15 @@ describe('lib/extension.ts', () => {
   })
 
   describe('builders', () => {
-    it('should add integerID', () => {
-      const model = modelContext.integerID()
+    it('should add integerId', () => {
+      const model = modelContext.integerId()
       expect(model.spec.db.constrain).to.have.length(1)
       expect(model.spec.db.automanage).to.have.length(1)
       expect(model.spec.db.constrain[0].type).to.equal('primary')
     })
 
-    it('should add uuidID', () => {
-      const model = modelContext.uuidID()
+    it('should add uuidId', () => {
+      const model = modelContext.uuidId()
       expect(model.spec.db.constrain).to.have.length(1)
       expect(model.spec.db.automanage).to.have.length(1)
       expect(model.spec.db.constrain[0].type).to.equal('primary')

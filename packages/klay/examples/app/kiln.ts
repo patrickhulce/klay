@@ -6,11 +6,11 @@ import {userModel} from './models/user'
 
 export const kiln: IKiln = new Kiln()
 
-export enum ModelID {
+export enum ModelId {
   User = 'user',
 }
 
-kiln.addModel({name: ModelID.User, model: userModel, meta: {plural: 'example_users'}})
+kiln.addModel({name: ModelId.User, model: userModel, meta: {plural: 'example_users'}})
 
 const sqlOptions = {
   host: process.env.KLAY_MYSQL_HOST || 'localhost',

@@ -2,8 +2,8 @@ import {ICoerceFunction, IModel, ValidationPhase} from 'klay-core'
 
 declare module 'klay-core/dist/typedefs' {
   export interface IModelContext {
-    integerID(): IModel
-    uuidID(): IModel
+    integerId(): IModel
+    uuidId(): IModel
     createdAt(): IModel
     updatedAt(): IModel
   }

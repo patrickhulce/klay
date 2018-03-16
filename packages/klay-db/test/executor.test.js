@@ -22,7 +22,7 @@ describe('lib/executor.ts', () => {
     model = context
       .object()
       .children({
-        id: context.integerID(),
+        id: context.integerId(),
         x: context
           .integer()
           .constrain({type: 'unique'})
