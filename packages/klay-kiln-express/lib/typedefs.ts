@@ -12,6 +12,7 @@ declare module 'express-serve-static-core' {
   export interface ValidatedPayloads {
     query?: any
     params?: any
+    cookies?: any
     body?: any
   }
 
@@ -45,6 +46,7 @@ export enum ActionType {
 export enum ValidateIn {
   Query = 'query',
   Params = 'params',
+  Cookies = 'cookies',
   Body = 'body',
 }
 
