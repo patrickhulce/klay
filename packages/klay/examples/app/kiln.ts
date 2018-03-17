@@ -3,14 +3,17 @@ import {SQLDialect, SQLExtension} from '../../lib'
 import {RouterExtension, RouteExtension, ActionType} from '../../lib'
 
 import {userModel} from './models/user'
+import {postModel} from './models/post'
 
 export const kiln: IKiln = new Kiln()
 
 export enum ModelId {
   User = 'user',
+  Post = 'post',
 }
 
 kiln.addModel({name: ModelId.User, model: userModel, meta: {plural: 'example_users'}})
+kiln.addModel({name: ModelId.Post, model: postModel})
 
 const sqlOptions = {
   host: process.env.KLAY_MYSQL_HOST || 'localhost',
@@ -23,7 +26,7 @@ const sqlOptions = {
 export const sqlExtension = new SQLExtension(sqlOptions)
 kiln.addExtension({extension: sqlExtension})
 
-const routeExtension = new RouteExtension({type: ActionType.List})
+const routeExtension = new RouteExtension({})
 kiln.addExtension({extension: routeExtension})
 
 const routerExtension = new RouterExtension({})
