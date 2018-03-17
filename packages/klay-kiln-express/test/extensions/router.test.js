@@ -34,4 +34,31 @@ describe('lib/extensions/router.ts', () => {
 
     expect(fn).to.throw(/incompatible.*foo/)
   })
+
+  it('should apply options to all action routes', () => {
+    const router = kiln.build('user', 'express-router', {
+      defaultLimit: 87,
+      routes: {
+        'GET /': 'list',
+        'GET /foo': {type: 'list', defaultLimit: 50},
+      },
+    })
+
+    const limitModel = route => route.queryModel.spec.children.find(x => x.path === 'limit').model
+    expect(limitModel(router.routes[0])).to.have.nested.property('spec.default', 87)
+    expect(limitModel(router.routes[1])).to.have.nested.property('spec.default', 50)
+  })
+
+  it('should apply options to all input routes', () => {
+    const router = kiln.build('user', 'express-router', {
+      bodyModel: context.string(),
+      routes: {
+        'PUT /': {bodyModel: context.integer(), handler},
+        'PUT /foo': {handler},
+      },
+    })
+
+    expect(router.routes).to.have.nested.property('0.bodyModel.spec.type', 'number')
+    expect(router.routes).to.have.nested.property('1.bodyModel.spec.type', 'string')
+  })
 })

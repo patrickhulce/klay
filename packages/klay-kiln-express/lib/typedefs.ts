@@ -104,7 +104,7 @@ export interface IActionOptions extends IQuerifyOptions, IParamifyOptions {
 }
 
 export interface IRouteOptions extends IActionOptions {
-  type: ActionType
+  type?: ActionType
   databaseExtension?: string
   middleware?: IAdditionalMiddleware
 }
@@ -133,13 +133,14 @@ export interface IRoutes {
   [expressPath: string]: ActionType | IRouteOptions | IRouteInput
 }
 
-export interface IRouterOptions extends IActionOptions {
+export interface IRouterOptions extends IRouteOptions {
   routes?: IRoutes
 }
 
 export interface IRouterRoute extends IRoute {
   path: string
   method: HTTPMethod
+  options: IRouteOptions
 }
 
 export interface IRouter {

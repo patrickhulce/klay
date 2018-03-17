@@ -1,7 +1,7 @@
 import {Router} from 'express'
 import {modelAssertions} from 'klay-core'
 import {IKiln, IKilnExtension, IKilnModel} from 'klay-kiln'
-import {entries, isEqual, map} from 'lodash'
+import {entries, isEqual, map, omit} from 'lodash'
 import {createRoute} from '../helpers/create-route'
 import {
   ActionType,
@@ -14,6 +14,7 @@ import {
   IRouteParams,
   IRouter,
   IRouterOptions,
+  IRouterRoute,
   IRoutes,
   ValidateIn,
 } from '../typedefs'
@@ -45,27 +46,31 @@ export class RouterExtension implements IKilnExtension<IRouter, IRouterOptions> 
   }
 
   // tslint:disable-next-line
-  private getRoute(kiln: IKiln, kilnModel: IKilnModel, inputOrOptions: IRouteInput | IRouteOptions): IRoute {
+  private getRoute(kiln: IKiln, kilnModel: IKilnModel, inputOrOptions: IRouteInput | IRouteOptions, routerOptions: IRouterOptions): IRoute {
     if (typeof (inputOrOptions as any).type === 'string') {
+      const inheritedRouterOptions = omit(routerOptions, ['routes']) as IRouteOptions
+      const routeOptions = inputOrOptions as IRouteOptions
       return kiln.build<IRoute, IRouteOptions>(
         kilnModel.name,
         EXPRESS_ROUTE,
-        inputOrOptions as IRouteOptions,
+        {...inheritedRouterOptions, ...routeOptions},
       )
     }
 
-    return createRoute(inputOrOptions as IRouteInput)
+    const inheritedRouterOptions = omit(routerOptions, ['routes']) as IRouteInput
+    const routeInput = inputOrOptions as IRouteInput
+    return createRoute({...inheritedRouterOptions, ...routeInput})
   }
 
-  public build(kilnModel: IKilnModel, options: IRouterOptions, kiln: IKiln): IRouter {
+  public build(kilnModel: IKilnModel, routerOptions: IRouterOptions, kiln: IKiln): IRouter {
     const router = Router()
 
     const paramHandlers: IRouteParams = {}
 
-    const routes = map(options.routes, (typeOrOption, key) => {
+    const routes: IRouterRoute[] = map(routerOptions.routes, (typeOrOption, key) => {
       const [method, path] = key.split(' ')
-      const options = typeof typeOrOption === 'string' ? {type: typeOrOption} : typeOrOption
-      const route = this.getRoute(kiln, kilnModel, options)
+      const routeOptions = typeof typeOrOption === 'string' ? {type: typeOrOption} : typeOrOption
+      const route = this.getRoute(kiln, kilnModel, routeOptions, routerOptions)
 
       for (const [name, handler] of entries(route.paramHandlers)) {
         const existing = paramHandlers[name] || handler
@@ -80,7 +85,7 @@ export class RouterExtension implements IKilnExtension<IRouter, IRouterOptions> 
       return {
         path,
         method: method.toLowerCase() as HTTPMethod,
-        options,
+        options: routeOptions,
         ...route,
       }
     })
