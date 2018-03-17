@@ -54,7 +54,13 @@ module.exports = state => {
   it('should list users', async () => {
     const response = await fetch(`${state.baseURL}/v1/users`)
     const users = await response.json()
-    expect(users).to.deep.include({data: [state.user, state.userB], total: 2})
+    expect(users).to.eql({data: [state.user, state.userB], total: 2, limit: 10, offset: 0})
+  })
+
+  it('should read a user', async () => {
+    const response = await fetch(`${state.baseURL}/v1/users/${state.user.id}`)
+    const user = await response.json()
+    expect(user).to.eql(state.user)
   })
 
   it('should update a user', async () => {
@@ -67,9 +73,18 @@ module.exports = state => {
     expect(response.status).to.equal(200)
     const updatedUser = await response.json()
     expect(updatedUser).to.include({firstName: 'Changed'})
-    expect(state.userB)
+    expect(updatedUser)
       .to.have.property('password')
       .match(/^[a-f0-9]{40}$/)
     expect(new Date(updatedUser.updatedAt)).to.be.greaterThan(new Date(state.user.updatedAt))
+  })
+
+  it('should delete a user', async () => {
+    const response = await fetch(`${state.baseURL}/v1/users/${state.userB.id}`, {
+      method: 'DELETE',
+    })
+
+    expect(response.status).to.equal(204)
+    delete state.userB
   })
 }

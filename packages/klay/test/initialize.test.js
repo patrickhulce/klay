@@ -18,6 +18,7 @@ describe('e2e', () => {
   })
 
   require('./scenarios/create-user.test.js')(state)
+  require('./scenarios/create-many-users.test.js')(state)
 
   it('should power down the server', done => {
     state.server.close(done)

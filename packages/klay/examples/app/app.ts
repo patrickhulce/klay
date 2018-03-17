@@ -13,7 +13,7 @@ if (typeof (global as any).it === 'undefined') app.use(logger('short'))
 app.use(json({strict: false}))
 app.use('/v1/users', userRoutes.router)
 app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (!res.promise) next()
+  if (!res.promise) return next()
 
   try {
     const result = await res.promise

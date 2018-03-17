@@ -84,7 +84,7 @@ export const listAction: IAction = {
   defaultOptions: {
     expectQueryIn: ValidateIn.Query,
     allowQueryByEquality: true,
-    allowQueryByInclusion: false,
+    allowQueryByInclusion: true,
     allowQueryByRange: [['createdAt'], ['updatedAt']],
     maxLimit: 1000,
     defaultLimit: 10,

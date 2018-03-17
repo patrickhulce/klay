@@ -17,9 +17,15 @@ import {
 export const CRUD_ROUTES: IRoutes = {
   'GET /': {type: ActionType.List},
   'POST /search': {type: ActionType.List, expectQueryIn: ValidateIn.Body},
+
   'POST /': {type: ActionType.Create},
   'PUT /': {type: ActionType.Update, byId: false},
   'DELETE /': {type: ActionType.Destroy, byId: false},
+
+  'POST /bulk': {type: ActionType.Create, byList: true},
+  'PUT /bulk': {type: ActionType.Update, byId: false, byList: true},
+  'DELETE /bulk': {type: ActionType.Destroy, byId: false, byList: true},
+
   'GET /:id': {type: ActionType.Read},
   'PUT /:id': {type: ActionType.Update},
   'DELETE /:id': {type: ActionType.Destroy},

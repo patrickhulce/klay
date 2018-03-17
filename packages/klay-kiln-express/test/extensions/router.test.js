@@ -13,6 +13,6 @@ describe('lib/extensions/router.ts', () => {
 
   it('should build the router', () => {
     const route = kiln.build('user', 'express-router', {routes: CRUD_ROUTES})
-    expect(route.routes).to.have.length(8)
+    expect(route.routes).to.have.length.greaterThan(7)
   })
 })
