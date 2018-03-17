@@ -3,7 +3,7 @@ import {
   modelAssertions as assertions,
   ValidationPhase,
 } from 'klay-core'
-import {cloneDeep, isEqual, uniqWith, values} from 'lodash'
+import {cloneDeep, isEqual, last, uniqWith, values} from 'lodash'
 import {v4 as uuid} from 'uuid'
 import {
   ConstraintType,
@@ -12,6 +12,7 @@ import {
   IAutomanagePropertyInput,
   IConstraint,
   IConstraintInput,
+  IConstraintMeta,
   IDatabaseOptions,
   IDatabaseSpecification,
   IDatabaseSpecificationUnsafe,
@@ -65,6 +66,7 @@ export class DatabaseOptions implements IDatabaseOptions {
 
     const constrain = input as IConstraint
     constrain.name = DatabaseOptions.computeConstraintName(constrain)
+    constrain.meta = DatabaseOptions.computeMetaProperties(constrain)
     this.spec.constrain.push(constrain)
     return this
   }
@@ -88,6 +90,14 @@ export class DatabaseOptions implements IDatabaseOptions {
   public static computeConstraintName(constraint: IConstraint): string {
     const propertiesAsString = constraint.properties.map(prop => prop.join('.')).join(',')
     return constraint.meta.name || `${constraint.type}:${propertiesAsString}`
+  }
+
+  public static computeMetaProperties(constraint: IConstraint): IConstraintMeta {
+    if (constraint.type !== ConstraintType.Reference) return constraint.meta
+    const lastPropertyName = last(constraint.properties[0])
+    const inferredModel = lastPropertyName && lastPropertyName.replace(/id$/i, '')
+    const referencedModel = constraint.meta.referencedModel || inferredModel
+    return {...constraint.meta, referencedModel}
   }
 
   private static _determineSupplyWith(

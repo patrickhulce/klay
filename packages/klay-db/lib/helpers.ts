@@ -23,6 +23,7 @@ export function addPropertyNames(
   forEach(cloned.constrain, constraint => {
     constraint.properties = constraint.properties.map(property => [name].concat(property))
     constraint.name = DatabaseOptions.computeConstraintName(constraint)
+    constraint.meta = DatabaseOptions.computeMetaProperties(constraint)
   })
 
   forEach(cloned.index, properties => {

@@ -43,6 +43,9 @@ describe('lib/helpers.ts', () => {
           .integer()
           .constrain({type: 'primary'})
           .autoIncrement(),
+        accountId: context
+          .integer()
+          .constrain({type: 'reference'}),
         email: context.email().constrain({type: 'unique'}),
         updatedAt: context
           .date()
@@ -64,19 +67,19 @@ describe('lib/helpers.ts', () => {
     it('should collect db options from children', () => {
       const results = helpers.mergeChildrenIntoRoot({}, children)
       expect(results.automanage).to.have.length(2)
-      expect(results.constrain).to.have.length(2)
+      expect(results.constrain).to.have.length(3)
       expect(results.index).to.have.length(1)
     })
 
     it('should be idempotent', () => {
       let results = helpers.mergeChildrenIntoRoot({}, children)
       expect(results.automanage).to.have.length(2)
-      expect(results.constrain).to.have.length(2)
+      expect(results.constrain).to.have.length(3)
       expect(results.index).to.have.length(1)
 
       results = helpers.mergeChildrenIntoRoot({}, children)
       expect(results.automanage).to.have.length(2)
-      expect(results.constrain).to.have.length(2)
+      expect(results.constrain).to.have.length(3)
       expect(results.index).to.have.length(1)
     })
 
@@ -92,8 +95,13 @@ describe('lib/helpers.ts', () => {
       expect(results).to.have.nested.property('constrain.0.name', 'primary:id')
       expect(results)
         .to.have.nested.property('constrain.1.properties.0')
+        .eql(['accountId'])
+      expect(results).to.have.nested.property('constrain.1.name', 'reference:accountId')
+      expect(results).to.have.nested.property('constrain.1.meta.referencedModel', 'account')
+      expect(results)
+        .to.have.nested.property('constrain.2.properties.0')
         .eql(['email'])
-      expect(results).to.have.nested.property('constrain.1.name', 'unique:email')
+      expect(results).to.have.nested.property('constrain.2.name', 'unique:email')
 
       expect(results)
         .to.have.nested.property('automanage.0.property')
