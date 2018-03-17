@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from 'express'
-import {IModel} from 'klay-core'
+import {defaultModelContext, IModel} from 'klay-core'
 import {IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import {creatifyModel} from '../helpers/transform-model'
@@ -9,8 +9,17 @@ import {defaultAction} from './action'
 export const upsertAction: IAction = {
   ...defaultAction,
   type: ActionType.Upsert,
+  defaultOptions: {
+    byList: false,
+  },
   bodyModel(kilnModel: IKilnModel, options: IActionOptions): IModel {
-    return creatifyModel(kilnModel.model)
+    const createModel = creatifyModel(kilnModel.model)
+    const arrayCreateModel = defaultModelContext
+      .array()
+      .children(createModel)
+      .required()
+      .strict()
+    return options.byList ? arrayCreateModel : createModel
   },
   handler(
     model: IKilnModel,
@@ -19,7 +28,7 @@ export const upsertAction: IAction = {
   ): IAnontatedHandler {
     return function(req: Request, res: Response, next: NextFunction): void {
       const payload = req.validated!.body
-      res.promise = executor.upsert(payload)
+      res.promise = options.byList ? executor.upsertAll(payload) : executor.upsert(payload)
       next()
     }
   },

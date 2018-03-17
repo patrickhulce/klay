@@ -4,7 +4,7 @@ const sinon = require('sinon')
 const utils = require('../utils')
 
 describe('lib/actions/upsert.ts', () => {
-  let state, kiln, executor, upsertStub
+  let state, kiln, executor, upsertStub, upsertAllStub
 
   beforeEach(() => {
     state = utils.state()
@@ -12,6 +12,7 @@ describe('lib/actions/upsert.ts', () => {
     executor = state.executor
     sinon.stub(executor, 'findOne').returns(undefined)
     upsertStub = sinon.stub(executor, 'upsert').returnsArg(0)
+    upsertAllStub = sinon.stub(executor, 'upsertAll').returnsArg(0)
   })
 
   it('should build the route', () => {
@@ -29,6 +30,18 @@ describe('lib/actions/upsert.ts', () => {
     expect(await res.promise).to.eql(req.validated.body)
     expect(nextCalledAll).to.equal(true)
     expect(upsertStub.callCount).to.equal(1)
+  })
+
+  it('should call upsertAll', async () => {
+    const route = kiln.build('user', 'express-route', {type: 'upsert', byList: true})
+    const req = {body: [{...utils.defaultUser}]}
+    const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
+    expect(req).to.have.nested.property('validated.body.0.firstName')
+    expect(req).to.not.have.nested.property('validated.body.0.id')
+    expect(await res.promise).to.eql(req.validated.body)
+    expect(nextCalledAll).to.equal(true)
+    expect(upsertStub.callCount).to.equal(0)
+    expect(upsertAllStub.callCount).to.equal(1)
   })
 
   it('should validate body', async () => {

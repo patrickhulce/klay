@@ -5,7 +5,7 @@ const uuid = require('uuid').v4
 const utils = require('../utils')
 
 describe('lib/actions/update.ts', () => {
-  let state, kiln, executor, updateStub
+  let state, kiln, executor, updateStub, updateAllStub
 
   beforeEach(() => {
     state = utils.state()
@@ -13,12 +13,18 @@ describe('lib/actions/update.ts', () => {
     executor = state.executor
     sinon.stub(executor, 'findOne').returns(undefined)
     updateStub = sinon.stub(executor, 'update').returnsArg(0)
+    updateAllStub = sinon.stub(executor, 'updateAll').returnsArg(0)
   })
 
   it('should build the route', () => {
     const route = kiln.build('user', 'express-route', {type: 'update'})
     expect(route.bodyModel).to.have.property('isKlayModel', true)
     expect(route.middleware).to.have.length.greaterThan(0)
+  })
+
+  it('should throw if both byId and byList are set', () => {
+    const fn = () => kiln.build('user', 'express-route', {type: 'update', byList: true})
+    expect(fn).to.throw(/Cannot update.*byId.*byList/)
   })
 
   it('should call update', async () => {
@@ -37,6 +43,25 @@ describe('lib/actions/update.ts', () => {
     expect(await res.promise).to.eql(req.validated.body)
     expect(nextCalledAll).to.equal(true)
     expect(updateStub.callCount).to.equal(1)
+  })
+
+  it('should call updateAll', async () => {
+    const route = kiln.build('user', 'express-route', {type: 'update', byId: false, byList: true})
+    const id = uuid()
+    const payload = {
+      id,
+      ...utils.defaultUser,
+      createdAt: new Date(),
+    }
+
+    const req = {body: [payload]}
+    const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
+    expect(req).to.have.nested.property('validated.body.0.id')
+    expect(req).to.have.nested.property('validated.body.0.updatedAt', undefined)
+    expect(await res.promise).to.eql(req.validated.body)
+    expect(nextCalledAll).to.equal(true)
+    expect(updateStub.callCount).to.equal(0)
+    expect(updateAllStub.callCount).to.equal(1)
   })
 
   it('should validate params', async () => {

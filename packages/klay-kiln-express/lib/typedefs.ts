@@ -71,7 +71,6 @@ export interface IAction {
 }
 
 export interface IValidationMiddlewareOptions {
-  // TODO: implement list support
   allowedAsList?: boolean
 }
 
@@ -86,14 +85,12 @@ export interface IParamifyOptions {
   idParamName?: string
 }
 
-export interface IActionOptions
-  extends IValidationMiddlewareOptions,
-    IQuerifyOptions,
-    IParamifyOptions {
+export interface IActionOptions extends IQuerifyOptions, IParamifyOptions {
   maxLimit?: number
   defaultLimit?: number
   defaultOrder?: IQueryOrder
   byId?: boolean
+  byList?: boolean
   expectQueryIn?: ValidateIn
 }
 

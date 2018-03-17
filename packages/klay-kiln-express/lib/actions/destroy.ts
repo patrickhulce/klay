@@ -23,6 +23,7 @@ export const destroyAction: IAction = {
   type: ActionType.Destroy,
   defaultOptions: {
     byId: true,
+    byList: false,
     idParamName: undefined,
   },
   paramsModel(kilnModel: IKilnModel, options: IActionOptions): IModel | undefined {
@@ -32,7 +33,11 @@ export const destroyAction: IAction = {
     if (options.byId) return
     const pkField = getPrimaryKeyField(kilnModel.model)
     const pkModel = findModel(kilnModel.model, [pkField])
-    return defaultModelContext.array().children(pkModel).required()
+    const arrayPkModel = defaultModelContext
+      .array()
+      .children(pkModel)
+      .required()
+    return options.byList ? arrayPkModel : pkModel
   },
   handler(
     kilnModel: IKilnModel,
@@ -42,9 +47,9 @@ export const destroyAction: IAction = {
     const pkField = getPrimaryKeyField(kilnModel.model)
     const pkParamName = options.idParamName || pkField
     return function(req: Request, res: Response, next: NextFunction): void {
-      const id = get(req.validated, ['params', pkParamName])
+      const id = options.byId ? get(req.validated, ['params', pkParamName]) : req.validated!.body
       const ids = req.validated!.body
-      res.promise = options.byId ? destroyById(executor, id) : destroyAll(executor, ids)
+      res.promise = options.byList ? destroyAll(executor, ids) : destroyById(executor, id)
 
       next()
     }
