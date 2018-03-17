@@ -1,13 +1,16 @@
 import {Router} from 'express'
+import {modelAssertions} from 'klay-core'
 import {IKiln, IKilnExtension, IKilnModel} from 'klay-kiln'
-import {map} from 'lodash'
+import {entries, isEqual, map} from 'lodash'
+import {createRoute} from '../helpers/create-route'
 import {
   ActionType,
   EXPRESS_ROUTE,
   EXPRESS_ROUTER,
   HTTPMethod,
   IRoute,
-  IRouteOptions,
+  IRouteInput,
+  IRouteParams,
   IRouter,
   IRouterOptions,
   IRoutes,
@@ -44,17 +47,37 @@ export class RouterExtension implements IKilnExtension<IRouter, IRouterOptions> 
   public build(kilnModel: IKilnModel, options: IRouterOptions, kiln: IKiln): IRouter {
     const router = Router()
 
+    const paramHandlers: IRouteParams = {}
+
     const routes = map(options.routes, (typeOrOption, key) => {
       const [method, path] = key.split(' ')
       const options = typeof typeOrOption === 'string' ? {type: typeOrOption} : typeOrOption
-      const extension = kiln.build(kilnModel.name, EXPRESS_ROUTE, options) as IRoute
+      const route =
+        typeof (options as any).type === 'string'
+          ? kiln.build<IRoute>(kilnModel.name, EXPRESS_ROUTE, options)
+          : createRoute(options as IRouteInput)
+
+      for (const [name, handler] of entries(route.paramHandlers)) {
+        const existing = paramHandlers[name] || handler
+        modelAssertions.ok(
+          isEqual(existing.model.spec, handler.model.spec),
+          `incompatible params model for ${name}`,
+        )
+
+        paramHandlers[name] = handler
+      }
+
       return {
         path,
         method: method.toLowerCase() as HTTPMethod,
         options,
-        ...extension,
+        ...route,
       }
     })
+
+    for (const [name, handler] of entries(paramHandlers)) {
+      router.param(name, handler)
+    }
 
     for (const route of routes) {
       router[route.method](route.path, route.middleware)

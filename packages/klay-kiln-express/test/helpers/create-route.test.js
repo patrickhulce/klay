@@ -13,7 +13,7 @@ describe('lib/helpers/create-route.ts', () => {
   it('should return the middleware function', () => {
     const handler = sinon.stub()
     const route = createRoute({handler})
-    expect(route).to.eql({middleware: [handler]})
+    expect(route).to.deep.include({middleware: [handler]})
   })
 
   it('should add extra middleware', () => {
@@ -21,7 +21,7 @@ describe('lib/helpers/create-route.ts', () => {
     const extra = sinon.stub()
     const middleware = {preValidation: extra}
     const route = createRoute({handler, middleware})
-    expect(route).to.eql({middleware: [extra, handler]})
+    expect(route).to.deep.include({middleware: [extra, handler]})
   })
 
   it('should add extra middleware as array', () => {
@@ -30,7 +30,23 @@ describe('lib/helpers/create-route.ts', () => {
     const extraB = sinon.stub()
     const middleware = {postResponse: [extraA, extraB]}
     const route = createRoute({handler, middleware})
-    expect(route).to.eql({middleware: [handler, extraA, extraB]})
+    expect(route).to.deep.include({middleware: [handler, extraA, extraB]})
+  })
+
+  it('should add paramHandlers', () => {
+    const handler = sinon.stub()
+    const paramsModel = context.object().children({id: context.integer(), other: context.boolean()})
+    const route = createRoute({handler, paramsModel})
+    expect(route).to.include({paramsModel})
+    const nextStub = sinon.stub()
+    route.paramHandlers.id(null, null, nextStub, '10')
+    expect(nextStub.firstCall.args).to.eql([])
+    route.paramHandlers.id(null, null, nextStub, '1.2')
+    expect(nextStub.secondCall.args).to.eql(['route'])
+    route.paramHandlers.other(null, null, nextStub, 'true')
+    expect(nextStub.thirdCall.args).to.eql([])
+    route.paramHandlers.other(null, null, nextStub, 'foobar')
+    expect(nextStub.getCall(3).args).to.eql(['route'])
   })
 
   it('should create validation middleware', () => {

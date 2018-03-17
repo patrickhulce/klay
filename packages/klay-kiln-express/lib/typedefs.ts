@@ -1,4 +1,8 @@
-import {Handler, Router as ExpressRouter} from 'express'
+import {
+  Handler as ExpressHandler,
+  RequestParamHandler as ExpressParamHandler,
+  Router as ExpressRouter,
+} from 'express'
 import {IModel} from 'klay-core'
 import {IDatabaseExecutor, IQueryOrder} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
@@ -55,7 +59,12 @@ export interface IModelSet {
   bodyModel?: IModel
 }
 
-export interface IAnontatedHandler extends Handler, IModelSet {}
+export interface IAnontatedHandler extends ExpressHandler, IModelSet {}
+
+export interface IAnnotatedParamsHandler extends ExpressParamHandler {
+  paramName: string
+  model: IModel
+}
 
 export interface IAction {
   type: ActionType
@@ -111,12 +120,17 @@ export interface IRouteInput extends IModelSet {
   middleware?: IAdditionalMiddleware
 }
 
+export interface IRouteParams {
+  [paramName: string]: IAnnotatedParamsHandler
+}
+
 export interface IRoute extends IModelSet {
+  paramHandlers: IRouteParams
   middleware: IAnontatedHandler[]
 }
 
 export interface IRoutes {
-  [expressPath: string]: ActionType | IRouteOptions
+  [expressPath: string]: ActionType | IRouteOptions | IRouteInput
 }
 
 export interface IRouterOptions extends IActionOptions {

@@ -68,7 +68,7 @@ module.exports = state => {
     expect(await response.json()).to.have.property('total', 3)
   })
 
-  it.skip('should update users', async () => {
+  it('should update users', async () => {
     const users = state.users.map(user => {
       return {...user, firstName: 'Changed'}
     })
@@ -82,11 +82,11 @@ module.exports = state => {
     expect(response.status).to.equal(200)
   })
 
-  it.skip('should list updated users', async () => {
+  it('should list updated users', async () => {
     const ids = state.users.map(user => user.id)
     const queryParams = new URLSearchParams({'id[$in]': ids.join(',')})
-    const listResponse = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`)
-    const updatedUsers = (await listResponse.json()).data
+    const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`)
+    const updatedUsers = (await response.json()).data
     expect(updatedUsers).to.have.length(3)
 
     for (const updatedUser of updatedUsers) {
@@ -98,5 +98,16 @@ module.exports = state => {
       const withoutUpdates = _.omit(updatedUser, ['firstName', 'updatedAt'])
       expect({...user, ...withoutUpdates}).to.eql(user)
     }
+  })
+
+  it('should delete users', async () => {
+    const ids = state.users.map(user => user.id)
+    const response = await fetch(`${state.baseURL}/v1/users/bulk`, {
+      method: 'DELETE',
+      body: JSON.stringify(ids),
+      headers: {'content-type': 'application/json'},
+    })
+
+    expect(response.status).to.equal(204)
   })
 }

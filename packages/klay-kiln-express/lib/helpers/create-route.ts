@@ -1,13 +1,36 @@
-import {IModel} from 'klay-core'
-import {pick} from 'lodash'
+import * as express from 'express'
+import {IModel, IModelChild} from 'klay-core'
+import {forEach, pick} from 'lodash'
 import {
   IAdditionalMiddleware,
   IAnontatedHandler,
   IRoute,
   IRouteInput,
+  IRouteParams,
   ValidateIn,
 } from '../typedefs'
 import {createValidationMiddleware} from './create-middleware'
+
+function createParamHandlers(model?: IModel): IRouteParams {
+  const handlers: IRouteParams = {}
+  forEach(model && (model.spec.children as IModelChild[]), child => {
+    const handlerFn: any = (
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+      paramValue: any,
+    ) => {
+      const nextArgs = child.model.validate(paramValue).conforms ? [] : ['route']
+      next(...nextArgs)
+    }
+
+    handlerFn.paramName = child.path
+    handlerFn.model = child.model
+    handlers[child.path] = handlerFn
+  })
+
+  return handlers
+}
 
 function extendMiddleware(
   base: IAnontatedHandler[],
@@ -29,6 +52,7 @@ function extendMiddleware(
 
 export function createRoute(input: IRouteInput): IRoute {
   const inputMiddleware = input.middleware || {}
+  const paramHandlers = createParamHandlers(input.paramsModel)
   const models = pick(input, ['queryModel', 'paramsModel', 'bodyModel'])
   const middleware: IAnontatedHandler[] = []
 
@@ -40,5 +64,5 @@ export function createRoute(input: IRouteInput): IRoute {
   extendMiddleware(middleware, input.handler)
   extendMiddleware(middleware, inputMiddleware.postResponse)
 
-  return {...models, middleware}
+  return {...models, middleware, paramHandlers}
 }
