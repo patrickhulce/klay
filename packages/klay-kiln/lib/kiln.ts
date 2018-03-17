@@ -4,7 +4,12 @@ export interface IKiln {
   getModels(): IKilnModel[]
   addModel(model: IKilnModelInput): IKiln
   addExtension(extension: IKilnExtensionInput<any>): IKiln
-  build<T>(modelName: string, extensionOrName: string | IKilnExtension<T>, options?: object): T
+  build<TResult>(modelName: string, extensionOrName: string | IKilnExtension<TResult, any>): TResult
+  build<TResult, TOptions>(
+    modelName: string,
+    extensionOrName: string | IKilnExtension<TResult, TOptions>,
+    options?: TOptions,
+  ): TResult
   buildAll(modelName?: string): Array<IKilnResult<any>>
 }
 
@@ -18,7 +23,7 @@ export interface IKilnModel {
   name: string
   model: IModel
   meta: IKilnModelMetadata
-  extensions: Map<string, IKilnExtensionInput<any>>
+  extensions: Map<string, IKilnExtensionInput<any, any>>
 }
 
 // tslint:disable-next-line
@@ -60,14 +65,21 @@ export class Kiln implements IKiln {
     return kilnModel!
   }
 
-  private _getExtensionInputOrThrow(
+  private _getExtensionInput<TResult, TOptions>(
     modelName: string,
     extensionName: string,
-  ): IKilnExtensionInput<any> {
+  ): IKilnExtensionInput<TResult, TOptions> | undefined {
     const kilnModel = this._getModelOrThrow(modelName)
-    const extension = kilnModel.extensions.get(extensionName)!
+    return kilnModel.extensions.get(extensionName)
+  }
+
+  private _getExtensionInputOrThrow<TResult, TOptions>(
+    modelName: string,
+    extensionName: string,
+  ): IKilnExtensionInput<TResult, TOptions> {
+    const extension = this._getExtensionInput<TResult, TOptions>(modelName, extensionName)
     modelAssertions.ok(extension, `unable to find extension "${extensionName}"`)
-    return extension
+    return extension!
   }
 
   private _getOrBuild(
@@ -81,7 +93,10 @@ export class Kiln implements IKiln {
     }
 
     const model = this._getModelOrThrow(modelName)
-    const {extension, defaultOptions} = this._getExtensionInputOrThrow(modelName, extensionName)
+    const {extension, defaultOptions} = this._getExtensionInputOrThrow<any, any>(
+      modelName,
+      extensionName,
+    )
     const buildOptions = {...extension.defaultOptions, ...defaultOptions, ...options}
     const value = extension.build(model, buildOptions, this)
     const result = {modelName, extensionName, value}
@@ -106,7 +121,7 @@ export class Kiln implements IKiln {
     modelAssertions.ok(!this._models.has(kilnModel.name), 'model with same name already exists')
 
     const meta = {plural: `${kilnModel.name}s`, ...kilnModel.meta}
-    this._models.set(kilnModel.name, {...kilnModel, meta,  extensions: new Map()})
+    this._models.set(kilnModel.name, {...kilnModel, meta, extensions: new Map()})
     return this
   }
 
@@ -145,17 +160,23 @@ export class Kiln implements IKiln {
     return results
   }
 
-  public build<T>(
+  public build<TResult, TOptions = any>(
     modelName: string,
-    extensionOrName: string | IKilnExtension<T>,
-    options?: object,
-  ): T {
+    extensionOrName: string | IKilnExtension<TResult, TOptions>,
+    options?: TOptions,
+  ): TResult {
     if (typeof extensionOrName === 'object') {
       const model = this._getModelOrThrow(modelName)
-      const extension = extensionOrName as IKilnExtension<T>
-      return extension.build(model, {...extension.defaultOptions, ...options}, this) as T
+      const extension = extensionOrName as IKilnExtension<TResult, TOptions>
+      const cachedExtension = this._getExtensionInput<TResult, TOptions>(modelName, extension.name)!
+      if (cachedExtension && !options && extension === cachedExtension.extension) {
+        return this._getOrBuild(modelName, extension.name, options).value as TResult
+      }
+
+      const merged = {...(extension.defaultOptions as any), ...(options as any)}
+      return extension.build(model, merged, this) // tslint:disable-line
     }
 
-    return this._getOrBuild(modelName, extensionOrName, options).value as T
+    return this._getOrBuild(modelName, extensionOrName, options).value as TResult
   }
 }

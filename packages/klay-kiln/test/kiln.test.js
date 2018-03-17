@@ -140,7 +140,7 @@ describe('lib/kiln.ts', () => {
       kiln.addExtension({extension, defaultOptions: {y: 1}})
       expect(kiln.build('user', 'A')).to.eql({x: 1, y: 1})
       expect(kiln.build('user', 'A', {z: 1})).to.eql({x: 1, y: 1, z: 1})
-      expect(kiln.build('user', extension)).to.eql({x: 1})
+      expect(kiln.build('user', {...extension})).to.eql({x: 1})
       expect(kiln.build('user', extension, {z: 1})).to.eql({x: 1, z: 1})
     })
 
@@ -155,22 +155,37 @@ describe('lib/kiln.ts', () => {
       expect(value2).to.not.eql({busted: true})
     })
 
-    it('should not cache results of direct build', () => {
+    it('should cache results of direct build when ===', () => {
       const value1 = kiln.build('user', extensionA)
       expect(value1).to.eql({resultA: 'foo'})
       extensionA.build.restore()
       sinon.stub(extensionA, 'build').returns({busted: 1})
 
       const value2 = kiln.build('user', 'A')
-      expect(value2).to.not.equal(value1)
-      expect(value2).to.eql({busted: 1})
-      extensionA.build.restore()
-      sinon.stub(extensionA, 'build').returns({busted: 2})
+      expect(value2).to.equal(value1)
 
       const value3 = kiln.build('user', extensionA)
-      expect(value3).to.not.equal(value2)
+      expect(value3).to.equal(value1)
+      expect(kiln.build('user', 'A')).to.eql(value1)
+    })
+
+    it('should not cache results of direct build when !==', () => {
+      const extensionALike = _.defaults({name: 'A'}, extensionApi)
+      sinon.stub(extensionALike, 'build').returns({busted: 1})
+
+      const value1 = kiln.build('user', extensionALike)
+      expect(value1).to.eql({busted: 1})
+
+      const value2 = kiln.build('user', 'A')
+      expect(value2).to.eql({resultA: 'foo'})
+      extensionALike.build.restore()
+      sinon.stub(extensionALike, 'build').returns({busted: 2})
+
+      const value3 = kiln.build('user', extensionALike)
       expect(value3).to.eql({busted: 2})
-      expect(kiln.build('user', 'A')).to.eql({busted: 1})
+      extensionA.build.restore()
+      sinon.stub(extensionA, 'build').returns({busted: 3})
+      expect(kiln.build('user', 'A')).to.eql({resultA: 'foo'})
     })
 
     it('should fail when referencing unknowns', () => {

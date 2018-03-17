@@ -10,6 +10,7 @@ import {
   HTTPMethod,
   IRoute,
   IRouteInput,
+  IRouteOptions,
   IRouteParams,
   IRouter,
   IRouterOptions,
@@ -44,6 +45,18 @@ export class RouterExtension implements IKilnExtension<IRouter, IRouterOptions> 
   }
 
   // tslint:disable-next-line
+  private getRoute(kiln: IKiln, kilnModel: IKilnModel, inputOrOptions: IRouteInput | IRouteOptions): IRoute {
+    if (typeof (inputOrOptions as any).type === 'string') {
+      return kiln.build<IRoute, IRouteOptions>(
+        kilnModel.name,
+        EXPRESS_ROUTE,
+        inputOrOptions as IRouteOptions,
+      )
+    }
+
+    return createRoute(inputOrOptions as IRouteInput)
+  }
+
   public build(kilnModel: IKilnModel, options: IRouterOptions, kiln: IKiln): IRouter {
     const router = Router()
 
@@ -52,10 +65,7 @@ export class RouterExtension implements IKilnExtension<IRouter, IRouterOptions> 
     const routes = map(options.routes, (typeOrOption, key) => {
       const [method, path] = key.split(' ')
       const options = typeof typeOrOption === 'string' ? {type: typeOrOption} : typeOrOption
-      const route =
-        typeof (options as any).type === 'string'
-          ? kiln.build<IRoute>(kilnModel.name, EXPRESS_ROUTE, options)
-          : createRoute(options as IRouteInput)
+      const route = this.getRoute(kiln, kilnModel, options)
 
       for (const [name, handler] of entries(route.paramHandlers)) {
         const existing = paramHandlers[name] || handler
