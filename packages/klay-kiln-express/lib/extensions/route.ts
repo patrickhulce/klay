@@ -33,22 +33,14 @@ export class RouteExtension implements IKilnExtension<IRoute, IRouteOptions> {
     options = {...action.defaultOptions, ...options}
 
     const executor = kiln.build(kilnModel.name, options.databaseExtension!) as IDatabaseExecutor
-    const lookupActionTargetHandler = action.lookupActionTarget(kilnModel, options, executor)
-
-    const middleware = options.middleware || {}
-    if (lookupActionTargetHandler) {
-      const postValidation: IAnontatedHandler[] = []
-      middleware.postValidation = postValidation
-        .concat(middleware.postValidation || [])
-        .concat(lookupActionTargetHandler)
-    }
 
     return createRoute({
       queryModel: action.queryModel(kilnModel, options),
       bodyModel: action.bodyModel(kilnModel, options),
       paramsModel: action.paramsModel(kilnModel, options),
       handler: action.handler(kilnModel, options, executor),
-      middleware,
+      lookupActionTarget: action.lookupActionTarget(kilnModel, options, executor),
+      middleware: options.middleware,
     })
   }
 }

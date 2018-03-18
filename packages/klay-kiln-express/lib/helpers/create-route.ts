@@ -61,6 +61,8 @@ export function createRoute(input: IRouteInput): IRoute {
   extendMiddleware(middleware, ValidateIn.Query, models.queryModel)
   extendMiddleware(middleware, ValidateIn.Body, models.bodyModel)
   extendMiddleware(middleware, inputMiddleware.postValidation)
+  extendMiddleware(middleware, input.lookupActionTarget)
+  extendMiddleware(middleware, inputMiddleware.preResponse)
   extendMiddleware(middleware, input.handler)
   extendMiddleware(middleware, inputMiddleware.postResponse)
 

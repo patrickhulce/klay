@@ -126,6 +126,7 @@ export interface IAdditionalMiddleware {
 
 export interface IRouteInput extends IModelSet {
   handler: IAnontatedHandler
+  lookupActionTarget?: IAnontatedHandler
   middleware?: IAdditionalMiddleware
 }
 
