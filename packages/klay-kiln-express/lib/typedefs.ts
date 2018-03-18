@@ -150,6 +150,23 @@ export interface IRouter {
   router: ExpressRouter
 }
 
+/* Authentication */
+export type GrantTemplate = string
+
+export interface IAuthRoles {
+  [role: string]: GrantTemplate[]
+}
+
+export interface IAuthScopes {
+  [scope: string]: string[]
+}
+
+export interface IAuthConfiguration {
+  roles: IAuthRoles
+  scopes: IAuthScopes
+}
+
+/* Constants */
 export const DEFAULT_DATABASE_EXTENSION = 'sql'
 export const EXPRESS_ROUTE = 'express-route'
 export const EXPRESS_ROUTER = 'express-router'
