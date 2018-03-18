@@ -151,19 +151,30 @@ export interface IRouter {
 }
 
 /* Authentication */
-export type GrantTemplate = string
-
-export interface IAuthRoles {
-  [role: string]: GrantTemplate[]
+export interface IGrantTemplate {
+  permission: string
+  criteria: string[]
 }
 
-export interface IAuthScopes {
-  [scope: string]: string[]
+export interface IAuthRoles {
+  [role: string]: IGrantTemplate[]
+}
+
+export interface IAuthPermissions {
+  [permission: string]: string[]
 }
 
 export interface IAuthConfiguration {
   roles: IAuthRoles
-  scopes: IAuthScopes
+  permissions: IAuthPermissions
+}
+
+export interface IAuthCriteria {
+  [criteriaProperty: string]: string | number | boolean
+}
+
+export interface IGrants {
+  has(permission: string, criteria: IAuthCriteria): boolean
 }
 
 /* Constants */
