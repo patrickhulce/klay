@@ -135,7 +135,8 @@ export interface IRoutes {
   [expressPath: string]: ActionType | IRouteOptions | IRouteInput
 }
 
-export interface IRouterOptions extends IRouteOptions {
+export interface IRouterOptions {
+  defaults?: IRouteOptions | IRouteInput
   routes?: IRoutes
 }
 

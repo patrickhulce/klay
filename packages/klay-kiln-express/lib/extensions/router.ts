@@ -1,7 +1,7 @@
 import {Router} from 'express'
 import {modelAssertions} from 'klay-core'
 import {IKiln, IKilnExtension, IKilnModel} from 'klay-kiln'
-import {entries, isEqual, map, omit} from 'lodash'
+import {entries, isEqual, map} from 'lodash'
 import {createRoute} from '../helpers/create-route'
 import {
   ActionType,
@@ -48,7 +48,7 @@ export class RouterExtension implements IKilnExtension<IRouter, IRouterOptions> 
   // tslint:disable-next-line
   private getRoute(kiln: IKiln, kilnModel: IKilnModel, inputOrOptions: IRouteInput | IRouteOptions, routerOptions: IRouterOptions): IRoute {
     if (typeof (inputOrOptions as any).type === 'string') {
-      const inheritedRouterOptions = omit(routerOptions, ['routes']) as IRouteOptions
+      const inheritedRouterOptions = routerOptions.defaults as IRouteOptions
       const routeOptions = inputOrOptions as IRouteOptions
       return kiln.build<IRoute, IRouteOptions>(
         kilnModel.name,
@@ -57,7 +57,7 @@ export class RouterExtension implements IKilnExtension<IRouter, IRouterOptions> 
       )
     }
 
-    const inheritedRouterOptions = omit(routerOptions, ['routes']) as IRouteInput
+    const inheritedRouterOptions = routerOptions.defaults as IRouteInput
     const routeInput = inputOrOptions as IRouteInput
     return createRoute({...inheritedRouterOptions, ...routeInput})
   }

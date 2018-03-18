@@ -37,7 +37,7 @@ describe('lib/extensions/router.ts', () => {
 
   it('should apply options to all action routes', () => {
     const router = kiln.build('user', 'express-router', {
-      defaultLimit: 87,
+      defaults: {defaultLimit: 87},
       routes: {
         'GET /': 'list',
         'GET /foo': {type: 'list', defaultLimit: 50},
@@ -51,7 +51,7 @@ describe('lib/extensions/router.ts', () => {
 
   it('should apply options to all input routes', () => {
     const router = kiln.build('user', 'express-router', {
-      bodyModel: context.string(),
+      defaults: {bodyModel: context.string()},
       routes: {
         'PUT /': {bodyModel: context.integer(), handler},
         'PUT /foo': {handler},
