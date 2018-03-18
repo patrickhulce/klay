@@ -18,6 +18,7 @@ declare module 'express-serve-static-core' {
 
   export interface Request {
     validated?: ValidatedPayloads
+    actionTarget?: any
   }
 
   export interface Response {
@@ -74,6 +75,11 @@ export interface IAction {
   queryModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   paramsModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   bodyModel(model: IKilnModel, options: IActionOptions): IModel | undefined
+  lookupActionTarget(
+    model: IKilnModel,
+    options: IActionOptions,
+    executor: IDatabaseExecutor,
+  ): IAnontatedHandler | undefined
   handler(
     model: IKilnModel,
     options: IActionOptions,
@@ -114,6 +120,7 @@ export interface IRouteOptions extends IActionOptions {
 export interface IAdditionalMiddleware {
   preValidation?: IAnontatedHandler | IAnontatedHandler[]
   postValidation?: IAnontatedHandler | IAnontatedHandler[]
+  preResponse?: IAnontatedHandler | IAnontatedHandler[]
   postResponse?: IAnontatedHandler | IAnontatedHandler[]
 }
 
@@ -151,7 +158,7 @@ export interface IRouter {
   router: ExpressRouter
 }
 
-/* Authentication */
+/* Auth */
 export interface IGrantTemplate {
   permission: string
   criteria: string[]

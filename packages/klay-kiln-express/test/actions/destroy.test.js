@@ -11,7 +11,7 @@ describe('lib/actions/destroy.ts', () => {
     state = utils.state()
     kiln = state.kiln
     executor = state.executor
-    sinon.stub(executor, 'findByIdOrThrow').returns({})
+    sinon.stub(executor, 'findByIdOrThrow').returns({foo: 1})
     destroyStub = sinon.stub(executor, 'destroyById').returns(Promise.resolve())
     transactionStub = sinon.stub(executor, 'transaction', f => f('t'))
   })
@@ -36,6 +36,7 @@ describe('lib/actions/destroy.ts', () => {
     const req = {params: {id}}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).to.have.nested.property('validated.params.id', id)
+    expect(req).to.have.property('actionTarget').eql({foo: 1})
     expect(await res.promise).to.eql(undefined)
     expect(nextCalledAll).to.equal(true)
     expect(destroyStub.callCount).to.equal(1)
@@ -46,6 +47,7 @@ describe('lib/actions/destroy.ts', () => {
     const req = {body: uuid()}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).to.have.nested.property('validated.body').a('string')
+    expect(req).to.have.property('actionTarget').eql({foo: 1})
     expect(await res.promise).to.eql(undefined)
     expect(nextCalledAll).to.equal(true)
     expect(destroyStub.callCount).to.equal(1)
@@ -57,6 +59,7 @@ describe('lib/actions/destroy.ts', () => {
     const req = {body: [uuid(), uuid(), uuid()]}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).to.have.nested.property('validated.body').length(3)
+    expect(req).to.have.property('actionTarget').eql([{foo: 1}, {foo: 1}, {foo: 1}])
     expect(await res.promise).to.eql(undefined)
     expect(nextCalledAll).to.equal(true)
     expect(destroyStub.callCount).to.equal(3)

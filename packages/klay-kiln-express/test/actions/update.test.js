@@ -11,7 +11,8 @@ describe('lib/actions/update.ts', () => {
     state = utils.state()
     kiln = state.kiln
     executor = state.executor
-    sinon.stub(executor, 'findOne').returns(undefined)
+    sinon.stub(executor, 'findByIdOrThrow').returns({foo: 1})
+    sinon.stub(executor, 'findOne').returns({foo: 1})
     updateStub = sinon.stub(executor, 'update').returnsArg(0)
     updateAllStub = sinon.stub(executor, 'updateAll').returnsArg(0)
   })
@@ -40,6 +41,7 @@ describe('lib/actions/update.ts', () => {
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).to.have.nested.property('validated.body')
     expect(req).to.have.nested.property('validated.body.updatedAt', undefined)
+    expect(req).to.have.property('actionTarget').eql({foo: 1})
     expect(await res.promise).to.eql(req.validated.body)
     expect(nextCalledAll).to.equal(true)
     expect(updateStub.callCount).to.equal(1)
@@ -59,6 +61,7 @@ describe('lib/actions/update.ts', () => {
     expect(req).to.have.nested.property('validated.body.0.id')
     expect(req).to.have.nested.property('validated.body.0.updatedAt', undefined)
     expect(await res.promise).to.eql(req.validated.body)
+    expect(req).to.have.property('actionTarget').eql([{foo: 1}])
     expect(nextCalledAll).to.equal(true)
     expect(updateStub.callCount).to.equal(0)
     expect(updateAllStub.callCount).to.equal(1)

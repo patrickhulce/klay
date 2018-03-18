@@ -26,6 +26,7 @@ describe('lib/actions/read.ts', () => {
     const req = {params: {id}}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).to.have.nested.property('validated.params.id', id)
+    expect(req).to.have.property('actionTarget').eql({foo: 'bar'})
     expect(await res.promise).to.eql({foo: 'bar'})
     expect(nextCalledAll).to.equal(true)
     expect(readStub.callCount).to.equal(1)

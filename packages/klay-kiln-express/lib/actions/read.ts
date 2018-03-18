@@ -21,11 +21,8 @@ export const readAction: IAction = {
     options: IActionOptions,
     executor: IDatabaseExecutor,
   ): IAnontatedHandler {
-    const pkField = getPrimaryKeyField(kilnModel.model)
-    const pkParamName = options.idParamName || pkField
     return function(req: Request, res: Response, next: NextFunction): void {
-      const id = get(req.validated!.params, pkParamName)
-      res.promise = executor.findByIdOrThrow(id)
+      res.promise = Promise.resolve(req.actionTarget)
       next()
     }
   },

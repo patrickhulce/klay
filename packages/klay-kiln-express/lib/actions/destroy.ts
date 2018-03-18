@@ -7,11 +7,6 @@ import {paramifyModel} from '../helpers/transform-model'
 import {ActionType, IAction, IActionOptions, IAnontatedHandler} from '../typedefs'
 import {defaultAction} from './action'
 
-async function destroyById(executor: IDatabaseExecutor, id: PrimaryKey): Promise<void> {
-  await executor.findByIdOrThrow(id)
-  await executor.destroyById(id)
-}
-
 async function destroyAll(executor: IDatabaseExecutor, ids: PrimaryKey[]): Promise<void> {
   await executor.transaction(async transaction => {
     await Promise.all(ids.map(id => executor.destroyById(id, {transaction})))
@@ -49,7 +44,7 @@ export const destroyAction: IAction = {
     return function(req: Request, res: Response, next: NextFunction): void {
       const id = options.byId ? get(req.validated, ['params', pkParamName]) : req.validated!.body
       const ids = req.validated!.body
-      res.promise = options.byList ? destroyAll(executor, ids) : destroyById(executor, id)
+      res.promise = options.byList ? destroyAll(executor, ids) : executor.destroyById(id)
 
       next()
     }
