@@ -111,7 +111,7 @@ export interface IActionOptions extends IQuerifyOptions, IParamifyOptions {
   expectQueryIn?: ValidateIn
 }
 
-export interface IRouteOptions extends IActionOptions {
+export interface IActionRouteOptions extends IActionOptions {
   type?: ActionType
   databaseExtension?: string
   middleware?: IAdditionalMiddleware

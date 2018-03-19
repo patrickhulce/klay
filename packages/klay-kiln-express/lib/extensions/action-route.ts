@@ -2,20 +2,19 @@ import {IKiln, IKilnExtension, IKilnModel} from 'klay-kiln'
 import {
   DEFAULT_DATABASE_EXTENSION,
   EXPRESS_ROUTE,
-  IAnontatedHandler,
+  IActionRouteOptions,
   IRoute,
-  IRouteOptions,
 } from '../typedefs'
 
 import {IDatabaseExecutor} from 'klay-db'
 import {actions} from '../actions'
 import {createRoute} from '../helpers/create-route'
 
-export class RouteExtension implements IKilnExtension<IRoute, IRouteOptions> {
+export class ActionRouteExtension implements IKilnExtension<IRoute, IActionRouteOptions> {
   public name: string
-  public defaultOptions: IRouteOptions
+  public defaultOptions: IActionRouteOptions
 
-  public constructor(options: IRouteOptions) {
+  public constructor(options: IActionRouteOptions) {
     this.name = EXPRESS_ROUTE
     this.defaultOptions = {
       databaseExtension: DEFAULT_DATABASE_EXTENSION,
@@ -24,7 +23,7 @@ export class RouteExtension implements IKilnExtension<IRoute, IRouteOptions> {
   }
 
   // tslint:disable-next-line
-  public build(kilnModel: IKilnModel, options: IRouteOptions, kiln: IKiln): IRoute {
+  public build(kilnModel: IKilnModel, options: IActionRouteOptions, kiln: IKiln): IRoute {
     const action = actions.find(action => action.type === options.type)
     if (!action) {
       throw new Error(`Could not find action: ${options.type}`)
