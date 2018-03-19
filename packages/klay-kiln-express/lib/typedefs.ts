@@ -1,8 +1,4 @@
-import {
-  Handler as ExpressHandler,
-  RequestParamHandler as ExpressParamHandler,
-  Router as ExpressRouter,
-} from 'express'
+import * as express from 'express'
 import {IModel} from 'klay-core'
 import {IDatabaseExecutor, IQueryOrder} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
@@ -17,6 +13,7 @@ declare module 'express-serve-static-core' {
   }
 
   export interface Request {
+    grants?: IGrants
     validated?: ValidatedPayloads
     actionTarget?: any
   }
@@ -62,9 +59,11 @@ export interface IModelSet {
   bodyModel?: IModel
 }
 
-export interface IAnontatedHandler extends ExpressHandler, IModelSet {}
+export interface IAnontatedHandler extends express.Handler, IModelSet {
+  requiredAuthPermission?: string
+}
 
-export interface IAnnotatedParamsHandler extends ExpressParamHandler {
+export interface IAnnotatedParamsHandler extends express.RequestParamHandler {
   paramName: string
   model: IModel
 }
@@ -124,9 +123,21 @@ export interface IAdditionalMiddleware {
   postResponse?: IAnontatedHandler | IAnontatedHandler[]
 }
 
+export type GetCriteriaValues = (
+  req: express.Request,
+  criteriaProperty: string,
+) => AuthCriteriaValue[]
+
+export interface IAuthorizationRequired {
+  permission: string
+  criteria: AuthCriteriaProperties[]
+  getCriteriaValues?: GetCriteriaValues
+}
+
 export interface IRouteInput extends IModelSet {
   handler: IAnontatedHandler
   lookupActionTarget?: IAnontatedHandler
+  authorization?: IAuthorizationRequired
   middleware?: IAdditionalMiddleware
 }
 
@@ -140,29 +151,36 @@ export interface IRoute extends IModelSet {
 }
 
 export interface IRoutes {
-  [expressPath: string]: ActionType | IRouteOptions | IRouteInput
+  [expressPath: string]: ActionType | IActionRouteOptions | IRouteInput
 }
 
 export interface IRouterOptions {
-  defaults?: IRouteOptions | IRouteInput
+  defaults?: IActionRouteOptions & IRouteInput
+  // FIXME: https://github.com/patrickhulce/klay/issues/74
+  readAuthorization?: IAuthorizationRequired
+  writeAuthorization?: IAuthorizationRequired
   routes?: IRoutes
 }
 
 export interface IRouterRoute extends IRoute {
   path: string
   method: HTTPMethod
-  options: IRouteOptions
+  options: IActionRouteOptions
 }
 
 export interface IRouter {
   routes: IRouterRoute[]
-  router: ExpressRouter
+  router: express.Router
 }
 
 /* Auth */
+export type AuthCriteriaProperties = string[]
+
+export type AuthCriteriaValue = string | number | boolean
+
 export interface IGrantTemplate {
   permission: string
-  criteria: string[]
+  criteria: AuthCriteriaProperties
 }
 
 export interface IAuthRoles {
@@ -176,13 +194,16 @@ export interface IAuthPermissions {
 export interface IAuthConfiguration {
   roles: IAuthRoles
   permissions: IAuthPermissions
+  getUserContext?(req: express.Request): any
+  getRole?(userContext: any, req: express.Request): string | undefined
 }
 
 export interface IAuthCriteria {
-  [criteriaProperty: string]: string | number | boolean
+  [criteriaProperty: string]: AuthCriteriaValue
 }
 
 export interface IGrants {
+  hasGlobal(permission: string): boolean
   has(permission: string, criteria: IAuthCriteria): boolean
 }
 

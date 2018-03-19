@@ -9,7 +9,7 @@ import {
   IRouteParams,
   ValidateIn,
 } from '../typedefs'
-import {createValidationMiddleware} from './create-middleware'
+import {createGrantValidationMiddleware, createValidationMiddleware} from './create-middleware'
 
 function createParamHandlers(model?: IModel): IRouteParams {
   const handlers: IRouteParams = {}
@@ -55,6 +55,7 @@ export function createRoute(input: IRouteInput): IRoute {
   const paramHandlers = createParamHandlers(input.paramsModel)
   const models = pick(input, ['queryModel', 'paramsModel', 'bodyModel'])
   const middleware: IAnontatedHandler[] = []
+  const authMiddleware = input.authorization && createGrantValidationMiddleware(input.authorization)
 
   extendMiddleware(middleware, inputMiddleware.preValidation)
   extendMiddleware(middleware, ValidateIn.Params, models.paramsModel)
@@ -62,6 +63,7 @@ export function createRoute(input: IRouteInput): IRoute {
   extendMiddleware(middleware, ValidateIn.Body, models.bodyModel)
   extendMiddleware(middleware, inputMiddleware.postValidation)
   extendMiddleware(middleware, input.lookupActionTarget)
+  extendMiddleware(middleware, authMiddleware)
   extendMiddleware(middleware, inputMiddleware.preResponse)
   extendMiddleware(middleware, input.handler)
   extendMiddleware(middleware, inputMiddleware.postResponse)
