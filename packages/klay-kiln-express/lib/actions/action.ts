@@ -1,12 +1,15 @@
 import * as express from 'express'
 import {getPrimaryKeyField, IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
-import {ActionType, IAction, IActionOptions, IAnontatedHandler} from '../typedefs'
+import {ActionType, IActionOptions, IAnontatedHandler} from '../typedefs'
 
 const actionTypesWithTarget = new Set([ActionType.Read, ActionType.Update, ActionType.Destroy])
 
 export const defaultAction = {
   defaultOptions: {},
+  getCriteriaValues(model: IKilnModel, options: IActionOptions): undefined {
+    return undefined
+  },
   queryModel(model: IKilnModel, options: IActionOptions): undefined {
     return undefined
   },
@@ -21,7 +24,7 @@ export const defaultAction = {
     options: IActionOptions,
     executor: IDatabaseExecutor,
   ): IAnontatedHandler | undefined {
-    const actionType = (this as IAction).type
+    const actionType = (this as any).type
     if (!actionTypesWithTarget.has(actionType)) return undefined
 
     const pkField = options.idParamName || getPrimaryKeyField(kilnModel.model)

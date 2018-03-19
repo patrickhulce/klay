@@ -19,6 +19,8 @@ import {
   ValidateIn,
 } from '../typedefs'
 
+const READ_ACTIONS = new Set([ActionType.List, ActionType.Read])
+
 export const CRUD_ROUTES: IRoutes = {
   'GET /': {type: ActionType.List},
   'POST /search': {type: ActionType.List, expectQueryIn: ValidateIn.Body},
@@ -46,15 +48,24 @@ export class RouterExtension implements IKilnExtension<IRouter, IRouterOptions> 
   }
 
   // tslint:disable-next-line
-  private getRoute(kiln: IKiln, kilnModel: IKilnModel, inputOrOptions: IRouteInput | IRouteOptions, routerOptions: IRouterOptions): IRoute {
-    if (typeof (inputOrOptions as any).type === 'string') {
-      const inheritedRouterOptions = routerOptions.defaults as IRouteOptions
-      const routeOptions = inputOrOptions as IRouteOptions
-      return kiln.build<IRoute, IRouteOptions>(
-        kilnModel.name,
-        EXPRESS_ROUTE,
-        {...inheritedRouterOptions, ...routeOptions},
-      )
+  private getRoute(
+    kiln: IKiln,
+    kilnModel: IKilnModel,
+    inputOrOptions: IRouteInput | IActionRouteOptions,
+    routerOptions: IRouterOptions,
+  ): IRoute {
+    const actionType = (inputOrOptions as any).type
+    if (typeof actionType === 'string') {
+      const authorization = READ_ACTIONS.has(actionType as ActionType)
+        ? routerOptions.readAuthorization
+        : routerOptions.writeAuthorization
+      const inheritedRouterOptions = routerOptions.defaults as IActionRouteOptions
+      const routeOptions = inputOrOptions as IActionRouteOptions
+      return kiln.build<IRoute, IActionRouteOptions>(kilnModel.name, EXPRESS_ROUTE, {
+        ...inheritedRouterOptions,
+        authorization,
+        ...routeOptions,
+      })
     }
 
     const inheritedRouterOptions = routerOptions.defaults as IRouteInput

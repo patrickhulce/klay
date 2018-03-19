@@ -4,7 +4,15 @@ import {IDatabaseExecutor, IQuery, IQueryOrderItem, SortDirection} from 'klay-db
 import {IKilnModel} from 'klay-kiln'
 import {forEach, omit, pick} from 'lodash'
 import {querifyModel} from '../helpers/transform-model'
-import {ActionType, IAction, IActionOptions, IAnontatedHandler, ValidateIn} from '../typedefs'
+import {
+  ActionType,
+  AuthCriteriaValue,
+  GetCriteriaValues,
+  IAction,
+  IActionOptions,
+  IAnontatedHandler,
+  ValidateIn,
+} from '../typedefs'
 import {defaultAction} from './action'
 
 const LIST_OPTIONS = ['limit', 'offset', 'order', 'fields']
@@ -26,8 +34,9 @@ function parseOrder(value: IValidationResult): IValidationResult {
   if (typeof value.value === 'string') {
     return value.setValue(value.value.split(',').map(stringToOrderItem))
   } else if (Array.isArray(value.value)) {
-    const newArr = value.value.map(item =>
-      typeof item === 'string' ? stringToOrderItem(item) : (item as IQueryOrderItem))
+    const newArr = value.value.map(
+      item => (typeof item === 'string' ? stringToOrderItem(item) : (item as IQueryOrderItem)),
+    )
 
     return value.setValue(newArr)
   }
@@ -88,6 +97,13 @@ export const listAction: IAction = {
     allowQueryByRange: [['createdAt'], ['updatedAt']],
     maxLimit: 1000,
     defaultLimit: 10,
+  },
+  getCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
+    return function(req: Request, property: string): AuthCriteriaValue[] {
+      const payload =
+        options.expectQueryIn === ValidateIn.Query ? req.validated!.query : req.validated!.body
+      return [payload[property] && payload[property].$eq]
+    }
   },
   queryModel(kilnModel: IKilnModel, options: IActionOptions): IModel | undefined {
     return options.expectQueryIn === ValidateIn.Query

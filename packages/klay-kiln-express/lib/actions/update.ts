@@ -3,7 +3,14 @@ import {defaultModelContext, IModel} from 'klay-core'
 import {IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import {paramifyModel, updateifyModel} from '../helpers/transform-model'
-import {ActionType, IAction, IActionOptions, IAnontatedHandler} from '../typedefs'
+import {
+  ActionType,
+  AuthCriteriaValue,
+  GetCriteriaValues,
+  IAction,
+  IActionOptions,
+  IAnontatedHandler,
+} from '../typedefs'
 import {defaultAction} from './action'
 
 export const updateAction: IAction = {
@@ -13,6 +20,13 @@ export const updateAction: IAction = {
     byId: true,
     byList: false,
     idParamName: undefined,
+  },
+  getCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
+    return function(req: Request, property: string): AuthCriteriaValue[] {
+      const incomingItems: any[] = [].concat(req.validated!.body)
+      const existingItems: any[] = [].concat(req.actionTarget)
+      return incomingItems.concat(existingItems).map(item => item[property])
+    }
   },
   paramsModel(kilnModel: IKilnModel, options: IActionOptions): IModel | undefined {
     return options.byId ? paramifyModel(kilnModel.model, options) : undefined

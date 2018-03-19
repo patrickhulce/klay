@@ -4,7 +4,14 @@ import {findModel, getPrimaryKeyField, IDatabaseExecutor, PrimaryKey} from 'klay
 import {IKilnModel} from 'klay-kiln'
 import {get} from 'lodash'
 import {paramifyModel} from '../helpers/transform-model'
-import {ActionType, IAction, IActionOptions, IAnontatedHandler} from '../typedefs'
+import {
+  ActionType,
+  AuthCriteriaValue,
+  GetCriteriaValues,
+  IAction,
+  IActionOptions,
+  IAnontatedHandler,
+} from '../typedefs'
 import {defaultAction} from './action'
 
 async function destroyAll(executor: IDatabaseExecutor, ids: PrimaryKey[]): Promise<void> {
@@ -20,6 +27,12 @@ export const destroyAction: IAction = {
     byId: true,
     byList: false,
     idParamName: undefined,
+  },
+  getCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
+    return function(req: Request, property: string): AuthCriteriaValue[] {
+      const items: any[] = [].concat(req.actionTarget)
+      return items.map(item => item[property])
+    }
   },
   paramsModel(kilnModel: IKilnModel, options: IActionOptions): IModel | undefined {
     return options.byId ? paramifyModel(kilnModel.model, options) : undefined

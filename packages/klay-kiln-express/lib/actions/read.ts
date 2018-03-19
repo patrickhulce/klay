@@ -1,10 +1,16 @@
 import {NextFunction, Request, Response} from 'express'
 import {IModel} from 'klay-core'
-import {getPrimaryKeyField, IDatabaseExecutor} from 'klay-db'
+import {IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
-import {get} from 'lodash'
 import {paramifyModel} from '../helpers/transform-model'
-import {ActionType, IAction, IActionOptions, IAnontatedHandler} from '../typedefs'
+import {
+  ActionType,
+  AuthCriteriaValue,
+  GetCriteriaValues,
+  IAction,
+  IActionOptions,
+  IAnontatedHandler,
+} from '../typedefs'
 import {defaultAction} from './action'
 
 export const readAction: IAction = {
@@ -12,6 +18,11 @@ export const readAction: IAction = {
   type: ActionType.Read,
   defaultOptions: {
     idParamName: undefined,
+  },
+  getCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
+    return function(req: Request, property: string): AuthCriteriaValue[] {
+      return [req.actionTarget[property]]
+    }
   },
   paramsModel(kilnModel: IKilnModel, options: IActionOptions): IModel {
     return paramifyModel(kilnModel.model, options)

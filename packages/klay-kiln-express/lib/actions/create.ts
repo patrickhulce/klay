@@ -3,7 +3,14 @@ import defaultModelContext, {IModel} from 'klay-core'
 import {IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import {creatifyModel} from '../helpers/transform-model'
-import {ActionType, IAction, IActionOptions, IAnontatedHandler} from '../typedefs'
+import {
+  ActionType,
+  AuthCriteriaValue,
+  GetCriteriaValues,
+  IAction,
+  IActionOptions,
+  IAnontatedHandler,
+} from '../typedefs'
 import {defaultAction} from './action'
 
 export const createAction: IAction = {
@@ -11,6 +18,12 @@ export const createAction: IAction = {
   type: ActionType.Create,
   defaultOptions: {
     byList: false,
+  },
+  getCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
+    return function(req: Request, property: string): AuthCriteriaValue[] {
+      const items: any[] = [].concat(req.validated!.body)
+      return items.map(item => item[property])
+    }
   },
   bodyModel(kilnModel: IKilnModel, options: IActionOptions): IModel {
     const createModel = creatifyModel(kilnModel.model)
