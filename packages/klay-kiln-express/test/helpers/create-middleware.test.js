@@ -51,4 +51,52 @@ describe('lib/helpers/create-middleware.ts', () => {
       expect(err.errors[0].message).to.match(/expected.*number/)
     })
   })
+
+  describe('#createGrantCreationMiddleware', () => {
+    let roles, permissions
+    const createMiddleware = middlewareModule.createGrantCreationMiddleware
+
+    beforeEach(() => {
+      roles = {
+        admin: [{permission: 'write', criteria: ['orgId=<%= orgId %>']}],
+        user: [{permission: 'read', criteria: ['orgId<%= orgId %>']}],
+      }
+      permissions = {write: ['read'], read: []}
+    })
+
+    it('should create grants when empty', () => {
+      const middleware = createMiddleware({roles, permissions})
+      const req = {}
+
+      middleware(req, {}, next)
+      expect(next.callCount).to.equal(1)
+      expect(req).to.have.property('grants')
+      expect(req.grants._grants.size).to.equal(0)
+    })
+
+    it('should create grants when populated', () => {
+      const middleware = createMiddleware({roles, permissions})
+      const req = {user: {orgId: 2, role: 'admin'}}
+
+      middleware(req, {}, next)
+      expect(next.callCount).to.equal(1)
+      expect(req).to.have.property('grants')
+      expect(req.grants.has('write', {orgId: 2})).to.equal(true)
+      expect(req.grants.has('read', {orgId: 2})).to.equal(true)
+      expect(req.grants.has('write', {orgId: 3})).to.equal(false)
+    })
+
+    it('should create grants with custom role finder', () => {
+      const getRole = user => user.theRole
+      const middleware = createMiddleware({roles, permissions, getRole})
+      const req = {user: {orgId: 2, theRole: 'admin'}}
+
+      middleware(req, {}, next)
+      expect(next.callCount).to.equal(1)
+      expect(req).to.have.property('grants')
+      expect(req.grants.has('write', {orgId: 2})).to.equal(true)
+      expect(req.grants.has('read', {orgId: 2})).to.equal(true)
+      expect(req.grants.has('write', {orgId: 3})).to.equal(false)
+    })
+  })
 })
