@@ -2,6 +2,7 @@ const expect = require('chai').expect
 const sinon = require('sinon')
 const ModelContext = require('klay-core').ModelContext
 const middlewareModule = require('../../dist/helpers/create-middleware')
+const Grants = require('../../dist/auth/grants').Grants
 
 describe('lib/helpers/create-middleware.ts', () => {
   let context, model, next
@@ -59,7 +60,7 @@ describe('lib/helpers/create-middleware.ts', () => {
     beforeEach(() => {
       roles = {
         admin: [{permission: 'write', criteria: ['orgId=<%= orgId %>']}],
-        user: [{permission: 'read', criteria: ['orgId<%= orgId %>']}],
+        user: [{permission: 'read', criteria: ['orgId=<%= orgId %>']}],
       }
       permissions = {write: ['read'], read: []}
     })
@@ -97,6 +98,135 @@ describe('lib/helpers/create-middleware.ts', () => {
       expect(req.grants.has('write', {orgId: 2})).to.equal(true)
       expect(req.grants.has('read', {orgId: 2})).to.equal(true)
       expect(req.grants.has('write', {orgId: 3})).to.equal(false)
+    })
+
+    it('should create grants with custom user finder', () => {
+      const getUserContext = req => req.foo
+      const middleware = createMiddleware({roles, permissions, getUserContext})
+      const req = {foo: {orgId: 2, role: 'user'}}
+
+      middleware(req, {}, next)
+      expect(next.callCount).to.equal(1)
+      expect(req).to.have.property('grants')
+      expect(req.grants.has('write', {orgId: 2})).to.equal(false)
+      expect(req.grants.has('read', {orgId: 2})).to.equal(true)
+    })
+  })
+
+  describe('#createGrantValidationMiddleware', () => {
+    let roles, permissions, grants, getCriteriaValues
+    const createMiddleware = middlewareModule.createGrantValidationMiddleware
+
+    beforeEach(() => {
+      roles = {
+        root: [{permission: 'write', criteria: '*'}],
+        user: [
+          {permission: 'write', criteria: ['orgId=<%= orgId %>', 'userId=<%= id %>']},
+          {permission: 'read', criteria: ['orgId=<%= orgId %>']},
+        ]
+      }
+
+      permissions = {write: ['read'], read: []}
+      grants = new Grants('user', {id: 1, orgId: 2}, {roles, permissions})
+      getCriteriaValues = (req, prop) => [req[prop]]
+    })
+
+    it('should throw when getCriteriaValues not set', () => {
+      const fn = () => createMiddleware({permission: 'read', criteria: [['orgId']]})
+      expect(fn).to.throw(/getCriteriaValues/)
+    })
+
+    it('should fail request if grants property not set', () => {
+      const middleware = createMiddleware({
+        permission: 'read',
+        criteria: [['orgId']],
+        getCriteriaValues,
+      })
+      middleware({}, {}, next)
+      expect(next.callCount).to.equal(1)
+      expect(next.firstCall.args[0]).to.be.instanceof(Error)
+    })
+
+    it('should pass request if global access', () => {
+      grants = new Grants('root', {}, {roles, permissions})
+
+      const middleware = createMiddleware({
+        permission: 'read',
+        criteria: [['orgId']],
+        getCriteriaValues,
+      })
+
+      middleware({grants}, {}, next)
+      expect(next.callCount).to.equal(1)
+      expect(next.firstCall.args).to.have.length(0)
+    })
+
+    it('should pass request if matches the criteria', () => {
+      const middleware = createMiddleware({
+        permission: 'read',
+        criteria: [['orgId']],
+        getCriteriaValues,
+      })
+
+      middleware({grants, orgId: 2}, {}, next)
+      expect(next.callCount).to.equal(1)
+      expect(next.firstCall.args).to.have.length(0)
+    })
+
+    it('should pass request if matches multi-criteria', () => {
+      const middleware = createMiddleware({
+        permission: 'write',
+        criteria: [['userId', 'orgId']],
+        getCriteriaValues,
+      })
+
+      middleware({grants, userId: 1, orgId: 2}, {}, next)
+      expect(next.callCount).to.equal(1)
+      expect(next.firstCall.args).to.have.length(0)
+    })
+
+    it('should pass request if matches one the criteria', () => {
+      const middleware = createMiddleware({
+        permission: 'read',
+        criteria: [['userId'], ['orgId']],
+        getCriteriaValues,
+      })
+
+      middleware({grants, userId: 100, orgId: 2}, {}, next)
+      expect(next.callCount).to.equal(1)
+      expect(next.firstCall.args).to.have.length(0)
+    })
+
+    it('should fail request if not matches the criteria', () => {
+      const middleware = createMiddleware({
+        permission: 'read',
+        criteria: [['orgId']],
+        getCriteriaValues,
+      })
+
+      middleware({grants, orgId: 3}, {}, next)
+      expect(next.callCount).to.equal(1)
+      expect(next.firstCall.args[0]).to.be.instanceof(Error)
+    })
+
+    it('should fail request if not matches all criteria properties', () => {
+      const middleware = createMiddleware({
+        permission: 'read',
+        criteria: [['userId', 'orgId']],
+        getCriteriaValues,
+      })
+
+      middleware({grants, userId: 1, orgId: 2}, {}, next)
+      expect(next.callCount).to.equal(1)
+      expect(next.firstCall.args).to.have.length(0)
+
+      middleware({grants, userId: 2, orgId: 2}, {}, next)
+      expect(next.callCount).to.equal(2)
+      expect(next.secondCall.args[0]).to.be.instanceof(Error)
+
+      middleware({grants, userId: 1, orgId: 3}, {}, next)
+      expect(next.callCount).to.equal(3)
+      expect(next.thirdCall.args[0]).to.be.instanceof(Error)
     })
   })
 })
