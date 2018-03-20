@@ -35,7 +35,9 @@ export function computeAllGrants(
   assert.ok(conf.roles[role], `invalid role: ${role}`)
 
   for (const grantDef of conf.roles[role]) {
-    const criteria = template(grantDef.criteria.join(','))(userContext)
+    const criteriaTemplate =
+      typeof grantDef.criteria === 'string' ? grantDef.criteria : grantDef.criteria.sort().join(',')
+    const criteria = template(criteriaTemplate || '*')(userContext)
     assertValidCriteria(criteria)
     const permissions = computeAllPermissions(grantDef.permission, conf)
     for (const permission of permissions) {
@@ -47,7 +49,9 @@ export function computeAllGrants(
 }
 
 function serializeCriteriaValues(criteriaValues: IAuthCriteria): string {
-  return map(criteriaValues, (value, prop) => `${prop}=${value}`).join(',')
+  return map(criteriaValues, (value, prop) => `${prop}=${value}`)
+    .sort()
+    .join(',')
 }
 
 export class Grants implements IGrants {
@@ -59,12 +63,8 @@ export class Grants implements IGrants {
     this._grants = computeAllGrants(role, userContext, conf)
   }
 
-  public hasGlobal(permission: string): boolean {
-    return this._grants.has(`${permission}!*`)
-  }
-
-  public has(permission: string, criteriaValues: IAuthCriteria): boolean {
-    const criteria = serializeCriteriaValues(criteriaValues)
-    return this.hasGlobal(permission) || this._grants.has(`${permission}!${criteria}`)
+  public has(permission: string, criteriaValues?: IAuthCriteria): boolean {
+    const criteria = criteriaValues ? serializeCriteriaValues(criteriaValues) : '*'
+    return this._grants.has(`${permission}!*`) || this._grants.has(`${permission}!${criteria}`)
   }
 }

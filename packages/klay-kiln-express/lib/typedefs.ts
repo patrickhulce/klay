@@ -182,7 +182,7 @@ export type AuthCriteriaValue = string | number | boolean
 
 export interface IGrantTemplate {
   permission: string
-  criteria: AuthCriteriaProperties
+  criteria: AuthCriteriaProperties | string
 }
 
 export interface IAuthRoles {
@@ -205,8 +205,7 @@ export interface IAuthCriteria {
 }
 
 export interface IGrants {
-  hasGlobal(permission: string): boolean
-  has(permission: string, criteria: IAuthCriteria): boolean
+  has(permission: string, criteria?: IAuthCriteria): boolean
 }
 
 /* Constants */

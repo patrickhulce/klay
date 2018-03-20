@@ -53,10 +53,10 @@ export function createGrantValidationMiddleware(auth: IAuthorizationRequired): I
   if (!auth.getCriteriaValues) throw new Error('Must define getCriteriaValues for grant validation')
 
   return function(req: Request, res: Response, next: NextFunction): void {
-    if (!req.grants) throw new Error('Cannot validate grants without grant middleware')
+    if (!req.grants) return next(new Error('Cannot validate grants without grant middleware'))
 
     const grants = req.grants
-    if (grants.hasGlobal(auth.permission)) return next()
+    if (grants.has(auth.permission)) return next()
 
     for (const criteriaProperties of auth.criteria) {
       const requiredCriteria: IAuthCriteria[] = []
@@ -72,6 +72,6 @@ export function createGrantValidationMiddleware(auth: IAuthorizationRequired): I
       if (passed) return next()
     }
 
-    throw new Error(`Lacking permission ${auth.permission}`)
+    next(new Error(`Lacking permission ${auth.permission}`))
   }
 }

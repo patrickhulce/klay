@@ -89,4 +89,44 @@ describe('lib/auth/grants.ts', () => {
       expect(fn).to.throw(/invalid criteria/)
     })
   })
+
+  describe('.has', () => {
+    let roles, permissions, grants
+
+    beforeEach(() => {
+      roles = {
+        root: [{permission: 'write', criteria: '*'}, {permission: 'read:public', criteria: '*'}],
+        user: [
+          {permission: 'write', criteria: ['userId=<%= id %>', 'orgId=<%= orgId %>']},
+          {permission: 'read', criteria: ['orgId=<%= orgId %>']},
+          {permission: 'read:public', criteria: []},
+        ],
+      }
+
+      permissions = {write: ['read'], read: [], 'read:public': []}
+
+      grants = new auth.Grants('user', {id: 1, orgId: 2}, {roles, permissions})
+    })
+
+    it('should correctly report on global permissions', () => {
+      grants = new auth.Grants('root', {id: 1, orgId: 2}, {roles, permissions})
+      expect(grants.has('write', {orgId: 2})).to.equal(true)
+      expect(grants.has('write', {orgId: 10})).to.equal(true)
+      expect(grants.has('write', {})).to.equal(true)
+      expect(grants.has('write')).to.equal(true)
+      expect(grants.has('read', {orgId: 2})).to.equal(true)
+      expect(grants.has('read', {orgId: 15})).to.equal(true)
+      expect(grants.has('read:public', {orgId: 15})).to.equal(true)
+    })
+
+    it('should correctly report on simple permissions', () => {
+      grants = new auth.Grants('user', {id: 1, orgId: 2}, {roles, permissions})
+      expect(grants.has('write', {orgId: 2, userId: 1})).to.equal(true)
+      expect(grants.has('write', {orgId: 10})).to.equal(false)
+      expect(grants.has('write', {})).to.equal(false)
+      expect(grants.has('read', {orgId: 2})).to.equal(true)
+      expect(grants.has('read', {orgId: 15})).to.equal(false)
+      expect(grants.has('read:public', {orgId: 15})).to.equal(true)
+    })
+  })
 })
