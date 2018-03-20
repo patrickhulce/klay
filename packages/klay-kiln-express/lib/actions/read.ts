@@ -17,6 +17,7 @@ export const readAction: IAction = {
   ...defaultAction,
   type: ActionType.Read,
   defaultOptions: {
+    byId: true,
     idParamName: undefined,
   },
   getCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
@@ -32,6 +33,10 @@ export const readAction: IAction = {
     options: IActionOptions,
     executor: IDatabaseExecutor,
   ): IAnontatedHandler {
+    if (!options.byId) {
+      throw new Error('Read must always be byId')
+    }
+
     return function(req: Request, res: Response, next: NextFunction): void {
       res.promise = Promise.resolve(req.actionTarget)
       next()

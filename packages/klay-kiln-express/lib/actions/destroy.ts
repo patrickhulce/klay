@@ -61,7 +61,9 @@ export const destroyAction: IAction = {
     return function(req: Request, res: Response, next: NextFunction): void {
       const id = options.byId ? get(req.validated, ['params', pkParamName]) : req.validated!.body
       const ids = req.validated!.body
-      res.promise = options.byList ? destroyAll(executor, ids) : executor.destroyById(id)
+      res.promise = options.byList
+        ? destroyAll(executor, ids)
+        : executor.destroyById(id).then(() => undefined)
 
       next()
     }
