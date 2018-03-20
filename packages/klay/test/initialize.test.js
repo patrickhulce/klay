@@ -19,6 +19,7 @@ describe('e2e', () => {
     })
   })
 
+  require('./scenarios/create-account.test.js')(state)
   require('./scenarios/create-user.test.js')(state)
   require('./scenarios/create-many-users.test.js')(state)
   require('./scenarios/create-posts.test.js')(state)

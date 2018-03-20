@@ -5,6 +5,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
+    "start": "node dist/examples/app/run.js",
     "build": "tsc",
     "test": "npm run test:unit",
     "test:unit": "mocha './test/**/*.test.js'"

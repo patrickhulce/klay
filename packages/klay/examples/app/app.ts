@@ -13,6 +13,8 @@ import {
   ActionType,
 } from '../../lib'
 
+const accountRoutes = kiln.build(ModelId.Account, EXPRESS_ROUTER, {routes: CRUD_ROUTES}) as IRouter
+
 const userRoutes = kiln.build(ModelId.User, EXPRESS_ROUTER, {routes: CRUD_ROUTES}) as IRouter
 
 const postRoutes = kiln.build<IRouter, IRouterOptions>(ModelId.Post, EXPRESS_ROUTER, {
@@ -25,11 +27,12 @@ const postRoutes = kiln.build<IRouter, IRouterOptions>(ModelId.Post, EXPRESS_ROU
     'PUT /:id': {type: ActionType.Update},
     'DELETE /:id': {type: ActionType.Destroy},
   },
-}) as IRouter
+})
 
 export const app: express.Express = express()
 if (typeof (global as any).it === 'undefined') app.use(logger('short'))
 app.use(json({strict: false}))
+app.use('/v1/accounts', accountRoutes.router)
 app.use('/v1/users', userRoutes.router)
 app.use('/v1/posts', postRoutes.router)
 app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {

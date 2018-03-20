@@ -2,17 +2,20 @@ import {IKiln, Kiln} from '../../lib'
 import {SQLDialect, SQLExtension} from '../../lib'
 import {RouterExtension, RouteExtension, ActionType} from '../../lib'
 
+import {accountModel} from './models/account'
 import {userModel} from './models/user'
 import {postModel} from './models/post'
 
 export const kiln: IKiln = new Kiln()
 
 export enum ModelId {
+  Account = 'account',
   User = 'user',
   Post = 'post',
 }
 
-kiln.addModel({name: ModelId.User, model: userModel, meta: {plural: 'example_users'}})
+kiln.addModel({name: ModelId.Account, model: accountModel})
+kiln.addModel({name: ModelId.User, model: userModel, meta: {tableName: 'example_users'}})
 kiln.addModel({name: ModelId.Post, model: postModel})
 
 const sqlOptions = {

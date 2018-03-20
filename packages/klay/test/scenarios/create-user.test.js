@@ -7,6 +7,7 @@ module.exports = state => {
   describe('user', () => {
     beforeEach(() => {
       user = {
+        accountId: state.account.id,
         email: 'foo@bar.com',
         password: 'password',
         firstName: 'Foo',

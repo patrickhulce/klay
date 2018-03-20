@@ -9,6 +9,7 @@ module.exports = state => {
   describe('posts', () => {
     beforeEach(() => {
       post = {
+        accountId: state.account.id,
         userId: state.user.id,
         title: 'My Post',
         body: 'This is a fascinating post...',
@@ -28,6 +29,7 @@ module.exports = state => {
       state.post = await response.json()
       expect(state.post).to.have.property('id').a('number')
       expect(_.omit(state.post, ['id', 'createdAt', 'updatedAt'])).to.eql({
+        accountId: state.account.id,
         userId: state.user.id,
         title: 'My Post',
         body: 'This is a fascinating post...',

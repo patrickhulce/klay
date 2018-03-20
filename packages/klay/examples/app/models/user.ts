@@ -9,6 +9,10 @@ export const userModel: IModel = modelContext
   .object()
   .children({
     id: modelContext.integerId(),
+    accountId: modelContext
+      .integer()
+      .constrain({type: ConstraintType.Immutable})
+      .constrain({type: ConstraintType.Reference, meta: {referencedModel: 'account'}}),
     email: modelContext
       .email()
       .max(250)

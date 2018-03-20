@@ -9,6 +9,7 @@ module.exports = state => {
   describe('bulk users', () => {
     beforeEach(() => {
       user = {
+        accountId: state.account.id,
         email: 'unset@bar.com',
         password: 'password',
         firstName: 'Foo',
