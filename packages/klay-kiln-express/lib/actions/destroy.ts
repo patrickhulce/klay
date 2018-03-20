@@ -52,6 +52,10 @@ export const destroyAction: IAction = {
     options: IActionOptions,
     executor: IDatabaseExecutor,
   ): IAnontatedHandler {
+    if (options.byId && options.byList) {
+      throw new Error('Cannot update both byId and byList')
+    }
+
     const pkField = getPrimaryKeyField(kilnModel.model)
     const pkParamName = options.idParamName || pkField
     return function(req: Request, res: Response, next: NextFunction): void {

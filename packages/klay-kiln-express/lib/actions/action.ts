@@ -1,14 +1,28 @@
 import * as express from 'express'
 import {getPrimaryKeyField, IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
-import {ActionType, IActionOptions, IAnontatedHandler} from '../typedefs'
+import {
+  ActionType,
+  IAction,
+  IActionOptions,
+  IAnontatedHandler,
+  IAuthorizationRequired,
+} from '../typedefs'
 
 const actionTypesWithTarget = new Set([ActionType.Read, ActionType.Update, ActionType.Destroy])
 
 export const defaultAction = {
   defaultOptions: {},
-  getCriteriaValues(model: IKilnModel, options: IActionOptions): undefined {
-    return undefined
+  authorization(model: IKilnModel, options: IActionOptions): IAuthorizationRequired {
+    const getCriteriaValuesFn = ((this as any) as IAction).getCriteriaValues
+
+    let getCriteriaValues
+    if (typeof getCriteriaValuesFn === 'function') {
+      getCriteriaValues = getCriteriaValuesFn(model, options)
+    }
+
+    // TODO: infer permission and criteria from model
+    return {permission: '', criteria: [], getCriteriaValues}
   },
   queryModel(model: IKilnModel, options: IActionOptions): undefined {
     return undefined

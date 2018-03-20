@@ -71,7 +71,8 @@ export interface IAnnotatedParamsHandler extends express.RequestParamHandler {
 export interface IAction {
   type: ActionType
   defaultOptions: IActionOptions
-  getCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues | undefined
+  getCriteriaValues?(model: IKilnModel, options: IActionOptions): GetCriteriaValues | undefined
+  authorization(model: IKilnModel, options: IActionOptions): IAuthorizationRequired | undefined
   queryModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   paramsModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   bodyModel(model: IKilnModel, options: IActionOptions): IModel | undefined

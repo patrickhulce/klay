@@ -1,10 +1,5 @@
 import {IKiln, IKilnExtension, IKilnModel} from 'klay-kiln'
-import {
-  DEFAULT_DATABASE_EXTENSION,
-  EXPRESS_ROUTE,
-  IActionRouteOptions,
-  IRoute,
-} from '../typedefs'
+import {DEFAULT_DATABASE_EXTENSION, EXPRESS_ROUTE, IActionRouteOptions, IRoute} from '../typedefs'
 
 import {IDatabaseExecutor} from 'klay-db'
 import {actions} from '../actions'
@@ -33,7 +28,13 @@ export class ActionRouteExtension implements IKilnExtension<IRoute, IActionRoute
 
     const executor = kiln.build(kilnModel.name, options.databaseExtension!) as IDatabaseExecutor
 
+    const defaultAuthorization = action.authorization(kilnModel, options)
+    const authorization = options.authorization
+      ? {...defaultAuthorization, ...options.authorization}
+      : undefined
+
     return createRoute({
+      authorization,
       queryModel: action.queryModel(kilnModel, options),
       bodyModel: action.bodyModel(kilnModel, options),
       paramsModel: action.paramsModel(kilnModel, options),

@@ -46,4 +46,32 @@ describe('lib/actions/list.ts', () => {
     expect(nextCalledAll).to.equal(false)
     expect(findStub.callCount).to.equal(0)
   })
+
+  context('authorization', () => {
+    let authorization, grants
+
+    beforeEach(() => {
+      authorization = {permission: 'users:admin', criteria: [['lastName']]}
+      grants = new utils.Grants('user', {id: 1, lastName: 'Thompson'}, utils.auth)
+    })
+
+    it('should pass authorization', async () => {
+      const route = kiln.build('user', 'express-route', {type: 'list', authorization})
+      const req = {grants, query: {lastName: 'Thompson'}}
+      const {res} = await utils.runMiddleware(route.middleware, req)
+
+      expect(await res.promise).to.deep.include({data: []})
+      expect(findStub.callCount).to.equal(1)
+    })
+
+    it('should fail authorization', async () => {
+      const route = kiln.build('user', 'express-route', {type: 'list', authorization})
+      const req = {grants}
+      const {res, err} = await utils.runMiddleware(route.middleware, req)
+
+      expect(err).to.be.instanceOf(Error)
+      expect(err.message).to.match(/permission/)
+      expect(res.promise).to.equal(undefined)
+    })
+  })
 })

@@ -5,6 +5,7 @@ const utils = require('../utils')
 
 describe('lib/actions/create.ts', () => {
   let state, kiln, executor, createStub, createAllStub
+  const buildRoute = opts => kiln.build('user', 'express-route', opts)
 
   beforeEach(() => {
     state = utils.state()
@@ -16,13 +17,13 @@ describe('lib/actions/create.ts', () => {
   })
 
   it('should build the route', () => {
-    const route = kiln.build('user', 'express-route', {type: 'create'})
+    const route = buildRoute({type: 'create'})
     expect(route.bodyModel).to.have.property('isKlayModel', true)
     expect(route.middleware).to.have.length.greaterThan(0)
   })
 
   it('should call create', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'create'})
+    const route = buildRoute({type: 'create'})
     const req = {body: {...utils.defaultUser}}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).to.have.nested.property('validated.body')
@@ -33,7 +34,7 @@ describe('lib/actions/create.ts', () => {
   })
 
   it('should call createAll', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'create', byList: true})
+    const route = buildRoute({type: 'create', byList: true})
     const req = {body: [{...utils.defaultUser}]}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).to.have.nested.property('validated.body.0.firstName')
@@ -45,7 +46,7 @@ describe('lib/actions/create.ts', () => {
   })
 
   it('should validate body', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'create'})
+    const route = buildRoute({type: 'create'})
     const req = {body: {...utils.defaultUser, age: false}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(next.firstCall.args[0]).to.be.instanceof(Error)
@@ -56,7 +57,7 @@ describe('lib/actions/create.ts', () => {
   })
 
   it('should validate list body', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'create', byList: true})
+    const route = buildRoute({type: 'create', byList: true})
     const req = {body: {...utils.defaultUser}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(next.firstCall.args[0]).to.be.instanceof(Error)
@@ -64,5 +65,63 @@ describe('lib/actions/create.ts', () => {
     expect(nextCalledAll).to.equal(false)
     expect(createStub.callCount).to.equal(0)
     expect(createAllStub.callCount).to.equal(0)
+  })
+
+  context('authorization', () => {
+    let authorization, grants
+
+    beforeEach(() => {
+      authorization = {permission: 'users:admin', criteria: [['lastName']]}
+      grants = new utils.Grants('user', {id: 1, lastName: 'Thompson'}, utils.auth)
+    })
+
+    it('should pass authorization', async () => {
+      const route = buildRoute({type: 'create', authorization})
+      const req = {grants, body: {...utils.defaultUser}}
+      const {res} = await utils.runMiddleware(route.middleware, req)
+
+      expect(await res.promise).to.eql(req.validated.body)
+      expect(createStub.callCount).to.equal(1)
+    })
+
+    it('should fail authorization', async () => {
+      const route = buildRoute({type: 'create', authorization})
+      const req = {grants, body: {...utils.defaultUser, lastName: 'Not-Thompson'}}
+      const {res, err} = await utils.runMiddleware(route.middleware, req)
+
+      expect(err).to.be.instanceOf(Error)
+      expect(err.message).to.match(/permission/)
+      expect(res.promise).to.equal(undefined)
+    })
+
+    it('should pass list authorization', async () => {
+      const route = buildRoute({type: 'create', byList: true, authorization})
+      const body = [
+        {...utils.defaultUser},
+        {...utils.defaultUser},
+      ]
+
+      const req = {grants, body}
+      const {res} = await utils.runMiddleware(route.middleware, req)
+
+      expect(await res.promise).to.eql(req.validated.body)
+      expect(createAllStub.callCount).to.equal(1)
+    })
+
+    it('should fail list authorization', async () => {
+      const route = buildRoute({type: 'create', byList: true, authorization})
+      const body = [
+        {...utils.defaultUser},
+        {...utils.defaultUser, lastName: 'Not-Thompson'},
+        {...utils.defaultUser},
+      ]
+
+      const req = {grants, body}
+      const {res, err} = await utils.runMiddleware(route.middleware, req)
+
+      expect(err).to.be.instanceOf(Error)
+      expect(err.message).to.match(/permission/)
+      expect(res.promise).to.equal(undefined)
+    })
   })
 })

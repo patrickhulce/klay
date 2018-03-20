@@ -102,7 +102,7 @@ export const listAction: IAction = {
     return function(req: Request, property: string): AuthCriteriaValue[] {
       const payload =
         options.expectQueryIn === ValidateIn.Query ? req.validated!.query : req.validated!.body
-      return [payload[property] && payload[property].$eq]
+      return [payload && payload[property] && payload[property].$eq]
     }
   },
   queryModel(kilnModel: IKilnModel, options: IActionOptions): IModel | undefined {

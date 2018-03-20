@@ -4,6 +4,7 @@ const ModelContext = require('klay-core').ModelContext
 const {DatabaseExtension, DatabaseExecutor} = require('klay-db')
 const RouteExtension = require('../dist/extensions/action-route').ActionRouteExtension
 const RouterExtension = require('../dist/extensions/router').RouterExtension
+const Grants = require('../dist/auth/grants').Grants
 
 function createModel(context) {
   const tracking = {
@@ -69,28 +70,44 @@ async function runMiddleware(middleware, req) {
   const res = {}
   const next = sinon.stub()
   let nextCalledAll = true
+  let err = undefined
   for (const fn of middleware) {
     const startCallCount = next.callCount
     await fn(req, res, next)
 
     if (next.callCount === startCallCount || next.getCall(startCallCount).args[0]) {
       nextCalledAll = false
+      err = next.getCall(startCallCount).args[0]
       break
     }
   }
 
-  return {req, res, next, nextCalledAll}
+  return {req, res, next, nextCalledAll, err}
 }
 
 module.exports = {
   state,
   runMiddleware,
+  Grants,
+  auth: {
+    roles: {
+      user: [
+        {permission: 'users:admin', criteria: 'lastName=<%= lastName %>'},
+        {permission: 'write', criteria: 'userId=<%= id %>'},
+      ],
+    },
+    permissions: {
+      'users:admin': [],
+      write: ['read'],
+      read: [],
+    },
+  },
   defaultUser: {
     age: 24,
     isAdmin: true,
     email: 'klay@example.com',
     password: 'rocko',
-    firstName: 'klay-core',
+    firstName: 'Klay',
     lastName: 'Thompson',
     tracking: {},
   },

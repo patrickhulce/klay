@@ -123,7 +123,7 @@ describe('lib/helpers/create-middleware.ts', () => {
         user: [
           {permission: 'write', criteria: ['orgId=<%= orgId %>', 'userId=<%= id %>']},
           {permission: 'read', criteria: ['orgId=<%= orgId %>']},
-        ]
+        ],
       }
 
       permissions = {write: ['read'], read: []}
