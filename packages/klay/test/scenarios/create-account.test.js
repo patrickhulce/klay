@@ -2,30 +2,35 @@ const expect = require('chai').expect
 const fetch = require('isomorphic-fetch')
 
 module.exports = state => {
-  let account
-
   describe('account', () => {
-    beforeEach(() => {
-      account = {
+    it('should create an account', async () => {
+      const signup = {
         name: 'CSN Bay Area',
-        plan: 'free',
+        firstName: 'Klay',
+        lastName: 'Thompson',
+        email: 'klay@example.com',
+        password: 'rocko',
       }
-    })
 
-    it('should create a account', async () => {
-      const response = await fetch(`${state.baseURL}/v1/accounts`, {
+      const response = await fetch(`${state.baseURL}/v1/accounts/signup`, {
         method: 'POST',
-        body: JSON.stringify(account),
+        body: JSON.stringify(signup),
         headers: {'content-type': 'application/json'},
       })
 
       expect(response.status).to.equal(200)
-      state.account = await response.json()
-      expect(state.account).to.have.property('slug', 'csn-bay-area')
+      const {account, user} = await response.json()
+      state.account = account
+      state.user = user
+      state.userCookie = `id=${user.id};accountId=${user.accountId};role=${user.role}`
+
+      expect(account).to.have.property('slug', 'csn-bay-area')
+      expect(user).to.have.property('password').match(/^[a-f0-9]{40}$/)
     })
 
     it('should read an account', async () => {
-      const response = await fetch(`${state.baseURL}/v1/accounts/${state.account.id}`)
+      const headers = {cookie: state.userCookie}
+      const response = await fetch(`${state.baseURL}/v1/accounts/${state.account.id}`, {headers})
       const account = await response.json()
       expect(account).to.eql(state.account)
     })
@@ -34,7 +39,7 @@ module.exports = state => {
       const response = await fetch(`${state.baseURL}/v1/accounts/${state.account.id}`, {
         method: 'PUT',
         body: JSON.stringify({...state.account, name: 'Changed', slug: 'special-slug'}),
-        headers: {'content-type': 'application/json'},
+        headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
       expect(response.status).to.equal(200)

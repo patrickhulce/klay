@@ -2,6 +2,7 @@ import {modelContext} from '../model-context'
 import {createHmac} from 'crypto'
 import {IModel, ValidationPhase} from '../../../lib'
 import {ConstraintType, SortDirection} from '../../../lib'
+import { AuthRoles } from '../auth';
 
 const SALT = 'super-secret-salt'
 
@@ -13,6 +14,7 @@ export const userModel: IModel = modelContext
       .integer()
       .constrain({type: ConstraintType.Immutable})
       .constrain({type: ConstraintType.Reference, meta: {referencedModel: 'account'}}),
+    role: modelContext.string().enum([AuthRoles.Admin, AuthRoles.User]),
     email: modelContext
       .email()
       .max(250)

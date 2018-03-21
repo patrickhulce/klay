@@ -8,6 +8,7 @@ module.exports = state => {
     beforeEach(() => {
       user = {
         accountId: state.account.id,
+        role: 'user',
         email: 'foo@bar.com',
         password: 'password',
         firstName: 'Foo',
@@ -19,12 +20,12 @@ module.exports = state => {
       const response = await fetch(`${state.baseURL}/v1/users`, {
         method: 'POST',
         body: JSON.stringify(user),
-        headers: {'content-type': 'application/json'},
+        headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
       expect(response.status).to.equal(200)
-      state.user = await response.json()
-      expect(state.user)
+      state.userA = await response.json()
+      expect(state.userA)
         .to.have.property('password')
         .match(/^[a-f0-9]{40}$/)
     })
@@ -33,7 +34,7 @@ module.exports = state => {
       const response = await fetch(`${state.baseURL}/v1/users`, {
         method: 'POST',
         body: JSON.stringify({...user, email: 'foo2@bar.com'}),
-        headers: {'content-type': 'application/json'},
+        headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
       expect(response.status).to.equal(200)
@@ -47,20 +48,22 @@ module.exports = state => {
       const response = await fetch(`${state.baseURL}/v1/users`, {
         method: 'POST',
         body: JSON.stringify(user),
-        headers: {'content-type': 'application/json'},
+        headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
+      // TODO: assert 400
       expect(response.status).to.not.equal(200)
     })
 
     it('should list users', async () => {
       const response = await fetch(`${state.baseURL}/v1/users`)
       const users = await response.json()
-      expect(users).to.eql({data: [state.user, state.userB], total: 2, limit: 10, offset: 0})
+      expect(users).to.eql({data: [state.user, state.userA, state.userB], total: 3, limit: 10, offset: 0})
     })
 
     it('should read a user', async () => {
-      const response = await fetch(`${state.baseURL}/v1/users/${state.user.id}`)
+      const headers = {cookie: state.userCookie}
+      const response = await fetch(`${state.baseURL}/v1/users/${state.user.id}`, {headers})
       const user = await response.json()
       expect(user).to.eql(state.user)
     })
@@ -69,7 +72,7 @@ module.exports = state => {
       const response = await fetch(`${state.baseURL}/v1/users/${state.user.id}`, {
         method: 'PUT',
         body: JSON.stringify({...state.user, firstName: 'Changed', password: 'other'}),
-        headers: {'content-type': 'application/json'},
+        headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
       expect(response.status).to.equal(200)
@@ -84,6 +87,7 @@ module.exports = state => {
     it('should delete a user', async () => {
       const response = await fetch(`${state.baseURL}/v1/users/${state.userB.id}`, {
         method: 'DELETE',
+        headers: {cookie: state.userCookie},
       })
 
       expect(response.status).to.equal(204)

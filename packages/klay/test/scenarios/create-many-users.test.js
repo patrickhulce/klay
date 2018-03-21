@@ -10,6 +10,7 @@ module.exports = state => {
     beforeEach(() => {
       user = {
         accountId: state.account.id,
+        role: 'user',
         email: 'unset@bar.com',
         password: 'password',
         firstName: 'Foo',
@@ -58,6 +59,7 @@ module.exports = state => {
       const responseBody = await response.json()
       expect(responseBody.data).to.eql([
         {id: state.user.id},
+        {id: state.userA.id},
         {id: state.users[0].id},
         {id: state.users[1].id},
         {id: state.users[2].id},

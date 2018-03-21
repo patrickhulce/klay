@@ -1,8 +1,9 @@
 import * as express from 'express'
 import * as logger from 'morgan'
 import {json} from 'body-parser'
+import * as cookies from 'cookie-parser'
 
-import {kiln, ModelId} from './kiln'
+import {kiln, ModelId, sqlExtension} from './kiln'
 import {
   IValidationError,
   ValidateIn,
@@ -11,13 +12,67 @@ import {
   IRouter,
   IRouterOptions,
   ActionType,
+  createGrantCreationMiddleware as authenticate,
 } from '../../lib'
+import {Permissions, configuration as authConf, AuthRoles} from './auth'
+import {modelContext} from './model-context'
+import {accountModel, AccountPlan} from './models/account'
+import {userModel} from './models/user'
+import {omit} from 'lodash'
 
-const accountRoutes = kiln.build(ModelId.Account, EXPRESS_ROUTER, {routes: CRUD_ROUTES}) as IRouter
+// TODO: add types to SQLExecutor
+const accountExecutor = kiln.build(ModelId.Account, sqlExtension)
+const userExecutor = kiln.build(ModelId.User, sqlExtension)
 
-const userRoutes = kiln.build(ModelId.User, EXPRESS_ROUTER, {routes: CRUD_ROUTES}) as IRouter
+const accountRoutes = kiln.build<IRouter, IRouterOptions>(ModelId.Account, EXPRESS_ROUTER, {
+  readAuthorization: {permission: Permissions.AccountView, criteria: [['id']]},
+  writeAuthorization: {permission: Permissions.AccountManage, criteria: [['id']]},
+  routes: {
+    ...CRUD_ROUTES,
+    'POST /signup': {
+      bodyModel: accountModel
+        .clone()
+        .pick(['name', 'slug'])
+        .merge(userModel.clone().pick(['firstName', 'lastName', 'email', 'password'])),
+      async handler(req: express.Request, res: express.Response) {
+        const response = await accountExecutor.transaction(async transaction => {
+          const payload = req.validated!.body
+          const account = (await accountExecutor.create(
+            {
+              name: payload.name,
+              slug: payload.slug,
+              plan: AccountPlan.Gold,
+            },
+            {transaction},
+          )) as any
+
+          const user = await userExecutor.create(
+            {
+              ...omit(payload, ['name', 'slug']),
+              accountId: account.id,
+              role: AuthRoles.Admin,
+            },
+            {transaction},
+          )
+
+          return {account, user}
+        })
+
+        res.json(response)
+      },
+    },
+  },
+})
+
+const userRoutes = kiln.build<IRouter, IRouterOptions>(ModelId.User, EXPRESS_ROUTER, {
+  readAuthorization: {permission: Permissions.UserView, criteria: [['accountId']]},
+  writeAuthorization: {permission: Permissions.UserManage, criteria: [['accountId'], ['id']]},
+  routes: CRUD_ROUTES,
+})
 
 const postRoutes = kiln.build<IRouter, IRouterOptions>(ModelId.Post, EXPRESS_ROUTER, {
+  readAuthorization: {permission: Permissions.PostManage, criteria: [['accountId']]},
+  writeAuthorization: {permission: Permissions.PostManage, criteria: [['accountId']]},
   routes: {
     'GET /': {type: ActionType.List},
     'POST /search': {type: ActionType.List, expectQueryIn: ValidateIn.Body},
@@ -32,6 +87,8 @@ const postRoutes = kiln.build<IRouter, IRouterOptions>(ModelId.Post, EXPRESS_ROU
 export const app: express.Express = express()
 if (typeof (global as any).it === 'undefined') app.use(logger('short'))
 app.use(json({strict: false}))
+app.use(cookies())
+app.use(authenticate(authConf))
 app.use('/v1/accounts', accountRoutes.router)
 app.use('/v1/users', userRoutes.router)
 app.use('/v1/posts', postRoutes.router)
