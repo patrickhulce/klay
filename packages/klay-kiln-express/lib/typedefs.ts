@@ -206,6 +206,7 @@ export interface IAuthCriteria {
 }
 
 export interface IGrants {
+  role?: string
   has(permission: string, criteria?: IAuthCriteria): boolean
 }
 

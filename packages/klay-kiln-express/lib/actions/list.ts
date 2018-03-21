@@ -21,7 +21,7 @@ function cleanUndefined(object: any, maxDepth: number = 0): void {
   forEach(object, (value, key) => {
     // tslint:disable-next-line
     if (typeof value === 'undefined') delete object[key]
-    if (maxDepth && typeof value === 'object') cleanUndefined(value, maxDepth--)
+    if (maxDepth && typeof value === 'object') cleanUndefined(value, maxDepth - 1)
   })
 }
 

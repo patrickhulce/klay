@@ -55,9 +55,11 @@ function serializeCriteriaValues(criteriaValues: IAuthCriteria): string {
 }
 
 export class Grants implements IGrants {
+  public readonly role?: string
   private readonly _grants: Set<string>
 
   public constructor(role?: string, userContext?: any, conf?: IAuthConfiguration) {
+    this.role = role
     this._grants = new Set()
     if (!role || !userContext || !conf) return
     this._grants = computeAllGrants(role, userContext, conf)

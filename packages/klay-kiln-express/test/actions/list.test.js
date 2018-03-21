@@ -22,9 +22,10 @@ describe('lib/actions/list.ts', () => {
 
   it('should call find', async () => {
     const route = kiln.build('user', 'express-route', {type: 'list'})
-    const req = {query: {age: '18'}}
+    const req = {query: {age: {$ne: '18'}, firstName: 'Klay'}}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(req).to.have.nested.property('validated.query.age.$eq', 18)
+    expect(req).to.have.nested.property('validated.query.age.$ne', 18)
+    expect(req).to.have.nested.property('validated.query.firstName.$eq', 'Klay')
     expect(await res.promise).to.eql({data: [], total: 5, limit: 10, offset: 0})
     expect(nextCalledAll).to.equal(true)
     expect(findStub.callCount).to.equal(1)
@@ -32,7 +33,7 @@ describe('lib/actions/list.ts', () => {
     expect(findStub.firstCall.args[0]).to.eql({
       limit: 10,
       offset: 0,
-      where: {age: {$eq: 18}},
+      where: {age: {$ne: 18}, firstName: {$eq: 'Klay'}},
     })
   })
 
