@@ -1,5 +1,5 @@
 export {ActionRouteExtension as RouteExtension} from './extensions/action-route'
 export {RouterExtension, CRUD_ROUTES} from './extensions/router'
-export {createValidationMiddleware} from './helpers/create-middleware'
 export {createRoute} from './helpers/create-route'
+export * from './helpers/create-middleware'
 export * from './typedefs'
