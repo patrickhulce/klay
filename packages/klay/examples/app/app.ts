@@ -121,7 +121,12 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
       body = ((err as any) as IValidationError).toJSON()
       break
     default:
-      body = {message: err.message, stack: err.stack!.split('\n')}
+      body = {message: err.message, stack: err.stack!.split('\n').slice(0, 5)}
+  }
+
+  // TODO: replace this with klay-auth errors `.name`
+  if (/Lacking permission/.test(err.message)) {
+    status = req.grants!.role === AuthRoles.Anonymous ? 401 : 403
   }
 
   res.status(status)

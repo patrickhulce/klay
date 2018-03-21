@@ -52,11 +52,12 @@ module.exports = state => {
       })
 
       // TODO: assert 400
-      expect(response.status).to.not.equal(200)
+      expect(response.status).to.equal(500)
     })
 
     it('should list users', async () => {
-      const response = await fetch(`${state.baseURL}/v1/users`)
+      const headers = {cookie: state.userCookie}
+      const response = await fetch(`${state.baseURL}/v1/users?accountId=${state.account.id}`, {headers})
       const users = await response.json()
       expect(users).to.eql({data: [state.user, state.userA, state.userB], total: 3, limit: 10, offset: 0})
     })

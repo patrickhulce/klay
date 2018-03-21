@@ -20,9 +20,7 @@ module.exports = state => {
       const response = await fetch(`${state.baseURL}/v1/posts`, {
         method: 'POST',
         body: JSON.stringify(post),
-        headers: {
-          'content-type': 'application/json',
-        },
+        headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
       expect(response.status).to.equal(200)

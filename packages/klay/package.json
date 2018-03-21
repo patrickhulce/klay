@@ -8,7 +8,7 @@
     "start": "node dist/examples/app/run.js",
     "build": "tsc",
     "test": "npm run test:unit",
-    "test:unit": "mocha --require source-map-support/register './test/**/*.test.js'"
+    "test:unit": "mocha --exit --require source-map-support/register './test/**/*.test.js'"
   },
   "repository": {
     "type": "git",

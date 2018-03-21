@@ -28,14 +28,16 @@ module.exports = state => {
       const response = await fetch(`${state.baseURL}/v1/users/bulk`, {
         method: 'POST',
         body: JSON.stringify(users),
-        headers: {'content-type': 'application/json'},
+        headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
       expect(response.status).to.equal(200)
       state.users = await response.json()
       expect(state.users).to.have.length(3)
       for (const user of state.users) {
-        expect(user).to.have.property('id').a('number')
+        expect(user)
+          .to.have.property('id')
+          .a('number')
         expect(user).to.have.property('createdAt')
         expect(user).to.have.property('updatedAt')
       }
@@ -45,15 +47,16 @@ module.exports = state => {
       const response = await fetch(`${state.baseURL}/v1/users/bulk`, {
         method: 'POST',
         body: JSON.stringify([user, user]),
-        headers: {'content-type': 'application/json'},
+        headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
       expect(response.status).to.equal(500)
     })
 
     it('should list users', async () => {
-      const queryParams = new URLSearchParams({fields: 'id'})
-      const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`)
+      const headers = {cookie: state.userCookie}
+      const queryParams = new URLSearchParams({fields: 'id', accountId: state.account.id})
+      const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`, {headers})
       expect(response.status).to.equal(200)
 
       const responseBody = await response.json()
@@ -67,8 +70,13 @@ module.exports = state => {
     })
 
     it('should query users', async () => {
-      const queryParams = new URLSearchParams({'email[$match]': 'foo.*bar'})
-      const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`)
+      const headers = {cookie: state.userCookie}
+      const queryParams = new URLSearchParams({
+        'email[$match]': 'foo.*bar',
+        accountId: state.account.id,
+      })
+
+      const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`, {headers})
       expect(await response.json()).to.have.property('total', 3)
     })
 
@@ -80,16 +88,21 @@ module.exports = state => {
       const response = await fetch(`${state.baseURL}/v1/users/bulk`, {
         method: 'PUT',
         body: JSON.stringify(users),
-        headers: {'content-type': 'application/json'},
+        headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
       expect(response.status).to.equal(200)
     })
 
     it('should list updated users', async () => {
+      const headers = {cookie: state.userCookie}
       const ids = state.users.map(user => user.id)
-      const queryParams = new URLSearchParams({'id[$in]': ids.join(',')})
-      const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`)
+      const queryParams = new URLSearchParams({
+        'id[$in]': ids.join(','),
+        accountId: state.account.id,
+      })
+
+      const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`, {headers})
       const updatedUsers = (await response.json()).data
       expect(updatedUsers).to.have.length(3)
 
@@ -109,7 +122,7 @@ module.exports = state => {
       const response = await fetch(`${state.baseURL}/v1/users/bulk`, {
         method: 'DELETE',
         body: JSON.stringify(ids),
-        headers: {'content-type': 'application/json'},
+        headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
       expect(response.status).to.equal(204)
