@@ -42,7 +42,7 @@ export function JSONToSQL(model: IModel, incoming: object): object {
   return record
 }
 
-export function SQLToJSON(model: IModel, record: object, fields?: string[]): object {
+export function SQLToJSON(model: IModel, record: object, fields?: string[]): any {
   const outgoing: any = {}
 
   forEachColumn(model, (childModel, path, column) => {

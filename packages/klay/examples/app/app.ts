@@ -13,16 +13,16 @@ import {
   IRouterOptions,
   ActionType,
   createGrantCreationMiddleware as authenticate,
+  IDatabaseExecutor,
 } from '../../lib'
 import {Permissions, configuration as authConf, AuthRoles} from './auth'
 import {modelContext} from './model-context'
-import {accountModel, AccountPlan} from './models/account'
-import {userModel} from './models/user'
+import {accountModel, AccountPlan, IAccount} from './models/account'
+import {userModel, IUser} from './models/user'
 import {omit} from 'lodash'
 
-// TODO: add types to SQLExecutor
-const accountExecutor = kiln.build(ModelId.Account, sqlExtension)
-const userExecutor = kiln.build(ModelId.User, sqlExtension)
+const accountExecutor = kiln.build(ModelId.Account, sqlExtension) as IDatabaseExecutor<IAccount>
+const userExecutor = kiln.build(ModelId.User, sqlExtension) as IDatabaseExecutor<IUser>
 
 const accountRoutes = kiln.build<IRouter, IRouterOptions>(ModelId.Account, EXPRESS_ROUTER, {
   readAuthorization: {permission: Permissions.AccountView, criteria: [['id']]},
@@ -37,20 +37,23 @@ const accountRoutes = kiln.build<IRouter, IRouterOptions>(ModelId.Account, EXPRE
       async handler(req: express.Request, res: express.Response) {
         const response = await accountExecutor.transaction(async transaction => {
           const payload = req.validated!.body
-          const account = (await accountExecutor.create(
+          const account = await accountExecutor.create(
             {
               name: payload.name,
               slug: payload.slug,
               plan: AccountPlan.Gold,
             },
             {transaction},
-          )) as any
+          )
 
           const user = await userExecutor.create(
             {
-              ...omit(payload, ['name', 'slug']),
-              accountId: account.id,
+              accountId: account.id!,
+              email: payload.email,
+              password: payload.password,
               role: AuthRoles.Admin,
+              firstName: payload.firstName,
+              lastName: payload.lastName,
             },
             {transaction},
           )

@@ -11,6 +11,15 @@ export enum AccountPlan {
   Gold = 'gold',
 }
 
+export interface IAccount {
+  id?: number
+  name: string
+  slug: string
+  plan: AccountPlan
+  createdAt?: Date
+  updatedAt?: Date
+}
+
 export const accountModel: IModel = modelContext
   .object()
   .children({

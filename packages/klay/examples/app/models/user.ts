@@ -6,6 +6,19 @@ import { AuthRoles } from '../auth';
 
 const SALT = 'super-secret-salt'
 
+
+export interface IUser {
+  id?: number
+  accountId: number
+  role: AuthRoles
+  email: string
+  password: string
+  firstName: string
+  lastName: string
+  createdAt?: Date
+  updatedAt?: Date
+}
+
 export const userModel: IModel = modelContext
   .object()
   .children({

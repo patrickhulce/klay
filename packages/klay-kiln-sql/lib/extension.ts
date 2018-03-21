@@ -4,7 +4,7 @@ import * as Sequelize from 'sequelize'
 
 import {DatabaseExecutor} from 'klay-db'
 import {getConnection, getModel} from './sequelize'
-import {SQLExectuor} from './sql-executor'
+import {SQLExecutor} from './sql-executor'
 import {IExecutorOptions, ISQLExecutor, ISQLOptions, ISyncOptions, SQL_EXECUTOR} from './typedefs'
 
 export class SQLExtension implements IKilnExtension<ISQLExecutor, IExecutorOptions> {
@@ -23,7 +23,7 @@ export class SQLExtension implements IKilnExtension<ISQLExecutor, IExecutorOptio
   }
 
   public build(kilnModel: IKilnModel, options: IExecutorOptions, kiln: IKiln): ISQLExecutor {
-    const baseExectuor = new SQLExectuor(
+    const baseExectuor = new SQLExecutor(
       this.sequelize,
       getModel(this.sequelize, kilnModel, kiln),
       kilnModel,

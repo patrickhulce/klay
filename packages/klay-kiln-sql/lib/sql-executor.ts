@@ -21,7 +21,8 @@ const mapOrder = (item: IQueryOrderItem) => [
   item.direction.toUpperCase(),
 ]
 
-export class SQLExectuor implements IDatabaseExecutorMinimal {
+export class SQLExecutor<TRecord extends object = object>
+  implements IDatabaseExecutorMinimal<TRecord> {
   public sequelize: Sequelize.Sequelize
   public sequelizeModel: Sequelize.Model<Sequelize.Instance<object>, object>
   public kilnModel: IKilnModel
@@ -41,18 +42,18 @@ export class SQLExectuor implements IDatabaseExecutorMinimal {
   }
 
   public async count(query: IQuery, extras?: IQueryExtras): Promise<number> {
-    const sqlExtras = SQLExectuor._extrasToSequlize(extras)
+    const sqlExtras = SQLExecutor._extrasToSequlize(extras)
     return this.sequelizeModel.count({...sqlExtras, where: query.where})
   }
 
-  public async findById(id: string | number, extras?: IQueryExtras): Promise<object | null> {
-    const sqlExtras = SQLExectuor._extrasToSequlize(extras)
+  public async findById(id: string | number, extras?: IQueryExtras): Promise<TRecord | null> {
+    const sqlExtras = SQLExecutor._extrasToSequlize(extras)
     const instance = await this.sequelizeModel.findById(id, sqlExtras)
     return instance && SQLToJSON(this.kilnModel.model, instance.toJSON())
   }
 
-  public async find(query: IQuery, extras?: IQueryExtras): Promise<object[]> {
-    const sqlExtras = SQLExectuor._extrasToSequlize(extras)
+  public async find(query: IQuery, extras?: IQueryExtras): Promise<TRecord[]> {
+    const sqlExtras = SQLExecutor._extrasToSequlize(extras)
     const instances: Array<Sequelize.Instance<object>> = await this.sequelizeModel.findAll({
       ...sqlExtras,
       where: query.where as Sequelize.WhereOptions<any>,
@@ -65,8 +66,8 @@ export class SQLExectuor implements IDatabaseExecutorMinimal {
     return instances.map(instance => SQLToJSON(this.kilnModel.model, instance.toJSON()))
   }
 
-  public async save(object: object, extras?: IQueryExtras): Promise<object> {
-    const sqlExtras = SQLExectuor._extrasToSequlize(extras)
+  public async save(object: TRecord, extras?: IQueryExtras): Promise<TRecord> {
+    const sqlExtras = SQLExecutor._extrasToSequlize(extras)
     const primaryKey = getPrimaryKey(this.kilnModel.model, object)
     const sqlValues = JSONToSQL(this.kilnModel.model, object)
     let instance = await this.sequelizeModel.findById(primaryKey)
@@ -81,7 +82,7 @@ export class SQLExectuor implements IDatabaseExecutorMinimal {
   }
 
   public async destroyById(id: string | number, extras?: IQueryExtras): Promise<void> {
-    const sqlExtras = SQLExectuor._extrasToSequlize(extras)
+    const sqlExtras = SQLExecutor._extrasToSequlize(extras)
     const instance = await this.sequelizeModel.findById(id, sqlExtras)
     if (!instance) {
       throw new Error(`No such record with ID ${id}`)
