@@ -16,6 +16,27 @@ module.exports = state => {
       }
     })
 
+    it('should check authentication', async () => {
+      const response = await fetch(`${state.baseURL}/v1/users`, {
+        method: 'POST',
+        body: JSON.stringify(user),
+        headers: {'content-type': 'application/json'},
+      })
+
+      expect(response.status).to.equal(401)
+    })
+
+    it('should check authorization', async () => {
+      const cookie = `role=user;accountId=${state.account.id};id=-1`
+      const response = await fetch(`${state.baseURL}/v1/users`, {
+        method: 'POST',
+        body: JSON.stringify(user),
+        headers: {'content-type': 'application/json', cookie},
+      })
+
+      expect(response.status).to.equal(403)
+    })
+
     it('should create a user', async () => {
       const response = await fetch(`${state.baseURL}/v1/users`, {
         method: 'POST',

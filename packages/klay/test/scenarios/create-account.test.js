@@ -35,6 +35,17 @@ module.exports = state => {
       expect(account).to.eql(state.account)
     })
 
+    it('should check authentication', async () => {
+      const response = await fetch(`${state.baseURL}/v1/accounts`)
+      expect(response.status).to.equal(401)
+    })
+
+    it('should check authorization', async () => {
+      const headers = {cookie: state.userCookie}
+      const response = await fetch(`${state.baseURL}/v1/accounts`, {headers})
+      expect(response.status).to.equal(403)
+    })
+
     it('should update an account', async () => {
       const response = await fetch(`${state.baseURL}/v1/accounts/${state.account.id}`, {
         method: 'PUT',

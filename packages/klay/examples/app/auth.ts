@@ -21,7 +21,7 @@ export const configuration: IAuthConfiguration = {
     if (req.cookies && req.cookies.accountId) {
       return req.cookies
     } else {
-      return {role: AuthRoles.Anonymous}
+      return {}
     }
   },
   permissions: {

@@ -4,7 +4,7 @@ import {IAuthConfiguration, IAuthCriteria, IGrants} from '../typedefs'
 
 function assertValidCriteria(criteria: string): void {
   if (criteria === '*') return
-  assert.ok(/(\w+=\w+,?)+/.test(criteria), `invalid criteria: ${criteria}`)
+  assert.ok(/(.+=.+,?)+/.test(criteria), `invalid criteria: ${criteria}`)
 }
 
 export function computeAllPermissions(permission: string, conf: IAuthConfiguration): string[] {
