@@ -1,6 +1,8 @@
 /* tslint:disable no-unsafe-any */
 import {NextFunction, Request, Response} from 'express'
 import {defaultModelContext, IModel} from 'klay-core'
+import {AuthenticationError} from '../auth/authentication-error'
+import {AuthorizationError} from '../auth/authorization-error'
 import {Grants} from '../auth/grants'
 import {
   IAnontatedHandler,
@@ -54,6 +56,7 @@ export function createGrantValidationMiddleware(auth: IAuthorizationRequired): I
 
   return function(req: Request, res: Response, next: NextFunction): void {
     if (!req.grants) return next(new Error('Cannot validate grants without grant middleware'))
+    if (!req.grants!.role) return next(new AuthenticationError())
 
     const grants = req.grants
     if (grants.has(auth.permission)) return next()
@@ -72,6 +75,6 @@ export function createGrantValidationMiddleware(auth: IAuthorizationRequired): I
       if (passed) return next()
     }
 
-    next(new Error(`Lacking permission ${auth.permission}`))
+    next(new AuthorizationError(auth.permission, req.grants))
   }
 }

@@ -120,13 +120,15 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
       status = 400
       body = ((err as any) as IValidationError).toJSON()
       break
+    case 'AuthenticationError':
+      status = 401
+      break
+    case 'AuthorizationError':
+      status = 403
+      body = {role: req.grants!.role!, grants: (req.grants as any)._grants}
+      break
     default:
       body = {message: err.message, stack: err.stack!.split('\n').slice(0, 5)}
-  }
-
-  // TODO: replace this with klay-auth errors `.name`
-  if (/Lacking permission/.test(err.message)) {
-    status = req.grants!.role === AuthRoles.Anonymous ? 401 : 403
   }
 
   res.status(status)

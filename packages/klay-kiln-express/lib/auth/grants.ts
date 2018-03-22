@@ -32,7 +32,7 @@ export function computeAllGrants(
   conf: IAuthConfiguration,
 ): Set<string> {
   const grants = new Set<string>()
-  assert.ok(conf.roles[role], `invalid role: ${role}`)
+  if (!conf.roles[role]) return grants
 
   for (const grantDef of conf.roles[role]) {
     const criteriaTemplate =
