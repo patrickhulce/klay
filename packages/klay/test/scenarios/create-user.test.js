@@ -72,8 +72,7 @@ module.exports = state => {
         headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
-      // TODO: assert 400
-      expect(response.status).to.equal(500)
+      expect(response.status).to.equal(400)
     })
 
     it('should list users', async () => {

@@ -19,7 +19,7 @@ import {Permissions, configuration as authConf, AuthRoles} from './auth'
 import {modelContext} from './model-context'
 import {accountModel, AccountPlan, IAccount} from './models/account'
 import {userModel, IUser} from './models/user'
-import {omit} from 'lodash'
+import {omit, pick} from 'lodash'
 
 const accountExecutor = kiln.build(ModelId.Account, sqlExtension) as IDatabaseExecutor<IAccount>
 const userExecutor = kiln.build(ModelId.User, sqlExtension) as IDatabaseExecutor<IUser>
@@ -119,6 +119,11 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
     case 'ValidationError':
       status = 400
       body = ((err as any) as IValidationError).toJSON()
+      break
+    case 'ConstraintError':
+      status = 400
+       // TODO: convert ConstraintError to same JSON format
+      body = pick(err, ['name', 'message', 'propertyPath', 'type'])
       break
     case 'AuthenticationError':
       status = 401

@@ -1,5 +1,7 @@
 /* tslint:disable await-promise */
 import {
+  ConstraintError,
+  ConstraintType,
   getPrimaryKey,
   IDatabaseExecutorMinimal,
   IQuery,
@@ -77,8 +79,16 @@ export class SQLExecutor<TRecord extends object = object>
       instance = this.sequelizeModel.build(sqlValues)
     }
 
-    const record = await instance!.save(sqlExtras)
-    return SQLToJSON(this.kilnModel.model, record.toJSON())
+    try {
+      const record = await instance!.save(sqlExtras)
+      return SQLToJSON(this.kilnModel.model, record.toJSON())
+    } catch (err) {
+      if (err.name === 'SequelizeUniqueConstraintError') {
+        throw new ConstraintError('unique constraint violated', ConstraintType.Unique)
+      }
+
+      throw err
+    }
   }
 
   public async destroyById(id: string | number, extras?: IQueryExtras): Promise<void> {

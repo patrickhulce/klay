@@ -10,6 +10,8 @@ import {
   PrimaryKey,
 } from './typedefs'
 
+import {assertions as constraintAssert} from './constraint-error'
+
 export function getPrimaryKeyField(model: IModel): string {
   const pkConstraint = model.spec.db!.constrain.find(
     constraint => constraint.type === ConstraintType.Primary,
@@ -89,7 +91,9 @@ export async function fetchByUniqueConstraints(
   }
 
   const existing = matches[0]
-  matches.forEach(item => assert.ok(isEqual(item, existing), 'conflicting unique constraints'))
+  matches.forEach(item =>
+    constraintAssert.ok(isEqual(item, existing), 'conflicting unique constraints'),
+  )
   return existing
 }
 
@@ -105,9 +109,13 @@ export async function evaluateUniqueConstraints(
     model,
     record,
     async (existing, constraint) => {
-      assert.ok(
+      constraintAssert.ok(
         !existing || primaryKey === getPrimaryKey(model, existing),
         `constraint ${constraint.name} violated`,
+        {
+          type: ConstraintType.Unique,
+          propertyPath: constraint.properties[0],
+        },
       )
     },
     extras,
@@ -130,7 +138,10 @@ export async function evaluateImmutableConstraints(
       const previous = get(existing, propertyPath)
       const next = get(record, propertyPath)
       const name = propertyPath.join('.')
-      assert.ok(isEqual(previous, next), `immutable constraint ${name} violated`)
+      constraintAssert.ok(isEqual(previous, next), `immutable constraint ${name} violated`, {
+        propertyPath,
+        type: ConstraintType.Immutable,
+      })
     })
   })
 }
