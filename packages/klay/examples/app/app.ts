@@ -14,6 +14,8 @@ import {
   ActionType,
   createGrantCreationMiddleware as authenticate,
   IDatabaseExecutor,
+  IRouterMap,
+  createAndMergeRouters,
 } from '../../lib'
 import {Permissions, configuration as authConf, AuthRoles} from './auth'
 import {modelContext} from './model-context'
@@ -24,77 +26,78 @@ import {omit, pick} from 'lodash'
 const accountExecutor = kiln.build(ModelId.Account, sqlExtension) as IDatabaseExecutor<IAccount>
 const userExecutor = kiln.build(ModelId.User, sqlExtension) as IDatabaseExecutor<IUser>
 
-const accountRoutes = kiln.build<IRouter, IRouterOptions>(ModelId.Account, EXPRESS_ROUTER, {
-  readAuthorization: {permission: Permissions.AccountView, criteria: [['id']]},
-  writeAuthorization: {permission: Permissions.AccountManage, criteria: [['id']]},
-  routes: {
-    ...CRUD_ROUTES,
-    'POST /signup': {
-      bodyModel: accountModel
-        .clone()
-        .pick(['name', 'slug'])
-        .merge(userModel.clone().pick(['firstName', 'lastName', 'email', 'password'])),
-      async handler(req: express.Request, res: express.Response) {
-        const response = await accountExecutor.transaction(async transaction => {
-          const payload = req.validated!.body
-          const account = await accountExecutor.create(
-            {
-              name: payload.name,
-              slug: payload.slug,
-              plan: AccountPlan.Gold,
-            },
-            {transaction},
-          )
+const routerMap: IRouterMap = {
+  '/v1/accounts': {
+    modelName: ModelId.Account,
+    readAuthorization: {permission: Permissions.AccountView, criteria: [['id']]},
+    writeAuthorization: {permission: Permissions.AccountManage, criteria: [['id']]},
+    routes: {
+      ...CRUD_ROUTES,
+      'POST /signup': {
+        bodyModel: accountModel
+          .clone()
+          .pick(['name', 'slug'])
+          .merge(userModel.clone().pick(['firstName', 'lastName', 'email', 'password'])),
+        async handler(req: express.Request, res: express.Response) {
+          const response = await accountExecutor.transaction(async transaction => {
+            const payload = req.validated!.body
+            const account = await accountExecutor.create(
+              {
+                name: payload.name,
+                slug: payload.slug,
+                plan: AccountPlan.Gold,
+              },
+              {transaction},
+            )
 
-          const user = await userExecutor.create(
-            {
-              accountId: account.id!,
-              email: payload.email,
-              password: payload.password,
-              role: AuthRoles.Admin,
-              firstName: payload.firstName,
-              lastName: payload.lastName,
-            },
-            {transaction},
-          )
+            const user = await userExecutor.create(
+              {
+                accountId: account.id!,
+                email: payload.email,
+                password: payload.password,
+                role: AuthRoles.Admin,
+                firstName: payload.firstName,
+                lastName: payload.lastName,
+              },
+              {transaction},
+            )
 
-          return {account, user}
-        })
+            return {account, user}
+          })
 
-        res.json(response)
+          res.json(response)
+        },
       },
     },
   },
-})
-
-const userRoutes = kiln.build<IRouter, IRouterOptions>(ModelId.User, EXPRESS_ROUTER, {
-  readAuthorization: {permission: Permissions.UserView, criteria: [['accountId']]},
-  writeAuthorization: {permission: Permissions.UserManage, criteria: [['accountId'], ['id']]},
-  routes: CRUD_ROUTES,
-})
-
-const postRoutes = kiln.build<IRouter, IRouterOptions>(ModelId.Post, EXPRESS_ROUTER, {
-  readAuthorization: {permission: Permissions.PostManage, criteria: [['accountId']]},
-  writeAuthorization: {permission: Permissions.PostManage, criteria: [['accountId']]},
-  routes: {
-    'GET /': {type: ActionType.List},
-    'POST /search': {type: ActionType.List, expectQueryIn: ValidateIn.Body},
-
-    'POST /': {type: ActionType.Create},
-    'GET /:id': {type: ActionType.Read},
-    'PUT /:id': {type: ActionType.Update},
-    'DELETE /:id': {type: ActionType.Destroy},
+  '/v1/users': {
+    modelName: ModelId.User,
+    readAuthorization: {permission: Permissions.UserView, criteria: [['accountId']]},
+    writeAuthorization: {permission: Permissions.UserManage, criteria: [['accountId'], ['id']]},
+    routes: CRUD_ROUTES,
   },
-})
+  '/v1/posts': {
+    modelName: ModelId.Post,
+    readAuthorization: {permission: Permissions.PostManage, criteria: [['accountId']]},
+    writeAuthorization: {permission: Permissions.PostManage, criteria: [['accountId']]},
+    routes: {
+      'GET /': {type: ActionType.List},
+      'POST /search': {type: ActionType.List, expectQueryIn: ValidateIn.Body},
+
+      'POST /': {type: ActionType.Create},
+      'GET /:id': {type: ActionType.Read},
+      'PUT /:id': {type: ActionType.Update},
+      'DELETE /:id': {type: ActionType.Destroy},
+    },
+  }
+}
 
 export const app: express.Express = express()
 if (typeof (global as any).it === 'undefined') app.use(logger('short'))
 app.use(json({strict: false}))
 app.use(cookies())
 app.use(authenticate(authConf))
-app.use('/v1/accounts', accountRoutes.router)
-app.use('/v1/users', userRoutes.router)
-app.use('/v1/posts', postRoutes.router)
+app.use(createAndMergeRouters(kiln, routerMap).router)
 app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (!res.promise) return next()
 

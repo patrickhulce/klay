@@ -161,6 +161,7 @@ export interface IRoutes {
 }
 
 export interface IRouterOptions {
+  modelName?: string
   defaults?: IActionRouteOptions & IRouteInput
   // FIXME: https://github.com/patrickhulce/klay/issues/74
   readAuthorization?: IAuthorizationRequired
@@ -177,6 +178,10 @@ export interface IRouterRoute extends IRoute {
 export interface IRouter {
   routes: IRouterRoute[]
   router: express.Router
+}
+
+export interface IRouterMap {
+  [path: string]: IRouter | IRouterOptions
 }
 
 /* Auth */
