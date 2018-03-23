@@ -10,5 +10,6 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
+    "preserveWatchOutput": true,
   }
 }

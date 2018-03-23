@@ -38,6 +38,7 @@
     "cookie-parser": "^1.4.3",
     "isomorphic-fetch": "^2.2.1",
     "morgan": "^1.9.0",
-    "source-map-support": "^0.5.4"
+    "source-map-support": "^0.5.4",
+    "typescript": "2.8.0-rc"
   }
 }
