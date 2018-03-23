@@ -1,5 +1,5 @@
 import {ModelContext} from './model-context'
-import {IModelContext} from './typedefs'
+import {IModelContext} from './typedefs' // tslint:disable-line
 
 export * from './typedefs'
 export {Assertions} from './errors/assertions'

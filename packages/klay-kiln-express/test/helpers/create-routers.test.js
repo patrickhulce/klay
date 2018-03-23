@@ -37,7 +37,7 @@ describe('lib/helpers/merge-routers.ts', () => {
     const merged = createRouters(kiln, {
       '/v1/model': {
         routes: [],
-        router: function(req, res, next) {
+        router(req, res, next) {
           next()
         },
       },
