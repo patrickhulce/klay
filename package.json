@@ -7,7 +7,7 @@
 		"build": "lerna run build",
 		"build:watch": "lerna exec --parallel 'tsc -w'",
 		"build:docs": "lerna exec ../../scripts/build-docs.sh",
-		"test": "npm run test:lint && npm run test:unit",
+		"test": "npm run build && npm run test:lint && npm run test:unit",
 		"test:lint": "lerna run test:lint --concurrency 1",
 		"test:unit": "mocha --exit --require source-map-support/register './packages/*/test/**/*.test.js'",
 		"test:watch": "npm run test:unit -- --watch --reporter dot"

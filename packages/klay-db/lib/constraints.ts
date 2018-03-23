@@ -114,7 +114,7 @@ export async function evaluateUniqueConstraints(
         `constraint ${constraint.name} violated`,
         {
           type: ConstraintType.Unique,
-          propertyPath: constraint.properties[0],
+          path: constraint.properties[0].join('.'),
         },
       )
     },
@@ -139,7 +139,7 @@ export async function evaluateImmutableConstraints(
       const next = get(record, propertyPath)
       const name = propertyPath.join('.')
       constraintAssert.ok(isEqual(previous, next), `immutable constraint ${name} violated`, {
-        propertyPath,
+        path: propertyPath.join('.'),
         type: ConstraintType.Immutable,
       })
     })

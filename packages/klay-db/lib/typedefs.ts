@@ -27,6 +27,12 @@ declare module 'klay-core/dist/typedefs' {
   }
 }
 
+declare module 'klay-core/dist/errors/assertions' {
+  export interface IExtraErrorProperties {
+    type?: ConstraintType
+  }
+}
+
 (ValidationPhase as any).Database = 'database'
 
 export interface IDatabaseSetterOptions {
@@ -174,34 +180,34 @@ export enum IDatabaseExecution {
   Destroy = 'destroy',
 }
 
-export interface IDatabaseExecutorMinimal {
+export interface IDatabaseExecutorMinimal<TRecord extends object = object> {
   transaction<T>(func: (t: IQueryTransaction) => Promise<T>): Promise<T>
 
   count(query: IQuery, extras?: IQueryExtras): Promise<number>
-  findById(id: PrimaryKey, extras?: IQueryExtras): Promise<object | null>
-  find(query: IQuery, extras?: IQueryExtras): Promise<object[]>
-  save(object: object, extras?: IQueryExtras): Promise<object>
+  findById(id: PrimaryKey, extras?: IQueryExtras): Promise<TRecord | null>
+  find(query: IQuery, extras?: IQueryExtras): Promise<TRecord[]>
+  save(object: TRecord, extras?: IQueryExtras): Promise<TRecord>
   destroyById(id: PrimaryKey, extras?: IQueryExtras): Promise<void>
 }
 
-export interface IDatabaseExecutor {
+export interface IDatabaseExecutor<TRecord extends object = object>  {
   transaction<T>(func: (t: IQueryTransaction) => Promise<T>): Promise<T>
 
   count(query: IQuery, extras?: IQueryExtras): Promise<number>
-  findById(id: PrimaryKey, extras?: IQueryExtras): Promise<object | null>
-  findByIdOrThrow(id: PrimaryKey, extras?: IQueryExtras): Promise<object>
-  find(query: IQuery, extras?: IQueryExtras): Promise<object[]>
+  findById(id: PrimaryKey, extras?: IQueryExtras): Promise<TRecord | null>
+  findByIdOrThrow(id: PrimaryKey, extras?: IQueryExtras): Promise<TRecord>
+  find(query: IQuery, extras?: IQueryExtras): Promise<TRecord[]>
   destroyById(id: PrimaryKey, extras?: IQueryExtras): Promise<void>
 
-  findOne(query: IQuery, extras?: IQueryExtras): Promise<object | undefined>
-  create(record: object, extras?: IQueryExtras): Promise<object>
-  createAll(records: object[], extras?: IQueryExtras): Promise<object[]>
-  update(record: object, extras?: IQueryExtras): Promise<object>
-  updateAll(records: object[], extras?: IQueryExtras): Promise<object[]>
-  upsert(record: object, extras?: IQueryExtras): Promise<object>
-  upsertAll(records: object[], extras?: IQueryExtras): Promise<object[]>
-  patch(id: PrimaryKey, patches: object, extras?: IQueryExtras): Promise<object>
-  patch(patches: object, extras?: IQueryExtras): Promise<object>
+  findOne(query: IQuery, extras?: IQueryExtras): Promise<TRecord | undefined>
+  create(record: TRecord, extras?: IQueryExtras): Promise<TRecord>
+  createAll(records: TRecord[], extras?: IQueryExtras): Promise<TRecord[]>
+  update(record: TRecord, extras?: IQueryExtras): Promise<TRecord>
+  updateAll(records: TRecord[], extras?: IQueryExtras): Promise<TRecord[]>
+  upsert(record: TRecord, extras?: IQueryExtras): Promise<TRecord>
+  upsertAll(records: TRecord[], extras?: IQueryExtras): Promise<TRecord[]>
+  patch(id: PrimaryKey, patches: Partial<TRecord>, extras?: IQueryExtras): Promise<TRecord>
+  patch(patches: Partial<TRecord>, extras?: IQueryExtras): Promise<TRecord>
   destroy(query: IQuery, extras?: IQueryExtras): Promise<void>
   destroyOne(query: IQuery, extras?: IQueryExtras): Promise<void>
 }
