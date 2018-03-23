@@ -48,6 +48,12 @@ describe('lib/actions/list.ts', () => {
     expect(findStub.callCount).to.equal(0)
   })
 
+  it('should return response model', () => {
+    const route = kiln.build('user', 'express-route', {type: 'list'})
+    expect(route).to.have.nested.property('responseModel.spec.type', 'object')
+    expect(route).to.have.nested.property('responseModel.spec.children').instanceof(Array)
+  })
+
   context('authorization', () => {
     let authorization, grants
 

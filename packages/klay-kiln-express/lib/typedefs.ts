@@ -54,9 +54,11 @@ export enum AutomanagedPropertyBehavior {
 }
 
 export interface IModelSet {
+  cookiesModel?: IModel
   queryModel?: IModel
   paramsModel?: IModel
   bodyModel?: IModel
+  responseModel?: IModel
 }
 
 export interface IAnontatedHandler extends express.Handler, IModelSet {
@@ -76,6 +78,7 @@ export interface IAction {
   queryModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   paramsModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   bodyModel(model: IKilnModel, options: IActionOptions): IModel | undefined
+  responseModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   lookupActionTarget(
     model: IKilnModel,
     options: IActionOptions,

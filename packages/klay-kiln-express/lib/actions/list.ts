@@ -115,6 +115,13 @@ export const listAction: IAction = {
       ? listOptionsModel(kilnModel.model, options)
       : undefined
   },
+  responseModel(kilnModel: IKilnModel, options: IActionOptions): IModel | undefined {
+    const modelAsArray = defaultModelContext.array().children(kilnModel.model).required()
+    return defaultModelContext.object().children({
+      data: modelAsArray,
+      total: defaultModelContext.integer().required(),
+    })
+  },
   handler(
     kilnModel: IKilnModel,
     options: IActionOptions,

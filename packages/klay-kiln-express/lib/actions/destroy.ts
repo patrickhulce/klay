@@ -47,6 +47,9 @@ export const destroyAction: IAction = {
       .required()
     return options.byList ? arrayPkModel : pkModel
   },
+  responseModel(): undefined {
+    return undefined
+  },
   handler(
     kilnModel: IKilnModel,
     options: IActionOptions,

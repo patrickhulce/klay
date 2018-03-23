@@ -1,4 +1,5 @@
 import * as express from 'express'
+import {defaultModelContext, IModel} from 'klay-core'
 import {getPrimaryKeyField, IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import {
@@ -32,6 +33,14 @@ export const defaultAction = {
   },
   bodyModel(model: IKilnModel, options: IActionOptions): undefined {
     return undefined
+  },
+  responseModel(model: IKilnModel, options: IActionOptions): IModel {
+    const arrayModel = defaultModelContext
+      .array()
+      .children(model.model)
+      .required()
+      .strict()
+    return options.byList ? arrayModel : model.model
   },
   lookupActionTarget(
     kilnModel: IKilnModel,

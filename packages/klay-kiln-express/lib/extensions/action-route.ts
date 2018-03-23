@@ -38,6 +38,7 @@ export class ActionRouteExtension implements IKilnExtension<IRoute, IActionRoute
       queryModel: action.queryModel(kilnModel, options),
       bodyModel: action.bodyModel(kilnModel, options),
       paramsModel: action.paramsModel(kilnModel, options),
+      responseModel: action.responseModel(kilnModel, options),
       handler: action.handler(kilnModel, options, executor),
       lookupActionTarget: action.lookupActionTarget(kilnModel, options, executor),
       middleware: options.middleware,

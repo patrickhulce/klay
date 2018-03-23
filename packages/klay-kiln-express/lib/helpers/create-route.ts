@@ -53,7 +53,7 @@ function extendMiddleware(
 export function createRoute(input: IRouteInput): IRoute {
   const inputMiddleware = input.middleware || {}
   const paramHandlers = createParamHandlers(input.paramsModel)
-  const models = pick(input, ['queryModel', 'paramsModel', 'bodyModel'])
+  const models = pick(input, ['queryModel', 'paramsModel', 'bodyModel', 'responseModel'])
   const middleware: IAnontatedHandler[] = []
   const authMiddleware = input.authorization && createGrantValidationMiddleware(input.authorization)
 
