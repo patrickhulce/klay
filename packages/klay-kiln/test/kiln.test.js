@@ -1,5 +1,4 @@
 const _ = require('lodash')
-const expect = require('chai').expect
 const sinon = require('sinon')
 const Kiln = require('../dist/kiln').Kiln
 
@@ -31,7 +30,7 @@ describe('lib/kiln.ts', () => {
   describe('.addModel', () => {
     it('should add a model', () => {
       kiln.addModel({name: 'user', model})
-      expect(kiln.getModels()).to.eql([
+      expect(kiln.getModels()).toEqual([
         {
           name: 'user',
           model,
@@ -43,7 +42,7 @@ describe('lib/kiln.ts', () => {
 
     it('should add a model with custom meta', () => {
       kiln.addModel({name: 'activity', model, meta: {plural: 'activities'}})
-      expect(kiln.getModels()).to.eql([
+      expect(kiln.getModels()).toEqual([
         {
           name: 'activity',
           model,
@@ -63,21 +62,21 @@ describe('lib/kiln.ts', () => {
 
     it('should add an extension to specific model', () => {
       kiln.addExtension({modelName: 'user', extension: extensionApi})
-      expect(get()).to.eql({extension: extensionApi, defaultOptions: undefined})
+      expect(get()).toEqual({extension: extensionApi, defaultOptions: undefined})
     })
 
     it('should add a global extension', () => {
       kiln.addModel({name: 'other', model})
       kiln.addExtension({extension: extensionApi})
-      expect(get(0)).to.eql({extension: extensionApi, defaultOptions: undefined})
-      expect(get(1)).to.eql({extension: extensionApi, defaultOptions: undefined})
+      expect(get(0)).toEqual({extension: extensionApi, defaultOptions: undefined})
+      expect(get(1)).toEqual({extension: extensionApi, defaultOptions: undefined})
     })
 
     it('should not mutate extension options', () => {
       const defaultOptions = {y: 1}
       kiln.addExtension({extension: extensionApi, defaultOptions})
-      expect(get()).to.eql({extension: extensionApi, defaultOptions: {y: 1}})
-      expect(extensionApi.defaultOptions).to.eql({})
+      expect(get()).toEqual({extension: extensionApi, defaultOptions: {y: 1}})
+      expect(extensionApi.defaultOptions).toEqual({})
     })
   })
 
@@ -85,7 +84,7 @@ describe('lib/kiln.ts', () => {
     beforeEach(() => addModels(kiln))
 
     it('should generate for all models and extensions', () => {
-      expect(kiln.buildAll()).to.eql([
+      expect(kiln.buildAll()).toEqual([
         {modelName: 'user', extensionName: 'A', value: {resultA: 'foo'}},
         {modelName: 'user', extensionName: 'B', value: {resultB: 'bar'}},
         {modelName: 'photo', extensionName: 'C', value: {resultC: 'baz'}},
@@ -93,7 +92,7 @@ describe('lib/kiln.ts', () => {
     })
 
     it('should generate for a specific model and extension', () => {
-      expect(kiln.buildAll('user')).to.eql([
+      expect(kiln.buildAll('user')).toEqual([
         {modelName: 'user', extensionName: 'A', value: {resultA: 'foo'}},
         {modelName: 'user', extensionName: 'B', value: {resultB: 'bar'}},
       ])
@@ -101,21 +100,21 @@ describe('lib/kiln.ts', () => {
 
     it('should cache results of already baked extensions', () => {
       const value1 = kiln.buildAll('user')[0].value
-      expect(value1).to.eql({resultA: 'foo'})
+      expect(value1).toEqual({resultA: 'foo'})
       extensionA.build.restore()
       sinon.stub(extensionA, 'build').returns({busted: true})
 
       const value2 = kiln.buildAll('user')[0].value
-      expect(value2).to.equal(value1)
-      expect(value2).to.not.eql({busted: true})
+      expect(value2).toBe(value1)
+      expect(value2).not.toEqual({busted: true})
 
       const value3 = kiln.buildAll()[0].value
-      expect(value3).to.equal(value1)
-      expect(value2).to.not.eql({busted: true})
+      expect(value3).toBe(value1)
+      expect(value2).not.toEqual({busted: true})
     })
 
     it('should fail when referencing an unknown model', () => {
-      expect(() => kiln.buildAll('unknown')).to.throw(/model "unknown"/)
+      expect(() => kiln.buildAll('unknown')).toThrowError(/model "unknown"/)
     })
   })
 
@@ -123,9 +122,9 @@ describe('lib/kiln.ts', () => {
     beforeEach(() => addModels(kiln))
 
     it('should generate for the specified model and extension', () => {
-      expect(kiln.build('user', 'A')).to.eql({resultA: 'foo'})
-      expect(kiln.build('user', 'B')).to.eql({resultB: 'bar'})
-      expect(kiln.build('user', extensionA)).to.eql({resultA: 'foo'})
+      expect(kiln.build('user', 'A')).toEqual({resultA: 'foo'})
+      expect(kiln.build('user', 'B')).toEqual({resultB: 'bar'})
+      expect(kiln.build('user', extensionA)).toEqual({resultA: 'foo'})
     })
 
     it('should use the provided options', () => {
@@ -138,35 +137,35 @@ describe('lib/kiln.ts', () => {
       }
 
       kiln.addExtension({extension, defaultOptions: {y: 1}})
-      expect(kiln.build('user', 'A')).to.eql({x: 1, y: 1})
-      expect(kiln.build('user', 'A', {z: 1})).to.eql({x: 1, y: 1, z: 1})
-      expect(kiln.build('user', {...extension})).to.eql({x: 1})
-      expect(kiln.build('user', extension, {z: 1})).to.eql({x: 1, z: 1})
+      expect(kiln.build('user', 'A')).toEqual({x: 1, y: 1})
+      expect(kiln.build('user', 'A', {z: 1})).toEqual({x: 1, y: 1, z: 1})
+      expect(kiln.build('user', {...extension})).toEqual({x: 1})
+      expect(kiln.build('user', extension, {z: 1})).toEqual({x: 1, z: 1})
     })
 
     it('should cache results of already baked extensions', () => {
       const value1 = kiln.build('user', 'A')
-      expect(value1).to.eql({resultA: 'foo'})
+      expect(value1).toEqual({resultA: 'foo'})
       extensionA.build.restore()
       sinon.stub(extensionA, 'build').returns({busted: true})
 
       const value2 = kiln.build('user', 'A')
-      expect(value2).to.equal(value1)
-      expect(value2).to.not.eql({busted: true})
+      expect(value2).toBe(value1)
+      expect(value2).not.toEqual({busted: true})
     })
 
     it('should cache results of direct build when ===', () => {
       const value1 = kiln.build('user', extensionA)
-      expect(value1).to.eql({resultA: 'foo'})
+      expect(value1).toEqual({resultA: 'foo'})
       extensionA.build.restore()
       sinon.stub(extensionA, 'build').returns({busted: 1})
 
       const value2 = kiln.build('user', 'A')
-      expect(value2).to.equal(value1)
+      expect(value2).toBe(value1)
 
       const value3 = kiln.build('user', extensionA)
-      expect(value3).to.equal(value1)
-      expect(kiln.build('user', 'A')).to.eql(value1)
+      expect(value3).toBe(value1)
+      expect(kiln.build('user', 'A')).toEqual(value1)
     })
 
     it('should not cache results of direct build when !==', () => {
@@ -174,23 +173,23 @@ describe('lib/kiln.ts', () => {
       sinon.stub(extensionALike, 'build').returns({busted: 1})
 
       const value1 = kiln.build('user', extensionALike)
-      expect(value1).to.eql({busted: 1})
+      expect(value1).toEqual({busted: 1})
 
       const value2 = kiln.build('user', 'A')
-      expect(value2).to.eql({resultA: 'foo'})
+      expect(value2).toEqual({resultA: 'foo'})
       extensionALike.build.restore()
       sinon.stub(extensionALike, 'build').returns({busted: 2})
 
       const value3 = kiln.build('user', extensionALike)
-      expect(value3).to.eql({busted: 2})
+      expect(value3).toEqual({busted: 2})
       extensionA.build.restore()
       sinon.stub(extensionA, 'build').returns({busted: 3})
-      expect(kiln.build('user', 'A')).to.eql({resultA: 'foo'})
+      expect(kiln.build('user', 'A')).toEqual({resultA: 'foo'})
     })
 
     it('should fail when referencing unknowns', () => {
-      expect(() => kiln.build('unknown', 'A')).to.throw(/model "unknown"/)
-      expect(() => kiln.build('user', 'unknown')).to.throw(/extension "unknown"/)
+      expect(() => kiln.build('unknown', 'A')).toThrowError(/model "unknown"/)
+      expect(() => kiln.build('user', 'unknown')).toThrowError(/extension "unknown"/)
     })
   })
 
@@ -198,14 +197,14 @@ describe('lib/kiln.ts', () => {
     beforeEach(() => addModels(kiln))
 
     it('should clear the models', () => {
-      expect(kiln.getModels()).to.have.length(2)
+      expect(kiln.getModels()).toHaveLength(2)
       kiln.reset()
-      expect(kiln.getModels()).to.have.length(0)
+      expect(kiln.getModels()).toHaveLength(0)
     })
 
     it('should clear the cache', () => {
       const value1 = kiln.build('user', 'A')
-      expect(value1).to.eql({resultA: 'foo'})
+      expect(value1).toEqual({resultA: 'foo'})
 
       kiln.reset()
       kiln.addModel({name: 'user', model})
@@ -215,8 +214,8 @@ describe('lib/kiln.ts', () => {
       sinon.stub(extensionA, 'build').returns({busted: true})
 
       const value2 = kiln.build('user', 'A')
-      expect(value2).to.not.equal(value1)
-      expect(value2).to.eql({busted: true})
+      expect(value2).not.toBe(value1)
+      expect(value2).toEqual({busted: true})
     })
   })
 })

@@ -1,8 +1,6 @@
 const _ = require('lodash')
 const utils = require('../utils')
 
-const expect = utils.expect
-
 describe('create objects', () => {
   const state = utils.state()
 
@@ -22,38 +20,26 @@ describe('create objects', () => {
       const user = _.clone(defaultUser)
       const userA = await state.models.user.create(user)
       state.userA = userA
-      expect(userA)
-        .to.have.property('id')
-        .is.a('number')
-      expect(userA)
-        .to.have.property('createdAt')
-        .instanceof(Date)
-      expect(userA)
-        .to.have.property('updatedAt')
-        .instanceof(Date)
+      expect(typeof userA.id).toBe('number')
+      expect(userA.createdAt).toBeInstanceOf(Date)
+      expect(userA.updatedAt).toBeInstanceOf(Date)
 
       const untouched = _.omit(userA, ['id', 'createdAt', 'updatedAt'])
-      expect(untouched).to.eql(user)
+      expect(untouched).toEqual(user)
     })
 
     it('should create a 2nd user', async () => {
       const user = _.assign({}, defaultUser, {firstName: 'Klay2', email: 'test2@foobar.com'})
-      const userA = await state.models.user.create(user)
-      expect(userA)
-        .to.have.property('id')
-        .is.a('number')
-        .greaterThan(state.userA.id)
-      expect(userA)
-        .to.have.property('createdAt')
-        .instanceof(Date)
-        .greaterThan(state.userA.createdAt)
-      expect(userA)
-        .to.have.property('updatedAt')
-        .instanceof(Date)
-        .greaterThan(state.userA.updatedAt)
+      const userB = await state.models.user.create(user)
+      expect(userB.id).toBeGreaterThan(state.userA.id)
 
-      const untouched = _.omit(userA, ['id', 'createdAt', 'updatedAt'])
-      expect(untouched).to.eql(user)
+      expect(userB.createdAt).toBeInstanceOf(Date)
+      expect(userB.updatedAt).toBeInstanceOf(Date)
+      expect(userB.createdAt.getTime()).toBeGreaterThan(state.userA.createdAt.getTime())
+      expect(userB.updatedAt.getTime()).toBeGreaterThan(state.userA.updatedAt.getTime())
+
+      const untouched = _.omit(userB, ['id', 'createdAt', 'updatedAt'])
+      expect(untouched).toEqual(user)
     })
 
     it('should create a set of users', async () => {
@@ -61,41 +47,30 @@ describe('create objects', () => {
       const userB = _.assign({}, defaultUser, {firstName: 'Klay4', email: 'test4@foobar.com'})
       const users = await state.models.user.createAll([userA, userB])
 
-      expect(users).to.have.length(2)
+      expect(users).toHaveLength(2)
       users.forEach((user, index) => {
-        expect(user)
-          .to.have.property('id')
-          .is.a('number')
-          .greaterThan(state.userA.id)
-        expect(user)
-          .to.have.property('createdAt')
-          .instanceof(Date)
-          .greaterThan(state.userA.createdAt)
-        expect(user)
-          .to.have.property('updatedAt')
-          .instanceof(Date)
-          .greaterThan(state.userA.updatedAt)
+        expect(user.id).toBeGreaterThan(state.userA.id)
+        expect(user.createdAt.getTime()).toBeGreaterThan(state.userA.createdAt.getTime())
+        expect(user.updatedAt.getTime()).toBeGreaterThan(state.userA.updatedAt.getTime())
 
         const untouched = _.omit(user, ['id', 'createdAt', 'updatedAt'])
-        expect(untouched).to.eql(index === 0 ? userA : userB)
+        expect(untouched).toEqual(index === 0 ? userA : userB)
       })
     })
 
     it('should prevent creation of user with same email', async () => {
       const user = _.assign({}, defaultUser, {firstName: 'missing'})
-      await expect(state.models.user.create(user)).to.eventually.be.rejectedWith(
-        /constraint.*email.*violated/,
-      )
+      await expect(state.models.user.create(user)).rejects.toThrow(/constraint.*email.*violated/)
     })
 
     it('should prevent creation of user with preset id', async () => {
       const user = _.assign({}, defaultUser, {id: 15, firstName: 'missing'})
-      await expect(state.models.user.create(user)).to.be.rejectedWith('value failed validation')
+      await expect(state.models.user.create(user)).rejects.toThrow('value failed validation')
     })
 
     it('should prevent creation of user with invalid values', async () => {
       const user = _.assign({}, defaultUser, {age: 'what', firstName: 'missing'})
-      await expect(state.models.user.create(user)).to.be.rejectedWith('value failed validation')
+      await expect(state.models.user.create(user)).rejects.toThrow('value failed validation')
     })
 
     it('should prevent creation of users when one is invalid', async () => {
@@ -103,12 +78,12 @@ describe('create objects', () => {
       const userB = _.assign({}, defaultUser, {firstName: 'Klay6', email: 'test4@foobar.com'})
       const userC = _.assign({}, defaultUser, {firstName: 'Klay7', email: 'test6@foobar.com'})
       const promise = state.models.user.createAll([userA, userB, userC])
-      await expect(promise).to.be.rejectedWith(/constraint.*email.*violated/)
+      await expect(promise).rejects.toThrow(/constraint.*email.*violated/)
     })
 
     it('should have prevented creation of other users when one is invalid', async () => {
       const where = {firstName: 'Klay5'}
-      await expect(state.models.user.findOne({where})).to.eventually.eql(undefined)
+      expect(await state.models.user.findOne({where})).toEqual(undefined)
     })
   })
 
@@ -117,25 +92,19 @@ describe('create objects', () => {
       const metadata = {type: 'jpeg', location: 'United States'}
       const photo = {ownerId: state.userA.id, aspectRatio: 0.67, metadata}
       return state.models.photo.create(photo).then(item => {
-        expect(item)
-          .to.have.property('id')
-          .match(/^\w{8}-\w{4}/)
-        expect(item)
-          .to.have.property('createdAt')
-          .instanceof(Date)
-        expect(item)
-          .to.have.property('updatedAt')
-          .instanceof(Date)
+        expect(item.id).toMatch(/^\w{8}-\w{4}/)
+        expect(item.createdAt).toBeInstanceOf(Date)
+        expect(item.updatedAt).toBeInstanceOf(Date)
 
         const untouched = _.omit(item, ['id', 'createdAt', 'updatedAt'])
-        expect(untouched).to.eql(photo)
+        expect(untouched).toEqual(photo)
       })
     })
 
     it('should prevent creation of photo with non-existant owner', async () => {
       const metadata = {type: 'jpeg', location: 'United States'}
       const photo = {ownerId: -1, aspectRatio: 2, metadata}
-      await expect(state.models.photo.create(photo)).to.be.rejectedWith(/foreign key constraint/)
+      await expect(state.models.photo.create(photo)).rejects.toThrow(/foreign key constraint/)
     })
   })
 })

@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const fetch = require('isomorphic-fetch')
 
 module.exports = state => {
@@ -18,32 +17,32 @@ module.exports = state => {
         headers: {'content-type': 'application/json'},
       })
 
-      expect(response.status).to.equal(200)
+      expect(response.status).toBe(200)
       const {account, user} = await response.json()
       state.account = account
       state.user = user
       state.userCookie = `id=${user.id};accountId=${user.accountId};role=${user.role}`
 
-      expect(account).to.have.property('slug', 'csn-bay-area')
-      expect(user).to.have.property('password').match(/^[a-f0-9]{40}$/)
+      expect(account).toHaveProperty('slug', 'csn-bay-area')
+      expect(user.password).toMatch(/^[a-f0-9]{40}$/)
     })
 
     it('should read an account', async () => {
       const headers = {cookie: state.userCookie}
       const response = await fetch(`${state.baseURL}/v1/accounts/${state.account.id}`, {headers})
       const account = await response.json()
-      expect(account).to.eql(state.account)
+      expect(account).toEqual(state.account)
     })
 
     it('should check authentication', async () => {
       const response = await fetch(`${state.baseURL}/v1/accounts`)
-      expect(response.status).to.equal(401)
+      expect(response.status).toBe(401)
     })
 
     it('should check authorization', async () => {
       const headers = {cookie: state.userCookie}
       const response = await fetch(`${state.baseURL}/v1/accounts`, {headers})
-      expect(response.status).to.equal(403)
+      expect(response.status).toBe(403)
     })
 
     it('should update an account', async () => {
@@ -53,9 +52,9 @@ module.exports = state => {
         headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
-      expect(response.status).to.equal(200)
+      expect(response.status).toBe(200)
       const updatedAccount = await response.json()
-      expect(updatedAccount).to.include({name: 'Changed', slug: 'special-slug'})
+      expect(updatedAccount).toMatchObject({name: 'Changed', slug: 'special-slug'})
     })
   })
 }

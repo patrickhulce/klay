@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const sinon = require('sinon')
 const ModelContext = require('klay-core').ModelContext
 const middlewareModule = require('../../dist/helpers/create-middleware')
@@ -18,24 +17,24 @@ describe('lib/helpers/create-middleware.ts', () => {
 
     it('should create a function', () => {
       const middleware = createMiddleware(model)
-      expect(middleware).to.be.a('function')
+      expect(typeof middleware).toBe('function')
     })
 
     it('should set validated', () => {
       const middleware = createMiddleware(model)
       const req = {body: {id: '1'}}
       middleware(req, {}, next)
-      expect(req.validated).to.eql({body: {id: 1}})
-      expect(req.body).to.eql({id: '1'})
-      expect(next.callCount).to.equal(1)
+      expect(req.validated).toEqual({body: {id: 1}})
+      expect(req.body).toEqual({id: '1'})
+      expect(next.callCount).toBe(1)
     })
 
     it('should merge validated', () => {
       const middleware = createMiddleware(model, 'query')
       const req = {body: {id: '1'}, validated: {params: 1}}
       middleware(req, {}, next)
-      expect(req.validated).to.eql({params: 1, query: undefined})
-      expect(req.body).to.eql({id: '1'})
+      expect(req.validated).toEqual({params: 1, query: undefined})
+      expect(req.body).toEqual({id: '1'})
     })
 
     it('should validate against model', () => {
@@ -44,12 +43,12 @@ describe('lib/helpers/create-middleware.ts', () => {
       const res = {}
 
       middleware(req, res, next)
-      expect(next.callCount).to.equal(1)
+      expect(next.callCount).toBe(1)
       const err = next.firstCall.args[0]
-      expect(err.value).to.eql({id: 'one'})
-      expect(err.errors).to.have.length(1)
-      expect(err.errors[0].path).to.eql(['id'])
-      expect(err.errors[0].message).to.match(/expected.*number/)
+      expect(err.value).toEqual({id: 'one'})
+      expect(err.errors).toHaveLength(1)
+      expect(err.errors[0].path).toEqual(['id'])
+      expect(err.errors[0].message).toMatch(/expected.*number/)
     })
   })
 
@@ -70,9 +69,9 @@ describe('lib/helpers/create-middleware.ts', () => {
       const req = {}
 
       middleware(req, {}, next)
-      expect(next.callCount).to.equal(1)
-      expect(req).to.have.property('grants')
-      expect(req.grants._grants.size).to.equal(0)
+      expect(next.callCount).toBe(1)
+      expect(req).toHaveProperty('grants')
+      expect(req.grants._grants.size).toBe(0)
     })
 
     it('should create grants when populated', () => {
@@ -80,11 +79,11 @@ describe('lib/helpers/create-middleware.ts', () => {
       const req = {user: {orgId: 2, role: 'admin'}}
 
       middleware(req, {}, next)
-      expect(next.callCount).to.equal(1)
-      expect(req).to.have.property('grants')
-      expect(req.grants.has('write', {orgId: 2})).to.equal(true)
-      expect(req.grants.has('read', {orgId: 2})).to.equal(true)
-      expect(req.grants.has('write', {orgId: 3})).to.equal(false)
+      expect(next.callCount).toBe(1)
+      expect(req).toHaveProperty('grants')
+      expect(req.grants.has('write', {orgId: 2})).toBe(true)
+      expect(req.grants.has('read', {orgId: 2})).toBe(true)
+      expect(req.grants.has('write', {orgId: 3})).toBe(false)
     })
 
     it('should create grants with custom role finder', () => {
@@ -93,11 +92,11 @@ describe('lib/helpers/create-middleware.ts', () => {
       const req = {user: {orgId: 2, theRole: 'admin'}}
 
       middleware(req, {}, next)
-      expect(next.callCount).to.equal(1)
-      expect(req).to.have.property('grants')
-      expect(req.grants.has('write', {orgId: 2})).to.equal(true)
-      expect(req.grants.has('read', {orgId: 2})).to.equal(true)
-      expect(req.grants.has('write', {orgId: 3})).to.equal(false)
+      expect(next.callCount).toBe(1)
+      expect(req).toHaveProperty('grants')
+      expect(req.grants.has('write', {orgId: 2})).toBe(true)
+      expect(req.grants.has('read', {orgId: 2})).toBe(true)
+      expect(req.grants.has('write', {orgId: 3})).toBe(false)
     })
 
     it('should create grants with custom user finder', () => {
@@ -106,10 +105,10 @@ describe('lib/helpers/create-middleware.ts', () => {
       const req = {foo: {orgId: 2, role: 'user'}}
 
       middleware(req, {}, next)
-      expect(next.callCount).to.equal(1)
-      expect(req).to.have.property('grants')
-      expect(req.grants.has('write', {orgId: 2})).to.equal(false)
-      expect(req.grants.has('read', {orgId: 2})).to.equal(true)
+      expect(next.callCount).toBe(1)
+      expect(req).toHaveProperty('grants')
+      expect(req.grants.has('write', {orgId: 2})).toBe(false)
+      expect(req.grants.has('read', {orgId: 2})).toBe(true)
     })
   })
 
@@ -133,7 +132,7 @@ describe('lib/helpers/create-middleware.ts', () => {
 
     it('should throw when getCriteriaValues not set', () => {
       const fn = () => createMiddleware({permission: 'read', criteria: [['orgId']]})
-      expect(fn).to.throw(/getCriteriaValues/)
+      expect(fn).toThrowError(/getCriteriaValues/)
     })
 
     it('should fail request if grants property not set', () => {
@@ -143,8 +142,8 @@ describe('lib/helpers/create-middleware.ts', () => {
         getCriteriaValues,
       })
       middleware({}, {}, next)
-      expect(next.callCount).to.equal(1)
-      expect(next.firstCall.args[0]).to.be.instanceof(Error)
+      expect(next.callCount).toBe(1)
+      expect(next.firstCall.args[0]).toBeInstanceOf(Error)
     })
 
     it('should pass request if global access', () => {
@@ -157,8 +156,8 @@ describe('lib/helpers/create-middleware.ts', () => {
       })
 
       middleware({grants}, {}, next)
-      expect(next.callCount).to.equal(1)
-      expect(next.firstCall.args).to.have.length(0)
+      expect(next.callCount).toBe(1)
+      expect(next.firstCall.args).toHaveLength(0)
     })
 
     it('should pass request if matches the criteria', () => {
@@ -169,8 +168,8 @@ describe('lib/helpers/create-middleware.ts', () => {
       })
 
       middleware({grants, orgId: 2}, {}, next)
-      expect(next.callCount).to.equal(1)
-      expect(next.firstCall.args).to.have.length(0)
+      expect(next.callCount).toBe(1)
+      expect(next.firstCall.args).toHaveLength(0)
     })
 
     it('should pass request if matches multi-criteria', () => {
@@ -181,8 +180,8 @@ describe('lib/helpers/create-middleware.ts', () => {
       })
 
       middleware({grants, userId: 1, orgId: 2}, {}, next)
-      expect(next.callCount).to.equal(1)
-      expect(next.firstCall.args).to.have.length(0)
+      expect(next.callCount).toBe(1)
+      expect(next.firstCall.args).toHaveLength(0)
     })
 
     it('should pass request if matches one the criteria', () => {
@@ -193,8 +192,8 @@ describe('lib/helpers/create-middleware.ts', () => {
       })
 
       middleware({grants, userId: 100, orgId: 2}, {}, next)
-      expect(next.callCount).to.equal(1)
-      expect(next.firstCall.args).to.have.length(0)
+      expect(next.callCount).toBe(1)
+      expect(next.firstCall.args).toHaveLength(0)
     })
 
     it('should fail request if not matches the criteria', () => {
@@ -205,8 +204,8 @@ describe('lib/helpers/create-middleware.ts', () => {
       })
 
       middleware({grants, orgId: 3}, {}, next)
-      expect(next.callCount).to.equal(1)
-      expect(next.firstCall.args[0]).to.be.instanceof(Error)
+      expect(next.callCount).toBe(1)
+      expect(next.firstCall.args[0]).toBeInstanceOf(Error)
     })
 
     it('should fail request if not matches all criteria properties', () => {
@@ -217,16 +216,16 @@ describe('lib/helpers/create-middleware.ts', () => {
       })
 
       middleware({grants, userId: 1, orgId: 2}, {}, next)
-      expect(next.callCount).to.equal(1)
-      expect(next.firstCall.args).to.have.length(0)
+      expect(next.callCount).toBe(1)
+      expect(next.firstCall.args).toHaveLength(0)
 
       middleware({grants, userId: 2, orgId: 2}, {}, next)
-      expect(next.callCount).to.equal(2)
-      expect(next.secondCall.args[0]).to.be.instanceof(Error)
+      expect(next.callCount).toBe(2)
+      expect(next.secondCall.args[0]).toBeInstanceOf(Error)
 
       middleware({grants, userId: 1, orgId: 3}, {}, next)
-      expect(next.callCount).to.equal(3)
-      expect(next.thirdCall.args[0]).to.be.instanceof(Error)
+      expect(next.callCount).toBe(3)
+      expect(next.thirdCall.args[0]).toBeInstanceOf(Error)
     })
   })
 })

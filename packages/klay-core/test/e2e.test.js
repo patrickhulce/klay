@@ -1,9 +1,8 @@
-const expect = require('chai').expect
 const klay = require('../dist').defaultModelContext
 const documentModel = require('./fixtures/document')
 
 describe('klay', () => {
-  context('simple object', () => {
+  describe('simple object', () => {
     const model = klay
       .object()
       .children({
@@ -23,7 +22,7 @@ describe('klay', () => {
       }
 
       const result = model.validate(value).toJSON()
-      expect(result).to.deep.include({
+      expect(result).toMatchObject({
         conforms: false,
         value: {
           firstName: 'John',
@@ -39,7 +38,7 @@ describe('klay', () => {
     })
   })
 
-  context('fixtures/document.js', () => {
+  describe('fixtures/document.js', () => {
     const model = documentModel
 
     it('should pass valid html document', () => {
@@ -54,14 +53,12 @@ describe('klay', () => {
       }
 
       const validated = model.validate(obj).toJSON()
-      expect(validated).to.have.property('conforms', true)
-      expect(validated)
-        .to.have.property('value')
-        .eql({
-          ...obj,
-          createdAt: new Date('2016-07-27T04:51:22.820Z'),
-          updatedAt: new Date('2016-07-27T04:51:22.820Z'),
-        })
+      expect(validated).toHaveProperty('conforms', true)
+      expect(validated.value).toEqual({
+        ...obj,
+        createdAt: new Date('2016-07-27T04:51:22.820Z'),
+        updatedAt: new Date('2016-07-27T04:51:22.820Z'),
+      })
     })
 
     it('should pass valid json document', () => {
@@ -76,15 +73,13 @@ describe('klay', () => {
       }
 
       const validated = model.validate(obj).toJSON()
-      expect(validated).to.have.property('conforms', true)
-      expect(validated)
-        .to.have.property('value')
-        .eql({
-          ...obj,
-          metadata: {type: 'array', size: 120},
-          createdAt: new Date('2016-07-27T04:51:22.820Z'),
-          updatedAt: new Date('2016-07-27T04:51:22.820Z'),
-        })
+      expect(validated).toHaveProperty('conforms', true)
+      expect(validated.value).toEqual({
+        ...obj,
+        metadata: {type: 'array', size: 120},
+        createdAt: new Date('2016-07-27T04:51:22.820Z'),
+        updatedAt: new Date('2016-07-27T04:51:22.820Z'),
+      })
     })
 
     it('should fail invalid html document', () => {
@@ -99,23 +94,19 @@ describe('klay', () => {
       }
 
       const validated = model.validate(obj).toJSON()
-      expect(validated).to.have.property('conforms', false)
-      expect(validated)
-        .to.have.property('errors')
-        .eql([
+      expect(validated).toHaveProperty('conforms', false)
+      expect(validated.errors).toEqual([
           {message: 'unexpected properties: html5', path: ['metadata']},
           {message: 'expected value to be at least 8', path: ['source', 'raw']},
           {message: 'expected value to be defined', path: ['source', 'text']},
         ])
 
-      expect(validated)
-        .to.have.property('value')
-        .eql({
-          ...obj,
-          source: {raw: '2short', text: undefined},
-          createdAt: new Date('2016-07-27T04:51:22.820Z'),
-          updatedAt: new Date('2016-07-27T04:51:22.820Z'),
-        })
+      expect(validated.value).toEqual({
+        ...obj,
+        source: {raw: '2short', text: undefined},
+        createdAt: new Date('2016-07-27T04:51:22.820Z'),
+        updatedAt: new Date('2016-07-27T04:51:22.820Z'),
+      })
     })
 
     it('should fail invalid json document', () => {
@@ -130,10 +121,8 @@ describe('klay', () => {
       }
 
       const validated = model.validate(obj).toJSON()
-      expect(validated).to.have.property('conforms', false)
-      expect(validated)
-        .to.have.property('errors')
-        .eql([
+      expect(validated).toHaveProperty('conforms', false)
+      expect(validated.errors).toEqual([
           {
             message: 'expected value (number) to be one of [object, array]',
             path: ['metadata', 'type'],
@@ -141,13 +130,11 @@ describe('klay', () => {
           {message: 'expected value (fifty) to have typeof number', path: ['metadata', 'size']},
         ])
 
-      expect(validated)
-        .to.have.property('value')
-        .eql({
-          ...obj,
-          createdAt: new Date('2016-07-27T04:51:22.820Z'),
-          updatedAt: new Date('2016-07-27T04:51:22.820Z'),
-        })
+      expect(validated.value).toEqual({
+        ...obj,
+        createdAt: new Date('2016-07-27T04:51:22.820Z'),
+        updatedAt: new Date('2016-07-27T04:51:22.820Z'),
+      })
     })
   })
 })

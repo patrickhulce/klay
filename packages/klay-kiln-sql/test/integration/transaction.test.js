@@ -1,8 +1,6 @@
 const _ = require('lodash')
 const utils = require('../utils')
 
-const expect = utils.expect
-
 describe('atomic transactions', () => {
   const state = utils.state()
 
@@ -33,9 +31,9 @@ describe('atomic transactions', () => {
 
       throw new Error('Transaction should have failed')
     } catch (err) {
-      expect(err.message).to.match(/foreign key constraint/)
+      expect(err.message).toMatch(/foreign key constraint/)
       const dbUser = await state.models.user.findById(state.user.id)
-      expect(dbUser).to.equal(null)
+      expect(dbUser).toBe(null)
     }
   })
 
@@ -49,8 +47,8 @@ describe('atomic transactions', () => {
 
     const dbUser = await state.models.user.findById(state.user.id)
     const dbPhoto = await state.models.photo.findById(state.photo.id)
-    expect(dbUser).to.eql(state.user)
-    expect(dbPhoto).to.eql(state.photo)
+    expect(dbUser).toEqual(state.user)
+    expect(dbPhoto).toEqual(state.photo)
   })
 
   it('should rollback updates', async () => {
@@ -65,13 +63,13 @@ describe('atomic transactions', () => {
         })
       })
     } catch (err) {
-      expect(err.message).to.equal('fail')
+      expect(err.message).toBe('fail')
     }
 
     const dbUser = await state.models.user.findById(state.user.id)
     const dbPhoto = await state.models.photo.findById(state.photo.id)
-    expect(dbUser.age).to.equal(23)
-    expect(dbPhoto.aspectRatio).to.equal(0.67)
+    expect(dbUser.age).toBe(23)
+    expect(dbPhoto.aspectRatio).toBe(0.67)
   })
 
   it('should commit updates', () => {
@@ -89,11 +87,11 @@ describe('atomic transactions', () => {
         return state.models.photo
           .findById(photo.id)
           .then(dbPhoto => {
-            expect(dbPhoto).to.have.property('aspectRatio', 2)
+            expect(dbPhoto).toHaveProperty('aspectRatio', 2)
             return state.models.user.findById(user.id)
           })
           .then(dbUser => {
-            expect(dbUser).to.have.property('age', 13)
+            expect(dbUser).toHaveProperty('age', 13)
           })
       })
   })
@@ -117,16 +115,11 @@ describe('atomic transactions', () => {
       .then(() => {
         throw new Error('should not have succeeded')
       })
-      .catch(err => {
-        expect(err.message).to.equal('fail!')
+      .catch(async err => {
+        expect(err.message).toBe('fail!')
 
-        return Promise.all([
-          expect(state.models.user.findById(state.user.id)).to.eventually.have.property('age', 13),
-          expect(state.models.photo.findById(state.photo.id)).to.eventually.have.property(
-            'aspectRatio',
-            2,
-          ),
-        ])
+        expect(await state.models.user.findById(state.user.id)).toHaveProperty('age', 13)
+        expect(await state.models.photo.findById(state.photo.id)).toHaveProperty('aspectRatio', 2)
       })
   })
 
@@ -145,11 +138,11 @@ describe('atomic transactions', () => {
         return state.models.photo
           .findById(photo.id)
           .then(dbPhoto => {
-            expect(dbPhoto).to.have.property('aspectRatio', 0.5)
+            expect(dbPhoto).toHaveProperty('aspectRatio', 0.5)
             return state.models.user.findById(user.id)
           })
           .then(dbUser => {
-            expect(dbUser).to.have.property('age', 30)
+            expect(dbUser).toHaveProperty('age', 30)
           })
       })
   })
@@ -166,19 +159,14 @@ describe('atomic transactions', () => {
       .then(() => {
         throw new Error('should not have succeeded')
       })
-      .catch(err => {
-        expect(err.message).to.equal('fail!')
+      .catch(async err => {
+        expect(err.message).toBe('fail!')
 
-        return Promise.all([
-          expect(state.models.user.findById(state.user.id)).to.eventually.have.property(
-            'id',
-            state.user.id,
-          ),
-          expect(state.models.photo.findById(state.photo.id)).to.eventually.have.property(
-            'id',
-            state.photo.id,
-          ),
-        ])
+        expect(await state.models.user.findById(state.user.id)).toHaveProperty('id', state.user.id)
+        expect(await state.models.photo.findById(state.photo.id)).toHaveProperty(
+          'id',
+          state.photo.id,
+        )
       })
   })
 
@@ -189,11 +177,9 @@ describe('atomic transactions', () => {
           return state.models.user.destroyById(state.user.id, {transaction})
         })
       })
-      .then(() => {
-        return Promise.all([
-          expect(state.models.user.findById(state.user.id)).to.eventually.equal(null),
-          expect(state.models.photo.findById(state.photo.id)).to.eventually.equal(null),
-        ])
+      .then(async () => {
+        expect(await state.models.user.findById(state.user.id)).toBe(null)
+        expect(await state.models.photo.findById(state.photo.id)).toBe(null)
       })
   })
 })

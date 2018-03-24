@@ -1,16 +1,7 @@
 const _ = require('lodash')
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
-const sinon = require('sinon')
-const sinonChai = require('sinon-chai')
-
 const ModelContext = require('klay-core').ModelContext
 const DatabaseExtension = require('../dist/extension').DatabaseExtension
 const Executor = require('../dist/executor').DatabaseExecutor
-
-const expect = chai.expect
-chai.use(chaiAsPromised)
-chai.use(sinonChai)
 
 describe('lib/executor.ts', () => {
   let model, executor, executorMinimal, executorData, transaction
@@ -80,18 +71,18 @@ describe('lib/executor.ts', () => {
     it('should find exactly one record', async () => {
       executorData = [{id: 1, x: 1}, {id: 2, x: 2}]
       const result = await executor.findOne({where: {x: 1}})
-      expect(result).to.eql({id: 1, x: 1})
+      expect(result).toEqual({id: 1, x: 1})
     })
 
     it('should not find missing records', async () => {
       executorData = [{id: 1, x: 1}, {id: 2, x: 2}]
       const result = await executor.findOne({where: {x: 3}})
-      expect(result).to.eql(undefined)
+      expect(result).toEqual(undefined)
     })
 
     it('should throw on multiple records', async () => {
       executorData = [{id: 1, x: 1, y: 1}, {id: 2, x: 2, y: 1}]
-      await expect(executor.findOne({where: {y: 1}})).to.be.rejectedWith(/single result/)
+      await expect(executor.findOne({where: {y: 1}})).rejects.toThrow(/single result/)
     })
   })
 
@@ -99,37 +90,37 @@ describe('lib/executor.ts', () => {
     it('should create a value', async () => {
       const result = await executor.create({x: 2})
       const expected = {id: 1, x: 2, y: 1, z: 2}
-      expect(result).to.eql(expected)
-      expect(executorData).to.eql([expected])
+      expect(result).toEqual(expected)
+      expect(executorData).toEqual([expected])
     })
 
     it('should not create value with primary key', async () => {
-      await expect(executor.create({id: 1, x: 1})).to.be.rejectedWith('value failed validation')
-      expect(executorData).to.eql([])
+      await expect(executor.create({id: 1, x: 1})).rejects.toThrow('value failed validation')
+      expect(executorData).toEqual([])
     })
 
     it('should not create value with validation errors', async () => {
-      await expect(executor.create({})).to.be.rejectedWith('value failed validation')
-      expect(executorData).to.eql([])
+      await expect(executor.create({})).rejects.toThrow('value failed validation')
+      expect(executorData).toEqual([])
     })
 
     it('should not create value with uniqueness errors', async () => {
       executorData = [{id: 1, x: 1}]
-      await expect(executor.create({x: 1})).to.be.rejectedWith(/unique.*violated/)
-      expect(executorData).to.eql([{id: 1, x: 1}])
+      await expect(executor.create({x: 1})).rejects.toThrow(/unique.*violated/)
+      expect(executorData).toEqual([{id: 1, x: 1}])
     })
 
     it('should not create value with custom errors', async () => {
-      await expect(executor.create({x: 200})).to.be.rejectedWith(/x is too big/)
-      expect(executorData).to.eql([])
+      await expect(executor.create({x: 200})).rejects.toThrow(/x is too big/)
+      expect(executorData).toEqual([])
     })
 
     it('should pass-through transaction', async () => {
-      const create = sinon.spy(executorMinimal, 'save')
+      const create = jest.spyOn(executorMinimal, 'save')
       const transaction = {x: 1}
       const extras = {transaction}
       await executor.create({x: 2}, extras)
-      expect(create.firstCall.args[1]).to.equal(extras)
+      expect(create.mock.calls[0][1]).toBe(extras)
     })
   })
 
@@ -138,46 +129,46 @@ describe('lib/executor.ts', () => {
       executorData = [{id: 1, x: 2, y: 1}]
       const result = await executor.update({id: 1, x: 3, y: 1})
       const expected = {id: 1, x: 3, y: 1, z: 2}
-      expect(result).to.eql(expected)
-      expect(executorData).to.eql([expected])
+      expect(result).toEqual(expected)
+      expect(executorData).toEqual([expected])
     })
 
     it('should not update non-existent value', async () => {
-      await expect(executor.update({id: 1, x: 1})).to.be.rejectedWith(/unable to find/)
-      expect(executorData).to.have.length(0)
+      await expect(executor.update({id: 1, x: 1})).rejects.toThrow(/unable to find/)
+      expect(executorData).toHaveLength(0)
     })
 
     it('should not update value with validation errors', async () => {
       executorData = [{id: 1, x: 2, y: 1}]
-      await expect(executor.update({id: 1, y: 1})).to.be.rejectedWith('value failed validation')
-      expect(executorData).to.eql([{id: 1, x: 2, y: 1}])
+      await expect(executor.update({id: 1, y: 1})).rejects.toThrow('value failed validation')
+      expect(executorData).toEqual([{id: 1, x: 2, y: 1}])
     })
 
     it('should not update value with immutable errors', async () => {
       executorData = [{id: 1, x: 1, y: 1}]
-      await expect(executor.update({id: 1, x: 1, y: 2})).to.be.rejectedWith(/immutable.*violated/)
-      expect(executorData).to.eql([{id: 1, x: 1, y: 1}])
+      await expect(executor.update({id: 1, x: 1, y: 2})).rejects.toThrow(/immutable.*violated/)
+      expect(executorData).toEqual([{id: 1, x: 1, y: 1}])
     })
 
     it('should not update value with uniqueness errors', async () => {
       executorData = [{id: 1, x: 1}, {id: 2, x: 2}]
-      await expect(executor.update({id: 2, x: 1})).to.be.rejectedWith(/unique.*violated/)
-      expect(executorData).to.eql([{id: 1, x: 1}, {id: 2, x: 2}])
+      await expect(executor.update({id: 2, x: 1})).rejects.toThrow(/unique.*violated/)
+      expect(executorData).toEqual([{id: 1, x: 1}, {id: 2, x: 2}])
     })
 
     it('should not update value with custom errors', async () => {
       executorData = [{id: 1, x: 1}]
-      await expect(executor.update({id: 1, x: 200})).to.be.rejectedWith(/x is too big/)
-      expect(executorData).to.eql([{id: 1, x: 1}])
+      await expect(executor.update({id: 1, x: 200})).rejects.toThrow(/x is too big/)
+      expect(executorData).toEqual([{id: 1, x: 1}])
     })
 
     it('should pass-through transaction', async () => {
       executorData = [{id: 1, x: 2, y: 1}]
-      const update = sinon.spy(executorMinimal, 'save')
+      const update = jest.spyOn(executorMinimal, 'save')
       const transaction = {x: 1}
       const extras = {transaction}
       await executor.update({id: 1, x: 3, y: 1}, extras)
-      expect(update.firstCall.args[1]).to.equal(extras)
+      expect(update.mock.calls[0][1]).toBe(extras)
     })
   })
 
@@ -185,24 +176,24 @@ describe('lib/executor.ts', () => {
     it('should create when non-matching', async () => {
       const result = await executor.upsert({x: 2})
       const expected = {id: 1, x: 2, y: 1, z: 2}
-      expect(result).to.eql(expected)
-      expect(executorData).to.eql([expected])
+      expect(result).toEqual(expected)
+      expect(executorData).toEqual([expected])
     })
 
     it('should update when has id', async () => {
       executorData = [{id: 1, x: 1, y: 1}]
       const result = await executor.upsert({id: 1, x: 3, y: 1})
       const expected = {id: 1, x: 3, y: 1, z: 2}
-      expect(result).to.eql(expected)
-      expect(executorData).to.eql([expected])
+      expect(result).toEqual(expected)
+      expect(executorData).toEqual([expected])
     })
 
     it('should update when matches unique', async () => {
       executorData = [{id: 1, x: 1, y: 1}]
       const result = await executor.upsert({x: 1})
       const expected = {id: 1, x: 1, y: 1, z: 2}
-      expect(result).to.eql(expected)
-      expect(executorData).to.eql([expected])
+      expect(result).toEqual(expected)
+      expect(executorData).toEqual([expected])
     })
   })
 
@@ -211,28 +202,28 @@ describe('lib/executor.ts', () => {
       executorData = [{id: 1, x: 1, y: 1}]
       const result = await executor.patch(1, {x: 2})
       const expected = {id: 1, x: 2, y: 1, z: 2}
-      expect(result).to.eql(expected)
-      expect(executorData).to.eql([expected])
+      expect(result).toEqual(expected)
+      expect(executorData).toEqual([expected])
     })
 
     it('should update values specified', async () => {
       executorData = [{id: 1, x: 1, y: 1}]
       const result = await executor.patch({id: 1, x: 2})
       const expected = {id: 1, x: 2, y: 1, z: 2}
-      expect(result).to.eql(expected)
-      expect(executorData).to.eql([expected])
+      expect(result).toEqual(expected)
+      expect(executorData).toEqual([expected])
     })
 
     it('should fail when id does not exist', async () => {
       executorData = [{id: 1, x: 1}]
-      await expect(executor.patch(2, {x: 2})).to.be.rejectedWith(/unable to find/)
-      expect(executorData).to.eql([{id: 1, x: 1}])
+      await expect(executor.patch(2, {x: 2})).rejects.toThrow(/unable to find/)
+      expect(executorData).toEqual([{id: 1, x: 1}])
     })
 
     it('should fail when violates constraints', async () => {
       executorData = [{id: 1, x: 1}, {id: 2, x: 2}]
-      await expect(executor.patch(2, {x: 1})).to.be.rejectedWith(/unique.*violated/)
-      expect(executorData).to.eql([{id: 1, x: 1}, {id: 2, x: 2}])
+      await expect(executor.patch(2, {x: 1})).rejects.toThrow(/unique.*violated/)
+      expect(executorData).toEqual([{id: 1, x: 1}, {id: 2, x: 2}])
     })
   })
 
@@ -240,7 +231,7 @@ describe('lib/executor.ts', () => {
     it('should destroy all by query', async () => {
       executorData = [{id: 1, x: 1, y: 1}, {id: 2, x: 2, y: 2}, {id: 3, x: 3, y: 1}]
       await executor.destroy({where: {y: 1}})
-      expect(executorData).to.eql([{id: 2, x: 2, y: 2}])
+      expect(executorData).toEqual([{id: 2, x: 2, y: 2}])
     })
   })
 
@@ -248,20 +239,20 @@ describe('lib/executor.ts', () => {
     it('should destroy one by query', async () => {
       executorData = [{id: 1, x: 1, y: 1}, {id: 2, x: 2, y: 2}, {id: 3, x: 3, y: 1}]
       await executor.destroyOne({where: {y: 2}})
-      expect(executorData).to.have.length(2)
-      expect(executorData[1].id).to.equal(3)
+      expect(executorData).toHaveLength(2)
+      expect(executorData[1].id).toBe(3)
     })
 
     it('should do nothing when none match', async () => {
       executorData = [{id: 1, x: 1, y: 1}, {id: 2, x: 2, y: 2}, {id: 3, x: 3, y: 1}]
       await executor.destroyOne({where: {y: 4}})
-      expect(executorData).to.have.length(3)
+      expect(executorData).toHaveLength(3)
     })
 
     it('should fail to destroy when ambiguous', async () => {
       executorData = [{id: 1, x: 1, y: 1}, {id: 2, x: 2, y: 2}, {id: 3, x: 3, y: 1}]
-      await expect(executor.destroyOne({where: {y: 1}})).to.be.rejectedWith(/single result/)
-      expect(executorData).to.have.length(3)
+      await expect(executor.destroyOne({where: {y: 1}})).rejects.toThrow(/single result/)
+      expect(executorData).toHaveLength(3)
     })
   })
 })

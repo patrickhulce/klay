@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const ModelContext = require('klay-core').ModelContext
 const CRUD_ROUTES = require('../../dist/extensions/router').CRUD_ROUTES
 
@@ -17,7 +16,7 @@ describe('lib/extensions/router.ts', () => {
 
   it('should build the router', () => {
     const router = kiln.build('user', 'express-router', {routes: CRUD_ROUTES})
-    expect(router.routes).to.have.length.greaterThan(7)
+    expect(router.routes.length).toBeGreaterThan(7)
   })
 
   it('should throw on incompatible params', () => {
@@ -32,7 +31,7 @@ describe('lib/extensions/router.ts', () => {
       })
     }
 
-    expect(fn).to.throw(/incompatible.*foo/)
+    expect(fn).toThrowError(/incompatible.*foo/)
   })
 
   it('should apply options to all action routes', () => {
@@ -45,8 +44,8 @@ describe('lib/extensions/router.ts', () => {
     })
 
     const limitModel = route => route.queryModel.spec.children.find(x => x.path === 'limit').model
-    expect(limitModel(router.routes[0])).to.have.nested.property('spec.default', 87)
-    expect(limitModel(router.routes[1])).to.have.nested.property('spec.default', 50)
+    expect(limitModel(router.routes[0])).toHaveProperty('spec.default', 87)
+    expect(limitModel(router.routes[1])).toHaveProperty('spec.default', 50)
   })
 
   it('should apply options to all input routes', () => {
@@ -58,7 +57,7 @@ describe('lib/extensions/router.ts', () => {
       },
     })
 
-    expect(router.routes).to.have.nested.property('0.bodyModel.spec.type', 'number')
-    expect(router.routes).to.have.nested.property('1.bodyModel.spec.type', 'string')
+    expect(router.routes).toHaveProperty('0.bodyModel.spec.type', 'number')
+    expect(router.routes).toHaveProperty('1.bodyModel.spec.type', 'string')
   })
 })

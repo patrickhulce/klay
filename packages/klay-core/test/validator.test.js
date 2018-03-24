@@ -1,5 +1,4 @@
 const _ = require('lodash')
-const expect = require('chai').expect
 const Model = require('../dist/model').Model
 const Validator = require('../dist/validator').Validator
 const assertionErrorModule = require('../dist/errors/assertion-error')
@@ -30,7 +29,7 @@ describe('lib/validator.ts', () => {
     }
 
     it('should work with no type', () => {
-      expect(validate({})).to.eql({
+      expect(validate({})).toEqual({
         conforms: true,
         value: {},
         errors: [],
@@ -42,21 +41,21 @@ describe('lib/validator.ts', () => {
 
       try {
         validate('not a number', {failLoudly: true})
-        expect(false).to.equal(true)
+        expect(false).toBe(true)
       } catch (err) {
-        expect(err).to.have.property('value', 'not a number')
-        expect(err).to.have.property('message', 'value failed validation')
-        expect(err).to.have.property('errors')
-        expect(err.errors).to.have.length(1)
-        expect(err.errors[0].message).to.match(/expected.*number/)
-        expect(err.errors[0].error).to.be.instanceOf(AssertionError)
+        expect(err).toHaveProperty('value', 'not a number')
+        expect(err).toHaveProperty('message', 'value failed validation')
+        expect(err).toHaveProperty('errors')
+        expect(err.errors).toHaveLength(1)
+        expect(err.errors[0].message).toMatch(/expected.*number/)
+        expect(err.errors[0].error).toBeInstanceOf(AssertionError)
       }
     })
 
-    context('required', () => {
+    describe('required', () => {
       it('should conform when present', () => {
         model = model.type('object').required()
-        expect(validate({})).to.eql({
+        expect(validate({})).toEqual({
           conforms: true,
           value: {},
           errors: [],
@@ -68,7 +67,7 @@ describe('lib/validator.ts', () => {
           .type('object')
           .required()
           .nullable()
-        expect(validate(null)).to.eql({
+        expect(validate(null)).toEqual({
           conforms: true,
           value: null,
           errors: [],
@@ -77,7 +76,7 @@ describe('lib/validator.ts', () => {
 
       it('should not conform when absent', () => {
         model = model.type('object').required()
-        expect(validate(undefined)).to.eql({
+        expect(validate(undefined)).toEqual({
           conforms: false,
           value: undefined,
           errors: [{message: 'expected value to be defined'}],
@@ -85,10 +84,10 @@ describe('lib/validator.ts', () => {
       })
     })
 
-    context('nullable', () => {
+    describe('nullable', () => {
       it('should not conform when null', () => {
         model = model.type('string').nullable(false)
-        expect(validate(null)).to.eql({
+        expect(validate(null)).toEqual({
           conforms: false,
           value: null,
           errors: [{message: 'expected value to be non-null'}],
@@ -100,7 +99,7 @@ describe('lib/validator.ts', () => {
           .type('object')
           .required()
           .nullable()
-        expect(validate(null)).to.eql({
+        expect(validate(null)).toEqual({
           conforms: true,
           value: null,
           errors: [],
@@ -108,10 +107,10 @@ describe('lib/validator.ts', () => {
       })
     })
 
-    context('default', () => {
+    describe('default', () => {
       it('should fill in when undefined', () => {
         model = model.type('string').default('Hello, World')
-        expect(validate(undefined, {failLoudly: true})).to.eql({
+        expect(validate(undefined, {failLoudly: true})).toEqual({
           conforms: true,
           value: 'Hello, World',
           errors: [],
@@ -123,7 +122,7 @@ describe('lib/validator.ts', () => {
           .type('number')
           .default(123)
           .required()
-        expect(validate(undefined)).to.eql({
+        expect(validate(undefined)).toEqual({
           conforms: false,
           value: undefined,
           errors: [{message: 'expected value to be defined'}],
@@ -135,7 +134,7 @@ describe('lib/validator.ts', () => {
           .type('number')
           .nullable()
           .default(1)
-        expect(validate(null)).to.eql({
+        expect(validate(null)).toEqual({
           conforms: true,
           value: null,
           errors: [],
@@ -144,7 +143,7 @@ describe('lib/validator.ts', () => {
 
       it('should still enforce non-null', () => {
         model = model.type('number').default(null)
-        expect(validate(undefined)).to.eql({
+        expect(validate(undefined)).toEqual({
           conforms: false,
           value: null,
           errors: [{message: 'expected value to be non-null'}],
@@ -156,7 +155,7 @@ describe('lib/validator.ts', () => {
           .type('string')
           .default('Hello, World')
           .validations(/skrilla/)
-        expect(validate(undefined)).to.eql({
+        expect(validate(undefined)).toEqual({
           conforms: false,
           value: 'Hello, World',
           errors: [
@@ -174,7 +173,7 @@ describe('lib/validator.ts', () => {
           .default(null)
           .validations(/skrilla/)
 
-        expect(validate(null)).to.eql({
+        expect(validate(null)).toEqual({
           conforms: true,
           value: null,
           errors: [],
@@ -182,33 +181,31 @@ describe('lib/validator.ts', () => {
       })
     })
 
-    context('enum', () => {
+    describe('enum', () => {
       it('should support simple types', () => {
         model = model.type('string').enum(['hello', 'bar'])
-        expect(validate('hello')).to.have.property('conforms', true)
-        expect(validate('bar')).to.have.property('conforms', true)
-        expect(validate('other')).to.have.property('conforms', false)
-        expect(validate(2)).to.have.property('conforms', false)
+        expect(validate('hello')).toHaveProperty('conforms', true)
+        expect(validate('bar')).toHaveProperty('conforms', true)
+        expect(validate('other')).toHaveProperty('conforms', false)
+        expect(validate(2)).toHaveProperty('conforms', false)
       })
 
       it('should provide useful errors when simple', () => {
         model = model.type('string').enum(['hello', 'bar'])
         const validation = validate('other')
-        expect(validation).to.have.property('conforms', false)
-        expect(validation).to.have.property('value', 'other')
-        expect(validation)
-          .to.have.nested.property('errors.0.message')
-          .include('one of [hello, bar]')
+        expect(validation).toHaveProperty('conforms', false)
+        expect(validation).toHaveProperty('value', 'other')
+        expect(validation.errors[0].message).toContain('one of [hello, bar]')
       })
 
       it('should support complex types', () => {
         const optionA = new Model({}, defaultOptions).type('string')
         const optionB = new Model({}, defaultOptions).type('object')
         model = model.enum([optionA, optionB])
-        expect(validate(true)).to.have.property('conforms', false)
-        expect(validate(1)).to.have.property('conforms', false)
-        expect(validate({})).to.have.property('conforms', true)
-        expect(validate('hello')).to.have.property('conforms', true)
+        expect(validate(true)).toHaveProperty('conforms', false)
+        expect(validate(1)).toHaveProperty('conforms', false)
+        expect(validate({})).toHaveProperty('conforms', true)
+        expect(validate('hello')).toHaveProperty('conforms', true)
       })
 
       it('should support deep complex types', () => {
@@ -218,11 +215,11 @@ describe('lib/validator.ts', () => {
         optionB.children({x: optionChildB})
 
         model = model.enum([optionA, optionB])
-        expect(validate(true)).to.have.property('conforms', false)
-        expect(validate(1)).to.have.property('conforms', false)
-        expect(validate({x: {}})).to.have.property('conforms', true)
-        expect(validate({x: 1})).to.have.property('conforms', false)
-        expect(validate('hello')).to.have.property('conforms', true)
+        expect(validate(true)).toHaveProperty('conforms', false)
+        expect(validate(1)).toHaveProperty('conforms', false)
+        expect(validate({x: {}})).toHaveProperty('conforms', true)
+        expect(validate({x: 1})).toHaveProperty('conforms', false)
+        expect(validate('hello')).toHaveProperty('conforms', true)
       })
 
       it('should support applies functions', () => {
@@ -236,9 +233,9 @@ describe('lib/validator.ts', () => {
         const valueModel = new Model({}, defaultOptions).enum([optionA, optionB])
 
         model = model.type('object').children({type: typeModel, value: valueModel})
-        expect(validate({type: 'a', value: 'hello'})).to.have.property('conforms', true)
-        expect(validate({type: 'b', value: 12})).to.have.property('conforms', true)
-        expect(validate({type: 'b', value: 'oops'})).to.eql({
+        expect(validate({type: 'a', value: 'hello'})).toHaveProperty('conforms', true)
+        expect(validate({type: 'b', value: 12})).toHaveProperty('conforms', true)
+        expect(validate({type: 'b', value: 'oops'})).toEqual({
           conforms: false,
           value: {type: 'b', value: 'oops'},
           errors: [
@@ -255,23 +252,17 @@ describe('lib/validator.ts', () => {
         const optionB = new Model({}, defaultOptions).type('object')
         model = model.enum([optionA, optionB])
         const validation = validate(1)
-        expect(validation).to.have.property('conforms', false)
-        expect(validation).to.have.property('value', 1)
-        expect(validation)
-          .to.have.property('errors')
-          .with.length(1)
+        expect(validation).toHaveProperty('conforms', false)
+        expect(validation).toHaveProperty('value', 1)
+        expect(validation.errors).toHaveLength(1)
 
         const error = validation.errors[0]
-        expect(error)
-          .to.have.property('message')
-          .match(/match.*enum/)
-        expect(error)
-          .to.have.property('details')
-          .with.length(2)
+        expect(error.message).toMatch(/match.*enum/)
+        expect(error.details).toHaveLength(2)
       })
     })
 
-    context('children', () => {
+    describe('children', () => {
       let mkModel
 
       beforeEach(() => {
@@ -288,7 +279,7 @@ describe('lib/validator.ts', () => {
       it('should validate arrays', () => {
         const childModel = new Model({}, validatorOptions).type('number').required()
         model = model.type('array').children(childModel)
-        expect(validate([1, '2', null, undefined, 5])).to.eql({
+        expect(validate([1, '2', null, undefined, 5])).toEqual({
           conforms: false,
           value: [1, 2, null, undefined, 5],
           errors: [
@@ -321,7 +312,7 @@ describe('lib/validator.ts', () => {
             meta: {type: 123},
             extra: 'foo',
           }),
-        ).to.eql({
+        ).toEqual({
           conforms: false,
           value: {
             id: 123,
@@ -382,7 +373,7 @@ describe('lib/validator.ts', () => {
           },
         })
 
-        expect(calledRootValue).to.eql({
+        expect(calledRootValue).toEqual({
           x: 1,
           y: 2,
           z: {
@@ -396,11 +387,11 @@ describe('lib/validator.ts', () => {
           },
         })
 
-        expect(result.value.z.zz.zzz).to.equal(11)
+        expect(result.value.z.zz.zzz).toBe(11)
       })
     })
 
-    context('coerce', () => {
+    describe('coerce', () => {
       it('should use coerce before checking definedness', () => {
         const parser = val => val.setValue('something')
         model = model
@@ -408,7 +399,7 @@ describe('lib/validator.ts', () => {
           .required()
           .coerce(parser)
 
-        expect(validate(null)).to.eql({
+        expect(validate(null)).toEqual({
           conforms: true,
           value: 'something',
           errors: [],
@@ -422,7 +413,7 @@ describe('lib/validator.ts', () => {
           .required()
           .coerce(parser)
 
-        expect(validate(null)).to.eql({
+        expect(validate(null)).toEqual({
           conforms: false,
           value: undefined,
           errors: [{message: 'expected value to be defined'}],
@@ -437,7 +428,7 @@ describe('lib/validator.ts', () => {
           .coerce(parser)
           .validations(/skrilla/)
 
-        expect(validate(null)).to.eql({
+        expect(validate(null)).toEqual({
           conforms: true,
           value: 'something',
           errors: [],
@@ -452,7 +443,7 @@ describe('lib/validator.ts', () => {
           .coerce(parser, 'validate-value')
           .validations(/skrilla/)
 
-        expect(validate('skrilla')).to.eql({
+        expect(validate('skrilla')).toEqual({
           conforms: true,
           value: 'something',
           errors: [],
@@ -466,18 +457,18 @@ describe('lib/validator.ts', () => {
           .required()
           .coerce(parser)
 
-        expect(() => validate('Hello, World')).to.throw(/must return.*ValidationResult/)
+        expect(() => validate('Hello, World')).toThrowError(/must return.*ValidationResult/)
       })
     })
 
-    context('validations [RegExp]', () => {
+    describe('validations [RegExp]', () => {
       it('should pass a valid match', () => {
         model = model
           .type('string')
           .required()
           .validations(/^foo.*bar$/)
 
-        expect(validate('foo Anything Goes bar')).to.eql({
+        expect(validate('foo Anything Goes bar')).toEqual({
           conforms: true,
           value: 'foo Anything Goes bar',
           errors: [],
@@ -490,7 +481,7 @@ describe('lib/validator.ts', () => {
           .required()
           .validations(/^foo.*bar$/)
 
-        expect(validate('Anything Goes bar')).to.eql({
+        expect(validate('Anything Goes bar')).toEqual({
           conforms: false,
           value: 'Anything Goes bar',
           errors: [
@@ -504,7 +495,7 @@ describe('lib/validator.ts', () => {
       it('should fail a non-string', () => {
         model = model.type('object').validations(/^foo.*bar$/)
 
-        expect(validate({})).to.eql({
+        expect(validate({})).toEqual({
           conforms: false,
           value: {},
           errors: [
@@ -516,14 +507,14 @@ describe('lib/validator.ts', () => {
       })
     })
 
-    context('validations [function]', () => {
+    describe('validations [function]', () => {
       it('should pass a valid match', () => {
         model = model
           .type('string')
           .required()
           .validations(_.noop)
 
-        expect(validate('Hello, World')).to.eql({
+        expect(validate('Hello, World')).toEqual({
           conforms: true,
           value: 'Hello, World',
           errors: [],
@@ -536,7 +527,7 @@ describe('lib/validator.ts', () => {
           .required()
           .validations([_.noop, _.noop])
 
-        expect(validate('Hello, World')).to.eql({
+        expect(validate('Hello, World')).toEqual({
           conforms: true,
           value: 'Hello, World',
           errors: [],
@@ -549,7 +540,7 @@ describe('lib/validator.ts', () => {
           .required()
           .validations([_.noop, _.noop, /World/])
 
-        expect(validate('Hello, World')).to.eql({
+        expect(validate('Hello, World')).toEqual({
           conforms: true,
           value: 'Hello, World',
           errors: [],
@@ -562,7 +553,7 @@ describe('lib/validator.ts', () => {
           .required()
           .validations([_.noop, /missing/, _.noop])
 
-        expect(validate('Hello, World')).to.eql({
+        expect(validate('Hello, World')).toEqual({
           conforms: false,
           value: 'Hello, World',
           errors: [
@@ -580,7 +571,7 @@ describe('lib/validator.ts', () => {
           .required()
           .validations([_.noop, fail, _.noop])
 
-        expect(validate('Hello, World')).to.eql({
+        expect(validate('Hello, World')).toEqual({
           conforms: false,
           value: 'Hello, World',
           errors: [{message: 'invalid value'}],
@@ -588,8 +579,8 @@ describe('lib/validator.ts', () => {
       })
     })
 
-    context('validator-options', () => {
-      context('validations', () => {
+    describe('validator-options', () => {
+      describe('validations', () => {
         beforeEach(() => {
           validatorOptions = {
             types: ['number'],
@@ -608,34 +599,32 @@ describe('lib/validator.ts', () => {
 
         it('should use ___ALL_FORMATS___', () => {
           model = model.type('number')
-          expect(validate(1)).to.have.property('conforms', true)
-          expect(validate('foo')).to.have.property('conforms', false)
-          expect(validate(true)).to.have.property('conforms', false)
-          expect(validate([])).to.have.property('conforms', false)
+          expect(validate(1)).toHaveProperty('conforms', true)
+          expect(validate('foo')).toHaveProperty('conforms', false)
+          expect(validate(true)).toHaveProperty('conforms', false)
+          expect(validate([])).toHaveProperty('conforms', false)
 
           model = model.type('number').format('integer')
-          expect(validate('foo').errors[0])
-            .to.have.property('message')
-            .match(/expected.*number/)
+          expect(validate('foo').errors[0].message).toMatch(/expected.*number/)
         })
 
         it('should use ___FALLBACK_FORMAT___', () => {
           model = model.type('number')
-          expect(validate(0)).to.have.property('conforms', false)
+          expect(validate(0)).toHaveProperty('conforms', false)
           model = model.type('number').format('integer')
-          expect(validate(0)).to.have.property('conforms', true)
+          expect(validate(0)).toHaveProperty('conforms', true)
         })
 
         it('should use appropriate format', () => {
           model = model.type('number').format('integer')
-          expect(validate(0)).to.have.property('conforms', true)
-          expect(validate(1.1)).to.have.property('conforms', false)
-          expect(validate(15)).to.have.property('conforms', true)
-          expect(validate(5.23)).to.have.property('conforms', false)
+          expect(validate(0)).toHaveProperty('conforms', true)
+          expect(validate(1.1)).toHaveProperty('conforms', false)
+          expect(validate(15)).toHaveProperty('conforms', true)
+          expect(validate(5.23)).toHaveProperty('conforms', false)
         })
       })
 
-      context('coerce', () => {
+      describe('coerce', () => {
         beforeEach(() => {
           validatorOptions = {
             types: ['string'],
@@ -663,7 +652,7 @@ describe('lib/validator.ts', () => {
 
         it('should use ___ALL_FORMATS___', () => {
           model = model.type('string').format('name')
-          expect(validate(1)).to.eql({
+          expect(validate(1)).toEqual({
             conforms: true,
             value: 'name: type: 1',
             errors: [],
@@ -672,7 +661,7 @@ describe('lib/validator.ts', () => {
 
         it('should use ___FALLBACK_FORMAT___', () => {
           model = model.type('string')
-          expect(validate(false)).to.eql({
+          expect(validate(false)).toEqual({
             conforms: true,
             value: 'format: type: false',
             errors: [],
@@ -681,7 +670,7 @@ describe('lib/validator.ts', () => {
 
         it('should use appropriate format', () => {
           model = model.type('string').format('phone')
-          expect(validate('+1 (555) 555-5555')).to.eql({
+          expect(validate('+1 (555) 555-5555')).toEqual({
             conforms: true,
             value: '15555555555',
             errors: [],

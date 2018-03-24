@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const Options = require('../dist/validator-options').ValidatorOptions
 
 const emptyObj = {___ALL_FORMATS___: {}, ___FALLBACK_FORMAT___: {}}
@@ -8,23 +7,23 @@ describe('lib/validator-options.ts', () => {
     it('creates successfully', () => {
       const types = ['string']
       const options = new Options({types})
-      expect(options.types).to.eql(['string'])
-      expect(options.types).to.not.equal(types)
-      expect(options.formats).to.eql({string: []})
-      expect(options.coerce).to.eql({string: emptyObj})
-      expect(options.validations).to.eql({string: emptyArr})
+      expect(options.types).toEqual(['string'])
+      expect(options.types).not.toBe(types)
+      expect(options.formats).toEqual({string: []})
+      expect(options.coerce).toEqual({string: emptyObj})
+      expect(options.validations).toEqual({string: emptyArr})
     })
 
     it('fills in missing formats', () => {
       const types = ['string']
       const formats = {string: ['name']}
       const options = new Options({types, formats})
-      expect(options.types).to.eql(['string'])
-      expect(options.types).to.not.equal(types)
-      expect(options.formats).to.eql({string: ['name']})
-      expect(options.formats).to.not.equal(formats)
-      expect(options.coerce).to.eql({string: Object.assign({}, emptyObj, {name: {}})})
-      expect(options.validations).to.eql({string: Object.assign({}, emptyArr, {name: []})})
+      expect(options.types).toEqual(['string'])
+      expect(options.types).not.toBe(types)
+      expect(options.formats).toEqual({string: ['name']})
+      expect(options.formats).not.toBe(formats)
+      expect(options.coerce).toEqual({string: Object.assign({}, emptyObj, {name: {}})})
+      expect(options.validations).toEqual({string: Object.assign({}, emptyArr, {name: []})})
     })
 
     it('allows partial definition', () => {
@@ -35,23 +34,23 @@ describe('lib/validator-options.ts', () => {
         coerce: {string: {___ALL_FORMATS___: {parse: parseFn}}},
       })
 
-      expect(options.types).to.eql(['string'])
-      expect(options.formats).to.eql({string: []})
-      expect(options.coerce).to.eql({
+      expect(options.types).toEqual(['string'])
+      expect(options.formats).toEqual({string: []})
+      expect(options.coerce).toEqual({
         string: {___ALL_FORMATS___: {parse: parseFn}, ___FALLBACK_FORMAT___: {}},
       })
-      expect(options.validations).to.eql({
+      expect(options.validations).toEqual({
         string: {___ALL_FORMATS___: [1], ___FALLBACK_FORMAT___: []},
       })
     })
 
     it('throws on invalid input', () => {
-      expect(() => new Options({types: 'foo'})).to.throw()
-      expect(() => new Options({types: {}})).to.throw()
-      expect(() => new Options({types: ['string'], formats: {whaa: []}})).to.throw()
-      expect(() => new Options({types: ['string'], validations: {whaa: []}})).to.throw()
-      expect(() => new Options({types: ['string'], validations: {string: []}})).to.throw()
-      expect(() => new Options({hooks: {value: 1}})).to.throw()
+      expect(() => new Options({types: 'foo'})).toThrowError()
+      expect(() => new Options({types: {}})).toThrowError()
+      expect(() => new Options({types: ['string'], formats: {whaa: []}})).toThrowError()
+      expect(() => new Options({types: ['string'], validations: {whaa: []}})).toThrowError()
+      expect(() => new Options({types: ['string'], validations: {string: []}})).toThrowError()
+      expect(() => new Options({hooks: {value: 1}})).toThrowError()
     })
   })
 
@@ -62,9 +61,9 @@ describe('lib/validator-options.ts', () => {
       const optionsB = optionsA.clone()
       optionsA.types.push('a')
       optionsB.types.push('b')
-      expect(original.types).to.eql(['string'])
-      expect(optionsA.types).to.eql(['string', 'a'])
-      expect(optionsB.types).to.eql(['string', 'b'])
+      expect(original.types).toEqual(['string'])
+      expect(optionsA.types).toEqual(['string', 'a'])
+      expect(optionsB.types).toEqual(['string', 'b'])
     })
 
     it('deep clones the nested objects', () => {
@@ -76,9 +75,9 @@ describe('lib/validator-options.ts', () => {
       const optionsB = optionsA.clone()
       optionsA.coerce.string.___ALL_FORMATS___.foo = 1
       optionsB.coerce.string.___ALL_FORMATS___.bar = 2
-      expect(original.coerce.string.___ALL_FORMATS___).to.eql({parse: parseFn})
-      expect(optionsA.coerce.string.___ALL_FORMATS___).to.eql({parse: parseFn, foo: 1})
-      expect(optionsB.coerce.string.___ALL_FORMATS___).to.eql({parse: parseFn, bar: 2})
+      expect(original.coerce.string.___ALL_FORMATS___).toEqual({parse: parseFn})
+      expect(optionsA.coerce.string.___ALL_FORMATS___).toEqual({parse: parseFn, foo: 1})
+      expect(optionsB.coerce.string.___ALL_FORMATS___).toEqual({parse: parseFn, bar: 2})
     })
   })
 
@@ -86,17 +85,17 @@ describe('lib/validator-options.ts', () => {
     it('fills in missing properties', () => {
       const input = {types: ['string']}
       const options = Options.from(input)
-      expect(options).to.not.equal(input)
-      expect(options.types).to.eql(['string'])
-      expect(options.formats).to.eql({string: []})
-      expect(options.coerce).to.eql({string: emptyObj})
-      expect(options.validations).to.eql({string: emptyArr})
+      expect(options).not.toBe(input)
+      expect(options.types).toEqual(['string'])
+      expect(options.formats).toEqual({string: []})
+      expect(options.coerce).toEqual({string: emptyObj})
+      expect(options.validations).toEqual({string: emptyArr})
     })
 
     it('reuses existing options', () => {
       const input = new Options({types: ['string']})
       const options = Options.from(input)
-      expect(options).to.equal(input)
+      expect(options).toBe(input)
     })
   })
 
@@ -107,7 +106,7 @@ describe('lib/validator-options.ts', () => {
       const inputA = {types: ['string'], methods: {methodA}}
       const inputB = {types: ['number'], methods: {methodB}}
       const options = Options.merge(inputA, inputB)
-      expect(options).to.eql({
+      expect(options).toEqual({
         defaults: {},
         hooks: {},
         types: ['string', 'number'],
@@ -123,8 +122,8 @@ describe('lib/validator-options.ts', () => {
         },
       })
 
-      expect(inputA).to.eql({types: ['string'], methods: {methodA}})
-      expect(inputB).to.eql({types: ['number'], methods: {methodB}})
+      expect(inputA).toEqual({types: ['string'], methods: {methodA}})
+      expect(inputB).toEqual({types: ['number'], methods: {methodB}})
     })
 
     it('merges defaults', () => {
@@ -132,7 +131,7 @@ describe('lib/validator-options.ts', () => {
       const inputB = {defaults: {required: false, type: 'string'}}
       const inputC = {defaults: {type: 'number'}}
       const options = Options.merge(inputA, inputB, inputC)
-      expect(options.defaults).to.eql({required: false, type: 'number'})
+      expect(options.defaults).toEqual({required: false, type: 'number'})
     })
 
     it('merges hooks', () => {
@@ -142,7 +141,7 @@ describe('lib/validator-options.ts', () => {
       const inputB = {hooks: {construction: [hookB]}}
       const inputC = {hooks: {'set-children': [hookB]}}
       const options = Options.merge(inputA, inputB, inputC)
-      expect(options.hooks).to.eql({
+      expect(options.hooks).toEqual({
         'construction': [hookA, hookB],
         'set-children': [hookB],
       })
@@ -154,14 +153,14 @@ describe('lib/validator-options.ts', () => {
       const inputC = {types: ['array']}
       const inputD = {types: ['object']}
       const options = Options.merge(inputA, inputB, inputC, inputD)
-      expect(options.types).to.eql(['string', 'number', 'array', 'object'])
+      expect(options.types).toEqual(['string', 'number', 'array', 'object'])
     })
 
     it('dedupes types', () => {
       const inputA = {types: ['string']}
       const inputB = {types: ['number', 'string']}
       const options = Options.merge(inputA, inputB)
-      expect(options.types).to.eql(['string', 'number'])
+      expect(options.types).toEqual(['string', 'number'])
     })
   })
 })

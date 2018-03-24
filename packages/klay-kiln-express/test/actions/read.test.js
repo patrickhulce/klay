@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const sinon = require('sinon')
 const uuid = require('uuid').v4
 
@@ -16,8 +15,8 @@ describe('lib/actions/read.ts', () => {
 
   it('should build the route', () => {
     const route = kiln.build('user', 'express-route', {type: 'read'})
-    expect(route.paramsModel).to.have.property('isKlayModel', true)
-    expect(route.middleware).to.have.length.greaterThan(0)
+    expect(route.paramsModel).toHaveProperty('isKlayModel', true)
+    expect(route.middleware.length).toBeGreaterThan(0)
   })
 
   it('should call read', async () => {
@@ -25,25 +24,25 @@ describe('lib/actions/read.ts', () => {
     const id = uuid()
     const req = {params: {id}}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(req).to.have.nested.property('validated.params.id', id)
-    expect(req).to.have.property('actionTarget').eql({foo: 'bar'})
-    expect(await res.promise).to.eql({foo: 'bar'})
-    expect(nextCalledAll).to.equal(true)
-    expect(readStub.callCount).to.equal(1)
+    expect(req).toHaveProperty('validated.params.id', id)
+    expect(req).toHaveProperty('actionTarget', {foo: 'bar'})
+    expect(await res.promise).toEqual({foo: 'bar'})
+    expect(nextCalledAll).toBe(true)
+    expect(readStub.callCount).toBe(1)
   })
 
   it('should validate params', async () => {
     const route = kiln.build('user', 'express-route', {type: 'read'})
     const req = {params: {id: 'foo'}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(next.firstCall.args[0]).to.be.instanceof(Error)
-    expect(next.firstCall.args[0].value).to.include({id: 'foo'})
-    expect(res.promise).to.equal(undefined)
-    expect(nextCalledAll).to.equal(false)
-    expect(readStub.callCount).to.equal(0)
+    expect(next.firstCall.args[0]).toBeInstanceOf(Error)
+    expect(next.firstCall.args[0].value).toMatchObject({id: 'foo'})
+    expect(res.promise).toBe(undefined)
+    expect(nextCalledAll).toBe(false)
+    expect(readStub.callCount).toBe(0)
   })
 
-  context('authorization', () => {
+  describe('authorization', () => {
     let authorization, grants
 
     beforeEach(() => {
@@ -56,8 +55,8 @@ describe('lib/actions/read.ts', () => {
       const req = {grants, params: {id: uuid()}}
       const {res} = await utils.runMiddleware(route.middleware, req)
 
-      expect(await res.promise).to.eql(req.validated.body)
-      expect(readStub.callCount).to.equal(1)
+      expect(await res.promise).toEqual(req.validated.body)
+      expect(readStub.callCount).toBe(1)
     })
 
     it('should fail authorization', async () => {
@@ -66,9 +65,9 @@ describe('lib/actions/read.ts', () => {
       readStub.returns({lastName: 'Not-Thompson'})
       const {res, err} = await utils.runMiddleware(route.middleware, req)
 
-      expect(err).to.be.instanceOf(Error)
-      expect(err.message).to.match(/permission/)
-      expect(res.promise).to.equal(undefined)
+      expect(err).toBeInstanceOf(Error)
+      expect(err.message).toMatch(/permission/)
+      expect(res.promise).toBe(undefined)
     })
   })
 })

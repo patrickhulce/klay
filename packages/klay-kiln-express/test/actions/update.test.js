@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const sinon = require('sinon')
 const uuid = require('uuid').v4
 
@@ -19,13 +18,13 @@ describe('lib/actions/update.ts', () => {
 
   it('should build the route', () => {
     const route = kiln.build('user', 'express-route', {type: 'update'})
-    expect(route.bodyModel).to.have.property('isKlayModel', true)
-    expect(route.middleware).to.have.length.greaterThan(0)
+    expect(route.bodyModel).toHaveProperty('isKlayModel', true)
+    expect(route.middleware.length).toBeGreaterThan(0)
   })
 
   it('should throw if both byId and byList are set', () => {
     const fn = () => kiln.build('user', 'express-route', {type: 'update', byList: true})
-    expect(fn).to.throw(/Cannot update.*byId.*byList/)
+    expect(fn).toThrowError(/Cannot update.*byId.*byList/)
   })
 
   it('should call update', async () => {
@@ -39,14 +38,13 @@ describe('lib/actions/update.ts', () => {
 
     const req = {params: {id}, body: payload}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(req).to.have.nested.property('validated.body')
-    expect(req).to.have.nested.property('validated.body.updatedAt', undefined)
+    expect(req).toHaveProperty('validated.body')
+    expect(req).toHaveProperty('validated.body.updatedAt', undefined)
     expect(req)
-      .to.have.property('actionTarget')
-      .eql({lastName: 'Thompson'})
-    expect(await res.promise).to.eql(req.validated.body)
-    expect(nextCalledAll).to.equal(true)
-    expect(updateStub.callCount).to.equal(1)
+      .toHaveProperty('actionTarget', {lastName: 'Thompson'})
+    expect(await res.promise).toEqual(req.validated.body)
+    expect(nextCalledAll).toBe(true)
+    expect(updateStub.callCount).toBe(1)
   })
 
   it('should call updateAll', async () => {
@@ -60,40 +58,39 @@ describe('lib/actions/update.ts', () => {
 
     const req = {body: [payload]}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(req).to.have.nested.property('validated.body.0.id')
-    expect(req).to.have.nested.property('validated.body.0.updatedAt', undefined)
-    expect(await res.promise).to.eql(req.validated.body)
+    expect(req).toHaveProperty('validated.body.0.id')
+    expect(req).toHaveProperty('validated.body.0.updatedAt', undefined)
+    expect(await res.promise).toEqual(req.validated.body)
     expect(req)
-      .to.have.property('actionTarget')
-      .eql([{lastName: 'Thompson'}])
-    expect(nextCalledAll).to.equal(true)
-    expect(updateStub.callCount).to.equal(0)
-    expect(updateAllStub.callCount).to.equal(1)
+      .toHaveProperty('actionTarget', [{lastName: 'Thompson'}])
+    expect(nextCalledAll).toBe(true)
+    expect(updateStub.callCount).toBe(0)
+    expect(updateAllStub.callCount).toBe(1)
   })
 
   it('should validate params', async () => {
     const route = kiln.build('user', 'express-route', {type: 'update'})
     const req = {params: {id: 'foo'}, body: {...utils.defaultUser, id: uuid()}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(next.firstCall.args[0]).to.be.instanceof(Error)
-    expect(next.firstCall.args[0].value).to.include({id: 'foo'})
-    expect(res.promise).to.equal(undefined)
-    expect(nextCalledAll).to.equal(false)
-    expect(updateStub.callCount).to.equal(0)
+    expect(next.firstCall.args[0]).toBeInstanceOf(Error)
+    expect(next.firstCall.args[0].value).toMatchObject({id: 'foo'})
+    expect(res.promise).toBe(undefined)
+    expect(nextCalledAll).toBe(false)
+    expect(updateStub.callCount).toBe(0)
   })
 
   it('should validate body', async () => {
     const route = kiln.build('user', 'express-route', {type: 'update'})
     const req = {params: {id: uuid()}, body: {...utils.defaultUser, age: false}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(next.secondCall.args[0]).to.be.instanceof(Error)
-    expect(next.secondCall.args[0].value).to.include({age: false})
-    expect(res.promise).to.equal(undefined)
-    expect(nextCalledAll).to.equal(false)
-    expect(updateStub.callCount).to.equal(0)
+    expect(next.secondCall.args[0]).toBeInstanceOf(Error)
+    expect(next.secondCall.args[0].value).toMatchObject({age: false})
+    expect(res.promise).toBe(undefined)
+    expect(nextCalledAll).toBe(false)
+    expect(updateStub.callCount).toBe(0)
   })
 
-  context('authorization', () => {
+  describe('authorization', () => {
     let authorization, grants
 
     beforeEach(() => {
@@ -106,8 +103,8 @@ describe('lib/actions/update.ts', () => {
       const req = {grants, body: {...utils.defaultUser, id: uuid()}}
       const {res} = await utils.runMiddleware(route.middleware, req)
 
-      expect(await res.promise).to.eql(req.validated.body)
-      expect(updateStub.callCount).to.equal(1)
+      expect(await res.promise).toEqual(req.validated.body)
+      expect(updateStub.callCount).toBe(1)
     })
 
     it('should fail authorization for incoming', async () => {
@@ -120,9 +117,9 @@ describe('lib/actions/update.ts', () => {
       const req = {grants, body}
       const {res, err} = await utils.runMiddleware(route.middleware, req)
 
-      expect(err).to.be.instanceOf(Error)
-      expect(err.message).to.match(/permission/)
-      expect(res.promise).to.equal(undefined)
+      expect(err).toBeInstanceOf(Error)
+      expect(err.message).toMatch(/permission/)
+      expect(res.promise).toBe(undefined)
     })
 
     it('should fail authorization for existing', async () => {
@@ -135,9 +132,9 @@ describe('lib/actions/update.ts', () => {
       const req = {grants, body}
       const {res, err} = await utils.runMiddleware(route.middleware, req)
 
-      expect(err).to.be.instanceOf(Error)
-      expect(err.message).to.match(/permission/)
-      expect(res.promise).to.equal(undefined)
+      expect(err).toBeInstanceOf(Error)
+      expect(err.message).toMatch(/permission/)
+      expect(res.promise).toBe(undefined)
     })
 
     it('should pass list authorization', async () => {
@@ -147,8 +144,8 @@ describe('lib/actions/update.ts', () => {
       const req = {grants, body}
       const {res} = await utils.runMiddleware(route.middleware, req)
 
-      expect(await res.promise).to.eql(req.validated.body)
-      expect(updateAllStub.callCount).to.equal(1)
+      expect(await res.promise).toEqual(req.validated.body)
+      expect(updateAllStub.callCount).toBe(1)
     })
 
     it('should fail list authorization for incoming', async () => {
@@ -161,9 +158,9 @@ describe('lib/actions/update.ts', () => {
       const req = {grants, body}
       const {res, err} = await utils.runMiddleware(route.middleware, req)
 
-      expect(err).to.be.instanceOf(Error)
-      expect(err.message).to.match(/permission/)
-      expect(res.promise).to.equal(undefined)
+      expect(err).toBeInstanceOf(Error)
+      expect(err.message).toMatch(/permission/)
+      expect(res.promise).toBe(undefined)
     })
 
     it('should fail list authorization for existing', async () => {
@@ -179,9 +176,9 @@ describe('lib/actions/update.ts', () => {
       const req = {grants, body}
       const {res, err} = await utils.runMiddleware(route.middleware, req)
 
-      expect(err).to.be.instanceOf(Error)
-      expect(err.message).to.match(/permission/)
-      expect(res.promise).to.equal(undefined)
+      expect(err).toBeInstanceOf(Error)
+      expect(err.message).toMatch(/permission/)
+      expect(res.promise).toBe(undefined)
     })
   })
 })

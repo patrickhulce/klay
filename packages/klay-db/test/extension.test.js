@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const ModelContext = require('klay-core').ModelContext
 const DatabaseExtension = require('../dist/extension').DatabaseExtension
 const DatabaseOptions = require('../dist/options').DatabaseOptions
@@ -15,7 +14,7 @@ describe('lib/extension.ts', () => {
     it('should gather child db specifications', () => {
       const child = modelContext.string().constrain({type: 'primary'})
       const model = modelContext.object().children({id: child})
-      expect(model.spec.db).to.eql({
+      expect(model.spec.db).toEqual({
         automanage: [],
         index: [],
         constrain: [
@@ -33,28 +32,28 @@ describe('lib/extension.ts', () => {
   describe('builders', () => {
     it('should add integerId', () => {
       const model = modelContext.integerId()
-      expect(model.spec.db.constrain).to.have.length(1)
-      expect(model.spec.db.automanage).to.have.length(1)
-      expect(model.spec.db.constrain[0].type).to.equal('primary')
+      expect(model.spec.db.constrain).toHaveLength(1)
+      expect(model.spec.db.automanage).toHaveLength(1)
+      expect(model.spec.db.constrain[0].type).toBe('primary')
     })
 
     it('should add uuidId', () => {
       const model = modelContext.uuidId()
-      expect(model.spec.db.constrain).to.have.length(1)
-      expect(model.spec.db.automanage).to.have.length(1)
-      expect(model.spec.db.constrain[0].type).to.equal('primary')
+      expect(model.spec.db.constrain).toHaveLength(1)
+      expect(model.spec.db.automanage).toHaveLength(1)
+      expect(model.spec.db.constrain[0].type).toBe('primary')
     })
 
     it('should add createdAt', () => {
       const model = modelContext.createdAt()
-      expect(model.spec.db.constrain).to.have.length(1)
-      expect(model.spec.db.automanage).to.have.length(1)
-      expect(model.spec.db.constrain[0].type).to.equal('immutable')
+      expect(model.spec.db.constrain).toHaveLength(1)
+      expect(model.spec.db.automanage).toHaveLength(1)
+      expect(model.spec.db.constrain[0].type).toBe('immutable')
     })
 
     it('should add updatedAt', () => {
       const model = modelContext.updatedAt()
-      expect(model.spec.db.automanage).to.have.length(1)
+      expect(model.spec.db.automanage).toHaveLength(1)
     })
   })
 
@@ -62,14 +61,14 @@ describe('lib/extension.ts', () => {
     it('should set db specification', () => {
       const optionsA = new DatabaseOptions().index([['x']])
       let model = modelContext.create().db(optionsA.spec)
-      expect(model.spec.db).to.eql({
+      expect(model.spec.db).toEqual({
         automanage: [],
         constrain: [],
         index: [[{property: ['x'], direction: 'asc'}]],
       })
       const optionsB = new DatabaseOptions().index([['y']])
       model = model.db(optionsB.spec)
-      expect(model.spec.db).to.eql({
+      expect(model.spec.db).toEqual({
         automanage: [],
         constrain: [],
         index: [[{property: ['y'], direction: 'asc'}]],
@@ -79,22 +78,22 @@ describe('lib/extension.ts', () => {
     it('should clear db specification', () => {
       const options = new DatabaseOptions().index([['x']])
       let model = modelContext.create().db(options.spec)
-      expect(model.spec.db).to.be.an('object')
+      expect(typeof model.spec.db).toBe('object')
       model = model.db()
-      expect(model.spec.db).to.equal(undefined)
+      expect(model.spec.db).toBe(undefined)
     })
 
     it('should merge db specifications', () => {
       const optionsA = new DatabaseOptions().index([['x']])
       let model = modelContext.create().db(optionsA.spec)
-      expect(model.spec.db).to.eql({
+      expect(model.spec.db).toEqual({
         automanage: [],
         constrain: [],
         index: [[{property: ['x'], direction: 'asc'}]],
       })
       const optionsB = new DatabaseOptions().index([['y']])
       model = model.db(optionsB.spec, {shouldMerge: true})
-      expect(model.spec.db).to.eql({
+      expect(model.spec.db).toEqual({
         automanage: [],
         constrain: [],
         index: [[{property: ['x'], direction: 'asc'}], [{property: ['y'], direction: 'asc'}]],
@@ -111,7 +110,7 @@ describe('lib/extension.ts', () => {
         supplyWith: 'auto-increment',
       })
 
-      expect(model.spec.db.automanage).to.eql([
+      expect(model.spec.db.automanage).toEqual([
         {
           property: ['x'],
           event: 'create',
@@ -129,7 +128,7 @@ describe('lib/extension.ts', () => {
         type: 'primary',
       })
 
-      expect(model.spec.db.constrain).to.eql([
+      expect(model.spec.db.constrain).toEqual([
         {
           name: 'primary:x',
           properties: [['x']],
@@ -143,14 +142,14 @@ describe('lib/extension.ts', () => {
   describe('.index', () => {
     it('should set index of model', () => {
       const model = modelContext.create().index([['x']])
-      expect(model.spec.db.index).to.eql([[{property: ['x'], direction: 'asc'}]])
+      expect(model.spec.db.index).toEqual([[{property: ['x'], direction: 'asc'}]])
     })
   })
 
   describe('.autoIncrement', () => {
     it('should set constrain on model', () => {
       const model = modelContext.create().autoIncrement()
-      expect(model.spec.db).to.have.nested.property('automanage[0].supplyWith', 'auto-increment')
+      expect(model.spec.db).toHaveProperty('automanage.0.supplyWith', 'auto-increment')
     })
   })
 
@@ -164,9 +163,9 @@ describe('lib/extension.ts', () => {
       })
 
       const createModel = model.toDatabaseEventModel('create')
-      expect(createModel.validate().value).to.be.instanceof(Date)
+      expect(createModel.validate().value).toBeInstanceOf(Date)
       const updateModel = model.toDatabaseEventModel('update')
-      expect(updateModel.validate().value).to.equal(undefined)
+      expect(updateModel.validate().value).toBe(undefined)
     })
   })
 })

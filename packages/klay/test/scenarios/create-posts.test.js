@@ -1,5 +1,4 @@
 const _ = require('lodash')
-const expect = require('chai').expect
 const fetch = require('isomorphic-fetch')
 const URLSearchParams = require('url').URLSearchParams
 
@@ -23,10 +22,10 @@ module.exports = state => {
         headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
-      expect(response.status).to.equal(200)
+      expect(response.status).toBe(200)
       state.post = await response.json()
-      expect(state.post).to.have.property('id').a('number')
-      expect(_.omit(state.post, ['id', 'createdAt', 'updatedAt'])).to.eql({
+      expect(typeof state.post.id).toBe('number')
+      expect(_.omit(state.post, ['id', 'createdAt', 'updatedAt'])).toEqual({
         accountId: state.account.id,
         userId: state.user.id,
         title: 'My Post',

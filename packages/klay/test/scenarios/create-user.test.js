@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const fetch = require('isomorphic-fetch')
 
 module.exports = state => {
@@ -23,7 +22,7 @@ module.exports = state => {
         headers: {'content-type': 'application/json'},
       })
 
-      expect(response.status).to.equal(401)
+      expect(response.status).toBe(401)
     })
 
     it('should check authorization', async () => {
@@ -34,7 +33,7 @@ module.exports = state => {
         headers: {'content-type': 'application/json', cookie},
       })
 
-      expect(response.status).to.equal(403)
+      expect(response.status).toBe(403)
     })
 
     it('should create a user', async () => {
@@ -44,11 +43,9 @@ module.exports = state => {
         headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
-      expect(response.status).to.equal(200)
+      expect(response.status).toBe(200)
       state.userA = await response.json()
-      expect(state.userA)
-        .to.have.property('password')
-        .match(/^[a-f0-9]{40}$/)
+      expect(state.userA.password).toMatch(/^[a-f0-9]{40}$/)
     })
 
     it('should create a 2nd user', async () => {
@@ -58,11 +55,9 @@ module.exports = state => {
         headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
-      expect(response.status).to.equal(200)
+      expect(response.status).toBe(200)
       state.userB = await response.json()
-      expect(state.userB)
-        .to.have.property('password')
-        .match(/^[a-f0-9]{40}$/)
+      expect(state.userB.password).toMatch(/^[a-f0-9]{40}$/)
     })
 
     it('should prevent duplicate user', async () => {
@@ -72,21 +67,23 @@ module.exports = state => {
         headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
-      expect(response.status).to.equal(400)
+      expect(response.status).toBe(400)
     })
 
     it('should list users', async () => {
       const headers = {cookie: state.userCookie}
       const response = await fetch(`${state.baseURL}/v1/users?accountId=${state.account.id}`, {headers})
       const users = await response.json()
-      expect(users).to.eql({data: [state.user, state.userA, state.userB], total: 3, limit: 10, offset: 0})
+      expect(users).toEqual(
+        {data: [state.user, state.userA, state.userB], total: 3, limit: 10, offset: 0}
+      )
     })
 
     it('should read a user', async () => {
       const headers = {cookie: state.userCookie}
       const response = await fetch(`${state.baseURL}/v1/users/${state.user.id}`, {headers})
       const user = await response.json()
-      expect(user).to.eql(state.user)
+      expect(user).toEqual(state.user)
     })
 
     it('should update a user', async () => {
@@ -96,13 +93,10 @@ module.exports = state => {
         headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
-      expect(response.status).to.equal(200)
+      expect(response.status).toBe(200)
       const updatedUser = await response.json()
-      expect(updatedUser).to.include({firstName: 'Changed'})
-      expect(updatedUser)
-        .to.have.property('password')
-        .match(/^[a-f0-9]{40}$/)
-      expect(new Date(updatedUser.updatedAt)).to.be.greaterThan(new Date(state.user.updatedAt))
+      expect(updatedUser).toMatchObject({firstName: 'Changed'})
+      expect(updatedUser.password).toMatch(/^[a-f0-9]{40}$/)
     })
 
     it('should delete a user', async () => {
@@ -111,7 +105,7 @@ module.exports = state => {
         headers: {cookie: state.userCookie},
       })
 
-      expect(response.status).to.equal(204)
+      expect(response.status).toBe(204)
       delete state.userB
     })
   })

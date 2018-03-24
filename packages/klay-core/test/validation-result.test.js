@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const ValidationResult = require('../dist/validation-result').ValidationResult
 const AssertionError = require('../dist/errors/assertion-error').AssertionError
 
@@ -28,7 +27,7 @@ describe('lib/validation-result.ts', () => {
         extraThatsIgnored: {},
       })
 
-      expect(result).to.eql({
+      expect(result).toEqual({
         value: undefined,
         conforms: true,
         errors: [],
@@ -42,21 +41,21 @@ describe('lib/validation-result.ts', () => {
   describe('.setConforms', () => {
     it('sets conforms true', () => {
       const result = create({conforms: false, isFinished: false})
-      expect(result.setConforms(true)).to.include({conforms: true, isFinished: false})
+      expect(result.setConforms(true)).toMatchObject({conforms: true, isFinished: false})
     })
 
     it('sets conforms false', () => {
       const result = create({conforms: false, isFinished: false})
-      expect(result.setConforms(false)).to.include({conforms: false, isFinished: true})
+      expect(result.setConforms(false)).toMatchObject({conforms: false, isFinished: true})
     })
   })
 
   describe('.assert', () => {
     it('should throw validation error', () => {
       const result = create({})
-      expect(result.assert(true, 'is fine')).to.equal(result)
-      expect(() => result.assert(false, '')).to.throw(AssertionError)
-      expect(() => result.assert(false, 'hello')).to.throw('hello')
+      expect(result.assert(true, 'is fine')).toBe(result)
+      expect(() => result.assert(false, '')).toThrowError(AssertionError)
+      expect(() => result.assert(false, 'hello')).toThrowError('hello')
     })
   })
 
@@ -77,16 +76,16 @@ describe('lib/validation-result.ts', () => {
       const resultB = resultA.clone()
       resultA.value.other = 1
       resultB.value.extra = 2
-      expect(resultB.value).to.not.have.property('other')
-      expect(resultA.value).to.not.have.property('extra')
-      expect(value).to.eql({foo: {bar: 1}})
+      expect(resultB.value).not.toHaveProperty('other')
+      expect(resultA.value).not.toHaveProperty('extra')
+      expect(value).toEqual({foo: {bar: 1}})
     })
   })
 
   describe('#fromValue', () => {
     it('should create a new validation result', () => {
       const result = ValidationResult.fromValue(1, {x: 1}, ['x'])
-      expect(result).to.eql({
+      expect(result).toEqual({
         value: 1,
         conforms: true,
         errors: [],
@@ -100,7 +99,7 @@ describe('lib/validation-result.ts', () => {
   describe('#coalesce', () => {
     it('throws when used on an already finished validationResult', () => {
       const original = create({isFinished: true})
-      expect(() => ValidationResult.coalesce(original, [])).to.throw(/cannot coalesce/)
+      expect(() => ValidationResult.coalesce(original, [])).toThrowError(/cannot coalesce/)
     })
 
     it('reuses base values from original', () => {
@@ -114,7 +113,7 @@ describe('lib/validation-result.ts', () => {
       })
 
       const result = ValidationResult.coalesce(original, [])
-      expect(result).to.eql({
+      expect(result).toEqual({
         value: 1,
         rootValue: {x: 1},
         conforms: true,
@@ -128,10 +127,10 @@ describe('lib/validation-result.ts', () => {
       const valueA = create({value: 1, conforms: true})
       const valueB = create({value: 2, conforms: true})
       const result = ValidationResult.coalesce(valueA, [valueA, valueB])
-      expect(result).to.have.property('value', 1)
-      expect(result).to.have.property('conforms', true)
-      expect(result).to.have.property('isFinished', false)
-      expect(result).to.have.property('errors').with.length(0)
+      expect(result).toHaveProperty('value', 1)
+      expect(result).toHaveProperty('conforms', true)
+      expect(result).toHaveProperty('isFinished', false)
+      expect(result.errors).toHaveLength(0)
     })
 
     it('merges mixed conforming values', () => {
@@ -139,10 +138,10 @@ describe('lib/validation-result.ts', () => {
       const valueA = create({value: 1, conforms: true})
       const valueB = create().markAsErrored(error)
       const result = ValidationResult.coalesce(valueA, [valueA, valueB])
-      expect(result).to.have.property('conforms', false)
-      expect(result).to.have.property('isFinished', true)
-      expect(result).to.have.property('errors').with.length(1)
-      expect(result.errors[0].error).to.eql(error)
+      expect(result).toHaveProperty('conforms', false)
+      expect(result).toHaveProperty('isFinished', true)
+      expect(result.errors).toHaveLength(1)
+      expect(result.errors[0].error).toEqual(error)
     })
 
     it('concats errors', () => {
@@ -153,8 +152,8 @@ describe('lib/validation-result.ts', () => {
       const valueB = create({conforms: false, errors: [errorB]})
       const valueC = create({conforms: false, errors: [errorC]})
       const result = ValidationResult.coalesce(valueA, [valueA, valueB, valueC])
-      expect(result).to.have.property('conforms', false)
-      expect(result).to.have.property('errors').that.eqls([errorA, errorB, errorC])
+      expect(result).toHaveProperty('conforms', false)
+      expect(result.errors).toEqual([errorA, errorB, errorC])
     })
 
     it('merges values into object', () => {
@@ -162,7 +161,7 @@ describe('lib/validation-result.ts', () => {
       const valueA = create({value: 1, pathToValue: ['x']})
       const valueB = create({value: 2, pathToValue: ['y']})
       const result = ValidationResult.coalesce(rootValue, [valueA, valueB])
-      expect(result).to.have.property('value').eql({x: 1, y: 2, z: 3})
+      expect(result.value).toEqual({x: 1, y: 2, z: 3})
     })
 
     it('merges into value array', () => {
@@ -170,7 +169,7 @@ describe('lib/validation-result.ts', () => {
       const valueA = create({value: 1, pathToValue: ['0']})
       const valueB = create({value: 2, pathToValue: ['1']})
       const result = ValidationResult.coalesce(rootValue, [valueA, valueB])
-      expect(result).to.have.property('value').eql([1, 2])
+      expect(result.value).toEqual([1, 2])
     })
 
     it('throws when pathToValue is nonsense for array', () => {
@@ -178,25 +177,25 @@ describe('lib/validation-result.ts', () => {
       const valueA = create({value: 1, pathToValue: ['x', 'y']})
       const valueB = create({value: 2, pathToValue: ['one']})
       const valueC = create({value: 3, pathToValue: ['1.2']})
-      expect(() => ValidationResult.coalesce(rootValue, [valueA])).to.throw()
-      expect(() => ValidationResult.coalesce(rootValue, [valueB])).to.throw()
-      expect(() => ValidationResult.coalesce(rootValue, [valueC])).to.throw()
+      expect(() => ValidationResult.coalesce(rootValue, [valueA])).toThrowError()
+      expect(() => ValidationResult.coalesce(rootValue, [valueB])).toThrowError()
+      expect(() => ValidationResult.coalesce(rootValue, [valueC])).toThrowError()
     })
 
     it('throws when pathToValue is nonsense for object', () => {
       const rootValue = create({value: {}})
       const valueA = create({value: 1, pathToValue: ['x', 'y']})
       const valueB = create({value: 2, pathToValue: []})
-      expect(() => ValidationResult.coalesce(rootValue, [valueA])).to.throw()
-      expect(() => ValidationResult.coalesce(rootValue, [valueB])).to.throw()
+      expect(() => ValidationResult.coalesce(rootValue, [valueA])).toThrowError()
+      expect(() => ValidationResult.coalesce(rootValue, [valueB])).toThrowError()
     })
 
     it('throws when pathToValue is nonsense', () => {
       const rootValue = create({value: 1})
       const valueA = create({value: 1, pathToValue: ['x', 'y']})
       const valueB = create({value: 2, pathToValue: ['x']})
-      expect(() => ValidationResult.coalesce(rootValue, [valueA])).to.throw()
-      expect(() => ValidationResult.coalesce(rootValue, [valueB])).to.throw()
+      expect(() => ValidationResult.coalesce(rootValue, [valueA])).toThrowError()
+      expect(() => ValidationResult.coalesce(rootValue, [valueB])).toThrowError()
     })
   })
 })

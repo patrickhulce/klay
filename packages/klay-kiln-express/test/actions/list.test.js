@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const sinon = require('sinon')
 
 const utils = require('../utils')
@@ -16,21 +15,21 @@ describe('lib/actions/list.ts', () => {
 
   it('should build the route', () => {
     const route = kiln.build('user', 'express-route', {type: 'list'})
-    expect(route.queryModel).to.have.property('isKlayModel', true)
-    expect(route.middleware).to.have.length.greaterThan(0)
+    expect(route.queryModel).toHaveProperty('isKlayModel', true)
+    expect(route.middleware.length).toBeGreaterThan(0)
   })
 
   it('should call find', async () => {
     const route = kiln.build('user', 'express-route', {type: 'list'})
     const req = {query: {age: {$ne: '18'}, firstName: 'Klay'}}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(req).to.have.nested.property('validated.query.age.$ne', 18)
-    expect(req).to.have.nested.property('validated.query.firstName.$eq', 'Klay')
-    expect(await res.promise).to.eql({data: [], total: 5, limit: 10, offset: 0})
-    expect(nextCalledAll).to.equal(true)
-    expect(findStub.callCount).to.equal(1)
-    expect(countStub.callCount).to.equal(1)
-    expect(findStub.firstCall.args[0]).to.eql({
+    expect(req).toHaveProperty('validated.query.age.$ne', 18)
+    expect(req).toHaveProperty('validated.query.firstName.$eq', 'Klay')
+    expect(await res.promise).toEqual({data: [], total: 5, limit: 10, offset: 0})
+    expect(nextCalledAll).toBe(true)
+    expect(findStub.callCount).toBe(1)
+    expect(countStub.callCount).toBe(1)
+    expect(findStub.firstCall.args[0]).toEqual({
       limit: 10,
       offset: 0,
       where: {age: {$ne: 18}, firstName: {$eq: 'Klay'}},
@@ -41,20 +40,20 @@ describe('lib/actions/list.ts', () => {
     const route = kiln.build('user', 'express-route', {type: 'list'})
     const req = {query: {age: 'whaa'}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(next.firstCall.args[0]).to.be.instanceof(Error)
-    expect(next.firstCall.args[0].value).to.include({limit: 10})
-    expect(res.promise).to.equal(undefined)
-    expect(nextCalledAll).to.equal(false)
-    expect(findStub.callCount).to.equal(0)
+    expect(next.firstCall.args[0]).toBeInstanceOf(Error)
+    expect(next.firstCall.args[0].value).toMatchObject({limit: 10})
+    expect(res.promise).toBe(undefined)
+    expect(nextCalledAll).toBe(false)
+    expect(findStub.callCount).toBe(0)
   })
 
   it('should return response model', () => {
     const route = kiln.build('user', 'express-route', {type: 'list'})
-    expect(route).to.have.nested.property('responseModel.spec.type', 'object')
-    expect(route).to.have.nested.property('responseModel.spec.children').instanceof(Array)
+    expect(route).toHaveProperty('responseModel.spec.type', 'object')
+    expect(route.responseModel.spec.children).toBeInstanceOf(Array)
   })
 
-  context('authorization', () => {
+  describe('authorization', () => {
     let authorization, grants
 
     beforeEach(() => {
@@ -67,8 +66,8 @@ describe('lib/actions/list.ts', () => {
       const req = {grants, query: {lastName: 'Thompson'}}
       const {res} = await utils.runMiddleware(route.middleware, req)
 
-      expect(await res.promise).to.deep.include({data: []})
-      expect(findStub.callCount).to.equal(1)
+      expect(await res.promise).toMatchObject({data: []})
+      expect(findStub.callCount).toBe(1)
     })
 
     it('should fail authorization', async () => {
@@ -76,9 +75,9 @@ describe('lib/actions/list.ts', () => {
       const req = {grants}
       const {res, err} = await utils.runMiddleware(route.middleware, req)
 
-      expect(err).to.be.instanceOf(Error)
-      expect(err.message).to.match(/permission/)
-      expect(res.promise).to.equal(undefined)
+      expect(err).toBeInstanceOf(Error)
+      expect(err.message).toMatch(/permission/)
+      expect(res.promise).toBe(undefined)
     })
   })
 })

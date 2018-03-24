@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const auth = require('../../dist/auth/grants')
 
 describe('lib/auth/grants.ts', () => {
@@ -32,17 +31,17 @@ describe('lib/auth/grants.ts', () => {
   describe('#computeAllPermissions', () => {
     it('should return the permission', () => {
       const permissions = auth.computeAllPermissions('posts:read', conf)
-      expect(permissions).to.eql(['posts:read'])
+      expect(permissions).toEqual(['posts:read'])
     })
 
     it('should return child permissions', () => {
       const permissions = auth.computeAllPermissions('posts:admin', conf)
-      expect(permissions).to.eql(['posts:admin', 'posts:read'])
+      expect(permissions).toEqual(['posts:admin', 'posts:read'])
     })
 
     it('should return all permissions', () => {
       const permissions = auth.computeAllPermissions('accounts:admin', conf)
-      expect(permissions).to.eql([
+      expect(permissions).toEqual([
         'accounts:admin',
         'accounts:read',
         'users:admin',
@@ -58,13 +57,13 @@ describe('lib/auth/grants.ts', () => {
 
     it('should return set of grants', () => {
       const grants = auth.computeAllGrants('root', {}, conf)
-      expect(grants).to.be.instanceof(Set)
-      expect(grants).to.have.property('size', 6)
+      expect(grants).toBeInstanceOf(Set)
+      expect(grants).toHaveProperty('size', 6)
     })
 
     it('should replace domain properties', () => {
       const grants = computeAsArray('owner', {id: 1, accountId: 2}, conf)
-      expect(grants).to.eql([
+      expect(grants).toEqual([
         'accounts:admin!accountId=2',
         'accounts:read!accountId=2',
         'users:admin!accountId=2',
@@ -80,13 +79,13 @@ describe('lib/auth/grants.ts', () => {
     it('should throw on invalid permission', () => {
       const roles = {...conf.roles, foo: [{permission: 'account:admin', criteria: ['*']}]}
       const fn = () => computeAsArray('foo', {}, {...conf, roles})
-      expect(fn).to.throw(/invalid permission/)
+      expect(fn).toThrowError(/invalid permission/)
     })
 
     it('should throw on invalid criteria', () => {
       const roles = {...conf.roles, foo: [{permission: 'accounts:admin', criteria: ['id']}]}
       const fn = () => computeAsArray('foo', {id: 1}, {...conf, roles})
-      expect(fn).to.throw(/invalid criteria/)
+      expect(fn).toThrowError(/invalid criteria/)
     })
   })
 
@@ -110,23 +109,23 @@ describe('lib/auth/grants.ts', () => {
 
     it('should correctly report on global permissions', () => {
       grants = new auth.Grants('root', {id: 1, orgId: 2}, {roles, permissions})
-      expect(grants.has('write', {orgId: 2})).to.equal(true)
-      expect(grants.has('write', {orgId: 10})).to.equal(true)
-      expect(grants.has('write', {})).to.equal(true)
-      expect(grants.has('write')).to.equal(true)
-      expect(grants.has('read', {orgId: 2})).to.equal(true)
-      expect(grants.has('read', {orgId: 15})).to.equal(true)
-      expect(grants.has('read:public', {orgId: 15})).to.equal(true)
+      expect(grants.has('write', {orgId: 2})).toBe(true)
+      expect(grants.has('write', {orgId: 10})).toBe(true)
+      expect(grants.has('write', {})).toBe(true)
+      expect(grants.has('write')).toBe(true)
+      expect(grants.has('read', {orgId: 2})).toBe(true)
+      expect(grants.has('read', {orgId: 15})).toBe(true)
+      expect(grants.has('read:public', {orgId: 15})).toBe(true)
     })
 
     it('should correctly report on simple permissions', () => {
       grants = new auth.Grants('user', {id: 1, orgId: 2}, {roles, permissions})
-      expect(grants.has('write', {orgId: 2, userId: 1})).to.equal(true)
-      expect(grants.has('write', {orgId: 10})).to.equal(false)
-      expect(grants.has('write', {})).to.equal(false)
-      expect(grants.has('read', {orgId: 2})).to.equal(true)
-      expect(grants.has('read', {orgId: 15})).to.equal(false)
-      expect(grants.has('read:public', {orgId: 15})).to.equal(true)
+      expect(grants.has('write', {orgId: 2, userId: 1})).toBe(true)
+      expect(grants.has('write', {orgId: 10})).toBe(false)
+      expect(grants.has('write', {})).toBe(false)
+      expect(grants.has('read', {orgId: 2})).toBe(true)
+      expect(grants.has('read', {orgId: 15})).toBe(false)
+      expect(grants.has('read:public', {orgId: 15})).toBe(true)
     })
   })
 })

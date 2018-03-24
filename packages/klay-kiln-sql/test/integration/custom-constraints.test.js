@@ -1,8 +1,6 @@
 const _ = require('lodash')
 const utils = require('../utils')
 
-const expect = utils.expect
-
 describe('complex constraints', () => {
   const ageError = 'users can only get older'
   const youngerError = 'new users must be younger than existing population'
@@ -68,7 +66,7 @@ describe('complex constraints', () => {
 
     it('should fail to create an older user', () => {
       const user = _.assign({}, defaultUser, {email: 'b@c.com', firstName: 'Kris', age: 70})
-      return expect(state.models.user.create(user)).to.eventually.be.rejectedWith(youngerError)
+      return expect(state.models.user.create(user)).rejects.toThrow(youngerError)
     })
 
     it('should create another Thompson user', () => {
@@ -78,7 +76,7 @@ describe('complex constraints', () => {
 
     it('should fail to create another Thompson user', () => {
       const user = _.assign({}, defaultUser, {email: 'd@e.com', firstName: 'Kanye', age: 40})
-      return expect(state.models.user.create(user)).to.eventually.be.rejectedWith(lastNameError)
+      return expect(state.models.user.create(user)).rejects.toThrow(lastNameError)
     })
 
     it('should update a Thompson user\'s firstName and age', () => {
@@ -88,12 +86,12 @@ describe('complex constraints', () => {
 
     it('should fail to update a non-Thompson user to a Thompson', () => {
       const user = _.assign({}, state.userB, {firstName: 'JJ', lastName: 'Thompson'})
-      return expect(state.models.user.update(user)).to.eventually.be.rejectedWith(lastNameError)
+      return expect(state.models.user.update(user)).rejects.toThrow(lastNameError)
     })
 
     it('should fail to make a user younger', () => {
       const user = _.assign({}, state.userC, {age: 20})
-      return expect(state.models.user.update(user)).to.eventually.be.rejectedWith(ageError)
+      return expect(state.models.user.update(user)).rejects.toThrow(ageError)
     })
   })
 })

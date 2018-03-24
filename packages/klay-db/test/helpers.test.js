@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const ModelContext = require('klay-core').ModelContext
 const helpers = require('../dist/helpers')
 const DatabaseExtension = require('../dist/extension').DatabaseExtension
@@ -18,17 +17,13 @@ describe('lib/helpers.ts', () => {
 
       const prefixed = helpers.addPropertyNames(options.spec, 'x')
       expect(prefixed)
-        .to.have.nested.property('automanage.0.property')
-        .eql(['x', 'nested'])
+        .toHaveProperty('automanage.0.property', ['x', 'nested'])
       expect(prefixed)
-        .to.have.nested.property('constrain.0.properties')
-        .eql([['x', 'nested'], ['x', 'other']])
+        .toHaveProperty('constrain.0.properties', [['x', 'nested'], ['x', 'other']])
       expect(prefixed)
-        .to.have.nested.property('index.0.0.property')
-        .eql(['x', 'nested'])
+        .toHaveProperty('index.0.0.property', ['x', 'nested'])
       expect(prefixed)
-        .to.have.nested.property('index.1')
-        .eql([{property: ['x'], direction: 'asc'}])
+        .toHaveProperty('index.1', [{property: ['x'], direction: 'asc'}])
     })
   })
 
@@ -60,55 +55,49 @@ describe('lib/helpers.ts', () => {
       const index = [{property: ['foo'], direction: 'asc'}]
       const root = {index: [index]}
       const results = helpers.mergeChildrenIntoRoot(root, [])
-      expect(results).to.equal(root)
-      expect(results).to.eql({index: [index]})
+      expect(results).toBe(root)
+      expect(results).toEqual({index: [index]})
     })
 
     it('should collect db options from children', () => {
       const results = helpers.mergeChildrenIntoRoot({}, children)
-      expect(results.automanage).to.have.length(2)
-      expect(results.constrain).to.have.length(3)
-      expect(results.index).to.have.length(1)
+      expect(results.automanage).toHaveLength(2)
+      expect(results.constrain).toHaveLength(3)
+      expect(results.index).toHaveLength(1)
     })
 
     it('should be idempotent', () => {
       let results = helpers.mergeChildrenIntoRoot({}, children)
-      expect(results.automanage).to.have.length(2)
-      expect(results.constrain).to.have.length(3)
-      expect(results.index).to.have.length(1)
+      expect(results.automanage).toHaveLength(2)
+      expect(results.constrain).toHaveLength(3)
+      expect(results.index).toHaveLength(1)
 
       results = helpers.mergeChildrenIntoRoot({}, children)
-      expect(results.automanage).to.have.length(2)
-      expect(results.constrain).to.have.length(3)
-      expect(results.index).to.have.length(1)
+      expect(results.automanage).toHaveLength(2)
+      expect(results.constrain).toHaveLength(3)
+      expect(results.index).toHaveLength(1)
     })
 
     it('should replace property names', () => {
       const results = helpers.mergeChildrenIntoRoot({}, children)
       expect(results)
-        .to.have.nested.property('index.0.0.property')
-        .eql(['updatedAt'])
+        .toHaveProperty('index.0.0.property', ['updatedAt'])
 
       expect(results)
-        .to.have.nested.property('constrain.0.properties.0')
-        .eql(['id'])
-      expect(results).to.have.nested.property('constrain.0.name', 'primary:id')
+        .toHaveProperty('constrain.0.properties.0', ['id'])
+      expect(results).toHaveProperty('constrain.0.name', 'primary:id')
       expect(results)
-        .to.have.nested.property('constrain.1.properties.0')
-        .eql(['accountId'])
-      expect(results).to.have.nested.property('constrain.1.name', 'reference:accountId')
-      expect(results).to.have.nested.property('constrain.1.meta.referencedModel', 'account')
+        .toHaveProperty('constrain.1.properties.0', ['accountId'])
+      expect(results).toHaveProperty('constrain.1.name', 'reference:accountId')
+      expect(results).toHaveProperty('constrain.1.meta.referencedModel', 'account')
       expect(results)
-        .to.have.nested.property('constrain.2.properties.0')
-        .eql(['email'])
-      expect(results).to.have.nested.property('constrain.2.name', 'unique:email')
+        .toHaveProperty('constrain.2.properties.0', ['email'])
+      expect(results).toHaveProperty('constrain.2.name', 'unique:email')
 
       expect(results)
-        .to.have.nested.property('automanage.0.property')
-        .eql(['id'])
+        .toHaveProperty('automanage.0.property', ['id'])
       expect(results)
-        .to.have.nested.property('automanage.1.property')
-        .eql(['updatedAt'])
+        .toHaveProperty('automanage.1.property', ['updatedAt'])
     })
   })
 
@@ -191,11 +180,11 @@ describe('lib/helpers.ts', () => {
         })
         .toJSON()
 
-      expect(results.value.createdAt).to.be.instanceof(Date)
-      expect(results.value.updatedAt).to.be.instanceof(Date)
-      expect(results.value.nested.prop).to.be.a('string')
+      expect(results.value.createdAt).toBeInstanceOf(Date)
+      expect(results.value.updatedAt).toBeInstanceOf(Date)
+      expect(typeof results.value.nested.prop).toBe('string')
 
-      expect(results.value).to.include({
+      expect(results.value).toMatchObject({
         id: undefined, // should be filled by database
         name: 'John',
         age: 17,
@@ -216,12 +205,12 @@ describe('lib/helpers.ts', () => {
         })
         .toJSON()
 
-      expect(results.errors).to.have.length(1)
-      expect(results.errors[0]).to.eql({path: ['email'], message: 'expected value to be defined'})
-      expect(results.value.updatedAt).to.be.instanceof(Date)
-      expect(results.value.nested.prop).to.match(/[a-f0-9]+/)
+      expect(results.errors).toHaveLength(1)
+      expect(results.errors[0]).toEqual({path: ['email'], message: 'expected value to be defined'})
+      expect(results.value.updatedAt).toBeInstanceOf(Date)
+      expect(results.value.nested.prop).toMatch(/[a-f0-9]+/)
 
-      expect(results.value).to.include({
+      expect(results.value).toMatchObject({
         id: 12,
         name: 'John',
         age: 17,

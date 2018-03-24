@@ -1,18 +1,10 @@
 const _ = require('lodash')
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
-const chaiSinon = require('sinon-chai')
-const sinon = require('sinon')
 const {
   getPrimaryKey,
   fetchByUniqueConstraints,
   evaluateUniqueConstraints,
   evaluateCustomConstraints,
 } = require('../dist/constraints')
-
-const expect = chai.expect
-chai.use(chaiAsPromised)
-chai.use(chaiSinon)
 
 describe('lib/constraints.ts', () => {
   let executor, executorData
@@ -30,12 +22,12 @@ describe('lib/constraints.ts', () => {
       const constraint = {type: 'primary', properties: [['id']]}
       const model = {spec: {db: {constrain: [constraint]}}}
       const pk = getPrimaryKey(model, {id: 1})
-      expect(pk).to.equal(1)
+      expect(pk).toBe(1)
     })
 
     it('should throw on invalid constrain', () => {
       const model = {spec: {db: {constrain: []}}}
-      expect(() => getPrimaryKey(model, {})).to.throw(/missing primary key/)
+      expect(() => getPrimaryKey(model, {})).toThrowError(/missing primary key/)
     })
   })
 
@@ -44,9 +36,9 @@ describe('lib/constraints.ts', () => {
       executorData = [{id: 1, x: 1}, {id: 2, x: 2}]
       const constraint = {type: 'unique', properties: [['x']]}
       const model = {spec: {db: {constrain: [constraint]}}}
-      expect(await fetchByUniqueConstraints(executor, model, {x: 3})).to.eql(undefined)
+      expect(await fetchByUniqueConstraints(executor, model, {x: 3})).toEqual(undefined)
       model.spec.db.constrain = []
-      expect(await fetchByUniqueConstraints(executor, model, {x: 1})).to.eql(undefined)
+      expect(await fetchByUniqueConstraints(executor, model, {x: 1})).toEqual(undefined)
     })
 
     it('should find the matching record', async () => {
@@ -54,7 +46,7 @@ describe('lib/constraints.ts', () => {
       const constraint = {type: 'unique', properties: [['x']]}
       const model = {spec: {db: {constrain: [constraint]}}}
       const result = await fetchByUniqueConstraints(executor, model, {x: 2})
-      expect(result).to.eql({id: 2, x: 2})
+      expect(result).toEqual({id: 2, x: 2})
     })
 
     it('should find the multi-matching record', async () => {
@@ -62,7 +54,7 @@ describe('lib/constraints.ts', () => {
       const constraint = {type: 'unique', properties: [['x'], ['y']]}
       const model = {spec: {db: {constrain: [constraint]}}}
       const result = await fetchByUniqueConstraints(executor, model, {x: 1, y: 2})
-      expect(result).to.eql({id: 2, x: 1, y: 2})
+      expect(result).toEqual({id: 2, x: 1, y: 2})
     })
   })
 
@@ -73,32 +65,32 @@ describe('lib/constraints.ts', () => {
       const unique = {type: 'unique', properties: [['x']]}
       const model = {spec: {db: {constrain: [primary, unique]}}}
       const resultA = evaluateUniqueConstraints(executor, model, {x: 2})
-      await expect(resultA).to.be.rejectedWith(/constraint.*violated/)
+      await expect(resultA).rejects.toThrow(/constraint.*violated/)
       const resultB = evaluateUniqueConstraints(executor, model, {id: 1, x: 2})
-      await expect(resultB).to.be.rejectedWith(/constraint.*violated/)
+      await expect(resultB).rejects.toThrow(/constraint.*violated/)
       const resultC = await evaluateUniqueConstraints(executor, model, {id: 2, x: 2})
-      expect(resultC).to.eql(undefined)
+      expect(resultC).toEqual(undefined)
     })
   })
 
   describe('evaluateCustomConstraints', () => {
     it('should validate custom constraints', async () => {
-      const evaluateA = sinon.spy()
-      const evaluateB = sinon.spy()
+      const evaluateA = jest.fn()
+      const evaluateB = jest.fn()
       const customA = {type: 'custom', properties: [[]], meta: {evaluate: evaluateA}}
       const customB = {type: 'custom', properties: [[]], meta: {evaluate: evaluateB}}
       const model = {spec: {db: {constrain: [customA, customB]}}}
       await evaluateCustomConstraints(executor, model, {x: 2}, {x: 1}, 'create')
-      expect(evaluateA.callCount).to.equal(1)
-      expect(evaluateB.callCount).to.equal(1)
+      expect(evaluateA).toHaveBeenCalledTimes(1)
+      expect(evaluateB).toHaveBeenCalledTimes(1)
 
-      const args = evaluateA.firstCall.args[0]
-      expect(args.record).to.eql({x: 2})
-      expect(args.existing).to.eql({x: 1})
-      expect(args.model).to.equal(model)
-      expect(args.executor).to.equal(executor)
-      expect(args.event).to.equal('create')
-      expect(args.constraint).to.equal(customA)
+      const args = evaluateA.mock.calls[0][0]
+      expect(args.record).toEqual({x: 2})
+      expect(args.existing).toEqual({x: 1})
+      expect(args.model).toBe(model)
+      expect(args.executor).toBe(executor)
+      expect(args.event).toBe('create')
+      expect(args.constraint).toBe(customA)
     })
   })
 })

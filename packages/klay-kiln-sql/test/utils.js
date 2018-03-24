@@ -1,13 +1,8 @@
 const _ = require('lodash')
-const chai = require('chai')
-const chaiPromise = require('chai-as-promised')
 const Kiln = require('klay-kiln').Kiln
 const SQLExtension = require('../dist/extension').SQLExtension
 const fixtureData = require('./fixtures/data')
 const createModels = require('./fixtures/models').create
-
-const expect = chai.expect
-chai.use(chaiPromise)
 
 const dbOptions = {
   host: process.env.KLAY_MYSQL_HOST,

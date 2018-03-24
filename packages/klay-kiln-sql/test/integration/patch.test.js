@@ -1,8 +1,6 @@
 const _ = require('lodash')
 const utils = require('../utils')
 
-const expect = utils.expect
-
 describe('patch objects', () => {
   const state = utils.state()
 
@@ -31,38 +29,32 @@ describe('patch objects', () => {
     it('should update a single field', () => {
       const patch = _.assign(_.pick(state.userA, 'id'), {email: 'newemail@example.com'})
       return state.models.user.patch(patch).then(item => {
-        expect(item).to.have.property('email', 'newemail@example.com')
-        expect(item)
-          .to.have.property('updatedAt')
-          .instanceof(Date)
-          .greaterThan(state.userA.updatedAt)
+        expect(item).toHaveProperty('email', 'newemail@example.com')
+        expect(item.updatedAt.getTime()).toBeGreaterThan(state.userA.updatedAt.getTime())
 
         const untouched = _.omit(item, ['updatedAt', 'email'])
-        expect(untouched).to.eql(_.omit(state.userA, ['updatedAt', 'email']))
-      })
+        expect(untouched).toEqual(_.omit(state.userA, ['updatedAt', 'email']))
+      });
     })
 
     it('should update a single field with just id', () => {
       return state.models.user.patch(state.userA.id, {age: 27}).then(item => {
-        expect(item).to.have.property('age', 27)
-        expect(item)
-          .to.have.property('updatedAt')
-          .instanceof(Date)
-          .greaterThan(state.userA.updatedAt)
+        expect(item).toHaveProperty('age', 27)
+        expect(item.updatedAt.getTime()).toBeGreaterThan(state.userA.updatedAt.getTime())
 
         const untouched = _.omit(item, ['updatedAt', 'email', 'age'])
-        expect(untouched).to.eql(_.omit(state.userA, ['updatedAt', 'email', 'age']))
-      })
+        expect(untouched).toEqual(_.omit(state.userA, ['updatedAt', 'email', 'age']))
+      });
     })
 
     it('should prevent changing immutable properties', () => {
       const promise = state.models.user.patch(state.userA.id, {createdAt: new Date()})
-      return expect(promise).to.be.rejectedWith(/immutable.*violated/)
+      return expect(promise).rejects.toThrow(/immutable.*violated/)
     })
 
     it('should prevent violating a unique constraint', () => {
       const promise = state.models.user.patch(state.userA.id, {email: 'test2@klay.com'})
-      return expect(promise).to.be.rejectedWith(/unique.*violated/)
+      return expect(promise).rejects.toThrow(/unique.*violated/)
     })
   })
 
@@ -79,16 +71,12 @@ describe('patch objects', () => {
       const metadata = {type: 'jpeg', gps: 'otherr coords'}
       return state.models.photo.patch(state.photoA.id, {metadata}).then(item => {
         expect(item)
-          .to.have.property('metadata')
-          .eql(metadata)
-        expect(item)
-          .to.have.property('updatedAt')
-          .instanceof(Date)
-          .greaterThan(state.photoA.updatedAt)
+          .toHaveProperty('metadata', metadata)
+          expect(item.updatedAt.getTime()).toBeGreaterThan(state.photoA.updatedAt.getTime())
 
         const untouched = _.omit(item, ['updatedAt', 'metadata'])
-        expect(untouched).to.eql(_.omit(state.photoA, ['updatedAt', 'metadata']))
-      })
+        expect(untouched).toEqual(_.omit(state.photoA, ['updatedAt', 'metadata']))
+      });
     })
   })
 })

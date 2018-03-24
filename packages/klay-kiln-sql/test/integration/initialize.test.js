@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const _ = require('lodash')
 const utils = require('../utils')
 
@@ -22,9 +21,9 @@ describe('initialize database', () => {
   }
 
   describe('users', () => {
-    it('should have created a users table', () => {
-      return state.sequelize.query('describe users').then(([results]) => {
-        expect(toTable(results)).to.eql({
+    it('should have created a users table', async () => {
+      const [results] = await state.sequelize.query('describe users')
+        expect(toTable(results)).toEqual({
           id: {Type: 'bigint(20)', Key: 'PRI', Extra: 'auto_increment'},
           age: {Type: 'bigint(20)'},
           isAdmin: {Type: 'tinyint(1)'},
@@ -35,21 +34,20 @@ describe('initialize database', () => {
           createdAt: {Type: 'datetime(6)'},
           updatedAt: {Type: 'datetime(6)'},
         })
-      })
     })
 
     it('should have created the additional indexes', () => {
       return state.sequelize.query('show index from users').then(([results]) => {
         const indexes = _.filter(results, {Key_name: 'users_email_password'})
-        expect(indexes).to.have.length(2)
-      })
+        expect(indexes).toHaveLength(2)
+      });
     })
   })
 
   describe('photos', () => {
     it('should have created a photos table', () => {
       return state.sequelize.query('describe photos').then(([results]) => {
-        expect(toTable(results)).to.eql({
+        expect(toTable(results)).toEqual({
           id: {Type: 'char(36)', Key: 'PRI'},
           ownerId: {Type: 'bigint(20)', Key: 'MUL'},
           aspectRatio: {Type: 'double'},
@@ -57,7 +55,7 @@ describe('initialize database', () => {
           createdAt: {Type: 'datetime(6)'},
           updatedAt: {Type: 'datetime(6)'},
         })
-      })
+      });
     })
   })
 })

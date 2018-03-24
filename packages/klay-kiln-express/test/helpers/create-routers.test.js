@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const createRouters = require('../../dist/helpers/create-routers').createAndMergeRouters
 const utils = require('../utils')
 
@@ -27,10 +26,10 @@ describe('lib/helpers/merge-routers.ts', () => {
       },
     })
 
-    expect(merged.router).to.be.a('function')
-    expect(merged.routes).to.have.length(3)
-    expect(merged.routes[0]).to.have.property('path', '/v1/model/')
-    expect(merged.routes[2]).to.have.property('path', '/v2/model/foo')
+    expect(typeof merged.router).toBe('function')
+    expect(merged.routes).toHaveLength(3)
+    expect(merged.routes[0]).toHaveProperty('path', '/v1/model/')
+    expect(merged.routes[2]).toHaveProperty('path', '/v2/model/foo')
   })
 
   it('should use existing routers', () => {
@@ -49,7 +48,7 @@ describe('lib/helpers/merge-routers.ts', () => {
       },
     })
 
-    expect(merged.router).to.be.a('function')
-    expect(merged.routes).to.have.length(1)
+    expect(typeof merged.router).toBe('function')
+    expect(merged.routes).toHaveLength(1)
   })
 })

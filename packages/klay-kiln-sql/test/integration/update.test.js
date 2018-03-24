@@ -1,8 +1,6 @@
 const _ = require('lodash')
 const utils = require('../utils')
 
-const expect = utils.expect
-
 describe('update objects', () => {
   const state = utils.state()
 
@@ -31,29 +29,26 @@ describe('update objects', () => {
     it('should update a user', async () => {
       const user = _.assign({}, state.userA, {password: '1234'})
       const updated = await state.models.user.update(user)
-      expect(updated).to.have.property('password', '1234')
-      expect(updated)
-        .to.have.property('updatedAt')
-        .instanceof(Date)
-        .greaterThan(state.userA.updatedAt)
+      expect(updated).toHaveProperty('password', '1234')
+      expect(updated.updatedAt.getTime()).toBeGreaterThan(state.userA.updatedAt.getTime())
 
       const untouched = _.omit(updated, ['updatedAt', 'password'])
-      expect(untouched).to.eql(_.omit(user, ['updatedAt', 'password']))
+      expect(untouched).toEqual(_.omit(user, ['updatedAt', 'password']))
     })
 
     it('should prevent updating a non-existant record', async () => {
       const user = _.assign({}, state.userA, {id: 1245})
-      await expect(state.models.user.update(user)).to.be.rejectedWith(/unable to find/)
+      await expect(state.models.user.update(user)).rejects.toThrow(/unable to find/)
     })
 
     it('should prevent changing immutable properties', async () => {
       const user = _.assign({}, state.userA, {createdAt: new Date()})
-      await expect(state.models.user.update(user)).to.be.rejectedWith(/immutable.*violated/)
+      await expect(state.models.user.update(user)).rejects.toThrow(/immutable.*violated/)
     })
 
     it('should prevent violating a unique constraint', async () => {
       const user = _.assign({}, state.userA, {email: 'test2@klay.com'})
-      await expect(state.models.user.update(user)).to.be.rejectedWith(/unique.*violated/)
+      await expect(state.models.user.update(user)).rejects.toThrow(/unique.*violated/)
     })
   })
 
@@ -71,17 +66,13 @@ describe('update objects', () => {
       const metadata = {type: 'jpeg', gps: 'otherr coords'}
       const photo = _.assign({}, state.photoA, {aspectRatio: 2, metadata})
       const updated = await state.models.photo.update(photo)
-      expect(updated).to.have.property('aspectRatio', 2)
+      expect(updated).toHaveProperty('aspectRatio', 2)
       expect(updated)
-        .to.have.property('metadata')
-        .eql(metadata)
-      expect(updated)
-        .to.have.property('updatedAt')
-        .instanceof(Date)
-        .greaterThan(photo.updatedAt)
+        .toHaveProperty('metadata', metadata)
+        expect(updated.updatedAt.getTime()).toBeGreaterThan(photo.updatedAt.getTime())
 
       const untouched = _.omit(updated, ['updatedAt', 'metadata', 'aspectRatio'])
-      expect(untouched).to.eql(_.omit(photo, ['updatedAt', 'metadata', 'aspectRatio']))
+      expect(untouched).toEqual(_.omit(photo, ['updatedAt', 'metadata', 'aspectRatio']))
       state.photoA = updated
     })
   })

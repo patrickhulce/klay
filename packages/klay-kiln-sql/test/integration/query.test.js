@@ -1,7 +1,5 @@
 const utils = require('../utils')
 
-const expect = utils.expect
-
 describe('query objects', () => {
   const state = utils.state()
   let userModel, photoModel
@@ -22,11 +20,11 @@ describe('query objects', () => {
           where: {age: {$gte: 21}, isAdmin: false},
         })
         .then(items => {
-          expect(items).to.have.length(3)
-          expect(items[0]).to.have.property('email', 'jack.doe@example.com')
-          expect(items[1]).to.have.property('email', 'smith@example.com')
-          expect(items[2]).to.have.property('email', 'jill.doe@example.com')
-        })
+          expect(items).toHaveLength(3)
+          expect(items[0]).toHaveProperty('email', 'jack.doe@example.com')
+          expect(items[1]).toHaveProperty('email', 'smith@example.com')
+          expect(items[2]).toHaveProperty('email', 'jill.doe@example.com')
+        });
     })
 
     it('should find users based on more filters', () => {
@@ -38,30 +36,29 @@ describe('query objects', () => {
           where: {lastName: {$ne: 'Smith'}},
         })
         .then(items => {
-          expect(items).to.have.length(2)
-          expect(items[0]).to.have.property('email', 'jill.doe@example.com')
-          expect(items[1]).to.have.property('email', 'jack.doe@example.com')
-        })
+          expect(items).toHaveLength(2)
+          expect(items[0]).toHaveProperty('email', 'jill.doe@example.com')
+          expect(items[1]).toHaveProperty('email', 'jack.doe@example.com')
+        });
     })
 
     it('should find photos', () => {
       return photoModel
         .find({order: [{property: ['aspectRatio'], direction: 'asc'}]})
         .then(items => {
-          expect(items).to.have.length(7)
+          expect(items).toHaveLength(7)
           expect(items[0])
-            .to.have.property('metadata')
-            .eql({type: 'psd', width: 200, height: 300})
-        })
+            .toHaveProperty('metadata', {type: 'psd', width: 200, height: 300})
+        });
     })
   })
 
   describe('findOne', () => {
     it('should find a single user', () => {
       return userModel.findOne({where: {email: 'smith@example.com'}}).then(item => {
-        expect(item).to.have.property('lastName', 'Smith')
-        expect(item).to.have.property('email', 'smith@example.com')
-      })
+        expect(item).toHaveProperty('lastName', 'Smith')
+        expect(item).toHaveProperty('email', 'smith@example.com')
+      });
     })
   })
 
@@ -69,23 +66,23 @@ describe('query objects', () => {
     it('should find a single user by id', () => {
       return userModel.findOne({where: {email: 'smith@example.com'}}).then(itemA => {
         return userModel.findById(itemA.id).then(itemB => {
-          expect(itemA).to.eql(itemB)
-        })
-      })
+          expect(itemA).toEqual(itemB)
+        });
+      });
     })
 
     it('should find a single photo by id', () => {
       return photoModel.findOne({where: {aspectRatio: 0.66}}).then(itemA => {
         return photoModel.findById(itemA.id).then(itemB => {
-          expect(itemA).to.eql(itemB)
-        })
-      })
+          expect(itemA).toEqual(itemB)
+        });
+      });
     })
   })
 
   describe('count', () => {
-    it('should count number of photos', () => {
-      return expect(photoModel.count({where: {aspectRatio: {$gt: 1}}})).to.eventually.eql(4)
+    it('should count number of photos', async () => {
+      expect(await photoModel.count({where: {aspectRatio: {$gt: 1}}})).toEqual(4);
     })
   })
 
@@ -95,7 +92,7 @@ describe('query objects', () => {
         .queryBuilder()
         .where('firstName', 'Jill')
         .fetchResult()
-      expect(result).to.have.property('email', 'jill.doe@example.com')
+      expect(result).toHaveProperty('email', 'jill.doe@example.com')
     })
 
     it('should sort', async () => {
@@ -103,7 +100,7 @@ describe('query objects', () => {
         .queryBuilder()
         .orderBy([['email', 'desc']])
         .fetchResult()
-      expect(result).to.have.property('email', 'smith@example.com')
+      expect(result).toHaveProperty('email', 'smith@example.com')
     })
 
     it('should limit the number of records returned', async () => {
@@ -111,7 +108,7 @@ describe('query objects', () => {
         .queryBuilder()
         .limit(3)
         .fetchResults()
-      expect(results).to.have.length(3)
+      expect(results).toHaveLength(3)
     })
 
     it('should skip the requested number of records', async () => {
@@ -119,7 +116,7 @@ describe('query objects', () => {
         .queryBuilder()
         .offset(3)
         .fetchResults()
-      expect(result).to.have.length(3)
+      expect(result).toHaveLength(3)
     })
 
     it('should limit the fields returned', async () => {
@@ -128,7 +125,7 @@ describe('query objects', () => {
         .where('email', 'john.doe@example.com')
         .fields(['firstName', 'lastName'])
         .fetchResult()
-      expect(result).to.eql({firstName: 'John', lastName: 'Doe'})
+      expect(result).toEqual({firstName: 'John', lastName: 'Doe'})
     })
 
     it('should fetch the count', async () => {
@@ -139,7 +136,7 @@ describe('query objects', () => {
         .where('isAdmin', true)
         .fields(['firstName', 'lastName'])
         .fetchCount()
-      expect(result).to.eql(1)
+      expect(result).toEqual(1)
     })
   })
 })

@@ -1,4 +1,3 @@
-const expect = require('chai').expect
 const ModelContext = require('../dist/model-context').ModelContext
 
 describe('lib/model-context.ts', () => {
@@ -6,30 +5,30 @@ describe('lib/model-context.ts', () => {
     it('creates context with default options', () => {
       const context = ModelContext.create()
       const types = context._options.types
-      expect(types).to.contain('any')
-      expect(types).to.contain('boolean')
-      expect(types).to.contain('string')
-      expect(types).to.contain('object')
+      expect(types).toContain('any')
+      expect(types).toContain('boolean')
+      expect(types).toContain('string')
+      expect(types).toContain('object')
     })
 
     it('adds builder functions', () => {
       const context = ModelContext.create()
-      expect(context.string).to.be.a('function')
-      expect(context.creditCard).to.be.a('function')
-      expect(context.unixTimestamp).to.be.a('function')
+      expect(typeof context.string).toBe('function')
+      expect(typeof context.creditCard).toBe('function')
+      expect(typeof context.unixTimestamp).toBe('function')
       let model = context.creditCard()
-      expect(model.spec).to.include({type: 'string', format: 'credit-card'})
+      expect(model.spec).toMatchObject({type: 'string', format: 'credit-card'})
       model = context.unixTimestamp()
-      expect(model.spec).to.include({type: 'date', format: 'unix-timestamp'})
+      expect(model.spec).toMatchObject({type: 'date', format: 'unix-timestamp'})
     })
   })
 
   describe('.use', () => {
     it('merges in extensions', () => {
       const context = ModelContext.create().use({types: ['foo-bar']})
-      expect(context._options.types).to.include('foo-bar')
-      expect(context._options.types).to.include('number')
-      expect(context.fooBar).to.be.a('function')
+      expect(context._options.types).toContain('foo-bar')
+      expect(context._options.types).toContain('number')
+      expect(typeof context.fooBar).toBe('function')
     })
 
     it('calls extendContext', () => {
@@ -41,15 +40,15 @@ describe('lib/model-context.ts', () => {
       }
 
       const context = ModelContext.create().use(extension)
-      expect(context.superCustom).to.be.a('function')
-      expect(context.superCustom()).to.equal(1)
+      expect(typeof context.superCustom).toBe('function')
+      expect(context.superCustom()).toBe(1)
     })
 
     it('does not override built-ins', () => {
       const context = ModelContext.create().use({types: ['use']})
-      expect(context._options.types).to.include('use')
+      expect(context._options.types).toContain('use')
       const result = context.use({})
-      expect(result.constructor.name).to.equal('ModelContext')
+      expect(result.constructor.name).toBe('ModelContext')
     })
   })
 
@@ -59,20 +58,20 @@ describe('lib/model-context.ts', () => {
 
     it('resets options', () => {
       context = context.use({types: ['my-type']})
-      expect(context._options.types).to.include('string')
-      expect(context._options.types).to.include('my-type')
+      expect(context._options.types).toContain('string')
+      expect(context._options.types).toContain('my-type')
       context.reset()
-      expect(context._options.types).to.include('string')
-      expect(context._options.types).to.not.include('my-type')
+      expect(context._options.types).toContain('string')
+      expect(context._options.types).not.toContain('my-type')
     })
 
     it('deletes builders', () => {
       context = context.use({types: ['my-type']})
-      expect(context.string).to.be.a('function')
-      expect(context.myType).to.be.a('function')
+      expect(typeof context.string).toBe('function')
+      expect(typeof context.myType).toBe('function')
       context.reset()
-      expect(context.string).to.be.a('function')
-      expect(context.myType).to.not.be.a('function')
+      expect(typeof context.string).toBe('function')
+      expect(typeof context.myType).not.toBe('function')
     })
   })
 })

@@ -1,12 +1,11 @@
-const expect = require('chai').expect
 const extension = require('../../dist/extensions/strings')
 
 const testValues = shouldPass => (values, funcs) => {
   for (const value of values) {
     for (const func of funcs) {
       shouldPass ?
-        expect(() => func({value})).to.not.throw() :
-        expect(() => func({value})).to.throw()
+        expect(() => func({value})).not.toThrowError() :
+        expect(() => func({value})).toThrowError()
     }
   }
 }
@@ -18,14 +17,14 @@ describe('lib/extensions/strings.ts', () => {
     describe('creditCard', () => {
       const transform = () => undefined
       it('should remove dashes and spaces', () => {
-        transform('444-4444-4444').should.equal('44444444444')
-        transform('444 4444 4444').should.equal('44444444444')
+        expect(transform('444-4444-4444')).toBe('44444444444')
+        expect(transform('444 4444 4444')).toBe('44444444444')
       })
 
       it('should not remove dashes and spaces when non-string', () => {
         const obj = {}
-        transform(12).should.equal(12)
-        transform(obj).should.equal(obj)
+        expect(transform(12)).toBe(12)
+        expect(transform(obj)).toBe(obj)
       })
     })
   })
