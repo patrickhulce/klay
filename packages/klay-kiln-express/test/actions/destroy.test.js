@@ -34,8 +34,7 @@ describe('lib/actions/destroy.ts', () => {
     const req = {params: {id}}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).toHaveProperty('validated.params.id', id)
-    expect(req)
-      .toHaveProperty('actionTarget', {lastName: 'Thompson'})
+    expect(req).toHaveProperty('actionTarget', {lastName: 'Thompson'})
     expect(await res.promise).toEqual(undefined)
     expect(nextCalledAll).toBe(true)
     expect(destroyStub).toHaveBeenCalledTimes(1)
@@ -46,8 +45,7 @@ describe('lib/actions/destroy.ts', () => {
     const req = {body: uuid()}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(typeof req.validated.body).toBe('string')
-    expect(req)
-      .toHaveProperty('actionTarget', {lastName: 'Thompson'})
+    expect(req).toHaveProperty('actionTarget', {lastName: 'Thompson'})
     expect(await res.promise).toEqual(undefined)
     expect(nextCalledAll).toBe(true)
     expect(destroyStub).toHaveBeenCalledTimes(1)
@@ -59,8 +57,11 @@ describe('lib/actions/destroy.ts', () => {
     const req = {body: [uuid(), uuid(), uuid()]}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req.validated.body).toHaveLength(3)
-    expect(req)
-      .toHaveProperty('actionTarget', [{lastName: 'Thompson'}, {lastName: 'Thompson'}, {lastName: 'Thompson'}])
+    expect(req).toHaveProperty('actionTarget', [
+      {lastName: 'Thompson'},
+      {lastName: 'Thompson'},
+      {lastName: 'Thompson'},
+    ])
     expect(await res.promise).toEqual(undefined)
     expect(nextCalledAll).toBe(true)
     expect(destroyStub).toHaveBeenCalledTimes(3)

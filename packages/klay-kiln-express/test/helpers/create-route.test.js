@@ -1,4 +1,3 @@
-
 const ModelContext = require('klay-core').ModelContext
 const createRoute = require('../../dist/helpers/create-route').createRoute
 

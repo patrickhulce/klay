@@ -93,10 +93,7 @@ describe('lib/actions/create.ts', () => {
 
     it('should pass list authorization', async () => {
       const route = buildRoute({type: 'create', byList: true, authorization})
-      const body = [
-        {...utils.defaultUser},
-        {...utils.defaultUser},
-      ]
+      const body = [{...utils.defaultUser}, {...utils.defaultUser}]
 
       const req = {grants, body}
       const {res} = await utils.runMiddleware(route.middleware, req)

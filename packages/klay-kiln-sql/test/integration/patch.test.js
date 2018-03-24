@@ -34,7 +34,7 @@ describe('patch objects', () => {
 
         const untouched = _.omit(item, ['updatedAt', 'email'])
         expect(untouched).toEqual(_.omit(state.userA, ['updatedAt', 'email']))
-      });
+      })
     })
 
     it('should update a single field with just id', () => {
@@ -44,7 +44,7 @@ describe('patch objects', () => {
 
         const untouched = _.omit(item, ['updatedAt', 'email', 'age'])
         expect(untouched).toEqual(_.omit(state.userA, ['updatedAt', 'email', 'age']))
-      });
+      })
     })
 
     it('should prevent changing immutable properties', () => {
@@ -70,13 +70,12 @@ describe('patch objects', () => {
     it('should patch a photo', () => {
       const metadata = {type: 'jpeg', gps: 'otherr coords'}
       return state.models.photo.patch(state.photoA.id, {metadata}).then(item => {
-        expect(item)
-          .toHaveProperty('metadata', metadata)
-          expect(item.updatedAt.getTime()).toBeGreaterThan(state.photoA.updatedAt.getTime())
+        expect(item).toHaveProperty('metadata', metadata)
+        expect(item.updatedAt.getTime()).toBeGreaterThan(state.photoA.updatedAt.getTime())
 
         const untouched = _.omit(item, ['updatedAt', 'metadata'])
         expect(untouched).toEqual(_.omit(state.photoA, ['updatedAt', 'metadata']))
-      });
+      })
     })
   })
 })

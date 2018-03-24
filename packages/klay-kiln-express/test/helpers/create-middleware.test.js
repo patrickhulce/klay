@@ -1,4 +1,3 @@
-
 const ModelContext = require('klay-core').ModelContext
 const middlewareModule = require('../../dist/helpers/create-middleware')
 const Grants = require('../../dist/auth/grants').Grants

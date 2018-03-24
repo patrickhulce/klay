@@ -53,7 +53,9 @@ module.exports = state => {
     it('should list users', async () => {
       const headers = {cookie: state.userCookie}
       const queryParams = new URLSearchParams({fields: 'id', accountId: state.account.id})
-      const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`, {headers})
+      const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`, {
+        headers,
+      })
       expect(response.status).toBe(200)
 
       const responseBody = await response.json()
@@ -73,7 +75,9 @@ module.exports = state => {
         accountId: state.account.id,
       })
 
-      const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`, {headers})
+      const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`, {
+        headers,
+      })
       expect(await response.json()).toHaveProperty('total', 3)
     })
 
@@ -99,7 +103,9 @@ module.exports = state => {
         accountId: state.account.id,
       })
 
-      const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`, {headers})
+      const response = await fetch(`${state.baseURL}/v1/users?${queryParams.toString()}`, {
+        headers,
+      })
       const updatedUsers = (await response.json()).data
       expect(updatedUsers).toHaveLength(3)
 

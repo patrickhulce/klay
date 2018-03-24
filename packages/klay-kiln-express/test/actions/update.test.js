@@ -1,4 +1,3 @@
-
 const uuid = require('uuid').v4
 
 const utils = require('../utils')
@@ -40,8 +39,7 @@ describe('lib/actions/update.ts', () => {
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).toHaveProperty('validated.body')
     expect(req).toHaveProperty('validated.body.updatedAt', undefined)
-    expect(req)
-      .toHaveProperty('actionTarget', {lastName: 'Thompson'})
+    expect(req).toHaveProperty('actionTarget', {lastName: 'Thompson'})
     expect(await res.promise).toEqual(req.validated.body)
     expect(nextCalledAll).toBe(true)
     expect(updateStub).toHaveBeenCalledTimes(1)
@@ -61,8 +59,7 @@ describe('lib/actions/update.ts', () => {
     expect(req).toHaveProperty('validated.body.0.id')
     expect(req).toHaveProperty('validated.body.0.updatedAt', undefined)
     expect(await res.promise).toEqual(req.validated.body)
-    expect(req)
-      .toHaveProperty('actionTarget', [{lastName: 'Thompson'}])
+    expect(req).toHaveProperty('actionTarget', [{lastName: 'Thompson'}])
     expect(nextCalledAll).toBe(true)
     expect(updateStub).toHaveBeenCalledTimes(0)
     expect(updateAllStub).toHaveBeenCalledTimes(1)
@@ -165,10 +162,7 @@ describe('lib/actions/update.ts', () => {
 
     it('should fail list authorization for existing', async () => {
       const route = buildRoute({type: 'update', byId: false, byList: true, authorization})
-      const body = [
-        {id: uuid(), ...utils.defaultUser},
-        {id: uuid(), ...utils.defaultUser},
-      ]
+      const body = [{id: uuid(), ...utils.defaultUser}, {id: uuid(), ...utils.defaultUser}]
 
       findStub.mockReturnValueOnce({lastName: 'Thompson'})
       findStub.mockReturnValueOnce({lastName: 'Not-Thompson'})

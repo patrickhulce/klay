@@ -67,9 +67,8 @@ describe('update objects', () => {
       const photo = _.assign({}, state.photoA, {aspectRatio: 2, metadata})
       const updated = await state.models.photo.update(photo)
       expect(updated).toHaveProperty('aspectRatio', 2)
-      expect(updated)
-        .toHaveProperty('metadata', metadata)
-        expect(updated.updatedAt.getTime()).toBeGreaterThan(photo.updatedAt.getTime())
+      expect(updated).toHaveProperty('metadata', metadata)
+      expect(updated.updatedAt.getTime()).toBeGreaterThan(photo.updatedAt.getTime())
 
       const untouched = _.omit(updated, ['updatedAt', 'metadata', 'aspectRatio'])
       expect(untouched).toEqual(_.omit(photo, ['updatedAt', 'metadata', 'aspectRatio']))

@@ -119,7 +119,9 @@ describe('lib/model.ts', () => {
     })
 
     it('should throw on unacceptable format', () => {
-      expect(() => new Model({}, defaultOptions).type('string').format('unknown')).toThrowError(/expected format.*to be/)
+      expect(() => new Model({}, defaultOptions).type('string').format('unknown')).toThrowError(
+        /expected format.*to be/,
+      )
     })
   })
 

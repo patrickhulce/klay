@@ -32,15 +32,14 @@ describe('lib/options.ts', () => {
         supplyWith,
       })
 
-      expect(opts.spec)
-        .toHaveProperty('automanage', [
-          {
-            property: ['myprop'],
-            event: 'create',
-            phase: 'validate-value',
-            supplyWith,
-          },
-        ])
+      expect(opts.spec).toHaveProperty('automanage', [
+        {
+          property: ['myprop'],
+          event: 'create',
+          phase: 'validate-value',
+          supplyWith,
+        },
+      ])
     })
 
     it('should add the second automanaged property', () => {
@@ -59,13 +58,12 @@ describe('lib/options.ts', () => {
           supplyWith,
         })
 
-      expect(opts.spec)
-        .toHaveProperty('automanage.1', {
-          property: ['mypropB'],
-          event: 'update',
-          phase: 'parse',
-          supplyWith,
-        })
+      expect(opts.spec).toHaveProperty('automanage.1', {
+        property: ['mypropB'],
+        event: 'update',
+        phase: 'parse',
+        supplyWith,
+      })
     })
 
     it('should fill default property and phase', () => {
@@ -81,13 +79,12 @@ describe('lib/options.ts', () => {
         supplyWith: 'auto-increment',
       })
 
-      expect(opts.spec)
-        .toHaveProperty('automanage.0', {
-          property: ['mypropA'],
-          event: 'create',
-          phase: 'database',
-          supplyWith: 'auto-increment',
-        })
+      expect(opts.spec).toHaveProperty('automanage.0', {
+        property: ['mypropA'],
+        event: 'create',
+        phase: 'database',
+        supplyWith: 'auto-increment',
+      })
     })
 
     it('should support date supplyWith', () => {
@@ -126,15 +123,14 @@ describe('lib/options.ts', () => {
     it('should add the first constrain property', () => {
       opts = opts.constrain({properties: [['id']], type: 'primary'})
 
-      expect(opts.spec)
-        .toHaveProperty('constrain', [
-          {
-            name: 'primary:id',
-            properties: [['id']],
-            type: 'primary',
-            meta: {},
-          },
-        ])
+      expect(opts.spec).toHaveProperty('constrain', [
+        {
+          name: 'primary:id',
+          properties: [['id']],
+          type: 'primary',
+          meta: {},
+        },
+      ])
     })
 
     it('should add the second constrain property', () => {
@@ -142,13 +138,12 @@ describe('lib/options.ts', () => {
         .constrain({properties: [['id']], type: 'primary'})
         .constrain({properties: [['day'], ['other']], type: 'unique', meta: {behavior: 'reject'}})
 
-      expect(opts.spec)
-        .toHaveProperty('constrain.1', {
-          name: 'unique:day,other',
-          properties: [['day'], ['other']],
-          type: 'unique',
-          meta: {behavior: 'reject'},
-        })
+      expect(opts.spec).toHaveProperty('constrain.1', {
+        name: 'unique:day,other',
+        properties: [['day'], ['other']],
+        type: 'unique',
+        meta: {behavior: 'reject'},
+      })
     })
 
     it('should default properties, meta, and name', () => {
@@ -168,13 +163,12 @@ describe('lib/options.ts', () => {
         meta,
       })
 
-      expect(opts.spec)
-        .toHaveProperty('constrain.1', {
-          name: 'reference:parent',
-          properties: [['parent_id']],
-          type: 'reference',
-          meta,
-        })
+      expect(opts.spec).toHaveProperty('constrain.1', {
+        name: 'reference:parent',
+        properties: [['parent_id']],
+        type: 'reference',
+        meta,
+      })
     })
 
     it('should add an immutable constrain property', () => {
@@ -182,13 +176,12 @@ describe('lib/options.ts', () => {
         .constrain({properties: [['id']], type: 'primary'})
         .constrain({properties: [['canonical_id'], ['created_on']], type: 'immutable'})
 
-      expect(opts.spec)
-        .toHaveProperty('constrain.1', {
-          name: 'immutable:canonical_id,created_on',
-          properties: [['canonical_id'], ['created_on']],
-          type: 'immutable',
-          meta: {},
-        })
+      expect(opts.spec).toHaveProperty('constrain.1', {
+        name: 'immutable:canonical_id,created_on',
+        properties: [['canonical_id'], ['created_on']],
+        type: 'immutable',
+        meta: {},
+      })
     })
 
     it('should add a custom constrain property', () => {
@@ -198,13 +191,12 @@ describe('lib/options.ts', () => {
         meta: {foo: 'bar'},
       })
 
-      expect(opts.spec)
-        .toHaveProperty('constrain.0', {
-          name: 'custom:something,other',
-          properties: [['something'], ['other']],
-          type: 'custom',
-          meta: {foo: 'bar'},
-        })
+      expect(opts.spec).toHaveProperty('constrain.0', {
+        name: 'custom:something,other',
+        properties: [['something'], ['other']],
+        type: 'custom',
+        meta: {foo: 'bar'},
+      })
     })
 
     it('should use meta.name when set', () => {
@@ -227,26 +219,24 @@ describe('lib/options.ts', () => {
 
     it('should add the first index', () => {
       opts = opts.index([{property: ['myprop'], direction: 'desc'}])
-      expect(opts.spec)
-        .toHaveProperty('index', [[{property: ['myprop'], direction: 'desc'}]])
+      expect(opts.spec).toHaveProperty('index', [[{property: ['myprop'], direction: 'desc'}]])
     })
 
     it('should add the second index', () => {
       opts = opts.index([['myprop']]).index([['otherprop'], ['second']])
 
-      expect(opts.spec)
-        .toHaveProperty('index.1', [
-          {property: ['otherprop'], direction: 'asc'},
-          {property: ['second'], direction: 'asc'},
-        ])
+      expect(opts.spec).toHaveProperty('index.1', [
+        {property: ['otherprop'], direction: 'asc'},
+        {property: ['second'], direction: 'asc'},
+      ])
     })
 
     it('should add a mixed index', () => {
       opts = opts.index([['some'], {property: ['foo'], direction: 'desc'}])
-      expect(opts.spec)
-        .toHaveProperty('index.0',
-        [{property: ['some'], direction: 'asc'}, {property: ['foo'], direction: 'desc'}]
-      )
+      expect(opts.spec).toHaveProperty('index.0', [
+        {property: ['some'], direction: 'asc'},
+        {property: ['foo'], direction: 'desc'},
+      ])
     })
 
     it('should throw when given empty properties', () => {
@@ -282,20 +272,18 @@ describe('lib/options.ts', () => {
     })
 
     it('should de-dupe automanage', () => {
-      const optsA = new Options()
-        .automanage({
-          property: ['x'],
-          event: 'create',
-          phase: 'validate-value',
-          supplyWith: 'date',
-        })
-      const optsB = new Options()
-        .automanage({
-          property: ['x'],
-          event: 'create',
-          phase: 'validate-value',
-          supplyWith: 'date',
-        })
+      const optsA = new Options().automanage({
+        property: ['x'],
+        event: 'create',
+        phase: 'validate-value',
+        supplyWith: 'date',
+      })
+      const optsB = new Options().automanage({
+        property: ['x'],
+        event: 'create',
+        phase: 'validate-value',
+        supplyWith: 'date',
+      })
 
       const merged = Options.merge(optsA.spec, optsB.spec)
       expect(merged.automanage).toHaveLength(1)

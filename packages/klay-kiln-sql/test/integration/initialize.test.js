@@ -23,24 +23,24 @@ describe('initialize database', () => {
   describe('users', () => {
     it('should have created a users table', async () => {
       const [results] = await state.sequelize.query('describe users')
-        expect(toTable(results)).toEqual({
-          id: {Type: 'bigint(20)', Key: 'PRI', Extra: 'auto_increment'},
-          age: {Type: 'bigint(20)'},
-          isAdmin: {Type: 'tinyint(1)'},
-          email: {Type: 'varchar(250)', Key: 'UNI'},
-          firstName: {Type: 'varchar(100)', Key: 'MUL'},
-          lastName: {Type: 'varchar(100)'},
-          password: {Type: 'varchar(32)'},
-          createdAt: {Type: 'datetime(6)'},
-          updatedAt: {Type: 'datetime(6)'},
-        })
+      expect(toTable(results)).toEqual({
+        id: {Type: 'bigint(20)', Key: 'PRI', Extra: 'auto_increment'},
+        age: {Type: 'bigint(20)'},
+        isAdmin: {Type: 'tinyint(1)'},
+        email: {Type: 'varchar(250)', Key: 'UNI'},
+        firstName: {Type: 'varchar(100)', Key: 'MUL'},
+        lastName: {Type: 'varchar(100)'},
+        password: {Type: 'varchar(32)'},
+        createdAt: {Type: 'datetime(6)'},
+        updatedAt: {Type: 'datetime(6)'},
+      })
     })
 
     it('should have created the additional indexes', () => {
       return state.sequelize.query('show index from users').then(([results]) => {
         const indexes = _.filter(results, {Key_name: 'users_email_password'})
         expect(indexes).toHaveLength(2)
-      });
+      })
     })
   })
 
@@ -55,7 +55,7 @@ describe('initialize database', () => {
           createdAt: {Type: 'datetime(6)'},
           updatedAt: {Type: 'datetime(6)'},
         })
-      });
+      })
     })
   })
 })

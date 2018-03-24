@@ -96,10 +96,10 @@ describe('klay', () => {
       const validated = model.validate(obj).toJSON()
       expect(validated).toHaveProperty('conforms', false)
       expect(validated.errors).toEqual([
-          {message: 'unexpected properties: html5', path: ['metadata']},
-          {message: 'expected value to be at least 8', path: ['source', 'raw']},
-          {message: 'expected value to be defined', path: ['source', 'text']},
-        ])
+        {message: 'unexpected properties: html5', path: ['metadata']},
+        {message: 'expected value to be at least 8', path: ['source', 'raw']},
+        {message: 'expected value to be defined', path: ['source', 'text']},
+      ])
 
       expect(validated.value).toEqual({
         ...obj,
@@ -123,12 +123,12 @@ describe('klay', () => {
       const validated = model.validate(obj).toJSON()
       expect(validated).toHaveProperty('conforms', false)
       expect(validated.errors).toEqual([
-          {
-            message: 'expected value (number) to be one of [object, array]',
-            path: ['metadata', 'type'],
-          },
-          {message: 'expected value (fifty) to have typeof number', path: ['metadata', 'size']},
-        ])
+        {
+          message: 'expected value (number) to be one of [object, array]',
+          path: ['metadata', 'type'],
+        },
+        {message: 'expected value (fifty) to have typeof number', path: ['metadata', 'size']},
+      ])
 
       expect(validated.value).toEqual({
         ...obj,

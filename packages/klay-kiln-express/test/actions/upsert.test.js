@@ -1,5 +1,3 @@
-
-
 const utils = require('../utils')
 
 describe('lib/actions/upsert.ts', () => {

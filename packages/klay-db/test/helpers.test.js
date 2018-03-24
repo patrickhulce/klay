@@ -16,14 +16,10 @@ describe('lib/helpers.ts', () => {
         .index([[]])
 
       const prefixed = helpers.addPropertyNames(options.spec, 'x')
-      expect(prefixed)
-        .toHaveProperty('automanage.0.property', ['x', 'nested'])
-      expect(prefixed)
-        .toHaveProperty('constrain.0.properties', [['x', 'nested'], ['x', 'other']])
-      expect(prefixed)
-        .toHaveProperty('index.0.0.property', ['x', 'nested'])
-      expect(prefixed)
-        .toHaveProperty('index.1', [{property: ['x'], direction: 'asc'}])
+      expect(prefixed).toHaveProperty('automanage.0.property', ['x', 'nested'])
+      expect(prefixed).toHaveProperty('constrain.0.properties', [['x', 'nested'], ['x', 'other']])
+      expect(prefixed).toHaveProperty('index.0.0.property', ['x', 'nested'])
+      expect(prefixed).toHaveProperty('index.1', [{property: ['x'], direction: 'asc'}])
     })
   })
 
@@ -38,9 +34,7 @@ describe('lib/helpers.ts', () => {
           .integer()
           .constrain({type: 'primary'})
           .autoIncrement(),
-        accountId: context
-          .integer()
-          .constrain({type: 'reference'}),
+        accountId: context.integer().constrain({type: 'reference'}),
         email: context.email().constrain({type: 'unique'}),
         updatedAt: context
           .date()
@@ -80,24 +74,18 @@ describe('lib/helpers.ts', () => {
 
     it('should replace property names', () => {
       const results = helpers.mergeChildrenIntoRoot({}, children)
-      expect(results)
-        .toHaveProperty('index.0.0.property', ['updatedAt'])
+      expect(results).toHaveProperty('index.0.0.property', ['updatedAt'])
 
-      expect(results)
-        .toHaveProperty('constrain.0.properties.0', ['id'])
+      expect(results).toHaveProperty('constrain.0.properties.0', ['id'])
       expect(results).toHaveProperty('constrain.0.name', 'primary:id')
-      expect(results)
-        .toHaveProperty('constrain.1.properties.0', ['accountId'])
+      expect(results).toHaveProperty('constrain.1.properties.0', ['accountId'])
       expect(results).toHaveProperty('constrain.1.name', 'reference:accountId')
       expect(results).toHaveProperty('constrain.1.meta.referencedModel', 'account')
-      expect(results)
-        .toHaveProperty('constrain.2.properties.0', ['email'])
+      expect(results).toHaveProperty('constrain.2.properties.0', ['email'])
       expect(results).toHaveProperty('constrain.2.name', 'unique:email')
 
-      expect(results)
-        .toHaveProperty('automanage.0.property', ['id'])
-      expect(results)
-        .toHaveProperty('automanage.1.property', ['updatedAt'])
+      expect(results).toHaveProperty('automanage.0.property', ['id'])
+      expect(results).toHaveProperty('automanage.1.property', ['updatedAt'])
     })
   })
 

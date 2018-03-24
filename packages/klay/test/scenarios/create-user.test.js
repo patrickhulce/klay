@@ -72,11 +72,16 @@ module.exports = state => {
 
     it('should list users', async () => {
       const headers = {cookie: state.userCookie}
-      const response = await fetch(`${state.baseURL}/v1/users?accountId=${state.account.id}`, {headers})
+      const response = await fetch(`${state.baseURL}/v1/users?accountId=${state.account.id}`, {
+        headers,
+      })
       const users = await response.json()
-      expect(users).toEqual(
-        {data: [state.user, state.userA, state.userB], total: 3, limit: 10, offset: 0}
-      )
+      expect(users).toEqual({
+        data: [state.user, state.userA, state.userB],
+        total: 3,
+        limit: 10,
+        offset: 0,
+      })
     })
 
     it('should read a user', async () => {

@@ -24,7 +24,7 @@ describe('query objects', () => {
           expect(items[0]).toHaveProperty('email', 'jack.doe@example.com')
           expect(items[1]).toHaveProperty('email', 'smith@example.com')
           expect(items[2]).toHaveProperty('email', 'jill.doe@example.com')
-        });
+        })
     })
 
     it('should find users based on more filters', () => {
@@ -39,7 +39,7 @@ describe('query objects', () => {
           expect(items).toHaveLength(2)
           expect(items[0]).toHaveProperty('email', 'jill.doe@example.com')
           expect(items[1]).toHaveProperty('email', 'jack.doe@example.com')
-        });
+        })
     })
 
     it('should find photos', () => {
@@ -47,9 +47,8 @@ describe('query objects', () => {
         .find({order: [{property: ['aspectRatio'], direction: 'asc'}]})
         .then(items => {
           expect(items).toHaveLength(7)
-          expect(items[0])
-            .toHaveProperty('metadata', {type: 'psd', width: 200, height: 300})
-        });
+          expect(items[0]).toHaveProperty('metadata', {type: 'psd', width: 200, height: 300})
+        })
     })
   })
 
@@ -58,7 +57,7 @@ describe('query objects', () => {
       return userModel.findOne({where: {email: 'smith@example.com'}}).then(item => {
         expect(item).toHaveProperty('lastName', 'Smith')
         expect(item).toHaveProperty('email', 'smith@example.com')
-      });
+      })
     })
   })
 
@@ -67,22 +66,22 @@ describe('query objects', () => {
       return userModel.findOne({where: {email: 'smith@example.com'}}).then(itemA => {
         return userModel.findById(itemA.id).then(itemB => {
           expect(itemA).toEqual(itemB)
-        });
-      });
+        })
+      })
     })
 
     it('should find a single photo by id', () => {
       return photoModel.findOne({where: {aspectRatio: 0.66}}).then(itemA => {
         return photoModel.findById(itemA.id).then(itemB => {
           expect(itemA).toEqual(itemB)
-        });
-      });
+        })
+      })
     })
   })
 
   describe('count', () => {
     it('should count number of photos', async () => {
-      expect(await photoModel.count({where: {aspectRatio: {$gt: 1}}})).toEqual(4);
+      expect(await photoModel.count({where: {aspectRatio: {$gt: 1}}})).toEqual(4)
     })
   })
 
