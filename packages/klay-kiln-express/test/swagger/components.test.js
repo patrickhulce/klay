@@ -1,5 +1,6 @@
 const defaultModelContext = require('klay-core').defaultModelContext
 const components = require('../../dist/swagger/components')
+const transform = require('../../dist/helpers/transform-model')
 const Cache = require('../../dist/swagger/cache').SwaggerSchemaCache
 const utils = require('../utils')
 
@@ -29,6 +30,28 @@ describe('lib/swagger/components.ts', () => {
       expect(arraySchema).toHaveProperty('$ref', '#/definitions/Users')
       const schema = components.getSchema(model, cache)
       expect(schema).toHaveProperty('$ref', '#/definitions/UsersItem')
+    })
+  })
+
+  describe('#getParameters', () => {
+    it('should build path parameters', () => {
+      const paramsModel = transform.paramifyModel(model)
+      const parameters = components.getParameters(paramsModel, 'params')
+      expect(parameters).toMatchSnapshot()
+    })
+
+    it('should build query parameters', () => {
+      const queryModel = transform.querifyModel(model, {
+        allowQueryByEquality: true,
+      })
+      const parameters = components.getParameters(queryModel, 'query')
+      expect(parameters).toMatchSnapshot()
+    })
+
+    it('should build body parameters', () => {
+      const bodyModel = transform.creatifyModel(model)
+      const parameters = components.getParameters(bodyModel, 'body')
+      expect(parameters).toMatchSnapshot()
     })
   })
 })

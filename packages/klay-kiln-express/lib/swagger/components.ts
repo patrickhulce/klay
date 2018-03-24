@@ -1,23 +1,36 @@
 import {IModel, IModelChild, ModelType, NumberFormat} from 'klay-core'
 import {startCase} from 'lodash'
-import {BaseSchema, Schema} from 'swagger-schema-official'
+import * as swagger from 'swagger-schema-official'
+import {ValidateIn} from '../typedefs'
 import {ISwaggerSchemaCache} from './typedefs'
 
-function setIfDefined(schema: BaseSchema, key: keyof BaseSchema, value: any): void {
+function setIfDefined(schema: swagger.BaseSchema, key: keyof swagger.BaseSchema, value: any): void {
   if (typeof value !== 'undefined') {
     schema[key] = value
   }
 }
 
-function buildArraySchema(model: IModel, cache?: ISwaggerSchemaCache, name?: string): Schema {
+function isComplexType(type?: string): boolean {
+  return type === ModelType.Array || type === ModelType.Object
+}
+
+function buildArraySchema(
+  model: IModel,
+  cache?: ISwaggerSchemaCache,
+  name?: string,
+): swagger.Schema {
   return {
     type: 'array',
     items: getSchema(model.spec.children as IModel, cache, `${name}Item`),
   }
 }
 
-function buildObjectSchema(model: IModel, cache?: ISwaggerSchemaCache, name?: string): Schema {
-  const schema: Schema = {
+function buildObjectSchema(
+  model: IModel,
+  cache?: ISwaggerSchemaCache,
+  name?: string,
+): swagger.Schema {
+  const schema: swagger.Schema = {
     type: 'object',
     properties: {},
   }
@@ -39,8 +52,8 @@ function buildObjectSchema(model: IModel, cache?: ISwaggerSchemaCache, name?: st
   return schema
 }
 
-function buildBaseSchema(model: IModel): BaseSchema {
-  const schema: BaseSchema = {}
+function buildBaseSchema(model: IModel): swagger.BaseSchema {
+  const schema: swagger.BaseSchema = {}
 
   switch (model.spec.type) {
     case ModelType.Object:
@@ -81,16 +94,42 @@ function buildBaseSchema(model: IModel): BaseSchema {
   return schema
 }
 
+function pathToQueryName(path: string[]): string {
+  let name = path.shift()!
+  while (path.length) {
+    name += `[${path.shift()}]`
+  }
+
+  return name
+}
+
+function flattenModelForParameters(model: IModel, path: string[] = []): IModelChild[] {
+  let flattened: IModelChild[] = []
+
+  const children = model.spec.children as IModelChild[]
+  for (const child of children) {
+    const childPath = [...path, child.path]
+    if (isComplexType(child.model.spec.type)) {
+      const nested = flattenModelForParameters(child.model, childPath)
+      flattened = flattened.concat(nested)
+    } else {
+      flattened.push({path: pathToQueryName(childPath), model: child.model})
+    }
+  }
+
+  return flattened
+}
+
 export function getSchema(
   model: IModel,
   cache?: ISwaggerSchemaCache,
   name: string = 'Model',
-): Schema {
+): swagger.Schema {
   if (cache && cache.has(model)) {
     return {$ref: `#/definitions/${cache.get(model)!}`}
   }
 
-  let schema: Schema
+  let schema: swagger.Schema
   switch (model.spec.type) {
     case ModelType.Object:
       schema = buildObjectSchema(model, cache, name)
@@ -102,11 +141,43 @@ export function getSchema(
       schema = buildBaseSchema(model)
   }
 
-  const isComplex = schema.type === 'array' || schema.type === 'object'
-  if (cache && isComplex) {
+  if (cache && isComplexType(model.spec.type)) {
     cache.set(name, model, schema)
     return getSchema(model, cache)
   }
 
   return schema
+}
+
+export function getParameters(
+  model: IModel,
+  queryIn: ValidateIn,
+  cache?: ISwaggerSchemaCache,
+  name?: string,
+): swagger.Parameter[] {
+  if (queryIn === ValidateIn.Body) {
+    return [
+      {
+        name: 'body',
+        in: 'body',
+        required: !!model.spec.required,
+        schema: getSchema(model, cache, name),
+      },
+    ]
+  }
+
+  const parameters: swagger.Parameter[] = []
+
+  let children = model.spec.children as IModelChild[]
+  if (queryIn === ValidateIn.Query) children = flattenModelForParameters(model)
+  for (const child of children) {
+    parameters.push({
+      name: child.path,
+      in: queryIn === ValidateIn.Params ? 'params' : 'query',
+      required: !!child.model.spec.required,
+      ...buildBaseSchema(child.model),
+    })
+  }
+
+  return parameters
 }

@@ -21,7 +21,10 @@ export function paramifyModel(original: IModel, options?: IParamifyOptions): IMo
   const pkField = getPrimaryKeyField(original)
   const paramName = (options && options.idParamName) || pkField
   const children = model.spec.children as IModelChild[]
-  const pkModel = children.find(child => child.path === pkField)!.model.strict(false)
+  const pkModel = children
+    .find(child => child.path === pkField)!
+    .model.strict(false)
+    .required()
   model.spec = {}
   return model.type(ModelType.Object).children({[paramName]: pkModel})
 }
@@ -92,6 +95,7 @@ export function querifyModel(original: IModel, options: IQuerifyOptions): IModel
       filterKeys.push('$in', '$nin')
     }
 
+    // TODO: allow nested querying
     if (!filterKeys.length || !includes(ALLOWED_QUERY_TYPES, child.model.spec.type)) return
 
     const valueModel = child.model
@@ -125,5 +129,8 @@ export function querifyModel(original: IModel, options: IQuerifyOptions): IModel
       .strict()
   })
 
-  return defaultModelContext.object().children(children).strict()
+  return defaultModelContext
+    .object()
+    .children(children)
+    .strict()
 }
