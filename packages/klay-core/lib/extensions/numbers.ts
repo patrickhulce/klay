@@ -4,12 +4,8 @@ import {
   IValidatorFormats,
   IValidatorValidations,
   ModelType,
+  NumberFormat,
 } from '../typedefs'
-
-export enum NumberFormat {
-  Integer = 'integer',
-  Finite = 'finite',
-}
 
 export const types = [ModelType.Number]
 

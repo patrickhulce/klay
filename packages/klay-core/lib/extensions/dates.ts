@@ -1,16 +1,13 @@
 import {values} from 'lodash'
 import {assertions} from '../errors/assertion-error'
 import {
+  DateFormat,
   FALLBACK_FORMAT,
   IValidatorCoerce,
   IValidatorFormats,
   ModelType,
   ValidationPhase,
 } from '../typedefs'
-
-export enum DateFormat {
-  UnixTimestamp = 'unix-timestamp',
-}
 
 export const types = [ModelType.Date]
 
