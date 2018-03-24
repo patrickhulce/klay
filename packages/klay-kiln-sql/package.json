@@ -9,7 +9,7 @@
     "test": "npm run test:lint && npm run test:unit",
     "test:db": "KLAY_MYSQL_DB=klay_kiln_sql KLAY_MYSQL_USER=root npm test",
     "test:lint": "lint",
-    "test:unit": "jest --runInBand --forceExit",
+    "test:unit": "jest --runInBand --forceExit test/*.test.js",
     "test:watch": "npm run test:unit -- --watch"
   },
   "repository": {

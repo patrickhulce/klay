@@ -9,7 +9,7 @@
 		"build:docs": "lerna exec ../../scripts/build-docs.sh",
 		"test": "npm run build && npm run test:lint && npm run test:unit",
 		"test:lint": "lerna run test:lint --concurrency 1",
-		"test:unit": "jest --runInBand --forceExit",
+		"test:unit": "jest --forceExit",
 		"test:watch": "npm run test:unit -- --watch"
 	},
 	"devDependencies": {
@@ -19,7 +19,8 @@
 	"jest": {
 		"testPathIgnorePatterns": [
 			"/node_modules/",
-			"/klay/test/scenarios"
+			"/klay/test/scenarios/",
+			"/klay-kiln-sql/test/integration/"
 		],
 		"testMatch": [
 			"**/*.test.js"
