@@ -148,9 +148,3 @@ Object {
   "type": "object",
 }
 `;
-
-exports[`lib/swagger/components.ts #getSchema should reference schema from cache 1`] = `
-Object {
-  "$ref": "#/definitions/ModelItem",
-}
-`;

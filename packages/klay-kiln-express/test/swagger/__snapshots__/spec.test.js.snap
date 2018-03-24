@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lib/swagger/spec.ts #buildSpec should build a specification 1`] = `
+Object {
+  "info": Object {
+    "title": "Title",
+    "version": "Version",
+  },
+  "paths": Object {},
+  "swagger": "2.0",
+}
+`;

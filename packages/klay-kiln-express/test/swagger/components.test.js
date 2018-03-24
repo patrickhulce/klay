@@ -25,9 +25,10 @@ describe('lib/swagger/components.ts', () => {
     it('should reference schema from cache', () => {
       const arrayModel = defaultModelContext.array().children(model)
       const cache = new Cache()
-      components.getSchema(arrayModel, cache)
+      const arraySchema = components.getSchema(arrayModel, cache, 'Users')
+      expect(arraySchema).toHaveProperty('$ref', '#/definitions/Users')
       const schema = components.getSchema(model, cache)
-      expect(schema).toMatchSnapshot()
+      expect(schema).toHaveProperty('$ref', '#/definitions/UsersItem')
     })
   })
 })

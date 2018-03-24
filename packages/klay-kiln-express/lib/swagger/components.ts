@@ -105,6 +105,7 @@ export function getSchema(
   const isComplex = schema.type === 'array' || schema.type === 'object'
   if (cache && isComplex) {
     cache.set(name, model, schema)
+    return getSchema(model, cache)
   }
 
   return schema
