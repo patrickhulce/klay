@@ -1,5 +1,3 @@
-const sinon = require('sinon')
-
 const utils = require('../utils')
 
 describe('lib/actions/list.ts', () => {
@@ -9,8 +7,8 @@ describe('lib/actions/list.ts', () => {
     state = utils.state()
     kiln = state.kiln
     executor = state.executor
-    findStub = sinon.stub(executor, 'find').returns([])
-    countStub = sinon.stub(executor, 'count').returns(5)
+    findStub = jest.spyOn(executor, 'find').mockReturnValue([])
+    countStub = jest.spyOn(executor, 'count').mockReturnValue(5)
   })
 
   it('should build the route', () => {
@@ -27,9 +25,9 @@ describe('lib/actions/list.ts', () => {
     expect(req).toHaveProperty('validated.query.firstName.$eq', 'Klay')
     expect(await res.promise).toEqual({data: [], total: 5, limit: 10, offset: 0})
     expect(nextCalledAll).toBe(true)
-    expect(findStub.callCount).toBe(1)
-    expect(countStub.callCount).toBe(1)
-    expect(findStub.firstCall.args[0]).toEqual({
+    expect(findStub).toHaveBeenCalledTimes(1)
+    expect(countStub).toHaveBeenCalledTimes(1)
+    expect(findStub.mock.calls[0][0]).toEqual({
       limit: 10,
       offset: 0,
       where: {age: {$ne: 18}, firstName: {$eq: 'Klay'}},
@@ -40,11 +38,11 @@ describe('lib/actions/list.ts', () => {
     const route = kiln.build('user', 'express-route', {type: 'list'})
     const req = {query: {age: 'whaa'}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(next.firstCall.args[0]).toBeInstanceOf(Error)
-    expect(next.firstCall.args[0].value).toMatchObject({limit: 10})
+    expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
+    expect(next.mock.calls[0][0].value).toMatchObject({limit: 10})
     expect(res.promise).toBe(undefined)
     expect(nextCalledAll).toBe(false)
-    expect(findStub.callCount).toBe(0)
+    expect(findStub).toHaveBeenCalledTimes(0)
   })
 
   it('should return response model', () => {
@@ -67,7 +65,7 @@ describe('lib/actions/list.ts', () => {
       const {res} = await utils.runMiddleware(route.middleware, req)
 
       expect(await res.promise).toMatchObject({data: []})
-      expect(findStub.callCount).toBe(1)
+      expect(findStub).toHaveBeenCalledTimes(1)
     })
 
     it('should fail authorization', async () => {

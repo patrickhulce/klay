@@ -1,4 +1,4 @@
-const sinon = require('sinon')
+
 const Kiln = require('klay-kiln').Kiln
 const ModelContext = require('klay-core').ModelContext
 const {DatabaseExtension, DatabaseExecutor} = require('klay-db')
@@ -68,16 +68,16 @@ function state() {
 async function runMiddleware(middleware, req) {
   req = req || {}
   const res = {}
-  const next = sinon.stub()
+  const next = jest.fn()
   let nextCalledAll = true
   let err = undefined
   for (const fn of middleware) {
-    const startCallCount = next.callCount
+    const startCallCount = next.mock.calls.length
     await fn(req, res, next)
 
-    if (next.callCount === startCallCount || next.getCall(startCallCount).args[0]) {
+    if (next.mock.calls.length === startCallCount || next.mock.calls[startCallCount][0]) {
       nextCalledAll = false
-      err = next.getCall(startCallCount).args[0]
+      err = next.mock.calls[startCallCount][0]
       break
     }
   }

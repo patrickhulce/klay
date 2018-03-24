@@ -1,4 +1,4 @@
-const sinon = require('sinon')
+
 
 const utils = require('../utils')
 
@@ -9,9 +9,9 @@ describe('lib/actions/upsert.ts', () => {
     state = utils.state()
     kiln = state.kiln
     executor = state.executor
-    sinon.stub(executor, 'findOne').returns(undefined)
-    upsertStub = sinon.stub(executor, 'upsert').returnsArg(0)
-    upsertAllStub = sinon.stub(executor, 'upsertAll').returnsArg(0)
+    jest.spyOn(executor, 'findOne').mockReturnValue(undefined)
+    upsertStub = jest.spyOn(executor, 'upsert').mockImplementation(x => x)
+    upsertAllStub = jest.spyOn(executor, 'upsertAll').mockImplementation(x => x)
   })
 
   it('should build the route', () => {
@@ -28,7 +28,7 @@ describe('lib/actions/upsert.ts', () => {
     expect(req).not.toHaveProperty('validated.body.id')
     expect(await res.promise).toEqual(req.validated.body)
     expect(nextCalledAll).toBe(true)
-    expect(upsertStub.callCount).toBe(1)
+    expect(upsertStub).toHaveBeenCalledTimes(1)
   })
 
   it('should call upsertAll', async () => {
@@ -39,18 +39,18 @@ describe('lib/actions/upsert.ts', () => {
     expect(req).not.toHaveProperty('validated.body.0.id')
     expect(await res.promise).toEqual(req.validated.body)
     expect(nextCalledAll).toBe(true)
-    expect(upsertStub.callCount).toBe(0)
-    expect(upsertAllStub.callCount).toBe(1)
+    expect(upsertStub).toHaveBeenCalledTimes(0)
+    expect(upsertAllStub).toHaveBeenCalledTimes(1)
   })
 
   it('should validate body', async () => {
     const route = kiln.build('user', 'express-route', {type: 'upsert'})
     const req = {body: {...utils.defaultUser, age: false}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(next.firstCall.args[0]).toBeInstanceOf(Error)
-    expect(next.firstCall.args[0].value).toMatchObject({age: false})
+    expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
+    expect(next.mock.calls[0][0].value).toMatchObject({age: false})
     expect(res.promise).toBe(undefined)
     expect(nextCalledAll).toBe(false)
-    expect(upsertStub.callCount).toBe(0)
+    expect(upsertStub).toHaveBeenCalledTimes(0)
   })
 })

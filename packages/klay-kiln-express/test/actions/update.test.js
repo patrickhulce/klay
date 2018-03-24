@@ -1,4 +1,4 @@
-const sinon = require('sinon')
+
 const uuid = require('uuid').v4
 
 const utils = require('../utils')
@@ -11,9 +11,9 @@ describe('lib/actions/update.ts', () => {
     state = utils.state()
     kiln = state.kiln
     executor = state.executor
-    findStub = sinon.stub(executor, 'findByIdOrThrow').returns({lastName: 'Thompson'})
-    updateStub = sinon.stub(executor, 'update').returnsArg(0)
-    updateAllStub = sinon.stub(executor, 'updateAll').returnsArg(0)
+    findStub = jest.spyOn(executor, 'findByIdOrThrow').mockReturnValue({lastName: 'Thompson'})
+    updateStub = jest.spyOn(executor, 'update').mockImplementation(x => x)
+    updateAllStub = jest.spyOn(executor, 'updateAll').mockImplementation(x => x)
   })
 
   it('should build the route', () => {
@@ -44,7 +44,7 @@ describe('lib/actions/update.ts', () => {
       .toHaveProperty('actionTarget', {lastName: 'Thompson'})
     expect(await res.promise).toEqual(req.validated.body)
     expect(nextCalledAll).toBe(true)
-    expect(updateStub.callCount).toBe(1)
+    expect(updateStub).toHaveBeenCalledTimes(1)
   })
 
   it('should call updateAll', async () => {
@@ -64,30 +64,30 @@ describe('lib/actions/update.ts', () => {
     expect(req)
       .toHaveProperty('actionTarget', [{lastName: 'Thompson'}])
     expect(nextCalledAll).toBe(true)
-    expect(updateStub.callCount).toBe(0)
-    expect(updateAllStub.callCount).toBe(1)
+    expect(updateStub).toHaveBeenCalledTimes(0)
+    expect(updateAllStub).toHaveBeenCalledTimes(1)
   })
 
   it('should validate params', async () => {
     const route = kiln.build('user', 'express-route', {type: 'update'})
     const req = {params: {id: 'foo'}, body: {...utils.defaultUser, id: uuid()}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(next.firstCall.args[0]).toBeInstanceOf(Error)
-    expect(next.firstCall.args[0].value).toMatchObject({id: 'foo'})
+    expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
+    expect(next.mock.calls[0][0].value).toMatchObject({id: 'foo'})
     expect(res.promise).toBe(undefined)
     expect(nextCalledAll).toBe(false)
-    expect(updateStub.callCount).toBe(0)
+    expect(updateStub).toHaveBeenCalledTimes(0)
   })
 
   it('should validate body', async () => {
     const route = kiln.build('user', 'express-route', {type: 'update'})
     const req = {params: {id: uuid()}, body: {...utils.defaultUser, age: false}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(next.secondCall.args[0]).toBeInstanceOf(Error)
-    expect(next.secondCall.args[0].value).toMatchObject({age: false})
+    expect(next.mock.calls[1][0]).toBeInstanceOf(Error)
+    expect(next.mock.calls[1][0].value).toMatchObject({age: false})
     expect(res.promise).toBe(undefined)
     expect(nextCalledAll).toBe(false)
-    expect(updateStub.callCount).toBe(0)
+    expect(updateStub).toHaveBeenCalledTimes(0)
   })
 
   describe('authorization', () => {
@@ -104,7 +104,7 @@ describe('lib/actions/update.ts', () => {
       const {res} = await utils.runMiddleware(route.middleware, req)
 
       expect(await res.promise).toEqual(req.validated.body)
-      expect(updateStub.callCount).toBe(1)
+      expect(updateStub).toHaveBeenCalledTimes(1)
     })
 
     it('should fail authorization for incoming', async () => {
@@ -145,7 +145,7 @@ describe('lib/actions/update.ts', () => {
       const {res} = await utils.runMiddleware(route.middleware, req)
 
       expect(await res.promise).toEqual(req.validated.body)
-      expect(updateAllStub.callCount).toBe(1)
+      expect(updateAllStub).toHaveBeenCalledTimes(1)
     })
 
     it('should fail list authorization for incoming', async () => {
@@ -170,8 +170,8 @@ describe('lib/actions/update.ts', () => {
         {id: uuid(), ...utils.defaultUser},
       ]
 
-      findStub.onCall(0).returns({lastName: 'Thompson'})
-      findStub.onCall(1).returns({lastName: 'Not-Thompson'})
+      findStub.mockReturnValueOnce({lastName: 'Thompson'})
+      findStub.mockReturnValueOnce({lastName: 'Not-Thompson'})
 
       const req = {grants, body}
       const {res, err} = await utils.runMiddleware(route.middleware, req)

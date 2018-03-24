@@ -1,4 +1,4 @@
-const sinon = require('sinon')
+
 const ModelContext = require('klay-core').ModelContext
 const middlewareModule = require('../../dist/helpers/create-middleware')
 const Grants = require('../../dist/auth/grants').Grants
@@ -9,7 +9,7 @@ describe('lib/helpers/create-middleware.ts', () => {
   beforeEach(() => {
     context = new ModelContext()
     model = context.object().children({id: context.integer()})
-    next = sinon.stub()
+    next = jest.fn()
   })
 
   describe('#createValidationMiddleware', () => {
@@ -26,7 +26,7 @@ describe('lib/helpers/create-middleware.ts', () => {
       middleware(req, {}, next)
       expect(req.validated).toEqual({body: {id: 1}})
       expect(req.body).toEqual({id: '1'})
-      expect(next.callCount).toBe(1)
+      expect(next).toHaveBeenCalledTimes(1)
     })
 
     it('should merge validated', () => {
@@ -43,8 +43,8 @@ describe('lib/helpers/create-middleware.ts', () => {
       const res = {}
 
       middleware(req, res, next)
-      expect(next.callCount).toBe(1)
-      const err = next.firstCall.args[0]
+      expect(next).toHaveBeenCalledTimes(1)
+      const err = next.mock.calls[0][0]
       expect(err.value).toEqual({id: 'one'})
       expect(err.errors).toHaveLength(1)
       expect(err.errors[0].path).toEqual(['id'])
@@ -69,7 +69,7 @@ describe('lib/helpers/create-middleware.ts', () => {
       const req = {}
 
       middleware(req, {}, next)
-      expect(next.callCount).toBe(1)
+      expect(next).toHaveBeenCalledTimes(1)
       expect(req).toHaveProperty('grants')
       expect(req.grants._grants.size).toBe(0)
     })
@@ -79,7 +79,7 @@ describe('lib/helpers/create-middleware.ts', () => {
       const req = {user: {orgId: 2, role: 'admin'}}
 
       middleware(req, {}, next)
-      expect(next.callCount).toBe(1)
+      expect(next).toHaveBeenCalledTimes(1)
       expect(req).toHaveProperty('grants')
       expect(req.grants.has('write', {orgId: 2})).toBe(true)
       expect(req.grants.has('read', {orgId: 2})).toBe(true)
@@ -92,7 +92,7 @@ describe('lib/helpers/create-middleware.ts', () => {
       const req = {user: {orgId: 2, theRole: 'admin'}}
 
       middleware(req, {}, next)
-      expect(next.callCount).toBe(1)
+      expect(next).toHaveBeenCalledTimes(1)
       expect(req).toHaveProperty('grants')
       expect(req.grants.has('write', {orgId: 2})).toBe(true)
       expect(req.grants.has('read', {orgId: 2})).toBe(true)
@@ -105,7 +105,7 @@ describe('lib/helpers/create-middleware.ts', () => {
       const req = {foo: {orgId: 2, role: 'user'}}
 
       middleware(req, {}, next)
-      expect(next.callCount).toBe(1)
+      expect(next).toHaveBeenCalledTimes(1)
       expect(req).toHaveProperty('grants')
       expect(req.grants.has('write', {orgId: 2})).toBe(false)
       expect(req.grants.has('read', {orgId: 2})).toBe(true)
@@ -142,8 +142,8 @@ describe('lib/helpers/create-middleware.ts', () => {
         getCriteriaValues,
       })
       middleware({}, {}, next)
-      expect(next.callCount).toBe(1)
-      expect(next.firstCall.args[0]).toBeInstanceOf(Error)
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
     })
 
     it('should pass request if global access', () => {
@@ -156,8 +156,8 @@ describe('lib/helpers/create-middleware.ts', () => {
       })
 
       middleware({grants}, {}, next)
-      expect(next.callCount).toBe(1)
-      expect(next.firstCall.args).toHaveLength(0)
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(next.mock.calls[0]).toHaveLength(0)
     })
 
     it('should pass request if matches the criteria', () => {
@@ -168,8 +168,8 @@ describe('lib/helpers/create-middleware.ts', () => {
       })
 
       middleware({grants, orgId: 2}, {}, next)
-      expect(next.callCount).toBe(1)
-      expect(next.firstCall.args).toHaveLength(0)
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(next.mock.calls[0]).toHaveLength(0)
     })
 
     it('should pass request if matches multi-criteria', () => {
@@ -180,8 +180,8 @@ describe('lib/helpers/create-middleware.ts', () => {
       })
 
       middleware({grants, userId: 1, orgId: 2}, {}, next)
-      expect(next.callCount).toBe(1)
-      expect(next.firstCall.args).toHaveLength(0)
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(next.mock.calls[0]).toHaveLength(0)
     })
 
     it('should pass request if matches one the criteria', () => {
@@ -192,8 +192,8 @@ describe('lib/helpers/create-middleware.ts', () => {
       })
 
       middleware({grants, userId: 100, orgId: 2}, {}, next)
-      expect(next.callCount).toBe(1)
-      expect(next.firstCall.args).toHaveLength(0)
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(next.mock.calls[0]).toHaveLength(0)
     })
 
     it('should fail request if not matches the criteria', () => {
@@ -204,8 +204,8 @@ describe('lib/helpers/create-middleware.ts', () => {
       })
 
       middleware({grants, orgId: 3}, {}, next)
-      expect(next.callCount).toBe(1)
-      expect(next.firstCall.args[0]).toBeInstanceOf(Error)
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
     })
 
     it('should fail request if not matches all criteria properties', () => {
@@ -216,16 +216,16 @@ describe('lib/helpers/create-middleware.ts', () => {
       })
 
       middleware({grants, userId: 1, orgId: 2}, {}, next)
-      expect(next.callCount).toBe(1)
-      expect(next.firstCall.args).toHaveLength(0)
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(next.mock.calls[0]).toHaveLength(0)
 
       middleware({grants, userId: 2, orgId: 2}, {}, next)
-      expect(next.callCount).toBe(2)
-      expect(next.secondCall.args[0]).toBeInstanceOf(Error)
+      expect(next).toHaveBeenCalledTimes(2)
+      expect(next.mock.calls[1][0]).toBeInstanceOf(Error)
 
       middleware({grants, userId: 1, orgId: 3}, {}, next)
-      expect(next.callCount).toBe(3)
-      expect(next.thirdCall.args[0]).toBeInstanceOf(Error)
+      expect(next).toHaveBeenCalledTimes(3)
+      expect(next.mock.calls[2][0]).toBeInstanceOf(Error)
     })
   })
 })

@@ -1,6 +1,4 @@
-const sinon = require('sinon')
 const uuid = require('uuid').v4
-
 const utils = require('../utils')
 
 describe('lib/actions/destroy.ts', () => {
@@ -11,9 +9,9 @@ describe('lib/actions/destroy.ts', () => {
     state = utils.state()
     kiln = state.kiln
     executor = state.executor
-    findStub = sinon.stub(executor, 'findByIdOrThrow').returns({lastName: 'Thompson'})
-    destroyStub = sinon.stub(executor, 'destroyById').returns(Promise.resolve())
-    transactionStub = sinon.stub(executor, 'transaction', f => f('t'))
+    findStub = jest.spyOn(executor, 'findByIdOrThrow').mockReturnValue({lastName: 'Thompson'})
+    destroyStub = jest.spyOn(executor, 'destroyById').mockReturnValue(Promise.resolve())
+    transactionStub = jest.spyOn(executor, 'transaction').mockImplementation(f => f('t'))
   })
 
   it('should build the byId route', () => {
@@ -40,7 +38,7 @@ describe('lib/actions/destroy.ts', () => {
       .toHaveProperty('actionTarget', {lastName: 'Thompson'})
     expect(await res.promise).toEqual(undefined)
     expect(nextCalledAll).toBe(true)
-    expect(destroyStub.callCount).toBe(1)
+    expect(destroyStub).toHaveBeenCalledTimes(1)
   })
 
   it('should call single destroy', async () => {
@@ -52,8 +50,8 @@ describe('lib/actions/destroy.ts', () => {
       .toHaveProperty('actionTarget', {lastName: 'Thompson'})
     expect(await res.promise).toEqual(undefined)
     expect(nextCalledAll).toBe(true)
-    expect(destroyStub.callCount).toBe(1)
-    expect(transactionStub.callCount).toBe(0)
+    expect(destroyStub).toHaveBeenCalledTimes(1)
+    expect(transactionStub).toHaveBeenCalledTimes(0)
   })
 
   it('should call bulk destroy', async () => {
@@ -65,42 +63,42 @@ describe('lib/actions/destroy.ts', () => {
       .toHaveProperty('actionTarget', [{lastName: 'Thompson'}, {lastName: 'Thompson'}, {lastName: 'Thompson'}])
     expect(await res.promise).toEqual(undefined)
     expect(nextCalledAll).toBe(true)
-    expect(destroyStub.callCount).toBe(3)
-    expect(transactionStub.callCount).toBe(1)
-    expect(destroyStub.firstCall.args[1]).toHaveProperty('transaction', 't')
+    expect(destroyStub).toHaveBeenCalledTimes(3)
+    expect(transactionStub).toHaveBeenCalledTimes(1)
+    expect(destroyStub.mock.calls[0][1]).toHaveProperty('transaction', 't')
   })
 
   it('should validate params', async () => {
     const route = buildRoute({type: 'destroy'})
     const req = {params: {id: 'foo'}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(next.firstCall.args[0]).toBeInstanceOf(Error)
-    expect(next.firstCall.args[0].value).toMatchObject({id: 'foo'})
+    expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
+    expect(next.mock.calls[0][0].value).toMatchObject({id: 'foo'})
     expect(res.promise).toBe(undefined)
     expect(nextCalledAll).toBe(false)
-    expect(destroyStub.callCount).toBe(0)
+    expect(destroyStub).toHaveBeenCalledTimes(0)
   })
 
   it('should validate single body', async () => {
     const route = buildRoute({type: 'destroy', byId: false})
     const req = {body: [uuid()]}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(next.firstCall.args[0]).toBeInstanceOf(Error)
-    expect(next.firstCall.args[0].value).toEqual(req.body)
+    expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
+    expect(next.mock.calls[0][0].value).toEqual(req.body)
     expect(res.promise).toBe(undefined)
     expect(nextCalledAll).toBe(false)
-    expect(destroyStub.callCount).toBe(0)
+    expect(destroyStub).toHaveBeenCalledTimes(0)
   })
 
   it('should validate bulk body', async () => {
     const route = buildRoute({type: 'destroy', byId: false, byList: true})
     const req = {body: uuid()}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(next.firstCall.args[0]).toBeInstanceOf(Error)
-    expect(next.firstCall.args[0].value).toEqual(req.body)
+    expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
+    expect(next.mock.calls[0][0].value).toEqual(req.body)
     expect(res.promise).toBe(undefined)
     expect(nextCalledAll).toBe(false)
-    expect(destroyStub.callCount).toBe(0)
+    expect(destroyStub).toHaveBeenCalledTimes(0)
   })
 
   describe('authorization', () => {
@@ -117,13 +115,13 @@ describe('lib/actions/destroy.ts', () => {
       const {res} = await utils.runMiddleware(route.middleware, req)
 
       expect(await res.promise).toEqual(req.validated.body)
-      expect(destroyStub.callCount).toBe(1)
+      expect(destroyStub).toHaveBeenCalledTimes(1)
     })
 
     it('should fail authorization', async () => {
       const route = buildRoute({type: 'destroy', authorization})
       const req = {grants, params: {id: uuid()}}
-      findStub.returns({lastName: 'Not-Thompson'})
+      findStub.mockReturnValue({lastName: 'Not-Thompson'})
       const {res, err} = await utils.runMiddleware(route.middleware, req)
 
       expect(err).toBeInstanceOf(Error)
@@ -137,22 +135,22 @@ describe('lib/actions/destroy.ts', () => {
 
       const req = {grants, body}
       await utils.runMiddleware(route.middleware, req)
-      expect(destroyStub.callCount).toBe(2)
+      expect(destroyStub).toHaveBeenCalledTimes(2)
     })
 
     it('should fail list authorization', async () => {
       const route = buildRoute({type: 'destroy', byId: false, byList: true, authorization})
       const body = [uuid(), uuid()]
 
-      findStub.onCall(0).returns({lastName: 'Thompson'})
-      findStub.onCall(1).returns({lastName: 'Not-Thompson'})
+      findStub.mockReturnValueOnce({lastName: 'Thompson'})
+      findStub.mockReturnValueOnce({lastName: 'Not-Thompson'})
 
       const req = {grants, body}
       const {err} = await utils.runMiddleware(route.middleware, req)
 
       expect(err).toBeInstanceOf(Error)
       expect(err.message).toMatch(/permission/)
-      expect(destroyStub.callCount).toBe(0)
+      expect(destroyStub).toHaveBeenCalledTimes(0)
     })
   })
 })

@@ -1,4 +1,4 @@
-const sinon = require('sinon')
+
 const uuid = require('uuid').v4
 
 const utils = require('../utils')
@@ -10,7 +10,7 @@ describe('lib/actions/read.ts', () => {
     state = utils.state()
     kiln = state.kiln
     executor = state.executor
-    readStub = sinon.stub(executor, 'findByIdOrThrow').returns({foo: 'bar'})
+    readStub = jest.spyOn(executor, 'findByIdOrThrow').mockReturnValue({foo: 'bar'})
   })
 
   it('should build the route', () => {
@@ -28,18 +28,18 @@ describe('lib/actions/read.ts', () => {
     expect(req).toHaveProperty('actionTarget', {foo: 'bar'})
     expect(await res.promise).toEqual({foo: 'bar'})
     expect(nextCalledAll).toBe(true)
-    expect(readStub.callCount).toBe(1)
+    expect(readStub).toHaveBeenCalledTimes(1)
   })
 
   it('should validate params', async () => {
     const route = kiln.build('user', 'express-route', {type: 'read'})
     const req = {params: {id: 'foo'}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
-    expect(next.firstCall.args[0]).toBeInstanceOf(Error)
-    expect(next.firstCall.args[0].value).toMatchObject({id: 'foo'})
+    expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
+    expect(next.mock.calls[0][0].value).toMatchObject({id: 'foo'})
     expect(res.promise).toBe(undefined)
     expect(nextCalledAll).toBe(false)
-    expect(readStub.callCount).toBe(0)
+    expect(readStub).toHaveBeenCalledTimes(0)
   })
 
   describe('authorization', () => {
@@ -56,13 +56,13 @@ describe('lib/actions/read.ts', () => {
       const {res} = await utils.runMiddleware(route.middleware, req)
 
       expect(await res.promise).toEqual(req.validated.body)
-      expect(readStub.callCount).toBe(1)
+      expect(readStub).toHaveBeenCalledTimes(1)
     })
 
     it('should fail authorization', async () => {
       const route = kiln.build('user', 'express-route', {type: 'read', authorization})
       const req = {grants, params: {id: uuid()}}
-      readStub.returns({lastName: 'Not-Thompson'})
+      readStub.mockReturnValue({lastName: 'Not-Thompson'})
       const {res, err} = await utils.runMiddleware(route.middleware, req)
 
       expect(err).toBeInstanceOf(Error)

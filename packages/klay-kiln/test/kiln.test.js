@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const sinon = require('sinon')
+
 const Kiln = require('../dist/kiln').Kiln
 
 describe('lib/kiln.ts', () => {
@@ -10,9 +10,9 @@ describe('lib/kiln.ts', () => {
     extensionA = _.defaults({name: 'A'}, extensionApi)
     const extensionB = _.defaults({name: 'B'}, extensionApi)
     const extensionC = _.defaults({name: 'C'}, extensionApi)
-    sinon.stub(extensionA, 'build').returns({resultA: 'foo'})
-    sinon.stub(extensionB, 'build').returns({resultB: 'bar'})
-    sinon.stub(extensionC, 'build').returns({resultC: 'baz'})
+    jest.spyOn(extensionA, 'build').mockReturnValue({resultA: 'foo'})
+    jest.spyOn(extensionB, 'build').mockReturnValue({resultB: 'bar'})
+    jest.spyOn(extensionC, 'build').mockReturnValue({resultC: 'baz'})
 
     kiln
       .addModel({name: 'user', model})
@@ -101,8 +101,8 @@ describe('lib/kiln.ts', () => {
     it('should cache results of already baked extensions', () => {
       const value1 = kiln.buildAll('user')[0].value
       expect(value1).toEqual({resultA: 'foo'})
-      extensionA.build.restore()
-      sinon.stub(extensionA, 'build').returns({busted: true})
+      extensionA.build.mockRestore()
+      jest.spyOn(extensionA, 'build').mockReturnValue({busted: true})
 
       const value2 = kiln.buildAll('user')[0].value
       expect(value2).toBe(value1)
@@ -146,8 +146,8 @@ describe('lib/kiln.ts', () => {
     it('should cache results of already baked extensions', () => {
       const value1 = kiln.build('user', 'A')
       expect(value1).toEqual({resultA: 'foo'})
-      extensionA.build.restore()
-      sinon.stub(extensionA, 'build').returns({busted: true})
+      extensionA.build.mockRestore()
+      jest.spyOn(extensionA, 'build').mockReturnValue({busted: true})
 
       const value2 = kiln.build('user', 'A')
       expect(value2).toBe(value1)
@@ -157,8 +157,8 @@ describe('lib/kiln.ts', () => {
     it('should cache results of direct build when ===', () => {
       const value1 = kiln.build('user', extensionA)
       expect(value1).toEqual({resultA: 'foo'})
-      extensionA.build.restore()
-      sinon.stub(extensionA, 'build').returns({busted: 1})
+      extensionA.build.mockRestore()
+      jest.spyOn(extensionA, 'build').mockReturnValue({busted: 1})
 
       const value2 = kiln.build('user', 'A')
       expect(value2).toBe(value1)
@@ -170,20 +170,20 @@ describe('lib/kiln.ts', () => {
 
     it('should not cache results of direct build when !==', () => {
       const extensionALike = _.defaults({name: 'A'}, extensionApi)
-      sinon.stub(extensionALike, 'build').returns({busted: 1})
+      jest.spyOn(extensionALike, 'build').mockReturnValue({busted: 1})
 
       const value1 = kiln.build('user', extensionALike)
       expect(value1).toEqual({busted: 1})
 
       const value2 = kiln.build('user', 'A')
       expect(value2).toEqual({resultA: 'foo'})
-      extensionALike.build.restore()
-      sinon.stub(extensionALike, 'build').returns({busted: 2})
+      extensionALike.build.mockRestore()
+      jest.spyOn(extensionALike, 'build').mockReturnValue({busted: 2})
 
       const value3 = kiln.build('user', extensionALike)
       expect(value3).toEqual({busted: 2})
-      extensionA.build.restore()
-      sinon.stub(extensionA, 'build').returns({busted: 3})
+      extensionA.build.mockRestore()
+      jest.spyOn(extensionA, 'build').mockReturnValue({busted: 3})
       expect(kiln.build('user', 'A')).toEqual({resultA: 'foo'})
     })
 
@@ -210,8 +210,8 @@ describe('lib/kiln.ts', () => {
       kiln.addModel({name: 'user', model})
       kiln.addExtension({extension: extensionA})
 
-      extensionA.build.restore()
-      sinon.stub(extensionA, 'build').returns({busted: true})
+      extensionA.build.mockRestore()
+      jest.spyOn(extensionA, 'build').mockReturnValue({busted: true})
 
       const value2 = kiln.build('user', 'A')
       expect(value2).not.toBe(value1)
