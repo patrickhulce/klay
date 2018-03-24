@@ -1,0 +1,156 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lib/swagger/components.ts #getSchema should build an array schema 1`] = `
+Object {
+  "items": Object {
+    "properties": Object {
+      "age": Object {
+        "format": "int64",
+        "type": "integer",
+      },
+      "createdAt": Object {
+        "format": "date-time",
+        "type": "string",
+      },
+      "email": Object {
+        "maxLength": 250,
+        "type": "string",
+      },
+      "firstName": Object {
+        "maxLength": 100,
+        "type": "string",
+      },
+      "id": Object {
+        "type": "string",
+      },
+      "isAdmin": Object {
+        "type": "boolean",
+      },
+      "lastName": Object {
+        "maxLength": 100,
+        "type": "string",
+      },
+      "metadata": Object {
+        "properties": Object {},
+        "type": "object",
+      },
+      "password": Object {
+        "maxLength": 32,
+        "type": "string",
+      },
+      "tracking": Object {
+        "properties": Object {
+          "lastVisit": Object {
+            "format": "date-time",
+            "type": "string",
+          },
+          "trackingId": Object {
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "trackingId",
+        ],
+        "type": "object",
+      },
+      "updatedAt": Object {
+        "format": "date-time",
+        "type": "string",
+      },
+    },
+    "required": Array [
+      "id",
+      "age",
+      "isAdmin",
+      "email",
+      "password",
+      "firstName",
+      "lastName",
+      "tracking",
+      "createdAt",
+      "updatedAt",
+    ],
+    "type": "object",
+  },
+  "type": "array",
+}
+`;
+
+exports[`lib/swagger/components.ts #getSchema should build an object schema 1`] = `
+Object {
+  "properties": Object {
+    "age": Object {
+      "format": "int64",
+      "type": "integer",
+    },
+    "createdAt": Object {
+      "format": "date-time",
+      "type": "string",
+    },
+    "email": Object {
+      "maxLength": 250,
+      "type": "string",
+    },
+    "firstName": Object {
+      "maxLength": 100,
+      "type": "string",
+    },
+    "id": Object {
+      "type": "string",
+    },
+    "isAdmin": Object {
+      "type": "boolean",
+    },
+    "lastName": Object {
+      "maxLength": 100,
+      "type": "string",
+    },
+    "metadata": Object {
+      "properties": Object {},
+      "type": "object",
+    },
+    "password": Object {
+      "maxLength": 32,
+      "type": "string",
+    },
+    "tracking": Object {
+      "properties": Object {
+        "lastVisit": Object {
+          "format": "date-time",
+          "type": "string",
+        },
+        "trackingId": Object {
+          "type": "string",
+        },
+      },
+      "required": Array [
+        "trackingId",
+      ],
+      "type": "object",
+    },
+    "updatedAt": Object {
+      "format": "date-time",
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "id",
+    "age",
+    "isAdmin",
+    "email",
+    "password",
+    "firstName",
+    "lastName",
+    "tracking",
+    "createdAt",
+    "updatedAt",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`lib/swagger/components.ts #getSchema should reference schema from cache 1`] = `
+Object {
+  "$ref": "#/definitions/ModelItem",
+}
+`;
