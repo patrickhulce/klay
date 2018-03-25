@@ -15,3 +15,9 @@ export interface ISwaggerSchemaCache {
   set(name: string, model: IModel, schema: Schema): void
   getUniqueSchemas(): IKeyedSchema
 }
+
+export interface ISwaggerModelOptions {
+  inline?: boolean
+  alternateQueryModel?: IModel
+  alternateBodyModel?: IModel
+}

@@ -3,6 +3,17 @@ import {IModel} from 'klay-core'
 import {IDatabaseExecutor, IQueryOrder} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import {AuthCriteriaProperties, AuthCriteriaValue, IGrants} from './auth/typedefs'
+import {ISwaggerModelOptions} from './swagger/typedefs'
+
+declare module 'klay-core/dist/typedefs' {
+  export interface IModel {
+    swagger(options?: ISwaggerModelOptions): IModel
+  }
+
+  export interface IModelSpecification {
+    swagger?: ISwaggerModelOptions
+  }
+}
 
 declare module 'express-serve-static-core' {
   /* tslint:disable */
