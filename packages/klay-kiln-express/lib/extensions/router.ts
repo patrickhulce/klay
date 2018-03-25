@@ -97,6 +97,7 @@ export class RouterExtension implements IKilnExtension<IRouter, IRouterOptions> 
         path,
         method: method.toLowerCase() as HTTPMethod,
         options: routeOptions,
+        kilnModel,
         ...route,
       }
     })

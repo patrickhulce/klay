@@ -23,7 +23,8 @@ export function paramifyModel(original: IModel, options?: IParamifyOptions): IMo
   const children = model.spec.children as IModelChild[]
   const pkModel = children
     .find(child => child.path === pkField)!
-    .model.strict(false)
+    .model
+    .strict(false)
     .required()
   model.spec = {}
   return model.type(ModelType.Object).children({[paramName]: pkModel})

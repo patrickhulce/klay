@@ -172,7 +172,8 @@ export interface IRouterOptions {
 export interface IRouterRoute extends IRoute {
   path: string
   method: HTTPMethod
-  options: IActionRouteOptions
+  options: IActionRouteOptions | IRouteInput
+  kilnModel: IKilnModel
 }
 
 export interface IRouter {
