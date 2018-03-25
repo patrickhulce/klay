@@ -2,6 +2,7 @@
 
 exports[`lib/swagger/spec.ts #buildSpec should build a specification 1`] = `
 Object {
+  "basePath": "/",
   "definitions": Object {
     "User": Object {
       "properties": Object {
@@ -80,11 +81,18 @@ Object {
       "type": "object",
     },
   },
+  "host": "localhost",
   "info": Object {
     "title": "Title",
     "version": "Version",
   },
   "paths": Object {},
+  "produces": Array [
+    "application/json",
+  ],
+  "schemes": Array [
+    "http",
+  ],
   "swagger": "2.0",
 }
 `;

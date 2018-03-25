@@ -13,6 +13,10 @@ export function buildSpecification(kiln: IKiln, router: IRouter): Spec {
 
   return {
     swagger: '2.0',
+    basePath: '/',
+    produces: ['application/json'],
+    host: 'localhost',
+    schemes: ['http'],
     info: {
       title: 'Title',
       version: 'Version',
