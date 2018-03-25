@@ -16,7 +16,6 @@ export class SwaggerSchemaCache implements ISwaggerSchemaCache {
     return !!this.get(model)
   }
 
-  // TODO: de-dupe swagger schemas if the output is identical
   public get(model: IModel): string | undefined {
     if (this._modelCache.has(model)) {
       return this._modelCache.get(model)
@@ -31,6 +30,13 @@ export class SwaggerSchemaCache implements ISwaggerSchemaCache {
   }
 
   public set(name: string, model: IModel, schema: Schema): void {
+    for (const [candidateName, candidateSchema] of this._cache.entries()) {
+      if (isEqual(candidateSchema, schema)) {
+        this._modelCache.set(model, candidateName)
+        return
+      }
+    }
+
     this._modelCache.set(model, name)
     this._cache.set(name, schema)
   }
