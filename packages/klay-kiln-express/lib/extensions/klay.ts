@@ -1,10 +1,7 @@
 import {
   IKlayExtension,
   IModel,
-  IModelContext,
-  IModelHooks,
   IValidatorMethods,
-  ValidationPhase,
 } from 'klay-core'
 import {ISwaggerModelOptions} from '../typedefs'
 

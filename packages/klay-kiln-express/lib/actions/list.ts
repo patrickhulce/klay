@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from 'express'
-import defaultModelContext, {IModel, IValidationResult} from 'klay-core'
+import defaultModelContext, {IModel, IValidationResult, ModelType} from 'klay-core'
 import {IDatabaseExecutor, IQuery, IQueryOrderItem, SortDirection} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import {forEach, omit, pick} from 'lodash'
@@ -28,6 +28,18 @@ function cleanUndefined(object: any, maxDepth: number = 0): void {
 function stringToOrderItem(s: string): IQueryOrderItem {
   const direction = s.charAt(0) === '-' ? SortDirection.Descending : SortDirection.Ascending
   return {property: s.split('.'), direction}
+}
+
+function orderItemsToString(orderItems?: IQueryOrderItem[]): string | undefined {
+  if (!orderItems) return undefined
+  let out = ''
+
+  for (const orderItem of orderItems) {
+    if (orderItem.direction === SortDirection.Descending) out += '-'
+    out += orderItem.property.join('.')
+  }
+
+  return out
 }
 
 function parseOrder(value: IValidationResult): IValidationResult {
@@ -69,15 +81,28 @@ function listOptionsModel(model: IModel, options: IActionOptions): IModel {
       .default(0)
       .optional(),
     order: defaultModelContext
-      .array()
-      .coerce(parseOrder)
-      .default(options.defaultOrder)
-      .min(1)
-      .optional(),
+      .create({
+        type: ModelType.Array,
+        default: options.defaultOrder,
+        min: 1,
+        swagger: {
+          alternateModel: defaultModelContext.create({
+            type: ModelType.String,
+            default: orderItemsToString(options.defaultOrder),
+          }),
+        },
+      })
+      .coerce(parseOrder),
     fields: defaultModelContext
-      .array()
-      .coerce(parseFields)
-      .optional(),
+      .create({
+        type: ModelType.Array,
+        swagger: {
+          alternateModel: defaultModelContext.create({
+            type: ModelType.String,
+          }),
+        },
+      })
+      .coerce(parseFields),
   }
 
   return defaultModelContext
@@ -116,7 +141,10 @@ export const listAction: IAction = {
       : undefined
   },
   responseModel(kilnModel: IKilnModel, options: IActionOptions): IModel | undefined {
-    const modelAsArray = defaultModelContext.array().children(kilnModel.model).required()
+    const modelAsArray = defaultModelContext
+      .array()
+      .children(kilnModel.model)
+      .required()
     return defaultModelContext.object().children({
       data: modelAsArray,
       total: defaultModelContext.integer().required(),

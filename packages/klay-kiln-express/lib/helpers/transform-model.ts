@@ -1,6 +1,6 @@
 import {defaultModelContext, IModel, IModelChild, IValidationResult, ModelType} from 'klay-core'
 import {ConstraintType, DatabaseEvent, eventMatches, findModel, getPrimaryKeyField} from 'klay-db'
-import {flatten, forEach, includes, isEqual} from 'lodash'
+import {flatten, forEach, includes, isEqual, pick, startCase} from 'lodash'
 import {IParamifyOptions, IQuerifyOptions} from '../typedefs'
 
 const ALLOWED_QUERY_TYPES = [ModelType.Boolean, ModelType.String, ModelType.Number, ModelType.Date]
@@ -23,8 +23,7 @@ export function paramifyModel(original: IModel, options?: IParamifyOptions): IMo
   const children = model.spec.children as IModelChild[]
   const pkModel = children
     .find(child => child.path === pkField)!
-    .model
-    .strict(false)
+    .model.strict(false)
     .required()
   model.spec = {}
   return model.type(ModelType.Object).children({[paramName]: pkModel})
@@ -99,35 +98,49 @@ export function querifyModel(original: IModel, options: IQuerifyOptions): IModel
     // TODO: allow nested querying
     if (!filterKeys.length || !includes(ALLOWED_QUERY_TYPES, child.model.spec.type)) return
 
-    const valueModel = child.model
-      .clone()
-      .optional()
-      .default()
-      .strict(false)
+    const modelForSwagger = defaultModelContext.create(pick(child.model.spec, ['type', 'format']))
+    const valueModel = defaultModelContext.create({
+      ...pick(child.model.spec, ['type', 'format', 'max', 'min', 'enum']),
+      swagger: {
+        alternateModel: modelForSwagger,
+        alternateQueryModel: modelForSwagger,
+      },
+    })
 
     const filterChildren = filterKeys.map(key => {
       let model = valueModel
 
       if (key === '$match') {
-        model = defaultModelContext.string().optional()
+        model = defaultModelContext.create({type: ModelType.String})
       }
 
       if (key === '$in' || key === '$nin') {
         model = defaultModelContext
-          .array()
-          .children(valueModel)
+          .create({
+            type: ModelType.Array,
+            children: valueModel,
+            swagger: {
+              inline: true,
+              alternateQueryModel: defaultModelContext.create({type: ModelType.String}),
+            },
+          })
           .coerce(vr => (typeof vr.value === 'string' ? vr.setValue(vr.value.split(',')) : vr))
       }
 
       return {path: key, model}
     })
 
+    const typeName = startCase(child.model.spec.type)
+    // TODO: add format to name if it changes schema
+    const schemaName = `${typeName}Filters`
     children[child.path] = defaultModelContext
-      .object()
+      .create({
+        type: ModelType.Object,
+        strict: true,
+        children: filterChildren,
+        swagger: {schemaName},
+      })
       .coerce(parseQueryFilter)
-      .children(filterChildren)
-      .optional()
-      .strict()
   })
 
   return defaultModelContext

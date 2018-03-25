@@ -2,23 +2,11 @@ import {defaultModelContext, IModel, IModelChild, ModelType, NumberFormat} from 
 import {startCase} from 'lodash'
 import * as swagger from 'swagger-schema-official'
 import {ValidateIn} from '../typedefs'
-import {ISwaggerSchemaCache} from './typedefs'
+import {ISwaggerSchemaCache, SwaggerContext} from './typedefs'
 
-type SpecialCaseContext = 'schema' | 'parameters'
-
-// TODO: remove in favor of model.spec.swagger
-function transformSpecialCases(model: IModel, name: string, context?: SpecialCaseContext): IModel {
-  if (name === '$in' || name === '$nin') {
-    return defaultModelContext.string()
-  }
-
-  // TODO: replace with generic filter schema
-  if (
-    context === 'schema' &&
-    Array.isArray(model.spec.children) &&
-    model.spec.children.find(child => child.path === '$eq')
-  ) {
-    return model.spec.children.find(child => child.path === '$eq')!.model
+function transformSpecialCases(model: IModel, context: SwaggerContext): IModel {
+  if (model.spec.swagger && model.spec.swagger.alternateModel) {
+    return model.spec.swagger.alternateModel
   }
 
   return model
@@ -64,7 +52,7 @@ function buildObjectSchema(
   const children = (model.spec.children as IModelChild[]) || []
   for (const child of children) {
     const childName = startCase(child.path).replace(/ +/g, '')
-    const childModel = transformSpecialCases(child.model, child.path, 'schema')
+    const childModel = transformSpecialCases(child.model, SwaggerContext.Schema)
     schema.properties![child.path] = getSchema(childModel, cache, `${name}${childName}`)
     if (childModel.spec.required) {
       required.push(child.path)
@@ -135,18 +123,17 @@ function flattenQueryModel(model: IModel, path: string[] = []): IModelChild[] {
 
   if (!Array.isArray(children)) {
     const childPath = `${pathToQueryName(path)}[]`
-    const childModel = model.spec.children as IModel
-    // TODO: copy other spec settings from original model if complex
-    const childModelForQuery = isComplexType(childModel.spec.type)
-      ? defaultModelContext.string()
-      : childModel
-    return [{path: childPath, model: childModelForQuery}]
+    const childModel = transformSpecialCases(
+      model.spec.children as IModel,
+      SwaggerContext.Parameters,
+    )
+    return [{path: childPath, model: childModel}]
   }
 
   let flattened: IModelChild[] = []
   for (const child of children) {
     const childPath = [...path, child.path]
-    const childModel = transformSpecialCases(child.model, child.path)
+    const childModel = transformSpecialCases(child.model, SwaggerContext.Parameters)
     if (isComplexType(childModel.spec.type)) {
       const nested = flattenQueryModel(childModel, childPath)
       flattened = flattened.concat(nested)
@@ -163,6 +150,12 @@ export function getSchema(
   cache?: ISwaggerSchemaCache,
   name: string = 'Model',
 ): swagger.Schema {
+  model = transformSpecialCases(model, SwaggerContext.Schema)
+  if (model.spec.swagger) {
+    if (model.spec.swagger.inline) cache = undefined
+    if (model.spec.swagger.schemaName) name = model.spec.swagger.schemaName
+  }
+
   if (cache && cache.has(model)) {
     return {$ref: `#/definitions/${cache.get(model)!}`}
   }
@@ -195,6 +188,12 @@ export function getParameters(
 ): swagger.Parameter[] {
   if (!model) {
     return []
+  }
+
+  model = transformSpecialCases(model, SwaggerContext.Schema)
+  if (model.spec.swagger && model.spec.swagger.inline) {
+    cache = undefined
+    name = undefined
   }
 
   if (queryIn === ValidateIn.Body) {

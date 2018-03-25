@@ -4,6 +4,29 @@ exports[`lib/swagger/spec.ts #buildSpec should build a specification 1`] = `
 Object {
   "basePath": "/",
   "definitions": Object {
+    "BooleanFilters": Object {
+      "properties": Object {
+        "$eq": Object {
+          "type": "boolean",
+        },
+        "$in": Object {
+          "items": Object {
+            "type": "boolean",
+          },
+          "type": "array",
+        },
+        "$ne": Object {
+          "type": "boolean",
+        },
+        "$nin": Object {
+          "items": Object {
+            "type": "boolean",
+          },
+          "type": "array",
+        },
+      },
+      "type": "object",
+    },
     "CreateUserPayload": Object {
       "properties": Object {
         "age": Object {
@@ -62,36 +85,80 @@ Object {
       },
       "type": "array",
     },
-    "ListUsersPayload": Object {
+    "DateFilters": Object {
       "properties": Object {
-        "age": Object {
-          "format": "int64",
-          "type": "integer",
-        },
-        "createdAt": Object {
+        "$eq": Object {
           "format": "date-time",
           "type": "string",
         },
-        "email": Object {
-          "maxLength": 250,
+        "$gt": Object {
+          "format": "date-time",
           "type": "string",
+        },
+        "$gte": Object {
+          "format": "date-time",
+          "type": "string",
+        },
+        "$in": Object {
+          "items": Object {
+            "format": "date-time",
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "$lt": Object {
+          "format": "date-time",
+          "type": "string",
+        },
+        "$lte": Object {
+          "format": "date-time",
+          "type": "string",
+        },
+        "$ne": Object {
+          "format": "date-time",
+          "type": "string",
+        },
+        "$nin": Object {
+          "items": Object {
+            "format": "date-time",
+            "type": "string",
+          },
+          "type": "array",
+        },
+      },
+      "type": "object",
+    },
+    "DestroyUsersPayload": Object {
+      "items": Object {
+        "type": "string",
+      },
+      "type": "array",
+    },
+    "ListUsersPayload": Object {
+      "properties": Object {
+        "age": Object {
+          "$ref": "#/definitions/NumberFilters",
+        },
+        "createdAt": Object {
+          "$ref": "#/definitions/DateFilters",
+        },
+        "email": Object {
+          "$ref": "#/definitions/StringFilters",
         },
         "fields": Object {
-          "$ref": "#/definitions/ListUsersPayloadOrder",
+          "type": "string",
         },
         "firstName": Object {
-          "maxLength": 100,
-          "type": "string",
+          "$ref": "#/definitions/StringFilters",
         },
         "id": Object {
-          "type": "string",
+          "$ref": "#/definitions/StringFilters",
         },
         "isAdmin": Object {
-          "type": "boolean",
+          "$ref": "#/definitions/BooleanFilters",
         },
         "lastName": Object {
-          "maxLength": 100,
-          "type": "string",
+          "$ref": "#/definitions/StringFilters",
         },
         "limit": Object {
           "default": 10,
@@ -106,24 +173,69 @@ Object {
           "type": "integer",
         },
         "order": Object {
-          "$ref": "#/definitions/ListUsersPayloadOrder",
+          "type": "string",
         },
         "password": Object {
-          "maxLength": 32,
-          "type": "string",
+          "$ref": "#/definitions/StringFilters",
         },
         "updatedAt": Object {
-          "format": "date-time",
-          "type": "string",
+          "$ref": "#/definitions/DateFilters",
         },
       },
       "type": "object",
     },
-    "ListUsersPayloadOrder": Object {
-      "items": Object {
-        "type": "string",
+    "NumberFilters": Object {
+      "properties": Object {
+        "$eq": Object {
+          "format": "int64",
+          "type": "integer",
+        },
+        "$in": Object {
+          "items": Object {
+            "format": "int64",
+            "type": "integer",
+          },
+          "type": "array",
+        },
+        "$ne": Object {
+          "format": "int64",
+          "type": "integer",
+        },
+        "$nin": Object {
+          "items": Object {
+            "format": "int64",
+            "type": "integer",
+          },
+          "type": "array",
+        },
       },
-      "type": "array",
+      "type": "object",
+    },
+    "StringFilters": Object {
+      "properties": Object {
+        "$eq": Object {
+          "type": "string",
+        },
+        "$in": Object {
+          "items": Object {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "$match": Object {
+          "type": "string",
+        },
+        "$ne": Object {
+          "type": "string",
+        },
+        "$nin": Object {
+          "items": Object {
+            "type": "string",
+          },
+          "type": "array",
+        },
+      },
+      "type": "object",
     },
     "UpdateUserPayload": Object {
       "properties": Object {
@@ -318,6 +430,18 @@ Object {
           },
           Object {
             "in": "query",
+            "name": "order",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
             "name": "id[$eq]",
             "required": false,
             "type": "string",
@@ -336,13 +460,13 @@ Object {
           },
           Object {
             "in": "query",
-            "name": "id[$in]",
+            "name": "id[$in][]",
             "required": false,
             "type": "string",
           },
           Object {
             "in": "query",
-            "name": "id[$nin]",
+            "name": "id[$nin][]",
             "required": false,
             "type": "string",
           },
@@ -361,16 +485,18 @@ Object {
             "type": "integer",
           },
           Object {
+            "format": "int64",
             "in": "query",
-            "name": "age[$in]",
+            "name": "age[$in][]",
             "required": false,
-            "type": "string",
+            "type": "integer",
           },
           Object {
+            "format": "int64",
             "in": "query",
-            "name": "age[$nin]",
+            "name": "age[$nin][]",
             "required": false,
-            "type": "string",
+            "type": "integer",
           },
           Object {
             "in": "query",
@@ -386,26 +512,24 @@ Object {
           },
           Object {
             "in": "query",
-            "name": "isAdmin[$in]",
+            "name": "isAdmin[$in][]",
             "required": false,
-            "type": "string",
+            "type": "boolean",
           },
           Object {
             "in": "query",
-            "name": "isAdmin[$nin]",
+            "name": "isAdmin[$nin][]",
             "required": false,
-            "type": "string",
+            "type": "boolean",
           },
           Object {
             "in": "query",
-            "maxLength": 250,
             "name": "email[$eq]",
             "required": false,
             "type": "string",
           },
           Object {
             "in": "query",
-            "maxLength": 250,
             "name": "email[$ne]",
             "required": false,
             "type": "string",
@@ -418,26 +542,24 @@ Object {
           },
           Object {
             "in": "query",
-            "name": "email[$in]",
+            "name": "email[$in][]",
             "required": false,
             "type": "string",
           },
           Object {
             "in": "query",
-            "name": "email[$nin]",
+            "name": "email[$nin][]",
             "required": false,
             "type": "string",
           },
           Object {
             "in": "query",
-            "maxLength": 32,
             "name": "password[$eq]",
             "required": false,
             "type": "string",
           },
           Object {
             "in": "query",
-            "maxLength": 32,
             "name": "password[$ne]",
             "required": false,
             "type": "string",
@@ -450,26 +572,24 @@ Object {
           },
           Object {
             "in": "query",
-            "name": "password[$in]",
+            "name": "password[$in][]",
             "required": false,
             "type": "string",
           },
           Object {
             "in": "query",
-            "name": "password[$nin]",
+            "name": "password[$nin][]",
             "required": false,
             "type": "string",
           },
           Object {
             "in": "query",
-            "maxLength": 100,
             "name": "firstName[$eq]",
             "required": false,
             "type": "string",
           },
           Object {
             "in": "query",
-            "maxLength": 100,
             "name": "firstName[$ne]",
             "required": false,
             "type": "string",
@@ -482,26 +602,24 @@ Object {
           },
           Object {
             "in": "query",
-            "name": "firstName[$in]",
+            "name": "firstName[$in][]",
             "required": false,
             "type": "string",
           },
           Object {
             "in": "query",
-            "name": "firstName[$nin]",
+            "name": "firstName[$nin][]",
             "required": false,
             "type": "string",
           },
           Object {
             "in": "query",
-            "maxLength": 100,
             "name": "lastName[$eq]",
             "required": false,
             "type": "string",
           },
           Object {
             "in": "query",
-            "maxLength": 100,
             "name": "lastName[$ne]",
             "required": false,
             "type": "string",
@@ -514,13 +632,13 @@ Object {
           },
           Object {
             "in": "query",
-            "name": "lastName[$in]",
+            "name": "lastName[$in][]",
             "required": false,
             "type": "string",
           },
           Object {
             "in": "query",
-            "name": "lastName[$nin]",
+            "name": "lastName[$nin][]",
             "required": false,
             "type": "string",
           },
@@ -567,14 +685,16 @@ Object {
             "type": "string",
           },
           Object {
+            "format": "date-time",
             "in": "query",
-            "name": "createdAt[$in]",
+            "name": "createdAt[$in][]",
             "required": false,
             "type": "string",
           },
           Object {
+            "format": "date-time",
             "in": "query",
-            "name": "createdAt[$nin]",
+            "name": "createdAt[$nin][]",
             "required": false,
             "type": "string",
           },
@@ -621,14 +741,16 @@ Object {
             "type": "string",
           },
           Object {
+            "format": "date-time",
             "in": "query",
-            "name": "updatedAt[$in]",
+            "name": "updatedAt[$in][]",
             "required": false,
             "type": "string",
           },
           Object {
+            "format": "date-time",
             "in": "query",
-            "name": "updatedAt[$nin]",
+            "name": "updatedAt[$nin][]",
             "required": false,
             "type": "string",
           },
@@ -719,7 +841,7 @@ Object {
             "name": "body",
             "required": true,
             "schema": Object {
-              "$ref": "#/definitions/ListUsersPayloadOrder",
+              "$ref": "#/definitions/DestroyUsersPayload",
             },
           },
         ],

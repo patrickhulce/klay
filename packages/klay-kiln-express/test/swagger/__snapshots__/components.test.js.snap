@@ -119,14 +119,12 @@ Array [
   },
   Object {
     "in": "query",
-    "maxLength": 250,
     "name": "email[$eq]",
     "required": false,
     "type": "string",
   },
   Object {
     "in": "query",
-    "maxLength": 250,
     "name": "email[$ne]",
     "required": false,
     "type": "string",
@@ -139,14 +137,12 @@ Array [
   },
   Object {
     "in": "query",
-    "maxLength": 32,
     "name": "password[$eq]",
     "required": false,
     "type": "string",
   },
   Object {
     "in": "query",
-    "maxLength": 32,
     "name": "password[$ne]",
     "required": false,
     "type": "string",
@@ -159,14 +155,12 @@ Array [
   },
   Object {
     "in": "query",
-    "maxLength": 100,
     "name": "firstName[$eq]",
     "required": false,
     "type": "string",
   },
   Object {
     "in": "query",
-    "maxLength": 100,
     "name": "firstName[$ne]",
     "required": false,
     "type": "string",
@@ -179,14 +173,12 @@ Array [
   },
   Object {
     "in": "query",
-    "maxLength": 100,
     "name": "lastName[$eq]",
     "required": false,
     "type": "string",
   },
   Object {
     "in": "query",
-    "maxLength": 100,
     "name": "lastName[$ne]",
     "required": false,
     "type": "string",

@@ -1,6 +1,11 @@
 import {IModel} from 'klay-core'
 import {Path, Schema} from 'swagger-schema-official'
 
+export enum SwaggerContext {
+  Schema = 'schema',
+  Query = 'query',
+}
+
 export interface IKeyedSchema {
   [key: string]: Schema
 }
@@ -17,7 +22,8 @@ export interface ISwaggerSchemaCache {
 }
 
 export interface ISwaggerModelOptions {
+  schemaName?: string
   inline?: boolean
+  alternateModel?: IModel
   alternateQueryModel?: IModel
-  alternateBodyModel?: IModel
 }
