@@ -16,6 +16,7 @@ export class SwaggerSchemaCache implements ISwaggerSchemaCache {
     return !!this.get(model)
   }
 
+  // TODO: de-dupe swagger schemas if the output is identical
   public get(model: IModel): string | undefined {
     if (this._modelCache.has(model)) {
       return this._modelCache.get(model)

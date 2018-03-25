@@ -117,6 +117,7 @@ export interface IActionOptions extends IQuerifyOptions, IParamifyOptions {
 }
 
 export interface IActionRouteOptions extends IActionOptions {
+  actionName?: string
   type?: ActionType
   databaseExtension?: string
   middleware?: IAdditionalMiddleware
@@ -141,6 +142,7 @@ export interface IAuthorizationRequired {
 }
 
 export interface IRouteInput extends IModelSet {
+  actionName?: string
   handler: IAnontatedHandler
   lookupActionTarget?: IAnontatedHandler
   authorization?: IAuthorizationRequired

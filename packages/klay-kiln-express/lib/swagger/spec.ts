@@ -4,6 +4,7 @@ import {Spec} from 'swagger-schema-official'
 import {IRouter} from '../typedefs'
 import {SwaggerSchemaCache} from './cache'
 import {getSchema} from './components'
+import {buildPaths} from './paths'
 
 export function buildSpecification(kiln: IKiln, router: IRouter): Spec {
   const schemaCache = new SwaggerSchemaCache()
@@ -21,7 +22,7 @@ export function buildSpecification(kiln: IKiln, router: IRouter): Spec {
       title: 'Title',
       version: 'Version',
     },
-    paths: {},
+    paths: buildPaths(router, schemaCache),
     definitions: schemaCache.getUniqueSchemas(),
   }
 }
