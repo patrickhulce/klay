@@ -4,6 +4,22 @@ import * as swagger from 'swagger-schema-official'
 import {ValidateIn} from '../typedefs'
 import {ISwaggerSchemaCache} from './typedefs'
 
+type SpecialCaseContext = 'schema'|'parameters'
+
+// TODO: remove in favor of model.spec.swagger
+function transformSpecialCases(model: IModel, name: string, context?: SpecialCaseContext): IModel {
+  if (name === '$in' || name === '$nin') {
+    return defaultModelContext.string()
+  }
+
+  // TODO: replace with generic filter schema
+  if (context === 'schema' && Array.isArray(model.spec.children) && model.spec.children.find(child => child.path === '$eq')) {
+    return model.spec.children.find(child => child.path === '$eq')!.model
+  }
+
+  return model
+}
+
 function setIfDefined(schema: swagger.BaseSchema, key: keyof swagger.BaseSchema, value: any): void {
   if (typeof value !== 'undefined') {
     schema[key] = value
@@ -44,8 +60,9 @@ function buildObjectSchema(
   const children = (model.spec.children as IModelChild[]) || []
   for (const child of children) {
     const childName = startCase(child.path).replace(/ +/g, '')
-    schema.properties![child.path] = getSchema(child.model, cache, `${name}${childName}`)
-    if (child.model.spec.required) {
+    const childModel = transformSpecialCases(child.model, child.path)
+    schema.properties![child.path] = getSchema(childModel, cache, `${name}${childName}`)
+    if (childModel.spec.required) {
       required.push(child.path)
     }
   }
@@ -125,11 +142,12 @@ function flattenQueryModel(model: IModel, path: string[] = []): IModelChild[] {
   let flattened: IModelChild[] = []
   for (const child of children) {
     const childPath = [...path, child.path]
-    if (isComplexType(child.model.spec.type)) {
-      const nested = flattenQueryModel(child.model, childPath)
+    const childModel = transformSpecialCases(child.model, child.path)
+    if (isComplexType(childModel.spec.type)) {
+      const nested = flattenQueryModel(childModel, childPath)
       flattened = flattened.concat(nested)
     } else {
-      flattened.push({path: pathToQueryName(childPath), model: child.model})
+      flattened.push({path: pathToQueryName(childPath), model: childModel})
     }
   }
 
