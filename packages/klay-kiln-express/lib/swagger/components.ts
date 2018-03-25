@@ -1,4 +1,4 @@
-import {IModel, IModelChild, ModelType, NumberFormat} from 'klay-core'
+import {defaultModelContext, IModel, IModelChild, ModelType, NumberFormat} from 'klay-core'
 import {startCase} from 'lodash'
 import * as swagger from 'swagger-schema-official'
 import {ValidateIn} from '../typedefs'
@@ -19,9 +19,14 @@ function buildArraySchema(
   cache?: ISwaggerSchemaCache,
   name?: string,
 ): swagger.Schema {
+  // TODO: handle model.spec.swagger.alternateModel
+  const children = model.spec.children as IModel
+  const childrenForArray = children || defaultModelContext.string()
+
   return {
     type: 'array',
-    items: getSchema(model.spec.children as IModel, cache, `${name}Item`),
+    // TODO: handle model.spec.swagger.inline
+    items: getSchema(childrenForArray, cache, `${name}Item`),
   }
 }
 
@@ -103,14 +108,25 @@ function pathToQueryName(path: string[]): string {
   return name
 }
 
-function flattenModelForParameters(model: IModel, path: string[] = []): IModelChild[] {
-  let flattened: IModelChild[] = []
-
+function flattenQueryModel(model: IModel, path: string[] = []): IModelChild[] {
   const children = model.spec.children as IModelChild[]
+  if (!children) return []
+
+  if (!Array.isArray(children)) {
+    const childPath = `${pathToQueryName(path)}[]`
+    const childModel = model.spec.children as IModel
+    // TODO: copy other spec settings from original model if complex
+    const childModelForQuery = isComplexType(childModel.spec.type)
+      ? defaultModelContext.string()
+      : childModel
+    return [{path: childPath, model: childModelForQuery}]
+  }
+
+  let flattened: IModelChild[] = []
   for (const child of children) {
     const childPath = [...path, child.path]
     if (isComplexType(child.model.spec.type)) {
-      const nested = flattenModelForParameters(child.model, childPath)
+      const nested = flattenQueryModel(child.model, childPath)
       flattened = flattened.concat(nested)
     } else {
       flattened.push({path: pathToQueryName(childPath), model: child.model})
@@ -150,11 +166,15 @@ export function getSchema(
 }
 
 export function getParameters(
-  model: IModel,
+  model: IModel | undefined,
   queryIn: ValidateIn,
   cache?: ISwaggerSchemaCache,
   name?: string,
 ): swagger.Parameter[] {
+  if (!model) {
+    return []
+  }
+
   if (queryIn === ValidateIn.Body) {
     return [
       {
@@ -169,7 +189,7 @@ export function getParameters(
   const parameters: swagger.Parameter[] = []
 
   let children = model.spec.children as IModelChild[]
-  if (queryIn === ValidateIn.Query) children = flattenModelForParameters(model)
+  if (queryIn === ValidateIn.Query) children = flattenQueryModel(model)
   for (const child of children) {
     parameters.push({
       name: child.path,
