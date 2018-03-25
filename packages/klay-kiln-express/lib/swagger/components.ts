@@ -4,7 +4,7 @@ import * as swagger from 'swagger-schema-official'
 import {ValidateIn} from '../typedefs'
 import {ISwaggerSchemaCache} from './typedefs'
 
-type SpecialCaseContext = 'schema'|'parameters'
+type SpecialCaseContext = 'schema' | 'parameters'
 
 // TODO: remove in favor of model.spec.swagger
 function transformSpecialCases(model: IModel, name: string, context?: SpecialCaseContext): IModel {
@@ -13,7 +13,11 @@ function transformSpecialCases(model: IModel, name: string, context?: SpecialCas
   }
 
   // TODO: replace with generic filter schema
-  if (context === 'schema' && Array.isArray(model.spec.children) && model.spec.children.find(child => child.path === '$eq')) {
+  if (
+    context === 'schema' &&
+    Array.isArray(model.spec.children) &&
+    model.spec.children.find(child => child.path === '$eq')
+  ) {
     return model.spec.children.find(child => child.path === '$eq')!.model
   }
 
@@ -60,7 +64,7 @@ function buildObjectSchema(
   const children = (model.spec.children as IModelChild[]) || []
   for (const child of children) {
     const childName = startCase(child.path).replace(/ +/g, '')
-    const childModel = transformSpecialCases(child.model, child.path)
+    const childModel = transformSpecialCases(child.model, child.path, 'schema')
     schema.properties![child.path] = getSchema(childModel, cache, `${name}${childName}`)
     if (childModel.spec.required) {
       required.push(child.path)

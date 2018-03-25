@@ -4,6 +4,200 @@ exports[`lib/swagger/spec.ts #buildSpec should build a specification 1`] = `
 Object {
   "basePath": "/",
   "definitions": Object {
+    "CreateUserPayload": Object {
+      "properties": Object {
+        "age": Object {
+          "format": "int64",
+          "type": "integer",
+        },
+        "email": Object {
+          "maxLength": 250,
+          "type": "string",
+        },
+        "firstName": Object {
+          "maxLength": 100,
+          "type": "string",
+        },
+        "isAdmin": Object {
+          "type": "boolean",
+        },
+        "lastName": Object {
+          "maxLength": 100,
+          "type": "string",
+        },
+        "metadata": Object {
+          "$ref": "#/definitions/UserMetadata",
+        },
+        "password": Object {
+          "maxLength": 32,
+          "type": "string",
+        },
+        "tracking": Object {
+          "$ref": "#/definitions/CreateUserPayloadTracking",
+        },
+      },
+      "required": Array [
+        "age",
+        "isAdmin",
+        "email",
+        "password",
+        "firstName",
+        "lastName",
+        "tracking",
+      ],
+      "type": "object",
+    },
+    "CreateUserPayloadTracking": Object {
+      "properties": Object {
+        "lastVisit": Object {
+          "format": "date-time",
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "CreateUsersPayload": Object {
+      "items": Object {
+        "$ref": "#/definitions/CreateUserPayload",
+      },
+      "type": "array",
+    },
+    "ListUsersPayload": Object {
+      "properties": Object {
+        "age": Object {
+          "format": "int64",
+          "type": "integer",
+        },
+        "createdAt": Object {
+          "format": "date-time",
+          "type": "string",
+        },
+        "email": Object {
+          "maxLength": 250,
+          "type": "string",
+        },
+        "fields": Object {
+          "$ref": "#/definitions/ListUsersPayloadOrder",
+        },
+        "firstName": Object {
+          "maxLength": 100,
+          "type": "string",
+        },
+        "id": Object {
+          "type": "string",
+        },
+        "isAdmin": Object {
+          "type": "boolean",
+        },
+        "lastName": Object {
+          "maxLength": 100,
+          "type": "string",
+        },
+        "limit": Object {
+          "default": 10,
+          "format": "int32",
+          "maximum": 1000,
+          "type": "integer",
+        },
+        "offset": Object {
+          "default": 0,
+          "format": "int64",
+          "minimum": 0,
+          "type": "integer",
+        },
+        "order": Object {
+          "$ref": "#/definitions/ListUsersPayloadOrder",
+        },
+        "password": Object {
+          "maxLength": 32,
+          "type": "string",
+        },
+        "updatedAt": Object {
+          "format": "date-time",
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "ListUsersPayloadOrder": Object {
+      "items": Object {
+        "type": "string",
+      },
+      "type": "array",
+    },
+    "UpdateUserPayload": Object {
+      "properties": Object {
+        "age": Object {
+          "format": "int64",
+          "type": "integer",
+        },
+        "createdAt": Object {
+          "format": "date-time",
+          "type": "string",
+        },
+        "email": Object {
+          "maxLength": 250,
+          "type": "string",
+        },
+        "firstName": Object {
+          "maxLength": 100,
+          "type": "string",
+        },
+        "id": Object {
+          "type": "string",
+        },
+        "isAdmin": Object {
+          "type": "boolean",
+        },
+        "lastName": Object {
+          "maxLength": 100,
+          "type": "string",
+        },
+        "metadata": Object {
+          "$ref": "#/definitions/UserMetadata",
+        },
+        "password": Object {
+          "maxLength": 32,
+          "type": "string",
+        },
+        "tracking": Object {
+          "$ref": "#/definitions/UpdateUserPayloadTracking",
+        },
+        "updatedAt": Object {
+          "format": "date-time",
+          "type": "string",
+        },
+      },
+      "required": Array [
+        "id",
+        "age",
+        "isAdmin",
+        "email",
+        "password",
+        "firstName",
+        "lastName",
+        "tracking",
+      ],
+      "type": "object",
+    },
+    "UpdateUserPayloadTracking": Object {
+      "properties": Object {
+        "lastVisit": Object {
+          "format": "date-time",
+          "type": "string",
+        },
+        "trackingId": Object {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "UpdateUsersPayload": Object {
+      "items": Object {
+        "$ref": "#/definitions/UpdateUserPayload",
+      },
+      "type": "array",
+    },
     "User": Object {
       "properties": Object {
         "age": Object {
@@ -86,7 +280,498 @@ Object {
     "title": "Title",
     "version": "Version",
   },
-  "paths": Object {},
+  "paths": Object {
+    "/": Object {
+      "delete": Object {
+        "parameters": Array [
+          Object {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": Object {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": Object {},
+        "summary": "DestroyUser",
+      },
+      "get": Object {
+        "parameters": Array [
+          Object {
+            "default": 10,
+            "format": "int32",
+            "in": "query",
+            "maximum": 1000,
+            "name": "limit",
+            "required": false,
+            "type": "integer",
+          },
+          Object {
+            "default": 0,
+            "format": "int64",
+            "in": "query",
+            "minimum": 0,
+            "name": "offset",
+            "required": false,
+            "type": "integer",
+          },
+          Object {
+            "in": "query",
+            "name": "id[$eq]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "id[$ne]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "id[$match]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "id[$in]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "id[$nin]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "int64",
+            "in": "query",
+            "name": "age[$eq]",
+            "required": false,
+            "type": "integer",
+          },
+          Object {
+            "format": "int64",
+            "in": "query",
+            "name": "age[$ne]",
+            "required": false,
+            "type": "integer",
+          },
+          Object {
+            "in": "query",
+            "name": "age[$in]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "age[$nin]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "isAdmin[$eq]",
+            "required": false,
+            "type": "boolean",
+          },
+          Object {
+            "in": "query",
+            "name": "isAdmin[$ne]",
+            "required": false,
+            "type": "boolean",
+          },
+          Object {
+            "in": "query",
+            "name": "isAdmin[$in]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "isAdmin[$nin]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "maxLength": 250,
+            "name": "email[$eq]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "maxLength": 250,
+            "name": "email[$ne]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "email[$match]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "email[$in]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "email[$nin]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "maxLength": 32,
+            "name": "password[$eq]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "maxLength": 32,
+            "name": "password[$ne]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "password[$match]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "password[$in]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "password[$nin]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "maxLength": 100,
+            "name": "firstName[$eq]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "maxLength": 100,
+            "name": "firstName[$ne]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "firstName[$match]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "firstName[$in]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "firstName[$nin]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "maxLength": 100,
+            "name": "lastName[$eq]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "maxLength": 100,
+            "name": "lastName[$ne]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "lastName[$match]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "lastName[$in]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "lastName[$nin]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "date-time",
+            "in": "query",
+            "name": "createdAt[$eq]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "date-time",
+            "in": "query",
+            "name": "createdAt[$ne]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "date-time",
+            "in": "query",
+            "name": "createdAt[$lt]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "date-time",
+            "in": "query",
+            "name": "createdAt[$gt]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "date-time",
+            "in": "query",
+            "name": "createdAt[$gte]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "date-time",
+            "in": "query",
+            "name": "createdAt[$lte]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "createdAt[$in]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "createdAt[$nin]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "date-time",
+            "in": "query",
+            "name": "updatedAt[$eq]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "date-time",
+            "in": "query",
+            "name": "updatedAt[$ne]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "date-time",
+            "in": "query",
+            "name": "updatedAt[$lt]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "date-time",
+            "in": "query",
+            "name": "updatedAt[$gt]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "date-time",
+            "in": "query",
+            "name": "updatedAt[$gte]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "format": "date-time",
+            "in": "query",
+            "name": "updatedAt[$lte]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "updatedAt[$in]",
+            "required": false,
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "updatedAt[$nin]",
+            "required": false,
+            "type": "string",
+          },
+        ],
+        "responses": Object {},
+        "summary": "ListUsers",
+      },
+      "post": Object {
+        "parameters": Array [
+          Object {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": Object {
+              "$ref": "#/definitions/CreateUserPayload",
+            },
+          },
+        ],
+        "responses": Object {},
+        "summary": "CreateUser",
+      },
+      "put": Object {
+        "parameters": Array [
+          Object {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": Object {
+              "$ref": "#/definitions/UpdateUserPayload",
+            },
+          },
+        ],
+        "responses": Object {},
+        "summary": "UpdateUser",
+      },
+    },
+    "/:id": Object {
+      "delete": Object {
+        "parameters": Array [
+          Object {
+            "in": "params",
+            "name": "id",
+            "required": true,
+            "type": "string",
+          },
+        ],
+        "responses": Object {},
+        "summary": "DestroyUser",
+      },
+      "get": Object {
+        "parameters": Array [
+          Object {
+            "in": "params",
+            "name": "id",
+            "required": true,
+            "type": "string",
+          },
+        ],
+        "responses": Object {},
+        "summary": "ReadUser",
+      },
+      "put": Object {
+        "parameters": Array [
+          Object {
+            "in": "params",
+            "name": "id",
+            "required": true,
+            "type": "string",
+          },
+          Object {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": Object {
+              "$ref": "#/definitions/UpdateUserPayload",
+            },
+          },
+        ],
+        "responses": Object {},
+        "summary": "UpdateUser",
+      },
+    },
+    "/bulk": Object {
+      "delete": Object {
+        "parameters": Array [
+          Object {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": Object {
+              "$ref": "#/definitions/ListUsersPayloadOrder",
+            },
+          },
+        ],
+        "responses": Object {},
+        "summary": "DestroyUsers",
+      },
+      "post": Object {
+        "parameters": Array [
+          Object {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": Object {
+              "$ref": "#/definitions/CreateUsersPayload",
+            },
+          },
+        ],
+        "responses": Object {},
+        "summary": "CreateUsers",
+      },
+      "put": Object {
+        "parameters": Array [
+          Object {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": Object {
+              "$ref": "#/definitions/UpdateUsersPayload",
+            },
+          },
+        ],
+        "responses": Object {},
+        "summary": "UpdateUsers",
+      },
+    },
+    "/search": Object {
+      "post": Object {
+        "parameters": Array [
+          Object {
+            "in": "body",
+            "name": "body",
+            "required": false,
+            "schema": Object {
+              "$ref": "#/definitions/ListUsersPayload",
+            },
+          },
+        ],
+        "responses": Object {},
+        "summary": "ListUsers",
+      },
+    },
+  },
   "produces": Array [
     "application/json",
   ],
