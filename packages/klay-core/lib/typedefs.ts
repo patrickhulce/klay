@@ -4,6 +4,8 @@ export interface IModelContext {
   use(extension: IKlayExtension): IModelContext
   reset(): void
 
+  create(spec?: IModelSpecification): IModel
+
   any(): IModel
   boolean(): IModel
   number(): IModel

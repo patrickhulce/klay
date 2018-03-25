@@ -4,6 +4,7 @@ import {
   IKlayExtension,
   IModel,
   IModelContext,
+  IModelSpecification,
   IValidatorOptions,
 } from './typedefs'
 import {ValidatorOptions} from './validator-options'
@@ -70,8 +71,10 @@ export class ModelContext {
     return modelContext
   }
 
-  public create(): IModel {
-    return new Model({}, this._options)
+  public create(spec?: IModelSpecification): IModel {
+    const model = new Model({}, this._options)
+    if (spec) model.spec = spec
+    return model
   }
 
   public static create(): IModelContext {

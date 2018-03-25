@@ -20,6 +20,8 @@ describe('lib/model-context.ts', () => {
       expect(model.spec).toMatchObject({type: 'string', format: 'credit-card'})
       model = context.unixTimestamp()
       expect(model.spec).toMatchObject({type: 'date', format: 'unix-timestamp'})
+      model = context.create({type: 'string', format: 'alphanumeric'})
+      expect(model.spec).toMatchObject({type: 'string', format: 'alphanumeric'})
     })
   })
 
@@ -72,6 +74,14 @@ describe('lib/model-context.ts', () => {
       context.reset()
       expect(typeof context.string).toBe('function')
       expect(typeof context.myType).not.toBe('function')
+    })
+  })
+
+  describe('.create', () => {
+    it('overrides defaults', () => {
+      const context = ModelContext.create().use({defaults: {required: true}})
+      const model = context.create({type: 'string', required: false})
+      expect(model.spec).toMatchObject({type: 'string', required: false})
     })
   })
 })
