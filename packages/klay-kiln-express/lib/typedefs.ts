@@ -2,6 +2,7 @@ import * as express from 'express'
 import {IModel} from 'klay-core'
 import {IDatabaseExecutor, IQueryOrder} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
+import {AuthCriteriaProperties, AuthCriteriaValue, IGrants} from './auth/typedefs'
 
 declare module 'express-serve-static-core' {
   /* tslint:disable */
@@ -188,38 +189,10 @@ export interface IRouterMap {
 }
 
 /* Auth */
-export type AuthCriteriaProperties = string[]
+export * from './auth/typedefs'
 
-export type AuthCriteriaValue = string | number | boolean
-
-export interface IGrantTemplate {
-  permission: string
-  criteria: AuthCriteriaProperties | string
-}
-
-export interface IAuthRoles {
-  [role: string]: IGrantTemplate[]
-}
-
-export interface IAuthPermissions {
-  [permission: string]: string[]
-}
-
-export interface IAuthConfiguration {
-  roles: IAuthRoles
-  permissions: IAuthPermissions
-  getUserContext?(req: express.Request): any
-  getRole?(userContext: any, req: express.Request): string | undefined
-}
-
-export interface IAuthCriteria {
-  [criteriaProperty: string]: AuthCriteriaValue
-}
-
-export interface IGrants {
-  role?: string
-  has(permission: string, criteria?: IAuthCriteria): boolean
-}
+/* Swagger */
+export * from './swagger/typedefs'
 
 /* Constants */
 export const DEFAULT_DATABASE_EXTENSION = 'sql'
