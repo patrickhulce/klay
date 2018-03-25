@@ -1,8 +1,8 @@
+import {entries, groupBy, startCase} from 'lodash'
 import * as swagger from 'swagger-schema-official'
-import {IRouterRoute, IRouter, ValidateIn, IActionRouteOptions, ActionType} from '../typedefs'
-import {IKeyedPaths, ISwaggerSchemaCache} from './typedefs'
-import {groupBy, entries, startCase} from 'lodash'
+import {ActionType, IActionRouteOptions, IRouter, IRouterRoute, ValidateIn} from '../typedefs'
 import {getParameters} from './components'
+import {IKeyedPaths, ISwaggerSchemaCache} from './typedefs'
 
 function getDefaultName(route: IRouterRoute): string {
   const singular = startCase(route.kilnModel.name)
@@ -16,7 +16,7 @@ function getDefaultName(route: IRouterRoute): string {
 
 function buildOperation(route: IRouterRoute, cache?: ISwaggerSchemaCache): swagger.Operation {
   const name = route.options.actionName || getDefaultName(route)
-  const programmaticName = name.replace(/ /g, '') + 'Payload'
+  const programmaticName = `${name.replace(/ /g, '')}Payload`
 
   return {
     summary: name,

@@ -1,5 +1,5 @@
 import {IModel} from 'klay-core'
-import {Schema, Path} from 'swagger-schema-official'
+import {Path, Schema} from 'swagger-schema-official'
 
 export interface IKeyedSchema {
   [key: string]: Schema

@@ -12,7 +12,7 @@ describe('lib/swagger/spec.ts', () => {
   describe('#buildSpec', () => {
     it('should build a specification', () => {
       const routerOpts = {
-        routes: CRUD_ROUTES
+        routes: CRUD_ROUTES,
       }
 
       const router = kiln.build('user', 'express-router', routerOpts)
