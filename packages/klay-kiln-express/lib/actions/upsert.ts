@@ -26,7 +26,7 @@ export const upsertAction: IAction = {
     options: IActionOptions,
     executor: IDatabaseExecutor,
   ): IAnontatedHandler {
-    // TODO: properly handle actionTarget
+    // TODO: properly handle actionTarget and permissions
     return function(req: Request, res: Response, next: NextFunction): void {
       const payload = req.validated!.body
       res.promise = options.byList ? executor.upsertAll(payload) : executor.upsert(payload)

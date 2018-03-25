@@ -27,13 +27,11 @@ function buildArraySchema(
   cache?: ISwaggerSchemaCache,
   name?: string,
 ): swagger.Schema {
-  // TODO: handle model.spec.swagger.alternateModel
   const children = model.spec.children as IModel
   const childrenForArray = children || defaultModelContext.string()
 
   return {
     type: 'array',
-    // TODO: handle model.spec.swagger.inline
     items: getSchema(childrenForArray, cache, `${name}Item`),
   }
 }
@@ -125,7 +123,7 @@ function flattenQueryModel(model: IModel, path: string[] = []): IModelChild[] {
     const childPath = `${pathToQueryName(path)}[]`
     const childModel = transformSpecialCases(
       model.spec.children as IModel,
-      SwaggerContext.Parameters,
+      SwaggerContext.Query,
     )
     return [{path: childPath, model: childModel}]
   }
@@ -133,7 +131,7 @@ function flattenQueryModel(model: IModel, path: string[] = []): IModelChild[] {
   let flattened: IModelChild[] = []
   for (const child of children) {
     const childPath = [...path, child.path]
-    const childModel = transformSpecialCases(child.model, SwaggerContext.Parameters)
+    const childModel = transformSpecialCases(child.model, SwaggerContext.Query)
     if (isComplexType(childModel.spec.type)) {
       const nested = flattenQueryModel(childModel, childPath)
       flattened = flattened.concat(nested)
