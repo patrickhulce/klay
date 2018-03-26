@@ -227,4 +227,31 @@ describe('lib/helpers/create-middleware.ts', () => {
       expect(next.mock.calls[2][0]).toBeInstanceOf(Error)
     })
   })
+
+  describe('#createSwaggerSpecHandler', () => {
+    let req, res, json, getHeader
+    const createHandler = middlewareModule.createSwaggerSpecHandler
+
+    beforeEach(() => {
+      getHeader = jest.fn()
+      json = jest.fn()
+      req = {get: getHeader}
+      res = {json}
+    })
+
+    it('should return swagger spec', () => {
+      const spec = {info: {title: 'Hello', version: 'v1'}}
+      const handler = createHandler(spec)
+      handler(req, res)
+      expect(json.mock.calls[0][0]).toEqual(spec)
+    })
+
+    it('should override base path', () => {
+      const spec = {info: {title: 'Hello', version: 'v1'}}
+      const handler = createHandler(spec, {autofillBasePath: true})
+      req.originalUrl = '/v1/swagger-spec_v1.json?foo=bar'
+      handler(req, res)
+      expect(json.mock.calls[0][0]).toMatchObject({basePath: '/v1'})
+    })
+  })
 })

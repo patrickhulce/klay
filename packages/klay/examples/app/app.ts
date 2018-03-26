@@ -16,6 +16,9 @@ import {
   IDatabaseExecutor,
   IRouterMap,
   createAndMergeRouters,
+  createSwaggerSpecHandler,
+  createSwaggerUIHandler,
+  buildSwaggerSpecification,
 } from '../../lib'
 import {Permissions, configuration as authConf, AuthRoles} from './auth'
 import {modelContext} from './model-context'
@@ -89,15 +92,32 @@ const routerMap: IRouterMap = {
       'PUT /:id': {type: ActionType.Update},
       'DELETE /:id': {type: ActionType.Destroy},
     },
-  }
+  },
 }
+
+const mergedRoutes = createAndMergeRouters(kiln, routerMap)
+const swagger = buildSwaggerSpecification(kiln, mergedRoutes, {
+  info: {
+    title: 'Klay Example',
+    version: 'v1',
+  },
+})
 
 export const app: express.Express = express()
 if (typeof (global as any).it === 'undefined') app.use(logger('short'))
 app.use(json({strict: false}))
 app.use(cookies())
 app.use(authenticate(authConf))
-app.use(createAndMergeRouters(kiln, routerMap).router)
+app.get(
+  '/v1/swagger.json',
+  createSwaggerSpecHandler(swagger, {autofillBasePath: true, autofillHost: true}),
+)
+app.get(
+  '/v1/docs',
+  createSwaggerUIHandler(swagger, '/v1/swagger.json')
+)
+
+app.use(mergedRoutes.router)
 app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (!res.promise) return next()
 
@@ -125,7 +145,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
       break
     case 'ConstraintError':
       status = 400
-       // TODO: convert ConstraintError to same JSON format
+      // TODO: convert ConstraintError to same JSON format
       body = pick(err, ['name', 'message', 'propertyPath', 'type'])
       break
     case 'AuthenticationError':

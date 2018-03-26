@@ -107,6 +107,11 @@ export interface IValidationMiddlewareOptions {
   allowedAsList?: boolean
 }
 
+export interface ISwaggerSpecMiddlewareOptions {
+  autofillHost?: boolean
+  autofillBasePath?: boolean
+}
+
 export interface IQuerifyOptions {
   strict?: boolean
   allowQueryByEquality?: boolean | string[][]

@@ -1,9 +1,9 @@
+import {IModel} from 'klay-core'
 import {entries, groupBy, startCase} from 'lodash'
 import * as swagger from 'swagger-schema-official'
 import {ActionType, IActionRouteOptions, IRouter, IRouterRoute, ValidateIn} from '../typedefs'
 import {getParameters, getSchema} from './components'
 import {IKeyedPaths, ISwaggerSchemaCache} from './typedefs'
-import { IModel } from 'klay-core';
 
 function getDefaultName(route: IRouterRoute): string {
   const singular = startCase(route.kilnModel.name)
@@ -15,8 +15,12 @@ function getDefaultName(route: IRouterRoute): string {
     : `${action} ${singular}`
 }
 
-function getSuccessResponse(name: string, responseModel?: IModel, cache?: ISwaggerSchemaCache): swagger.Response {
-  let schema: swagger.Schema | undefined = undefined
+function getSuccessResponse(
+  name: string,
+  responseModel?: IModel,
+  cache?: ISwaggerSchemaCache,
+): swagger.Response {
+  let schema: swagger.Schema | undefined
   if (responseModel) {
     schema = getSchema(responseModel, cache, `${name.replace(/ /g, '')}Response`)
   }

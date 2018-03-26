@@ -1,6 +1,7 @@
 /* tslint:disable no-unsafe-any */
 import {NextFunction, Request, Response} from 'express'
 import {defaultModelContext, IModel} from 'klay-core'
+import {Spec as SwaggerSpec} from 'swagger-schema-official'
 import {AuthenticationError} from '../auth/authentication-error'
 import {AuthorizationError} from '../auth/authorization-error'
 import {Grants} from '../auth/grants'
@@ -9,6 +10,7 @@ import {
   IAuthConfiguration,
   IAuthCriteria,
   IAuthorizationRequired,
+  ISwaggerSpecMiddlewareOptions,
   IValidationMiddlewareOptions,
   ValidateIn,
 } from '../typedefs'
@@ -76,5 +78,61 @@ export function createGrantValidationMiddleware(auth: IAuthorizationRequired): I
     }
 
     next(new AuthorizationError(auth.permission, req.grants))
+  }
+}
+
+export function createSwaggerUIHandler(spec: SwaggerSpec, swaggerPath: string): IAnontatedHandler {
+  return function(req: Request, res: Response): void {
+    const cdn = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.13.1'
+    res.set('content-type', 'text/html')
+    res.send(`
+      <html>
+      <head>
+        <title>${spec.info.title} API Documentation</title>
+        <link rel="stylesheet" type="text/css" href="${cdn}/swagger-ui.css">
+      </head>
+      <body>
+        <div id="swagger-ui"></div>
+        <script src="${cdn}/swagger-ui-bundle.js"></script>
+        <script src="${cdn}/swagger-ui-standalone-preset.js"></script>
+        <script>
+          window.onload = function () {
+            window.ui = SwaggerUIBundle({
+              url: "${swaggerPath}",
+              dom_id: '#swagger-ui',
+              deepLinking: true,
+              presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+              ],
+              plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+              ],
+              layout: "StandaloneLayout"
+            })
+          }
+        </script>
+    `)
+    res.end()
+  }
+}
+
+export function createSwaggerSpecHandler(
+  rootSpec: SwaggerSpec,
+  options?: ISwaggerSpecMiddlewareOptions,
+): IAnontatedHandler {
+  return function(req: Request, res: Response): void {
+    let spec = rootSpec
+
+    if (options && options.autofillBasePath) {
+      spec = {...rootSpec, basePath: req.originalUrl.replace(/\/[^\/]+$/i, '')}
+    }
+
+    const host = req.get('host')
+    if (options && options.autofillHost && host) {
+      spec = {...rootSpec, host}
+    }
+
+    res.json(spec)
   }
 }

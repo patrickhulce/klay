@@ -1,3 +1,4 @@
+import {defaultModelContext} from 'klay-core'
 import {IKiln} from 'klay-kiln'
 import {startCase} from 'lodash'
 import {Spec} from 'swagger-schema-official'
@@ -5,9 +6,8 @@ import {IRouter} from '../typedefs'
 import {SwaggerSchemaCache} from './cache'
 import {getSchema} from './components'
 import {buildPaths} from './paths'
-import {defaultModelContext} from 'klay-core'
 
-export function buildSpecification(kiln: IKiln, router: IRouter): Spec {
+export function buildSpecification(kiln: IKiln, router: IRouter, overrides?: Partial<Spec>): Spec {
   const schemaCache = new SwaggerSchemaCache()
   for (const kilnModel of kiln.getModels()) {
     const arrayModel = defaultModelContext.array().children(kilnModel.model)
@@ -27,5 +27,6 @@ export function buildSpecification(kiln: IKiln, router: IRouter): Spec {
     },
     paths: buildPaths(router, schemaCache),
     definitions: schemaCache.getUniqueSchemas(),
+    ...overrides,
   }
 }
