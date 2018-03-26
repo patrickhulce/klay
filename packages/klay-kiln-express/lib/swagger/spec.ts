@@ -5,11 +5,14 @@ import {IRouter} from '../typedefs'
 import {SwaggerSchemaCache} from './cache'
 import {getSchema} from './components'
 import {buildPaths} from './paths'
+import {defaultModelContext} from 'klay-core'
 
 export function buildSpecification(kiln: IKiln, router: IRouter): Spec {
   const schemaCache = new SwaggerSchemaCache()
   for (const kilnModel of kiln.getModels()) {
+    const arrayModel = defaultModelContext.array().children(kilnModel.model)
     getSchema(kilnModel.model, schemaCache, startCase(kilnModel.name))
+    getSchema(arrayModel, schemaCache, `${startCase(kilnModel.meta.plural)}List`)
   }
 
   return {

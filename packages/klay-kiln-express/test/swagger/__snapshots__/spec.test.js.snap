@@ -184,6 +184,22 @@ Object {
       },
       "type": "object",
     },
+    "ListUsersResponse": Object {
+      "properties": Object {
+        "data": Object {
+          "$ref": "#/definitions/UsersList",
+        },
+        "total": Object {
+          "format": "int64",
+          "type": "integer",
+        },
+      },
+      "required": Array [
+        "data",
+        "total",
+      ],
+      "type": "object",
+    },
     "NumberFilters": Object {
       "properties": Object {
         "$eq": Object {
@@ -386,6 +402,12 @@ Object {
       ],
       "type": "object",
     },
+    "UsersList": Object {
+      "items": Object {
+        "$ref": "#/definitions/User",
+      },
+      "type": "array",
+    },
   },
   "host": "localhost",
   "info": Object {
@@ -405,8 +427,13 @@ Object {
             },
           },
         ],
-        "responses": Object {},
-        "summary": "DestroyUser",
+        "responses": Object {
+          "204": Object {
+            "description": "Destroy User was successful",
+            "schema": undefined,
+          },
+        },
+        "summary": "Destroy User",
       },
       "get": Object {
         "parameters": Array [
@@ -755,8 +782,15 @@ Object {
             "type": "string",
           },
         ],
-        "responses": Object {},
-        "summary": "ListUsers",
+        "responses": Object {
+          "200": Object {
+            "description": "List Users was successful",
+            "schema": Object {
+              "$ref": "#/definitions/ListUsersResponse",
+            },
+          },
+        },
+        "summary": "List Users",
       },
       "post": Object {
         "parameters": Array [
@@ -769,8 +803,15 @@ Object {
             },
           },
         ],
-        "responses": Object {},
-        "summary": "CreateUser",
+        "responses": Object {
+          "200": Object {
+            "description": "Create User was successful",
+            "schema": Object {
+              "$ref": "#/definitions/User",
+            },
+          },
+        },
+        "summary": "Create User",
       },
       "put": Object {
         "parameters": Array [
@@ -783,8 +824,15 @@ Object {
             },
           },
         ],
-        "responses": Object {},
-        "summary": "UpdateUser",
+        "responses": Object {
+          "200": Object {
+            "description": "Update User was successful",
+            "schema": Object {
+              "$ref": "#/definitions/User",
+            },
+          },
+        },
+        "summary": "Update User",
       },
     },
     "/:id": Object {
@@ -797,8 +845,13 @@ Object {
             "type": "string",
           },
         ],
-        "responses": Object {},
-        "summary": "DestroyUser",
+        "responses": Object {
+          "204": Object {
+            "description": "Destroy User was successful",
+            "schema": undefined,
+          },
+        },
+        "summary": "Destroy User",
       },
       "get": Object {
         "parameters": Array [
@@ -809,8 +862,15 @@ Object {
             "type": "string",
           },
         ],
-        "responses": Object {},
-        "summary": "ReadUser",
+        "responses": Object {
+          "200": Object {
+            "description": "Read User was successful",
+            "schema": Object {
+              "$ref": "#/definitions/User",
+            },
+          },
+        },
+        "summary": "Read User",
       },
       "put": Object {
         "parameters": Array [
@@ -829,8 +889,15 @@ Object {
             },
           },
         ],
-        "responses": Object {},
-        "summary": "UpdateUser",
+        "responses": Object {
+          "200": Object {
+            "description": "Update User was successful",
+            "schema": Object {
+              "$ref": "#/definitions/User",
+            },
+          },
+        },
+        "summary": "Update User",
       },
     },
     "/bulk": Object {
@@ -845,8 +912,13 @@ Object {
             },
           },
         ],
-        "responses": Object {},
-        "summary": "DestroyUsers",
+        "responses": Object {
+          "204": Object {
+            "description": "Destroy Users was successful",
+            "schema": undefined,
+          },
+        },
+        "summary": "Destroy Users",
       },
       "post": Object {
         "parameters": Array [
@@ -859,8 +931,15 @@ Object {
             },
           },
         ],
-        "responses": Object {},
-        "summary": "CreateUsers",
+        "responses": Object {
+          "200": Object {
+            "description": "Create Users was successful",
+            "schema": Object {
+              "$ref": "#/definitions/UsersList",
+            },
+          },
+        },
+        "summary": "Create Users",
       },
       "put": Object {
         "parameters": Array [
@@ -873,8 +952,15 @@ Object {
             },
           },
         ],
-        "responses": Object {},
-        "summary": "UpdateUsers",
+        "responses": Object {
+          "200": Object {
+            "description": "Update Users was successful",
+            "schema": Object {
+              "$ref": "#/definitions/UsersList",
+            },
+          },
+        },
+        "summary": "Update Users",
       },
     },
     "/search": Object {
@@ -889,8 +975,15 @@ Object {
             },
           },
         ],
-        "responses": Object {},
-        "summary": "ListUsers",
+        "responses": Object {
+          "200": Object {
+            "description": "List Users was successful",
+            "schema": Object {
+              "$ref": "#/definitions/ListUsersResponse",
+            },
+          },
+        },
+        "summary": "List Users",
       },
     },
   },
