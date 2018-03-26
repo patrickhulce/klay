@@ -98,7 +98,7 @@ export function createSwaggerUIHandler(spec: SwaggerSpec, swaggerPath: string): 
         <script>
           window.onload = function () {
             window.ui = SwaggerUIBundle({
-              url: "${swaggerPath}",
+              url: new URL("${swaggerPath}", window.location.href).href,
               dom_id: '#swagger-ui',
               deepLinking: true,
               presets: [
@@ -121,15 +121,17 @@ export function createSwaggerSpecHandler(
   rootSpec: SwaggerSpec,
   options?: ISwaggerSpecMiddlewareOptions,
 ): IAnontatedHandler {
+  const {autofillBasePath = true, autofillHost = true} = options || {}
+
   return function(req: Request, res: Response): void {
     let spec = rootSpec
 
-    if (options && options.autofillBasePath) {
+    if (autofillBasePath) {
       spec = {...rootSpec, basePath: req.originalUrl.replace(/\/[^\/]+$/i, '')}
     }
 
     const host = req.get('host')
-    if (options && options.autofillHost && host) {
+    if (autofillHost && host) {
       spec = {...rootSpec, host}
     }
 

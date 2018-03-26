@@ -95,29 +95,12 @@ const routerMap: IRouterMap = {
   },
 }
 
-const mergedRoutes = createAndMergeRouters(kiln, routerMap)
-const swagger = buildSwaggerSpecification(kiln, mergedRoutes, {
-  info: {
-    title: 'Klay Example',
-    version: 'v1',
-  },
-})
-
 export const app: express.Express = express()
 if (typeof (global as any).it === 'undefined') app.use(logger('short'))
 app.use(json({strict: false}))
 app.use(cookies())
 app.use(authenticate(authConf))
-app.get(
-  '/v1/swagger.json',
-  createSwaggerSpecHandler(swagger, {autofillBasePath: true, autofillHost: true}),
-)
-app.get(
-  '/v1/docs',
-  createSwaggerUIHandler(swagger, '/v1/swagger.json')
-)
-
-app.use(mergedRoutes.router)
+app.use(createAndMergeRouters(kiln, routerMap).router)
 app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (!res.promise) return next()
 
