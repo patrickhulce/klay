@@ -28,7 +28,7 @@ before_script:
 script:
   - yarn build
   - yarn test:lint
-  - yarn test:unit --coverage
+  - yarn test:unit --coverage --runInBand --verbose
 after_success:
   - cat coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
   - yarn build:docs
