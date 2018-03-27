@@ -6,7 +6,7 @@ import * as Sequelize from 'sequelize'
 import * as constraints from './constraints'
 import {forEachColumn, getFlattenedPath} from './serialization'
 
-function getSequelizeType(model: IModel): Sequelize.DataTypeAbstract {
+export function getSequelizeType(model: IModel): Sequelize.DataTypeAbstract {
   const type = model.spec.type
   const format = model.spec.format
 
@@ -34,7 +34,7 @@ function getSequelizeType(model: IModel): Sequelize.DataTypeAbstract {
   }
 }
 
-function getIndexes(model: IModel): Sequelize.DefineIndexesOptions[] {
+function getIndexes(model: IModel, tableName: string): Sequelize.DefineIndexesOptions[] {
   const db = model.spec.db
   if (!db) {
     return []
@@ -47,18 +47,31 @@ function getIndexes(model: IModel): Sequelize.DefineIndexesOptions[] {
       continue
     }
 
-    indexes.push({unique: true, fields: constraint.properties.map(getFlattenedPath)})
+    const name = constraint.name.replace(/[^a-z0-9_]+/gi, '_').toLowerCase()
+    indexes.push({
+      name: `${tableName}_${name}`,
+      unique: true,
+      fields: constraint.properties.map(getFlattenedPath),
+    })
   }
 
   for (const index of db.index) {
+    const fields = index.map(item => ({
+      attribute: getFlattenedPath(item.property),
+      order: item.direction.toUpperCase(),
+      collate: undefined as any,
+      length: undefined as any,
+    }))
+
+    const name = fields
+      .map(field => `${field.attribute}_${field.order}`)
+      .join('__')
+      .toLowerCase()
+
     indexes.push({
+      name: `${tableName}_${name}`,
       method: 'BTREE',
-      fields: index.map(item => ({
-        attribute: getFlattenedPath(item.property),
-        order: item.direction.toUpperCase(),
-        collate: undefined as any,
-        length: undefined as any,
-      })),
+      fields,
     })
   }
 
@@ -82,8 +95,9 @@ export function getModel(
   constraints.addAutomanaged(sequelizeDatatypes, kilnModel.model)
   constraints.addForeignKeys(sequelizeDatatypes, kilnModel.model, kiln)
 
+  const tableName = kilnModel.meta.tableName || snakeCase(kilnModel.meta.plural!)
   return sequelize.define(kilnModel.name, sequelizeDatatypes, {
-    indexes: getIndexes(kilnModel.model),
-    tableName: kilnModel.meta.tableName || snakeCase(kilnModel.meta.plural!),
+    indexes: getIndexes(kilnModel.model, tableName),
+    tableName,
   })
 }

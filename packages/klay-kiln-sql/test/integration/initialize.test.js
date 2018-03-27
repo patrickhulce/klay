@@ -38,8 +38,10 @@ describe('initialize database', () => {
 
     it('should have created the additional indexes', () => {
       return state.sequelize.query('show index from users').then(([results]) => {
-        const indexes = _.filter(results, {Key_name: 'users_email_password'})
-        expect(indexes).toHaveLength(2)
+        const emailPasswordIndex = _.filter(results, {Key_name: 'users_email_asc__password_asc'})
+        expect(emailPasswordIndex).toHaveLength(2)
+        const nameIndex = _.filter(results, {Key_name: 'users_unique_firstname_lastname'})
+        expect(nameIndex).toHaveLength(2)
       })
     })
   })

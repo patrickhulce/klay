@@ -12,11 +12,27 @@ const dbOptions = {
   dialect: 'mysql',
 }
 
+function setup(klayModels) {
+  klayModels = klayModels || createModels()
+  const kiln = new Kiln()
+  kiln.addModel({name: 'user', model: klayModels.user})
+  kiln.addModel({name: 'photo', model: klayModels.photo})
+  const extension = new SQLExtension(dbOptions)
+  const sequelize = extension.sequelize
+  kiln.addExtension({extension})
+  const models = {
+    user: kiln.build('user', 'sql'),
+    photo: kiln.build('photo', 'sql'),
+  }
+
+  return {klayModels, kiln, extension, sequelize, models}
+}
+
 module.exports = {
-  expect,
   dbOptions,
   fixtureData,
   createModels,
+  setup,
   state() {
     return {}
   },
@@ -25,19 +41,8 @@ module.exports = {
       it('should initialize properly', async () => {
         const klayModels = createModels()
         if (mutateModels) mutateModels(klayModels)
-        const kiln = new Kiln()
-        const extension = new SQLExtension(dbOptions)
-        const sequelize = extension.sequelize
-        kiln.addModel({name: 'user', model: klayModels.user})
-        kiln.addModel({name: 'photo', model: klayModels.photo})
-        kiln.addExtension({extension})
-        const models = {
-          user: kiln.build('user', 'sql'),
-          photo: kiln.build('photo', 'sql'),
-        }
-
-        Object.assign(state, {klayModels, kiln, extension, sequelize, models})
-        await extension.sync({force: true})
+        Object.assign(state, setup(klayModels))
+        await state.extension.sync({force: true})
       })
     },
     insertFixtureData(state) {
