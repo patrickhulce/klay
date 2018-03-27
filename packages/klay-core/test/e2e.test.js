@@ -1,4 +1,4 @@
-const klay = require('../dist').defaultModelContext
+const klay = require('../lib').defaultModelContext
 const documentModel = require('./fixtures/document')
 
 describe('klay', () => {

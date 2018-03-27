@@ -1,4 +1,4 @@
-const Options = require('../dist/validator-options').ValidatorOptions
+const Options = require('../lib/validator-options').ValidatorOptions
 
 const emptyObj = {___ALL_FORMATS___: {}, ___FALLBACK_FORMAT___: {}}
 const emptyArr = {___ALL_FORMATS___: [], ___FALLBACK_FORMAT___: []}

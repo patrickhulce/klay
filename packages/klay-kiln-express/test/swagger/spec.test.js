@@ -1,5 +1,5 @@
-const buildSpecification = require('../../dist/swagger/spec').buildSpecification
-const CRUD_ROUTES = require('../../dist/extensions/router').CRUD_ROUTES
+const buildSpecification = require('../../lib/swagger/spec').buildSpecification
+const CRUD_ROUTES = require('../../lib/extensions/router').CRUD_ROUTES
 const utils = require('../utils')
 
 describe('lib/swagger/spec.ts', () => {

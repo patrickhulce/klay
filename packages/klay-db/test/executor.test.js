@@ -1,7 +1,7 @@
 const _ = require('lodash')
 const ModelContext = require('klay-core').ModelContext
-const DatabaseExtension = require('../dist/extension').DatabaseExtension
-const Executor = require('../dist/executor').DatabaseExecutor
+const DatabaseExtension = require('../lib/extension').DatabaseExtension
+const Executor = require('../lib/executor').DatabaseExecutor
 
 describe('lib/executor.ts', () => {
   let model, executor, executorMinimal, executorData, transaction

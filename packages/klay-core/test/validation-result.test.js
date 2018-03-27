@@ -1,5 +1,5 @@
-const ValidationResult = require('../dist/validation-result').ValidationResult
-const AssertionError = require('../dist/errors/assertion-error').AssertionError
+const ValidationResult = require('../lib/validation-result').ValidationResult
+const AssertionError = require('../lib/errors/assertion-error').AssertionError
 
 const defaults = {
   value: undefined,

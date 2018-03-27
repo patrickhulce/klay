@@ -1,4 +1,4 @@
-const auth = require('../../dist/auth/grants')
+const auth = require('../../lib/auth/grants')
 
 describe('lib/auth/grants.ts', () => {
   const conf = {

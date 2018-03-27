@@ -1,6 +1,6 @@
 const ModelContext = require('klay-core').ModelContext
-const DatabaseExtension = require('../dist/extension').DatabaseExtension
-const DatabaseOptions = require('../dist/options').DatabaseOptions
+const DatabaseExtension = require('../lib/extension').DatabaseExtension
+const DatabaseOptions = require('../lib/options').DatabaseOptions
 
 describe('lib/extension.ts', () => {
   let modelContext

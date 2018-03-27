@@ -1,5 +1,5 @@
-const sqlExtension = require('../dist/examples/app/kiln').sqlExtension
-const app = require('../dist/examples/app/app').app
+const sqlExtension = require('../examples/app/kiln').sqlExtension
+const app = require('../examples/app/app').app
 
 describe('e2e', () => {
   const state = {}

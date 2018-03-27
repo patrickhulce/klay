@@ -1,4 +1,4 @@
-const Options = require('../dist/options').DatabaseOptions
+const Options = require('../lib/options').DatabaseOptions
 
 describe('lib/options.ts', () => {
   let validationResult, setValue

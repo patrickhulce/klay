@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-const extension = require('../../dist/extensions/core')
+const extension = require('../../lib/extensions/core')
 const vr = require('../utils').createValidationResult
 
 const coercions = extension.coerce
