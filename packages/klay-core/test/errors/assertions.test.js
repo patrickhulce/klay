@@ -1,4 +1,4 @@
-const Assertions = require('../../dist/errors/assertions').Assertions
+const Assertions = require('../../lib/errors/assertions').Assertions
 
 describe('lib/errors/assertions.ts', () => {
   const assertions = new Assertions(msg => new Error(msg))

@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-const extension = require('../../dist/extensions/numbers')
+const extension = require('../../lib/extensions/numbers')
 
 const validations = extension.validations
 

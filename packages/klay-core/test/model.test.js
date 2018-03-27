@@ -1,4 +1,4 @@
-const Model = require('../dist/model').Model
+const Model = require('../lib/model').Model
 
 describe('lib/model.ts', () => {
   const defaultOptions = {

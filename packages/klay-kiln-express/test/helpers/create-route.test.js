@@ -1,5 +1,5 @@
 const ModelContext = require('klay-core').ModelContext
-const createRoute = require('../../dist/helpers/create-route').createRoute
+const createRoute = require('../../lib/helpers/create-route').createRoute
 
 describe('lib/helpers/create-route.ts', () => {
   let context

@@ -4,7 +4,7 @@ const {
   fetchByUniqueConstraints,
   evaluateUniqueConstraints,
   evaluateCustomConstraints,
-} = require('../dist/constraints')
+} = require('../lib/constraints')
 
 describe('lib/constraints.ts', () => {
   let executor, executorData

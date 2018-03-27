@@ -1,4 +1,4 @@
-const transforms = require('../../dist/helpers/transform-model')
+const transforms = require('../../lib/helpers/transform-model')
 const utils = require('../utils')
 
 describe('lib/helpers/transform-model.ts', () => {

@@ -1,7 +1,7 @@
 const defaultModelContext = require('klay-core').defaultModelContext
-const components = require('../../dist/swagger/components')
-const transform = require('../../dist/helpers/transform-model')
-const Cache = require('../../dist/swagger/cache').SwaggerSchemaCache
+const components = require('../../lib/swagger/components')
+const transform = require('../../lib/helpers/transform-model')
+const Cache = require('../../lib/swagger/cache').SwaggerSchemaCache
 const utils = require('../utils')
 
 describe('lib/swagger/components.ts', () => {

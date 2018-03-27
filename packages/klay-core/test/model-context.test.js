@@ -1,4 +1,4 @@
-const ModelContext = require('../dist/model-context').ModelContext
+const ModelContext = require('../lib/model-context').ModelContext
 
 describe('lib/model-context.ts', () => {
   describe('#constructor', () => {

@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-const Extension = require('../dist/extension').SQLExtension
+const Extension = require('../lib/extension').SQLExtension
 const utils = require('./utils')
 
 describe('lib/extension.ts', () => {

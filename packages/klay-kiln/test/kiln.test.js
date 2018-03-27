@@ -1,6 +1,6 @@
 const _ = require('lodash')
 
-const Kiln = require('../dist/kiln').Kiln
+const Kiln = require('../lib/kiln').Kiln
 
 describe('lib/kiln.ts', () => {
   let kiln, extensionA, extensionApi

@@ -1,5 +1,5 @@
 const ModelContext = require('klay-core').ModelContext
-const CRUD_ROUTES = require('../../dist/extensions/router').CRUD_ROUTES
+const CRUD_ROUTES = require('../../lib/extensions/router').CRUD_ROUTES
 
 const utils = require('../utils')
 

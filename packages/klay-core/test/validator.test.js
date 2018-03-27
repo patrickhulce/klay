@@ -1,7 +1,7 @@
 const _ = require('lodash')
-const Model = require('../dist/model').Model
-const Validator = require('../dist/validator').Validator
-const assertionErrorModule = require('../dist/errors/assertion-error')
+const Model = require('../lib/model').Model
+const Validator = require('../lib/validator').Validator
+const assertionErrorModule = require('../lib/errors/assertion-error')
 
 const assert = assertionErrorModule.assertions
 const AssertionError = assertionErrorModule.AssertionError

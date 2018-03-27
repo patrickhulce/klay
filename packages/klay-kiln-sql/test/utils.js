@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const Kiln = require('klay-kiln').Kiln
-const SQLExtension = require('../dist/extension').SQLExtension
+const SQLExtension = require('../lib/extension').SQLExtension
 const fixtureData = require('./fixtures/data')
 const createModels = require('./fixtures/models').create
 

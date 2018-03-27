@@ -9,7 +9,7 @@
     "test": "npm run test:lint && npm run test:unit",
     "test:db": "KLAY_MYSQL_DB=klay_kiln_sql KLAY_MYSQL_USER=root npm test",
     "test:lint": "lint",
-    "test:unit": "jest --runInBand --forceExit test/*.test.js",
+    "test:unit": "jest --forceExit test/*.test.js",
     "test:watch": "npm run test:unit -- --watch"
   },
   "repository": {
@@ -57,7 +57,7 @@
     "sequelize": "^4.33.4"
   },
   "devDependencies": {
-    "@patrickhulce/lint": "^2.0.3",
+    "@patrickhulce/lint": "^2.1.1",
     "@types/bluebird": "^3.5.20",
     "cz-conventional-changelog": "^1.2.0",
     "istanbul": "^0.4.5",
@@ -65,6 +65,7 @@
     "mysql2": "^1.5.2",
     "semantic-release": "^6.3.2",
     "source-map-support": "^0.5.3",
+    "ts-jest": "^22.4.2",
     "tslint": "^5.9.1",
     "typescript": "2.8.0-rc"
   }

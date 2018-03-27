@@ -2,9 +2,9 @@
 const Kiln = require('klay-kiln').Kiln
 const ModelContext = require('klay-core').ModelContext
 const {DatabaseExtension, DatabaseExecutor} = require('klay-db')
-const RouteExtension = require('../dist/extensions/action-route').ActionRouteExtension
-const RouterExtension = require('../dist/extensions/router').RouterExtension
-const Grants = require('../dist/auth/grants').Grants
+const RouteExtension = require('../lib/extensions/action-route').ActionRouteExtension
+const RouterExtension = require('../lib/extensions/router').RouterExtension
+const Grants = require('../lib/auth/grants').Grants
 
 function createModel(context) {
   const tracking = {

@@ -1,4 +1,4 @@
-const extension = require('../../dist/extensions/dates')
+const extension = require('../../lib/extensions/dates')
 const utils = require('../utils')
 
 describe('lib/extensions/dates.ts', () => {

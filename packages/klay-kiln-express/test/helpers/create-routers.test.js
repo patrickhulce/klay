@@ -1,4 +1,4 @@
-const createRouters = require('../../dist/helpers/create-routers').createAndMergeRouters
+const createRouters = require('../../lib/helpers/create-routers').createAndMergeRouters
 const utils = require('../utils')
 
 describe('lib/helpers/merge-routers.ts', () => {
