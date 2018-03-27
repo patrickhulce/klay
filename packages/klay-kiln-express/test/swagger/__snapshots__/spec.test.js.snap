@@ -434,6 +434,9 @@ Object {
           },
         },
         "summary": "Destroy User",
+        "tags": Array [
+          "user",
+        ],
       },
       "get": Object {
         "parameters": Array [
@@ -791,6 +794,9 @@ Object {
           },
         },
         "summary": "List Users",
+        "tags": Array [
+          "user",
+        ],
       },
       "post": Object {
         "parameters": Array [
@@ -812,6 +818,9 @@ Object {
           },
         },
         "summary": "Create User",
+        "tags": Array [
+          "user",
+        ],
       },
       "put": Object {
         "parameters": Array [
@@ -833,6 +842,9 @@ Object {
           },
         },
         "summary": "Update User",
+        "tags": Array [
+          "user",
+        ],
       },
     },
     "/:id": Object {
@@ -852,6 +864,9 @@ Object {
           },
         },
         "summary": "Destroy User",
+        "tags": Array [
+          "user",
+        ],
       },
       "get": Object {
         "parameters": Array [
@@ -871,6 +886,9 @@ Object {
           },
         },
         "summary": "Read User",
+        "tags": Array [
+          "user",
+        ],
       },
       "put": Object {
         "parameters": Array [
@@ -898,6 +916,9 @@ Object {
           },
         },
         "summary": "Update User",
+        "tags": Array [
+          "user",
+        ],
       },
     },
     "/bulk": Object {
@@ -919,6 +940,9 @@ Object {
           },
         },
         "summary": "Destroy Users",
+        "tags": Array [
+          "user",
+        ],
       },
       "post": Object {
         "parameters": Array [
@@ -940,6 +964,9 @@ Object {
           },
         },
         "summary": "Create Users",
+        "tags": Array [
+          "user",
+        ],
       },
       "put": Object {
         "parameters": Array [
@@ -961,6 +988,9 @@ Object {
           },
         },
         "summary": "Update Users",
+        "tags": Array [
+          "user",
+        ],
       },
     },
     "/search": Object {
@@ -984,6 +1014,9 @@ Object {
           },
         },
         "summary": "List Users",
+        "tags": Array [
+          "user",
+        ],
       },
     },
   },

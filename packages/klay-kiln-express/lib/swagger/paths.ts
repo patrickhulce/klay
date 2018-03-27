@@ -39,6 +39,7 @@ function buildOperation(route: IRouterRoute, cache?: ISwaggerSchemaCache): swagg
 
   return {
     summary: name,
+    tags: [route.kilnModel.name],
     parameters: [
       ...getParameters(route.paramsModel, ValidateIn.Params, cache, `${programmaticName}Params`),
       ...getParameters(route.queryModel, ValidateIn.Query, cache, `${programmaticName}Query`),
