@@ -1,16 +1,20 @@
 const _ = require('lodash')
 const Kiln = require('klay-kiln').Kiln
-const SQLExtension = require('../lib/extension').SQLExtension
+const SQLExtension = require('../dist/extension').SQLExtension
 const fixtureData = require('./fixtures/data')
 const createModels = require('./fixtures/models').create
 
 const dbOptions = {
-  host: process.env.KLAY_MYSQL_HOST,
+  host: process.env.KLAY_MYSQL_HOST || 'localhost',
   database: process.env.KLAY_MYSQL_DB,
-  user: process.env.KLAY_MYSQL_USER,
+  user: process.env.KLAY_MYSQL_USER || 'root',
   password: process.env.KLAY_MYSQL_PASSWORD || '',
   dialect: 'mysql',
 }
+
+const dbURL = `mysql://${dbOptions.user}${dbOptions.password ? ':' + dbOptions.password : ''}@${
+  dbOptions.host
+}/${dbOptions.database}`
 
 function setup(klayModels) {
   klayModels = klayModels || createModels()
@@ -19,17 +23,19 @@ function setup(klayModels) {
   kiln.addModel({name: 'photo', model: klayModels.photo})
   const extension = new SQLExtension(dbOptions)
   const sequelize = extension.sequelize
+  const queryInterface = sequelize.getQueryInterface()
   kiln.addExtension({extension})
   const models = {
     user: kiln.build('user', 'sql'),
     photo: kiln.build('photo', 'sql'),
   }
 
-  return {klayModels, kiln, extension, sequelize, models}
+  return {klayModels, kiln, extension, sequelize, models, queryInterface}
 }
 
 module.exports = {
   dbOptions,
+  dbURL,
   fixtureData,
   createModels,
   setup,
@@ -43,6 +49,13 @@ module.exports = {
         if (mutateModels) mutateModels(klayModels)
         Object.assign(state, setup(klayModels))
         await state.extension.sync({force: true})
+      })
+    },
+    dropAllTables(state) {
+      it('should drop tables', async () => {
+        await state.queryInterface.dropTable('photos')
+        await state.queryInterface.dropTable('users')
+        await state.queryInterface.dropTable('SequelizeMeta')
       })
     },
     insertFixtureData(state) {
@@ -60,6 +73,6 @@ module.exports = {
 
         await Promise.all(photoPromises)
       })
-    }
+    },
   },
 }

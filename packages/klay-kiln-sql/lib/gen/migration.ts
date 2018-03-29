@@ -1,13 +1,12 @@
-import {IKiln, IKilnModel} from 'klay-kiln'
-import * as Sequelize from 'sequelize'
+import {IKiln} from 'klay-kiln'
+import {flatten, mapValues, pick, size} from 'lodash'
 import {SQLExecutor} from '../sql-executor'
 import {SQL_EXECUTOR} from '../typedefs'
-import {mapValues, pick, size, flatten} from 'lodash'
 
 function normalizeWhitespace(
   chunk: string,
   padWith: number = 0,
-  skipFirst: boolean = true
+  skipFirst: boolean = true,
 ): string {
   const lines = chunk.split('\n').filter(Boolean)
   const minWhitespace = Math.min(...lines.slice(1).map(l => l.length - l.trimLeft().length))
@@ -59,7 +58,7 @@ function createTable(executor: SQLExecutor): string[] {
 
   const tableName = executor.sequelizeModel.getTableName() as string
   const attributes = mapValues(sqlAttributes, convertAttribute)
-  const stringifiedAttributes = JSON.stringify(attributes, null, 2).replace(/"/g, '')
+  const stringifiedAttributes = JSON.stringify(attributes, undefined, 2).replace(/"/g, '')
   return [
     `queryInterface.createTable('${tableName}', ${stringifiedAttributes})`,
     ...convertIndexes(tableName, sqlIndexes),
@@ -87,7 +86,7 @@ export function createNewMigrationFile(kiln: IKiln): string {
     `async (queryInterface, Sequelize) => {\n${normalizeWhitespace(
       awaitAll(stmts, 2),
       2,
-      false
+      false,
     )}\n}`
 
   const migration = `

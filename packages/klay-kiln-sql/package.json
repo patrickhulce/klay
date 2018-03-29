@@ -4,6 +4,9 @@
   "description": "Kiln extension to generate SQL models from Klay models.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "klay-kiln-sql": "./bin/cli.js"
+  },
   "scripts": {
     "build": "tsc",
     "test": "npm run test:lint && npm run test:unit",
@@ -27,6 +30,7 @@
       "rules": {
         "curly": false,
         "whitespace": false,
+        "max-line-length": [true, {"limit": 100, "ignore-pattern": "//"}],
         "newline-per-chained-call": false,
         "only-arrow-functions": false,
         "no-void-expression": false,
@@ -50,16 +54,20 @@
   "dependencies": {
     "@types/sequelize": "^4.27.7",
     "bluebird": "^3.5.1",
+    "colors": "^1.2.1",
     "klay-core": "^2.4.0",
     "klay-db": "^2.4.0",
     "klay-kiln": "^2.4.0",
     "lodash": "^4.15.0",
-    "sequelize": "^4.33.4"
+    "sequelize": "^4.33.4",
+    "umzug": "^2.1.0",
+    "yargs": "^11.0.0"
   },
   "devDependencies": {
     "@patrickhulce/lint": "^2.1.1",
     "@types/bluebird": "^3.5.20",
     "cz-conventional-changelog": "^1.2.0",
+    "execa": "^0.10.0",
     "istanbul": "^0.4.5",
     "jest": "^22.4.3",
     "mysql2": "^1.5.2",

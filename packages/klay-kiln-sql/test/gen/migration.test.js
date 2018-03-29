@@ -1,4 +1,3 @@
-const Sequelize = require('sequelize')
 const createMigration = require('../../lib/gen/migration').createNewMigrationFile
 const utils = require('../utils')
 

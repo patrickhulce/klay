@@ -1,0 +1,260 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`integration tests CLI migrate should execute migrations 1`] = `
+Object {
+  "age": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "BIGINT(20)",
+  },
+  "createdAt": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "DATETIME(6)",
+  },
+  "email": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "VARCHAR(250)",
+  },
+  "firstName": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "VARCHAR(100)",
+  },
+  "id": Object {
+    "allowNull": false,
+    "defaultValue": null,
+    "primaryKey": true,
+    "type": "BIGINT(20)",
+  },
+  "isAdmin": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "TINYINT(1)",
+  },
+  "lastName": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "VARCHAR(100)",
+  },
+  "password": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "VARCHAR(32)",
+  },
+  "updatedAt": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "DATETIME(6)",
+  },
+}
+`;
+
+exports[`integration tests CLI migrate should execute migrations 2`] = `
+Object {
+  "aspectRatio": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "DOUBLE",
+  },
+  "createdAt": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "DATETIME(6)",
+  },
+  "id": Object {
+    "allowNull": false,
+    "defaultValue": null,
+    "primaryKey": true,
+    "type": "CHAR(36)",
+  },
+  "metadata": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "TEXT",
+  },
+  "ownerId": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "BIGINT(20)",
+  },
+  "updatedAt": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "DATETIME(6)",
+  },
+}
+`;
+
+exports[`integration tests CLI migrate should execute migrations 3`] = `
+Array [
+  "PRIMARY",
+  "users_unique_email",
+  "users_unique_firstname_lastname",
+  "users_unique_firstname_lastname",
+  "users_email_asc__password_asc",
+  "users_email_asc__password_asc",
+]
+`;
+
+exports[`integration tests CLI migration:bootstrap should have created a migration file 1`] = `
+"module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('users', {
+        id: {
+          primaryKey: true,
+          allowNull: false,
+          autoIncrement: true,
+          type: Sequelize.BIGINT
+        },
+        age: Sequelize.BIGINT,
+        isAdmin: Sequelize.BOOLEAN,
+        email: Sequelize.STRING(250),
+        password: Sequelize.STRING(32),
+        firstName: Sequelize.STRING(100),
+        lastName: Sequelize.STRING(100),
+        createdAt: Sequelize.DATE(6),
+        updatedAt: Sequelize.DATE(6)
+      })
+    await queryInterface.addIndex('users', {'name':'users_unique_email','unique':true,'fields':['email']})
+    await queryInterface.addIndex('users', {'name':'users_unique_firstname_lastname','unique':true,'fields':['firstName','lastName']})
+    await queryInterface.addIndex('users', {'name':'users_email_asc__password_asc','fields':[{'attribute':'email','order':'ASC'},{'attribute':'password','order':'ASC'}]})
+    await queryInterface.createTable('photos', {
+        id: {
+          primaryKey: true,
+          allowNull: false,
+          type: Sequelize.UUID
+        },
+        ownerId: {
+          references: {
+            key: 'id',
+            model: 'users'
+          },
+          type: Sequelize.BIGINT
+        },
+        aspectRatio: Sequelize.DOUBLE,
+        metadata: Sequelize.TEXT,
+        createdAt: Sequelize.DATE(6),
+        updatedAt: Sequelize.DATE(6)
+      })
+  },
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable('photos')
+    await queryInterface.dropTable('users')
+  },
+}"
+`;
+
+exports[`integration tests initialize database photos should have created a photos table 1`] = `
+Object {
+  "aspectRatio": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "DOUBLE",
+  },
+  "createdAt": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "DATETIME(6)",
+  },
+  "id": Object {
+    "allowNull": false,
+    "defaultValue": null,
+    "primaryKey": true,
+    "type": "CHAR(36)",
+  },
+  "metadata": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "TEXT",
+  },
+  "ownerId": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "BIGINT(20)",
+  },
+  "updatedAt": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "DATETIME(6)",
+  },
+}
+`;
+
+exports[`integration tests initialize database users should have created a users table 1`] = `
+Object {
+  "age": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "BIGINT(20)",
+  },
+  "createdAt": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "DATETIME(6)",
+  },
+  "email": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "VARCHAR(250)",
+  },
+  "firstName": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "VARCHAR(100)",
+  },
+  "id": Object {
+    "allowNull": false,
+    "defaultValue": null,
+    "primaryKey": true,
+    "type": "BIGINT(20)",
+  },
+  "isAdmin": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "TINYINT(1)",
+  },
+  "lastName": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "VARCHAR(100)",
+  },
+  "password": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "VARCHAR(32)",
+  },
+  "updatedAt": Object {
+    "allowNull": true,
+    "defaultValue": null,
+    "primaryKey": false,
+    "type": "DATETIME(6)",
+  },
+}
+`;

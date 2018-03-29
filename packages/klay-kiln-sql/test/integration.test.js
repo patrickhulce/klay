@@ -1,4 +1,5 @@
 describe('integration tests', () => {
+  require('./integration/cli.test')
   require('./integration/initialize.test')
   require('./integration/create.test')
   require('./integration/custom-constraints.test')
