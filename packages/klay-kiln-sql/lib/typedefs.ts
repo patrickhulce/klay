@@ -15,7 +15,8 @@ export interface ISQLOptions {
   password?: string
   host?: string
   port?: number
-  dialect: SQLDialect
+  dialect?: SQLDialect
+  connectionURL?: string
 }
 
 export interface ISyncOptions {

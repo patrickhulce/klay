@@ -2,10 +2,8 @@ import * as Sequelize from 'sequelize'
 import {ISQLOptions} from '../typedefs'
 
 export function getConnection(options: ISQLOptions): Sequelize.Sequelize {
-  return new Sequelize(options.database!, options.user!, options.password!, {
-    port: options.port,
-    host: options.host,
-    dialect: options.dialect,
+  const sqlOptions: Sequelize.Options = {
+    // TODO: support sequelize logging
     logging: false,
     operatorsAliases: {
       $eq: Sequelize.Op.eq,
@@ -23,5 +21,16 @@ export function getConnection(options: ISQLOptions): Sequelize.Sequelize {
       timestamps: false,
       freezeTableName: true,
     },
+  }
+
+  if (options.connectionURL) {
+    return new Sequelize(options.connectionURL, sqlOptions)
+  }
+
+  return new Sequelize(options.database!, options.user!, options.password!, {
+    ...sqlOptions,
+    port: options.port,
+    host: options.host,
+    dialect: options.dialect,
   })
 }
