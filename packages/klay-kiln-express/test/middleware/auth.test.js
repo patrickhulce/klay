@@ -1,54 +1,11 @@
-const ModelContext = require('klay-core').ModelContext
-const middlewareModule = require('../../lib/helpers/create-middleware')
+const middlewareModule = require('../../lib/middleware/auth')
 const Grants = require('../../lib/auth/grants').Grants
 
-describe('lib/helpers/create-middleware.ts', () => {
-  let context, model, next
+describe('lib/middleware/auth.ts', () => {
+  let next
 
   beforeEach(() => {
-    context = new ModelContext()
-    model = context.object().children({id: context.integer()})
     next = jest.fn()
-  })
-
-  describe('#createValidationMiddleware', () => {
-    const createMiddleware = middlewareModule.createValidationMiddleware
-
-    it('should create a function', () => {
-      const middleware = createMiddleware(model)
-      expect(typeof middleware).toBe('function')
-    })
-
-    it('should set validated', () => {
-      const middleware = createMiddleware(model)
-      const req = {body: {id: '1'}}
-      middleware(req, {}, next)
-      expect(req.validated).toEqual({body: {id: 1}})
-      expect(req.body).toEqual({id: '1'})
-      expect(next).toHaveBeenCalledTimes(1)
-    })
-
-    it('should merge validated', () => {
-      const middleware = createMiddleware(model, 'query')
-      const req = {body: {id: '1'}, validated: {params: 1}}
-      middleware(req, {}, next)
-      expect(req.validated).toEqual({params: 1, query: undefined})
-      expect(req.body).toEqual({id: '1'})
-    })
-
-    it('should validate against model', () => {
-      const middleware = createMiddleware(model)
-      const req = {body: {id: 'one'}}
-      const res = {}
-
-      middleware(req, res, next)
-      expect(next).toHaveBeenCalledTimes(1)
-      const err = next.mock.calls[0][0]
-      expect(err.value).toEqual({id: 'one'})
-      expect(err.errors).toHaveLength(1)
-      expect(err.errors[0].path).toEqual(['id'])
-      expect(err.errors[0].message).toMatch(/expected.*number/)
-    })
   })
 
   describe('#createGrantCreationMiddleware', () => {
@@ -225,33 +182,6 @@ describe('lib/helpers/create-middleware.ts', () => {
       middleware({grants, userId: 1, orgId: 3}, {}, next)
       expect(next).toHaveBeenCalledTimes(3)
       expect(next.mock.calls[2][0]).toBeInstanceOf(Error)
-    })
-  })
-
-  describe('#createSwaggerSpecHandler', () => {
-    let req, res, json, getHeader
-    const createHandler = middlewareModule.createSwaggerSpecHandler
-
-    beforeEach(() => {
-      getHeader = jest.fn()
-      json = jest.fn()
-      req = {get: getHeader, originalUrl: ''}
-      res = {json}
-    })
-
-    it('should return swagger spec', () => {
-      const spec = {info: {title: 'Hello', version: 'v1'}}
-      const handler = createHandler(spec)
-      handler(req, res)
-      expect(json.mock.calls[0][0]).toMatchObject(spec)
-    })
-
-    it('should override base path', () => {
-      const spec = {info: {title: 'Hello', version: 'v1'}}
-      const handler = createHandler(spec)
-      req.originalUrl = '/v1/swagger-spec_v1.json?foo=bar'
-      handler(req, res)
-      expect(json.mock.calls[0][0]).toMatchObject({basePath: '/v1'})
     })
   })
 })

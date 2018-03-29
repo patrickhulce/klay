@@ -2,7 +2,7 @@ import * as express from 'express'
 import {IKiln} from 'klay-kiln'
 import {forEach} from 'lodash'
 import {Spec as SwaggerSpec} from 'swagger-schema-official'
-import {createSwaggerSpecHandler, createSwaggerUIHandler} from '../helpers/create-middleware'
+import {createSwaggerSpecHandler, createSwaggerUIHandler} from '../middleware'
 import {buildSpecification} from '../swagger/spec'
 import {EXPRESS_ROUTER, IRouter, IRouterMap, IRouterOptions, IRouterRoute} from '../typedefs'
 

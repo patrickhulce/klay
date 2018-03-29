@@ -1,6 +1,7 @@
 import * as express from 'express'
 import {IModel, IModelChild} from 'klay-core'
 import {forEach, pick} from 'lodash'
+import {createGrantValidationMiddleware, createValidationMiddleware} from '../middleware'
 import {
   IAdditionalMiddleware,
   IAnontatedHandler,
@@ -9,7 +10,6 @@ import {
   IRouteParams,
   ValidateIn,
 } from '../typedefs'
-import {createGrantValidationMiddleware, createValidationMiddleware} from './create-middleware'
 
 function createParamHandlers(model?: IModel): IRouteParams {
   const handlers: IRouteParams = {}
