@@ -1,4 +1,5 @@
 import * as express from 'express'
+import {IKiln} from 'klay-kiln'
 
 export type AuthCriteriaProperties = string[]
 
@@ -31,4 +32,11 @@ export interface IAuthCriteria {
 export interface IGrants {
   role?: string
   has(permission: string, criteria?: IAuthCriteria): boolean
+}
+
+export interface IOAuthOptions {
+  secret: string
+  kiln?: IKiln
+  databaseExtension?: string
+  lookupUserContextByPassword?(username: string, password: string): Promise<object | undefined>
 }

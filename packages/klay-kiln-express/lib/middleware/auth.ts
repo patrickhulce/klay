@@ -1,6 +1,6 @@
 /* tslint:disable no-unsafe-any */
 import {NextFunction, Request, Response} from 'express'
-import {defaultModelContext, IModel} from 'klay-core'
+import {defaultModelContext, IModel, IModelChild, ModelType} from 'klay-core'
 import {AuthenticationError} from '../auth/authentication-error'
 import {AuthorizationError} from '../auth/authorization-error'
 import {Grants} from '../auth/grants'
@@ -11,9 +11,19 @@ import {
   IAuthorizationRequired,
 } from '../typedefs'
 
+// TODO: convert this to async jwt verify fn
+function defaultGetUserContext(req: Request): any {
+  const reqAsAny = req as any
+  return reqAsAny.user || reqAsAny.oauth || reqAsAny.token
+}
+
+function defaultGetRole(userContext: any): string {
+  return userContext && (userContext.role as string)
+}
+
 export function createGrantCreationMiddleware(authConf: IAuthConfiguration): IAnontatedHandler {
-  const getUserContext = authConf.getUserContext || ((req: Request) => (req as any).user)
-  const getRole = authConf.getRole || ((ctx: any) => ctx && (ctx.role as string))
+  const getUserContext = authConf.getUserContext || defaultGetUserContext
+  const getRole = authConf.getRole || defaultGetRole
 
   return function(req: Request, res: Response, next: NextFunction): void {
     const userContext = getUserContext(req)

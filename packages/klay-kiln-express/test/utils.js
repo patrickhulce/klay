@@ -1,4 +1,3 @@
-
 const Kiln = require('klay-kiln').Kiln
 const ModelContext = require('klay-core').ModelContext
 const {DatabaseExtension, DatabaseExecutor} = require('klay-db')
@@ -23,7 +22,10 @@ function createModel(context) {
       .email()
       .max(250)
       .constrain({type: 'unique'}),
-    password: context.string().max(32),
+    password: context
+      .string()
+      .max(32)
+      .coerce(vr => vr.setValue(`hashed:${vr.value}`)),
     firstName: context.string().max(100),
     lastName: context.string().max(100),
     metadata: context

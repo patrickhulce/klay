@@ -37,6 +37,7 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "express": "^4.16.2",
+    "jsonwebtoken": "^8.2.0",
     "klay-core": "^2.4.0",
     "klay-db": "^2.4.0",
     "klay-kiln": "^2.4.0",
@@ -45,6 +46,7 @@
   "devDependencies": {
     "@patrickhulce/lint": "^2.1.1",
     "@types/express": "^4.11.1",
+    "@types/jsonwebtoken": "^7.2.6",
     "@types/swagger-schema-official": "^2.0.9",
     "body-parser": "^1.15.2",
     "cz-conventional-changelog": "^1.2.0",

@@ -58,6 +58,7 @@ export class Grants implements IGrants {
   public readonly role?: string
   private readonly _grants: Set<string>
 
+  // TODO: expand role to possibly be an array for OAuth2.0-style scopes
   public constructor(role?: string, userContext?: any, conf?: IAuthConfiguration) {
     this.role = role
     this._grants = new Set()
