@@ -1,5 +1,6 @@
 /* tslint:disable no-unsafe-any */
 import {NextFunction, Request, Response} from 'express'
+import * as jwt from 'jsonwebtoken'
 import {defaultModelContext, IModel, IModelChild, ModelType} from 'klay-core'
 import {AuthenticationError} from '../auth/authentication-error'
 import {AuthorizationError} from '../auth/authorization-error'
@@ -11,10 +12,37 @@ import {
   IAuthorizationRequired,
 } from '../typedefs'
 
-// TODO: convert this to async jwt verify fn
-function defaultGetUserContext(req: Request): any {
-  const reqAsAny = req as any
-  return reqAsAny.user || reqAsAny.oauth || reqAsAny.token
+const AUTH_BEARER_PATTERN = /^bearer (.*)/i
+
+function createDecodeTokenFn(authConf: IAuthConfiguration): (req: Request) => Promise<any> {
+  return async (req: Request): Promise<any> => {
+    let token: string | undefined
+    const authHeader = req.get('authorization')
+    if (AUTH_BEARER_PATTERN.test(authHeader!)) {
+      token = authHeader!.match(AUTH_BEARER_PATTERN)![1]
+    } else if (req.cookies && req.cookies.token) {
+      token = req.cookies.token
+    }
+
+    if (!token) return undefined
+    return new Promise((resolve, reject) => {
+      jwt.verify(token!, authConf.secret!, (err, unpacked) => {
+        if (err) return reject(err)
+        resolve(unpacked)
+      })
+    })
+  }
+}
+
+function createDefaultGetUserContext(authConf: IAuthConfiguration): (req: Request) => Promise<any> {
+  const decodeToken = authConf.secret ? createDecodeTokenFn(authConf) : (req: Request) => undefined
+  return async (req: Request): Promise<any> => {
+    const decodedToken = await decodeToken(req)
+    if (decodedToken) return decodedToken
+
+    const reqAsAny = req as any
+    return reqAsAny.userContext || reqAsAny.user
+  }
 }
 
 function defaultGetRole(userContext: any): string {
@@ -22,12 +50,12 @@ function defaultGetRole(userContext: any): string {
 }
 
 export function createGrantCreationMiddleware(authConf: IAuthConfiguration): IAnontatedHandler {
-  const getUserContext = authConf.getUserContext || defaultGetUserContext
+  const getUserContext = authConf.getUserContext || createDefaultGetUserContext(authConf)
   const getRole = authConf.getRole || defaultGetRole
 
-  return function(req: Request, res: Response, next: NextFunction): void {
-    const userContext = getUserContext(req)
-    const role = getRole(userContext, req)
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const userContext = await getUserContext(req)
+    const role = await getRole(userContext, req) // tslint:disable-line
     const grants = new Grants(role, userContext, authConf)
     req.grants = grants
     next()

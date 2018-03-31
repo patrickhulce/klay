@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken')
 const middlewareModule = require('../../lib/middleware/auth')
 const Grants = require('../../lib/auth/grants').Grants
 
@@ -9,7 +10,7 @@ describe('lib/middleware/auth.ts', () => {
   })
 
   describe('#createGrantCreationMiddleware', () => {
-    let roles, permissions
+    let roles, permissions, getStub
     const createMiddleware = middlewareModule.createGrantCreationMiddleware
 
     beforeEach(() => {
@@ -18,23 +19,52 @@ describe('lib/middleware/auth.ts', () => {
         user: [{permission: 'read', criteria: ['orgId=<%= orgId %>']}],
       }
       permissions = {write: ['read'], read: []}
+      getStub = jest.fn()
     })
 
-    it('should create grants when empty', () => {
+    it('should create grants when empty', async () => {
       const middleware = createMiddleware({roles, permissions})
       const req = {}
 
-      middleware(req, {}, next)
+      await middleware(req, {}, next)
       expect(next).toHaveBeenCalledTimes(1)
       expect(req).toHaveProperty('grants')
       expect(req.grants._grants.size).toBe(0)
     })
 
-    it('should create grants when populated', () => {
+    it('should create grants from bearer token', async () => {
+      const secret = 'the-secret'
+      const middleware = createMiddleware({roles, permissions, secret})
+      const req = {get: getStub}
+
+      const token = jwt.sign({orgId: 2, role: 'admin'}, secret)
+      getStub.mockReturnValue(`bearer ${token}`)
+
+      await middleware(req, {}, next)
+      expect(getStub).toHaveBeenCalledTimes(1)
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(req).toHaveProperty('grants')
+      expect(req.grants.has('write', {orgId: 2})).toBe(true)
+    })
+
+    it('should create grants from cookie token', async () => {
+      const secret = 'the-secret'
+      const token = jwt.sign({orgId: 2, role: 'admin'}, secret)
+      const middleware = createMiddleware({roles, permissions, secret})
+      const req = {get: getStub, cookies: {token}}
+
+      await middleware(req, {}, next)
+      expect(getStub).toHaveBeenCalledTimes(1)
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(req).toHaveProperty('grants')
+      expect(req.grants.has('write', {orgId: 2})).toBe(true)
+    })
+
+    it('should create grants when populated', async () => {
       const middleware = createMiddleware({roles, permissions})
       const req = {user: {orgId: 2, role: 'admin'}}
 
-      middleware(req, {}, next)
+      await middleware(req, {}, next)
       expect(next).toHaveBeenCalledTimes(1)
       expect(req).toHaveProperty('grants')
       expect(req.grants.has('write', {orgId: 2})).toBe(true)
@@ -42,12 +72,12 @@ describe('lib/middleware/auth.ts', () => {
       expect(req.grants.has('write', {orgId: 3})).toBe(false)
     })
 
-    it('should create grants with custom role finder', () => {
+    it('should create grants with custom role finder', async () => {
       const getRole = user => user.theRole
       const middleware = createMiddleware({roles, permissions, getRole})
       const req = {user: {orgId: 2, theRole: 'admin'}}
 
-      middleware(req, {}, next)
+      await middleware(req, {}, next)
       expect(next).toHaveBeenCalledTimes(1)
       expect(req).toHaveProperty('grants')
       expect(req.grants.has('write', {orgId: 2})).toBe(true)
@@ -55,12 +85,12 @@ describe('lib/middleware/auth.ts', () => {
       expect(req.grants.has('write', {orgId: 3})).toBe(false)
     })
 
-    it('should create grants with custom user finder', () => {
+    it('should create grants with custom user finder', async () => {
       const getUserContext = req => req.foo
       const middleware = createMiddleware({roles, permissions, getUserContext})
       const req = {foo: {orgId: 2, role: 'user'}}
 
-      middleware(req, {}, next)
+      await middleware(req, {}, next)
       expect(next).toHaveBeenCalledTimes(1)
       expect(req).toHaveProperty('grants')
       expect(req.grants.has('write', {orgId: 2})).toBe(false)

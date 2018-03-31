@@ -21,6 +21,7 @@ export interface IAuthPermissions {
 export interface IAuthConfiguration {
   roles: IAuthRoles
   permissions: IAuthPermissions
+  secret?: string
   getUserContext?(req: express.Request): any
   getRole?(userContext: any, req: express.Request): string | undefined
 }
