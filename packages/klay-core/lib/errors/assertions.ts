@@ -19,11 +19,15 @@ export class Assertions {
     const error = this._createError(message)
     _.assign(error, extra)
 
-    const v8error = Error as any
-    if (typeof v8error.captureStackTrace === 'function') {
-      v8error.captureStackTrace(error)
+    const V8Error = Error as any // tslint:disable-line
+    if (typeof V8Error.captureStackTrace === 'function') {
+      V8Error.captureStackTrace(error)
     }
 
+    error.stack = error
+      .stack!.split('\n')
+      .filter(l => !/at Assertions/.test(l))
+      .join('\n')
     throw error
   }
 
