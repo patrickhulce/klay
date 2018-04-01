@@ -16,14 +16,10 @@ export enum Permissions {
   PostManage = 'post:manage',
 }
 
+export const SECRET = 'super-secret-for-hash'
+
 export const configuration: IAuthConfiguration = {
-  getUserContext(req: express.Request): any {
-    if (req.cookies && req.cookies.accountId) {
-      return req.cookies
-    } else {
-      return {}
-    }
-  },
+  secret: SECRET,
   permissions: {
     [Permissions.AccountManage]: [Permissions.AccountView],
     [Permissions.AccountView]: [],

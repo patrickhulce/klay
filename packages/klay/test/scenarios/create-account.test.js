@@ -21,10 +21,44 @@ module.exports = state => {
       const {account, user} = await response.json()
       state.account = account
       state.user = user
-      state.userCookie = `id=${user.id};accountId=${user.accountId};role=${user.role}`
 
       expect(account).toHaveProperty('slug', 'csn-bay-area')
       expect(user.password).toMatch(/^[a-f0-9]{40}$/)
+    })
+
+    it('should login', async () => {
+      const payload = {
+        grant_type: 'password',
+        username: 'klay@example.com',
+        password: 'rocko',
+      }
+
+      const response = await fetch(`${state.baseURL}/v1/oauth/token`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {'content-type': 'application/json'},
+      })
+
+      expect(response.status).toBe(200)
+      const responseBody = await response.json()
+      expect(responseBody.access_token).toMatch(/.*\..*\..*/)
+      state.userCookie = `token=${responseBody.access_token};`
+    })
+
+    it('should prevent bad logins', async () => {
+      const payload = {
+        grant_type: 'password',
+        username: 'klay@example.com',
+        password: 'rocko2',
+      }
+
+      const response = await fetch(`${state.baseURL}/v1/oauth/token`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {'content-type': 'application/json'},
+      })
+
+      expect(response.status).toBe(401)
     })
 
     it('should read an account', async () => {

@@ -19,8 +19,11 @@ import {
   createSwaggerSpecHandler,
   createSwaggerUIHandler,
   buildSwaggerSpecification,
+  oauthTokenResponseModel,
+  oauthTokenRequestModel,
+  createOAuthTokenHandler,
 } from '../../lib'
-import {Permissions, configuration as authConf, AuthRoles} from './auth'
+import {Permissions, configuration as authConf, AuthRoles, SECRET} from './auth'
 import {modelContext} from './model-context'
 import {accountModel, AccountPlan, IAccount} from './models/account'
 import {userModel, IUser} from './models/user'
@@ -30,6 +33,17 @@ const accountExecutor = kiln.build(ModelId.Account, sqlExtension) as IDatabaseEx
 const userExecutor = kiln.build(ModelId.User, sqlExtension) as IDatabaseExecutor<IUser>
 
 const routerMap: IRouterMap = {
+  '/v1/oauth': {
+    // TODO: remove this line after https://github.com/patrickhulce/klay/issues/86, model is not needed
+    modelName: ModelId.User,
+    routes: {
+      'POST /token': {
+        bodyModel: oauthTokenRequestModel,
+        responseModel: oauthTokenResponseModel,
+        handler: createOAuthTokenHandler({secret: SECRET, kiln}),
+      }
+    }
+  },
   '/v1/accounts': {
     modelName: ModelId.Account,
     readAuthorization: {permission: Permissions.AccountView, criteria: [['id']]},
