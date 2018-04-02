@@ -137,7 +137,7 @@ export const validations: IValidatorValidations = {
   [ModelType.Array]: {
     [ALL_FORMATS]: [validateMinMax(value => size(value as any[]))],
   },
-  [ModelType.Date]: {
+  [ModelType.DateTime]: {
     [ALL_FORMATS]: [validateMinMax(value => (value as Date).getTime())],
   },
 }

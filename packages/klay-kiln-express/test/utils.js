@@ -11,7 +11,7 @@ function createModel(context) {
       .uuid()
       .automanage({supplyWith: 'uuid', event: 'create'})
       .constrain({type: 'immutable'}),
-    lastVisit: context.date().optional(),
+    lastVisit: context.dateTime().optional(),
   }
 
   const user = {

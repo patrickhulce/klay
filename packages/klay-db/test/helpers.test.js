@@ -37,7 +37,7 @@ describe('lib/helpers.ts', () => {
         accountId: context.integer().constrain({type: 'reference'}),
         email: context.email().constrain({type: 'unique'}),
         updatedAt: context
-          .date()
+          .dateTime()
           .index([{property: [], direction: 'desc'}])
           .automanage({...AUTOMANAGE, supplyWith: 'iso-timestamp'}),
       })
@@ -138,7 +138,7 @@ describe('lib/helpers.ts', () => {
             supplyWith: value => value.setValue(false),
           }),
         createdAt: context
-          .date()
+          .dateTime()
           .automanage({
             property: [],
             event: 'create',
@@ -147,7 +147,7 @@ describe('lib/helpers.ts', () => {
           })
           .optional(),
         updatedAt: context
-          .date()
+          .dateTime()
           .automanage({
             property: [],
             event: '*',

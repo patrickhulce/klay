@@ -3,7 +3,12 @@ import {ConstraintType, DatabaseEvent, eventMatches, findModel, getPrimaryKeyFie
 import {flatten, forEach, includes, isEqual, pick, startCase} from 'lodash'
 import {IParamifyOptions, IQuerifyOptions} from '../typedefs'
 
-const ALLOWED_QUERY_TYPES = [ModelType.Boolean, ModelType.String, ModelType.Number, ModelType.Date]
+const ALLOWED_QUERY_TYPES = [
+  ModelType.Boolean,
+  ModelType.String,
+  ModelType.Number,
+  ModelType.DateTime,
+]
 
 function omitAll(rootModel: IModel, paths: string[][]): IModel {
   for (const path of paths) {
@@ -130,7 +135,7 @@ export function querifyModel(original: IModel, options: IQuerifyOptions): IModel
       return {path: key, model}
     })
 
-    const typeName = startCase(child.model.spec.type)
+    const typeName = startCase(child.model.spec.type).replace(/ +/g, '')
     // TODO: add format to name if it changes schema
     const schemaName = `${typeName}Filters`
     children[child.path] = defaultModelContext

@@ -9,10 +9,10 @@ import {
   ValidationPhase,
 } from '../typedefs'
 
-export const types = [ModelType.Date]
+export const types = [ModelType.DateTime]
 
 export const formats: IValidatorFormats = {
-  [ModelType.Date]: values(DateFormat),
+  [ModelType.DateTime]: values(DateFormat),
 }
 
 function areDatesMoreThanTwoDaysApart(dateA: Date, dateB: Date): boolean {
@@ -38,7 +38,7 @@ function getDateFromNumber(value: number): Date | number {
 }
 
 export const coerce: IValidatorCoerce = {
-  [ModelType.Date]: {
+  [ModelType.DateTime]: {
     [FALLBACK_FORMAT]: {
       [ValidationPhase.CoerceType]: result => {
         if (result.value instanceof Date) {

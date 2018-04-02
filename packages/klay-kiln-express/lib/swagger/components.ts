@@ -91,7 +91,7 @@ function buildBaseSchema(model: IModel): swagger.BaseSchema {
     case ModelType.Boolean:
       schema.type = 'boolean'
       break
-    case ModelType.Date:
+    case ModelType.DateTime:
       // TODO: handle date-only
       schema.type = 'string'
       schema.format = 'date-time'

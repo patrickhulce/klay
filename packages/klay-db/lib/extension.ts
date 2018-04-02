@@ -93,7 +93,7 @@ export class DatabaseExtension implements IKlayExtension {
         })
     context.createdAt = () =>
       context
-        .date()
+        .dateTime()
         .required()
         .constrain({type: ConstraintType.Immutable})
         .automanage({
@@ -104,7 +104,7 @@ export class DatabaseExtension implements IKlayExtension {
         })
     context.updatedAt = () =>
       context
-        .date()
+        .dateTime()
         .required()
         .automanage({
           property: [],

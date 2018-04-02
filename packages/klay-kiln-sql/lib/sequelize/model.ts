@@ -26,7 +26,7 @@ export function getSequelizeType(model: IModel): Sequelize.DataTypeAbstract {
       return Sequelize.DOUBLE()
     case ModelType.Boolean:
       return Sequelize.BOOLEAN
-    case ModelType.Date:
+    case ModelType.DateTime:
       return Sequelize.DATE(6)
     default:
       // record will be JSONified

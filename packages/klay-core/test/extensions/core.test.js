@@ -259,7 +259,7 @@ describe('lib/extensions/core.ts', () => {
 
     describe('date', () => {
       beforeEach(() => {
-        validate = validations.date.___ALL_FORMATS___[0]
+        validate = validations['date-time'].___ALL_FORMATS___[0]
       })
 
       it('should validate min', () => {

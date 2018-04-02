@@ -38,8 +38,8 @@ const Document = context.object().children({
   type: context.string().enum(['html', 'json']),
   metadata: context.object().enum([HtmlMetadata, JsonMetadata]),
   source: context.object().enum([HtmlSource, JsonSource]),
-  createdAt: context.date(),
-  updatedAt: context.date(),
+  createdAt: context.dateTime(),
+  updatedAt: context.dateTime(),
 })
 
 module.exports = Document

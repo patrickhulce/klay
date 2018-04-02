@@ -1,7 +1,7 @@
 import {assert, IModel, IModelChild} from 'klay-core'
 import {get, set} from 'lodash'
 
-const PRIMITIVE_COLUMN_TYPES = new Set(['string', 'number', 'boolean', 'date'])
+const PRIMITIVE_COLUMN_TYPES = new Set(['string', 'number', 'boolean', 'date-time'])
 
 export type ColumnIterator = (model: IModel, path: string[], column: string) => void
 

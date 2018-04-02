@@ -19,7 +19,7 @@ describe('lib/model-context.ts', () => {
       let model = context.creditCard()
       expect(model.spec).toMatchObject({type: 'string', format: 'credit-card'})
       model = context.unixTimestamp()
-      expect(model.spec).toMatchObject({type: 'date', format: 'unix-timestamp'})
+      expect(model.spec).toMatchObject({type: 'date-time', format: 'unix-timestamp'})
       model = context.create({type: 'string', format: 'alphanumeric'})
       expect(model.spec).toMatchObject({type: 'string', format: 'alphanumeric'})
     })

@@ -8,7 +8,7 @@ describe('lib/extensions/dates.ts', () => {
   describe('coerce', () => {
     describe('unix', () => {
       beforeEach(() => {
-        coerce = extension.coerce.date['unix-timestamp']['coerce-type']
+        coerce = extension.coerce['date-time']['unix-timestamp']['coerce-type']
       })
 
       it('should transform string values', () => {
@@ -39,11 +39,11 @@ describe('lib/extensions/dates.ts', () => {
 
     describe('fallback format', () => {
       beforeEach(() => {
-        coerce = extension.coerce.date.___FALLBACK_FORMAT___['coerce-type']
+        coerce = extension.coerce['date-time'].___FALLBACK_FORMAT___['coerce-type']
       })
 
       it('should transform string values', () => {
-        expect(transform('2016-01-04')).toEqual(new Date('2016-01-04T00:00:00.000Z'))
+        expect(transform('2016-01-04')).toEqual(new Date('2016-01-04T00:00:00Z'))
         expect(transform('1993-02-14T08:00:00.000Z')).toEqual(new Date('1993-02-14T08:00:00.000Z'))
       })
 

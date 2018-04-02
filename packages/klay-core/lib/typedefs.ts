@@ -22,7 +22,7 @@ export interface IModelContext {
   creditCard(): IModel
   array(): IModel
   object(): IModel
-  date(): IModel
+  dateTime(): IModel
   unixTimestamp(): IModel
 }
 
@@ -157,7 +157,7 @@ export enum ModelType {
   String = 'string',
   Array = 'array',
   Object = 'object',
-  Date = 'date',
+  DateTime = 'date-time',
 }
 
 export enum ValidationPhase {

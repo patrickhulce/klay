@@ -85,7 +85,7 @@ Object {
       },
       "type": "array",
     },
-    "DateFilters": Object {
+    "DateTimeFilters": Object {
       "properties": Object {
         "$eq": Object {
           "format": "date-time",
@@ -140,7 +140,7 @@ Object {
           "$ref": "#/definitions/NumberFilters",
         },
         "createdAt": Object {
-          "$ref": "#/definitions/DateFilters",
+          "$ref": "#/definitions/DateTimeFilters",
         },
         "email": Object {
           "$ref": "#/definitions/StringFilters",
@@ -179,7 +179,7 @@ Object {
           "$ref": "#/definitions/StringFilters",
         },
         "updatedAt": Object {
-          "$ref": "#/definitions/DateFilters",
+          "$ref": "#/definitions/DateTimeFilters",
         },
       },
       "type": "object",
