@@ -292,5 +292,72 @@ describe('lib/extensions/strings.ts', () => {
         )
       })
     })
+
+    describe('date', () => {
+      const validate = extension.validations.string.date
+
+      it('should pass valid values', () => {
+        testPassingValues([
+          '1993-02-13',
+          '1993.2.1',
+          '2014.12.27',
+          '2014/12/27',
+        ], validate)
+      })
+
+      it('should fail invalid values', () => {
+        testFailingValues(
+          [
+            '1993-22-3',
+            '1-2-3',
+            '2005 12 3',
+            '2005-03-43',
+            '2005-23-9',
+          ],
+          validate,
+        )
+      })
+    })
+
+    describe('state', () => {
+      const validate = extension.validations.string.state
+
+      it('should pass valid values', () => {
+        testPassingValues(['AK', 'TN', 'TX', 'CA'], validate)
+      })
+
+      it('should fail invalid values', () => {
+        testFailingValues(
+          [
+            'TNN',
+            'tn',
+            'Tx',
+            // TODO: allow full state representations
+            'California',
+            'Tennessee',
+          ],
+          validate,
+        )
+      })
+    })
+
+    describe('zipcode', () => {
+      const validate = extension.validations.string.zipcode
+
+      it('should pass valid values', () => {
+        testPassingValues(['12345', '12345-1234', '04231', '94040'], validate)
+      })
+
+      it('should fail invalid values', () => {
+        testFailingValues(
+          [
+            '123456789',
+            '12345 1234',
+            ' 12345-1234 ',
+          ],
+          validate,
+        )
+      })
+    })
   })
 })

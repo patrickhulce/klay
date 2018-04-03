@@ -15,6 +15,10 @@ export enum StringFormat {
   Domain = 'domain',
   Email = 'email',
   CreditCard = 'credit-card',
+  // TODO: figure out format options, https://github.com/patrickhulce/klay/issues/88
+  Date = 'date',
+  State = 'state',
+  Zipcode = 'zipcode',
 }
 
 export const types = [ModelType.String]
@@ -43,6 +47,9 @@ export const validations: IValidatorValidations = {
         /(:\d+)?/,
       ]),
     ],
+    [StringFormat.Date]: [/^\d{4}(-|\.|\/)(0|1)?[0-9](-|\.|\/)([0-3])?[0-9]$/],
+    [StringFormat.State]: [/^[A-Z]{2}$/],
+    [StringFormat.Zipcode]: [/^\d{5}(-\d{4})?$/],
   },
 }
 
