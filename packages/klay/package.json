@@ -42,6 +42,6 @@
     "morgan": "^1.9.0",
     "source-map-support": "^0.5.4",
     "ts-jest": "^22.4.2",
-    "typescript": "2.8.0-rc"
+    "typescript": "^2.8.1"
   }
 }
