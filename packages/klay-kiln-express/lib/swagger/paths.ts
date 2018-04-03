@@ -6,10 +6,12 @@ import {getParameters, getSchema} from './components'
 import {IKeyedPaths, ISwaggerSchemaCache} from './typedefs'
 
 function getDefaultName(route: IRouterRoute): string {
-  const singular = startCase(route.kilnModel.name)
-  const plural = startCase(route.kilnModel.meta.plural!)
   const actionOpts = route.options as IActionRouteOptions
   const action = startCase(actionOpts.type)
+
+  if (!route.kilnModel) return action
+  const singular = startCase(route.kilnModel.name)
+  const plural = startCase(route.kilnModel.meta.plural!)
   return actionOpts.byList || actionOpts.type === ActionType.List
     ? `${action} ${plural}`
     : `${action} ${singular}`
@@ -39,7 +41,7 @@ function buildOperation(route: IRouterRoute, cache?: ISwaggerSchemaCache): swagg
 
   return {
     summary: name,
-    tags: [route.kilnModel.name],
+    tags: route.kilnModel && [route.kilnModel.name],
     parameters: [
       ...getParameters(route.paramsModel, ValidateIn.Params, cache, `${programmaticName}Params`),
       ...getParameters(route.queryModel, ValidateIn.Query, cache, `${programmaticName}Query`),

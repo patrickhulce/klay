@@ -1,8 +1,12 @@
 import * as express from 'express'
 import {IModel, IModelChild} from 'klay-core'
+import {IDatabaseExecutor} from 'klay-db'
+import {IKilnModel} from 'klay-kiln'
 import {forEach, pick} from 'lodash'
+import {actions} from '../actions'
 import {createGrantValidationMiddleware, createValidationMiddleware} from '../middleware'
 import {
+  IActionRouteOptions,
   IAdditionalMiddleware,
   IAnontatedHandler,
   IRoute,
@@ -69,4 +73,33 @@ export function createRoute(input: IRouteInput): IRoute {
   extendMiddleware(middleware, inputMiddleware.postResponse)
 
   return {...models, middleware, paramHandlers}
+}
+
+export function createActionRoute(
+  options: IActionRouteOptions,
+  kilnModel: IKilnModel,
+  executor: IDatabaseExecutor,
+): IRoute {
+  const action = actions.find(action => action.type === options.type)
+  if (!action) {
+    throw new Error(`Could not find action: ${options.type}`)
+  }
+
+  options = {...action.defaultOptions, ...options}
+
+  const defaultAuthorization = action.authorization(kilnModel, options)
+  const authorization = options.authorization
+    ? {...defaultAuthorization, ...options.authorization}
+    : undefined
+
+  return createRoute({
+    authorization,
+    queryModel: action.queryModel(kilnModel, options),
+    bodyModel: action.bodyModel(kilnModel, options),
+    paramsModel: action.paramsModel(kilnModel, options),
+    responseModel: action.responseModel(kilnModel, options),
+    handler: action.handler(kilnModel, options, executor),
+    lookupActionTarget: action.lookupActionTarget(kilnModel, options, executor),
+    middleware: options.middleware,
+  })
 }

@@ -181,6 +181,7 @@ export interface IRoutes {
 
 export interface IRouterOptions {
   modelName?: string
+  databaseExtension?: string
   defaults?: IActionRouteOptions & IRouteInput
   // FIXME: https://github.com/patrickhulce/klay/issues/74
   readAuthorization?: IAuthorizationRequired
@@ -192,7 +193,7 @@ export interface IRouterRoute extends IRoute {
   path: string
   method: HTTPMethod
   options: IActionRouteOptions | IRouteInput
-  kilnModel: IKilnModel
+  kilnModel?: IKilnModel
 }
 
 export interface IRouter {
