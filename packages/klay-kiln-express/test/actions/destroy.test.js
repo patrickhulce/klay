@@ -107,7 +107,7 @@ describe('lib/actions/destroy.ts', () => {
 
     beforeEach(() => {
       authorization = {permission: 'users:admin', criteria: [['lastName']]}
-      grants = new utils.Grants('user', {id: 1, lastName: 'Thompson'}, utils.auth)
+      grants = new utils.Grants(['user'], {id: 1, lastName: 'Thompson'}, utils.auth)
     })
 
     it('should pass authorization', async () => {

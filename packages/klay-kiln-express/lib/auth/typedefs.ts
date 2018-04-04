@@ -28,7 +28,7 @@ export interface IAuthConfiguration {
   permissions: IAuthPermissions
   secret?: string
   getUserContext?(req: express.Request): any
-  getRole?(userContext: any, req: express.Request): string | undefined
+  getRoles?(userContext: any, req: express.Request): string[] | undefined
 }
 
 export interface IAuthCriteriaPropertyValues {
@@ -36,7 +36,7 @@ export interface IAuthCriteriaPropertyValues {
 }
 
 export interface IGrants {
-  role?: string
+  roles: string[]
   has(permission: string, criteria?: IAuthCriteriaPropertyValues): boolean
 }
 

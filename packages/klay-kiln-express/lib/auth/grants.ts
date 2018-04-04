@@ -27,14 +27,14 @@ export function computeAllPermissions(permission: string, conf: IAuthConfigurati
 }
 
 export function computeAllGrants(
-  role: string,
+  roles: string,
   userContext: any,
   conf: IAuthConfiguration,
 ): Set<string> {
   const grants = new Set<string>()
-  if (!conf.roles[role]) return grants
+  if (!conf.roles[roles]) return grants
 
-  for (const grantDef of conf.roles[role]) {
+  for (const grantDef of conf.roles[roles]) {
     const criteriaTemplate =
       typeof grantDef.criteria === 'string' ? grantDef.criteria : grantDef.criteria.sort().join(',')
     const criteria = template(criteriaTemplate || '*')(userContext)
@@ -55,17 +55,21 @@ function serializeCriteriaValues(criteriaValues: IAuthCriteriaPropertyValues): s
 }
 
 export class Grants implements IGrants {
-  public readonly role?: string
+  public readonly roles: string[]
   public readonly userContext?: any
   private readonly _grants: Set<string>
 
-  // TODO: expand role to possibly be an array for OAuth2.0-style scopes
-  public constructor(role?: string, userContext?: any, conf?: IAuthConfiguration) {
-    this.role = role
+  public constructor(roles?: string[], userContext?: any, conf?: IAuthConfiguration) {
+    this.roles = roles || []
     this.userContext = userContext
     this._grants = new Set()
-    if (!role || !userContext || !conf) return
-    this._grants = computeAllGrants(role, userContext, conf)
+    if (!roles || !userContext || !conf) return
+
+    for (const role of roles) {
+      for (const grant of computeAllGrants(role, userContext, conf)) {
+        this._grants.add(grant)
+      }
+    }
   }
 
   public has(permission: string, criteriaValues?: IAuthCriteriaPropertyValues): boolean {

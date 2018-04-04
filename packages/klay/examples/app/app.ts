@@ -150,7 +150,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
       break
     case 'AuthorizationError':
       status = 403
-      body = {role: req.grants!.role!, grants: Array.from((req.grants as any)._grants)}
+      body = {roles: req.grants!.roles, grants: Array.from((req.grants as any)._grants)}
       break
     default:
       body = {message: err.message, stack: err.stack!.split('\n').slice(0, 5)}

@@ -73,8 +73,8 @@ describe('lib/middleware/auth.ts', () => {
     })
 
     it('should create grants with custom role finder', async () => {
-      const getRole = user => user.theRole
-      const middleware = createMiddleware({roles, permissions, getRole})
+      const getRoles = user => [user.theRole]
+      const middleware = createMiddleware({roles, permissions, getRoles})
       const req = {user: {orgId: 2, theRole: 'admin'}}
 
       await middleware(req, {}, next)
@@ -112,7 +112,7 @@ describe('lib/middleware/auth.ts', () => {
       }
 
       permissions = {write: ['read'], read: []}
-      grants = new Grants('user', {id: 1, orgId: 2}, {roles, permissions})
+      grants = new Grants(['user'], {id: 1, orgId: 2}, {roles, permissions})
       getAffectedCriteriaValues = (req, prop) => [req[prop]]
     })
 
@@ -133,7 +133,7 @@ describe('lib/middleware/auth.ts', () => {
     })
 
     it('should pass request if global access', () => {
-      grants = new Grants('root', {}, {roles, permissions})
+      grants = new Grants(['root'], {}, {roles, permissions})
 
       const middleware = createMiddleware({
         permission: 'read',

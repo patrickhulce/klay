@@ -45,18 +45,19 @@ function createDefaultGetUserContext(authConf: IAuthConfiguration): (req: Reques
   }
 }
 
-function defaultGetRole(userContext: any): string {
-  return userContext && (userContext.role as string)
+function defaultGetRoles(userContext: any): string[] | undefined {
+  const role = userContext && userContext.role
+  if (typeof role === 'string') return [role]
 }
 
 export function createGrantCreationMiddleware(authConf: IAuthConfiguration): IAnontatedHandler {
   const getUserContext = authConf.getUserContext || createDefaultGetUserContext(authConf)
-  const getRole = authConf.getRole || defaultGetRole
+  const getRoles = authConf.getRoles || defaultGetRoles
 
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const userContext = await getUserContext(req)
-    const role = await getRole(userContext, req) // tslint:disable-line
-    const grants = new Grants(role, userContext, authConf)
+    const roles = await getRoles(userContext, req) // tslint:disable-line
+    const grants = new Grants(roles, userContext, authConf)
     req.grants = grants
     next()
   }
@@ -68,7 +69,7 @@ export function createGrantValidationMiddleware(auth: IAuthorizationRequired): I
 
   return function(req: Request, res: Response, next: NextFunction): void {
     if (!req.grants) return next(new Error('Cannot validate grants without grant middleware'))
-    if (!req.grants!.role) return next(new AuthenticationError())
+    if (!req.grants.roles.length) return next(new AuthenticationError())
 
     const grants = req.grants
     if (grants.has(auth.permission)) return next()

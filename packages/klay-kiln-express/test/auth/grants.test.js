@@ -104,11 +104,11 @@ describe('lib/auth/grants.ts', () => {
 
       permissions = {'write': ['read'], 'read': [], 'read:public': []}
 
-      grants = new auth.Grants('user', {id: 1, orgId: 2}, {roles, permissions})
+      grants = new auth.Grants(['user'], {id: 1, orgId: 2}, {roles, permissions})
     })
 
     it('should correctly report on global permissions', () => {
-      grants = new auth.Grants('root', {id: 1, orgId: 2}, {roles, permissions})
+      grants = new auth.Grants(['root'], {id: 1, orgId: 2}, {roles, permissions})
       expect(grants.has('write', {orgId: 2})).toBe(true)
       expect(grants.has('write', {orgId: 10})).toBe(true)
       expect(grants.has('write', {})).toBe(true)
@@ -119,7 +119,7 @@ describe('lib/auth/grants.ts', () => {
     })
 
     it('should correctly report on simple permissions', () => {
-      grants = new auth.Grants('user', {id: 1, orgId: 2}, {roles, permissions})
+      grants = new auth.Grants(['user'], {id: 1, orgId: 2}, {roles, permissions})
       expect(grants.has('write', {orgId: 2, userId: 1})).toBe(true)
       expect(grants.has('write', {orgId: 10})).toBe(false)
       expect(grants.has('write', {})).toBe(false)
