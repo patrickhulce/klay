@@ -1,6 +1,6 @@
 import {assert} from 'klay-core'
 import {includes, map, template} from 'lodash'
-import {IAuthConfiguration, IAuthCriteria, IGrants} from '../typedefs'
+import {IAuthConfiguration, IAuthCriteriaPropertyValues, IGrants} from '../typedefs'
 
 function assertValidCriteria(criteria: string): void {
   if (criteria === '*') return
@@ -48,7 +48,7 @@ export function computeAllGrants(
   return grants
 }
 
-function serializeCriteriaValues(criteriaValues: IAuthCriteria): string {
+function serializeCriteriaValues(criteriaValues: IAuthCriteriaPropertyValues): string {
   return map(criteriaValues, (value, prop) => `${prop}=${value}`)
     .sort()
     .join(',')
@@ -68,7 +68,7 @@ export class Grants implements IGrants {
     this._grants = computeAllGrants(role, userContext, conf)
   }
 
-  public has(permission: string, criteriaValues?: IAuthCriteria): boolean {
+  public has(permission: string, criteriaValues?: IAuthCriteriaPropertyValues): boolean {
     const criteria = criteriaValues ? serializeCriteriaValues(criteriaValues) : '*'
     return this._grants.has(`${permission}!*`) || this._grants.has(`${permission}!${criteria}`)
   }

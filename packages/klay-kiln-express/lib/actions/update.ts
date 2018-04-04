@@ -21,7 +21,7 @@ export const updateAction: IAction = {
     byList: false,
     idParamName: undefined,
   },
-  getCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
+  getAffectedCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
     return function(req: Request, property: string): AuthCriteriaValue[] {
       const incomingItems: any[] = [].concat(req.validated!.body)
       const existingItems: any[] = [].concat(req.actionTarget)

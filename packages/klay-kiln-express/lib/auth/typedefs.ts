@@ -1,13 +1,18 @@
 import * as express from 'express'
 import {IKiln} from 'klay-kiln'
+import { ActionType } from '..'
 
-export type AuthCriteriaProperties = string[]
+export type AuthCriteriaProperty = string
+
+export type AuthCriteriaPropertySet = AuthCriteriaProperty[]
 
 export type AuthCriteriaValue = string | number | boolean
 
+export type ChildPermissions = string
+
 export interface IGrantTemplate {
   permission: string
-  criteria: AuthCriteriaProperties | string
+  criteria: AuthCriteriaPropertySet | string
 }
 
 export interface IAuthRoles {
@@ -26,13 +31,13 @@ export interface IAuthConfiguration {
   getRole?(userContext: any, req: express.Request): string | undefined
 }
 
-export interface IAuthCriteria {
+export interface IAuthCriteriaPropertyValues {
   [criteriaProperty: string]: AuthCriteriaValue
 }
 
 export interface IGrants {
   role?: string
-  has(permission: string, criteria?: IAuthCriteria): boolean
+  has(permission: string, criteria?: IAuthCriteriaPropertyValues): boolean
 }
 
 export interface IOAuthOptions {
@@ -40,4 +45,21 @@ export interface IOAuthOptions {
   kiln?: IKiln
   databaseExtension?: string
   lookupUserContextByPassword?(username: string, password: string): Promise<object | undefined>
+}
+
+export type GetCriteriaValues = (
+  req: express.Request,
+  criteriaProperty: string,
+) => AuthCriteriaValue[]
+
+export interface IAuthorizationRequired {
+  permission: string
+  criteria: AuthCriteriaPropertySet[]
+  getAffectedCriteriaValues?: GetCriteriaValues
+}
+
+export interface IAuthModelOptions {
+  actions: ActionType[]
+  permission: string
+  criteria: AuthCriteriaPropertySet[]
 }

@@ -2,15 +2,22 @@ import * as express from 'express'
 import {IModel} from 'klay-core'
 import {IDatabaseExecutor, IQueryOrder} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
-import {AuthCriteriaProperties, AuthCriteriaValue, IGrants} from './auth/typedefs'
+import {
+  GetCriteriaValues,
+  IAuthModelOptions,
+  IAuthorizationRequired,
+  IGrants,
+} from './auth/typedefs'
 import {ISwaggerModelOptions} from './swagger/typedefs'
 
 declare module 'klay-core/dist/typedefs' {
   export interface IModel {
+    authorization(options?: IAuthModelOptions | IAuthModelOptions[]): IModel
     swagger(options?: ISwaggerModelOptions): IModel
   }
 
   export interface IModelSpecification {
+    authorization?: IAuthModelOptions[]
     swagger?: ISwaggerModelOptions
   }
 }
@@ -85,7 +92,10 @@ export interface IAnnotatedParamsHandler extends express.RequestParamHandler {
 export interface IAction {
   type: ActionType
   defaultOptions: IActionOptions
-  getCriteriaValues?(model: IKilnModel, options: IActionOptions): GetCriteriaValues | undefined
+  getAffectedCriteriaValues?(
+    model: IKilnModel,
+    options: IActionOptions,
+  ): GetCriteriaValues | undefined
   authorization(model: IKilnModel, options: IActionOptions): IAuthorizationRequired | undefined
   queryModel(model: IKilnModel, options: IActionOptions): IModel | undefined
   paramsModel(model: IKilnModel, options: IActionOptions): IModel | undefined
@@ -145,17 +155,6 @@ export interface IAdditionalMiddleware {
   postValidation?: IAnontatedHandler | IAnontatedHandler[]
   preResponse?: IAnontatedHandler | IAnontatedHandler[]
   postResponse?: IAnontatedHandler | IAnontatedHandler[]
-}
-
-export type GetCriteriaValues = (
-  req: express.Request,
-  criteriaProperty: string,
-) => AuthCriteriaValue[]
-
-export interface IAuthorizationRequired {
-  permission: string
-  criteria: AuthCriteriaProperties[]
-  getCriteriaValues?: GetCriteriaValues
 }
 
 export interface IRouteInput extends IModelSet {

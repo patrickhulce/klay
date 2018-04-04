@@ -15,15 +15,15 @@ const actionTypesWithTarget = new Set([ActionType.Read, ActionType.Update, Actio
 export const defaultAction = {
   defaultOptions: {},
   authorization(model: IKilnModel, options: IActionOptions): IAuthorizationRequired {
-    const getCriteriaValuesFn = ((this as any) as IAction).getCriteriaValues
+    const getAffectedCriteriaValuesFn = ((this as any) as IAction).getAffectedCriteriaValues
 
-    let getCriteriaValues
-    if (typeof getCriteriaValuesFn === 'function') {
-      getCriteriaValues = getCriteriaValuesFn(model, options)
+    let getAffectedCriteriaValues
+    if (typeof getAffectedCriteriaValuesFn === 'function') {
+      getAffectedCriteriaValues = getAffectedCriteriaValuesFn(model, options)
     }
 
     // TODO: infer permission and criteria from model
-    return {permission: '', criteria: [], getCriteriaValues}
+    return {permission: '', criteria: [], getAffectedCriteriaValues}
   },
   queryModel(model: IKilnModel, options: IActionOptions): undefined {
     return undefined

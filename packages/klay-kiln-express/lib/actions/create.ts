@@ -19,7 +19,7 @@ export const createAction: IAction = {
   defaultOptions: {
     byList: false,
   },
-  getCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
+  getAffectedCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
     return function(req: Request, property: string): AuthCriteriaValue[] {
       const items: any[] = [].concat(req.validated!.body)
       return items.map(item => item[property])

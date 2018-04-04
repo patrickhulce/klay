@@ -99,7 +99,7 @@ describe('lib/middleware/auth.ts', () => {
   })
 
   describe('#createGrantValidationMiddleware', () => {
-    let roles, permissions, grants, getCriteriaValues
+    let roles, permissions, grants, getAffectedCriteriaValues
     const createMiddleware = middlewareModule.createGrantValidationMiddleware
 
     beforeEach(() => {
@@ -113,19 +113,19 @@ describe('lib/middleware/auth.ts', () => {
 
       permissions = {write: ['read'], read: []}
       grants = new Grants('user', {id: 1, orgId: 2}, {roles, permissions})
-      getCriteriaValues = (req, prop) => [req[prop]]
+      getAffectedCriteriaValues = (req, prop) => [req[prop]]
     })
 
-    it('should throw when getCriteriaValues not set', () => {
+    it('should throw when getAffectedCriteriaValues not set', () => {
       const fn = () => createMiddleware({permission: 'read', criteria: [['orgId']]})
-      expect(fn).toThrowError(/getCriteriaValues/)
+      expect(fn).toThrowError(/getAffectedCriteriaValues/)
     })
 
     it('should fail request if grants property not set', () => {
       const middleware = createMiddleware({
         permission: 'read',
         criteria: [['orgId']],
-        getCriteriaValues,
+        getAffectedCriteriaValues,
       })
       middleware({}, {}, next)
       expect(next).toHaveBeenCalledTimes(1)
@@ -138,7 +138,7 @@ describe('lib/middleware/auth.ts', () => {
       const middleware = createMiddleware({
         permission: 'read',
         criteria: [['orgId']],
-        getCriteriaValues,
+        getAffectedCriteriaValues,
       })
 
       middleware({grants}, {}, next)
@@ -150,7 +150,7 @@ describe('lib/middleware/auth.ts', () => {
       const middleware = createMiddleware({
         permission: 'read',
         criteria: [['orgId']],
-        getCriteriaValues,
+        getAffectedCriteriaValues,
       })
 
       middleware({grants, orgId: 2}, {}, next)
@@ -162,7 +162,7 @@ describe('lib/middleware/auth.ts', () => {
       const middleware = createMiddleware({
         permission: 'write',
         criteria: [['userId', 'orgId']],
-        getCriteriaValues,
+        getAffectedCriteriaValues,
       })
 
       middleware({grants, userId: 1, orgId: 2}, {}, next)
@@ -174,7 +174,7 @@ describe('lib/middleware/auth.ts', () => {
       const middleware = createMiddleware({
         permission: 'read',
         criteria: [['userId'], ['orgId']],
-        getCriteriaValues,
+        getAffectedCriteriaValues,
       })
 
       middleware({grants, userId: 100, orgId: 2}, {}, next)
@@ -186,7 +186,7 @@ describe('lib/middleware/auth.ts', () => {
       const middleware = createMiddleware({
         permission: 'read',
         criteria: [['orgId']],
-        getCriteriaValues,
+        getAffectedCriteriaValues,
       })
 
       middleware({grants, orgId: 3}, {}, next)
@@ -198,7 +198,7 @@ describe('lib/middleware/auth.ts', () => {
       const middleware = createMiddleware({
         permission: 'read',
         criteria: [['userId', 'orgId']],
-        getCriteriaValues,
+        getAffectedCriteriaValues,
       })
 
       middleware({grants, userId: 1, orgId: 2}, {}, next)

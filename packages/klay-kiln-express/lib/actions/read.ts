@@ -20,7 +20,7 @@ export const readAction: IAction = {
     byId: true,
     idParamName: undefined,
   },
-  getCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
+  getAffectedCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
     return function(req: Request, property: string): AuthCriteriaValue[] {
       return [req.actionTarget[property]]
     }

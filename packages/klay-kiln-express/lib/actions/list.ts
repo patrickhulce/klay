@@ -123,7 +123,7 @@ export const listAction: IAction = {
     maxLimit: 1000,
     defaultLimit: 10,
   },
-  getCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
+  getAffectedCriteriaValues(model: IKilnModel, options: IActionOptions): GetCriteriaValues {
     return function(req: Request, property: string): AuthCriteriaValue[] {
       const payload =
         options.expectQueryIn === ValidateIn.Query ? req.validated!.query : req.validated!.body

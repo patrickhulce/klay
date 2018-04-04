@@ -8,7 +8,7 @@ import {Grants} from '../auth/grants'
 import {
   IAnontatedHandler,
   IAuthConfiguration,
-  IAuthCriteria,
+  IAuthCriteriaPropertyValues,
   IAuthorizationRequired,
 } from '../typedefs'
 
@@ -63,7 +63,8 @@ export function createGrantCreationMiddleware(authConf: IAuthConfiguration): IAn
 }
 
 export function createGrantValidationMiddleware(auth: IAuthorizationRequired): IAnontatedHandler {
-  if (!auth.getCriteriaValues) throw new Error('Must define getCriteriaValues for grant validation')
+  if (!auth.getAffectedCriteriaValues)
+    throw new Error('Must define getAffectedCriteriaValues for grant validation')
 
   return function(req: Request, res: Response, next: NextFunction): void {
     if (!req.grants) return next(new Error('Cannot validate grants without grant middleware'))
@@ -73,16 +74,21 @@ export function createGrantValidationMiddleware(auth: IAuthorizationRequired): I
     if (grants.has(auth.permission)) return next()
 
     for (const criteriaProperties of auth.criteria) {
-      const requiredCriteria: IAuthCriteria[] = []
+      const requiredPropertyValues: IAuthCriteriaPropertyValues[] = []
+      // Loop through all criteria properties to build our criteria value objects
       for (const property of criteriaProperties) {
-        const values = auth.getCriteriaValues!(req, property)
+        // Route will return all the affected values for the given criteria property
+        const values = auth.getAffectedCriteriaValues!(req, property)
+        // Add the criteria property to the appropriate object
         values.forEach((value, i) => {
-          requiredCriteria[i] = requiredCriteria[i] || {}
-          requiredCriteria[i][property] = value
+          requiredPropertyValues[i] = requiredPropertyValues[i] || {}
+          requiredPropertyValues[i][property] = value
         })
       }
 
-      const passed = requiredCriteria.every(criteria => grants.has(auth.permission, criteria))
+      // All of the properties must match to pass
+      const passed = requiredPropertyValues.every(criteria => grants.has(auth.permission, criteria))
+      // If any one of the criteria passes, the request is authorized
       if (passed) return next()
     }
 
