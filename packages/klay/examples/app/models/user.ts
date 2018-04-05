@@ -1,11 +1,10 @@
 import {modelContext} from '../model-context'
 import {createHmac} from 'crypto'
-import {IModel, ValidationPhase} from '../../../lib'
+import {IModel, ValidationPhase, READ_ACTIONS, WRITE_ACTIONS} from '../../../lib'
 import {ConstraintType, SortDirection} from '../../../lib'
-import { AuthRoles } from '../auth';
+import {AuthRoles, Permissions} from '../auth'
 
 const SALT = 'super-secret-salt'
-
 
 export interface IUser {
   id?: number
@@ -48,3 +47,13 @@ export const userModel: IModel = modelContext
   })
   .index([['email'], ['password']])
   .index([{property: ['updatedAt'], direction: SortDirection.Descending}])
+  .authorization({
+    actions: READ_ACTIONS,
+    permission: Permissions.UserView,
+    criteria: [['accountId']],
+  })
+  .authorization({
+    actions: WRITE_ACTIONS,
+    permission: Permissions.UserManage,
+    criteria: [['id'], ['accountId']],
+  })

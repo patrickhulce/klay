@@ -1,8 +1,15 @@
 import {modelContext} from '../model-context'
 import {createHmac} from 'crypto'
-import {IModel, ValidationPhase} from '../../../lib'
-import {ConstraintType, SortDirection} from '../../../lib'
+import {
+  IModel,
+  ValidationPhase,
+  ConstraintType,
+  SortDirection,
+  READ_ACTIONS,
+  WRITE_ACTIONS,
+} from '../../../lib'
 import {values, kebabCase} from 'lodash'
+import {Permissions} from '../auth'
 
 export enum AccountPlan {
   Free = 'free',
@@ -24,9 +31,7 @@ export const accountModel: IModel = modelContext
   .object()
   .children({
     id: modelContext.integerId(),
-    name: modelContext
-      .string()
-      .max(100),
+    name: modelContext.string().max(100),
     slug: modelContext
       .string()
       .max(100)
@@ -39,3 +44,9 @@ export const accountModel: IModel = modelContext
   })
   .index([['name']])
   .index([{property: ['updatedAt'], direction: SortDirection.Descending}])
+  .authorization({actions: READ_ACTIONS, permission: Permissions.AccountView, criteria: [['id']]})
+  .authorization({
+    actions: WRITE_ACTIONS,
+    permission: Permissions.AccountManage,
+    criteria: [['id']],
+  })

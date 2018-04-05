@@ -2,8 +2,10 @@ import * as express from 'express'
 import {defaultModelContext, IModel} from 'klay-core'
 import {getPrimaryKeyField, IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
+import {includes} from 'lodash'
 import {
   ActionType,
+  AuthCriteriaPropertySet,
   IAction,
   IActionOptions,
   IAnontatedHandler,
@@ -14,16 +16,29 @@ const actionTypesWithTarget = new Set([ActionType.Read, ActionType.Update, Actio
 
 export const defaultAction = {
   defaultOptions: {},
-  authorization(model: IKilnModel, options: IActionOptions): IAuthorizationRequired {
-    const getAffectedCriteriaValuesFn = ((this as any) as IAction).getAffectedCriteriaValues
+  authorization(kilnModel: IKilnModel, options: IActionOptions): IAuthorizationRequired {
+    const action = (this as any) as IAction
+    const getAffectedCriteriaValuesFn = action.getAffectedCriteriaValues
 
     let getAffectedCriteriaValues
     if (typeof getAffectedCriteriaValuesFn === 'function') {
-      getAffectedCriteriaValues = getAffectedCriteriaValuesFn(model, options)
+      getAffectedCriteriaValues = getAffectedCriteriaValuesFn(kilnModel, options)
     }
 
-    // TODO: infer permission and criteria from model
-    return {permission: '', criteria: [], getAffectedCriteriaValues}
+    let permission = ''
+    let criteria: AuthCriteriaPropertySet[] = []
+    if (kilnModel.model.spec.authorization) {
+      const auth = kilnModel.model.spec.authorization.find(entry =>
+        includes(entry.actions, action.type),
+      )
+
+      if (auth) {
+        permission = auth.permission
+        criteria = auth.criteria
+      }
+    }
+
+    return {permission, criteria, getAffectedCriteriaValues}
   },
   queryModel(model: IKilnModel, options: IActionOptions): undefined {
     return undefined

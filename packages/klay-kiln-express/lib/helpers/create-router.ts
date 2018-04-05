@@ -7,7 +7,6 @@ import {Spec as SwaggerSpec} from 'swagger-schema-official'
 import {createSwaggerSpecHandler, createSwaggerUIHandler} from '../middleware'
 import {buildSpecification} from '../swagger/spec'
 import {
-  ActionType,
   EXPRESS_ROUTER,
   HTTPMethod,
   IActionRouteOptions,
@@ -21,8 +20,6 @@ import {
 } from '../typedefs'
 import {createActionRoute, createRoute} from './create-route'
 
-const READ_ACTIONS = new Set([ActionType.List, ActionType.Read])
-
 export function createRouteOrActionRoute(
   inputOrOptions: IRouteInput | IActionRouteOptions,
   routerOptions: IRouterOptions,
@@ -31,9 +28,6 @@ export function createRouteOrActionRoute(
 ): IRoute {
   const actionType = (inputOrOptions as any).type
   if (typeof actionType === 'string') {
-    const authorization = READ_ACTIONS.has(actionType as ActionType)
-      ? routerOptions.readAuthorization
-      : routerOptions.writeAuthorization
     const inheritedRouterOptions = routerOptions.defaults as IActionRouteOptions
     const routeOptions = inputOrOptions as IActionRouteOptions
     if (!kilnModel) throw new Error('Cannot create action route without kiln model')
@@ -42,7 +36,6 @@ export function createRouteOrActionRoute(
     return createActionRoute(
       {
         ...inheritedRouterOptions,
-        authorization,
         ...routeOptions,
       },
       kilnModel,

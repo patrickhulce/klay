@@ -1,6 +1,6 @@
 import {modelContext} from '../model-context'
-import {IModel, ValidationPhase} from '../../../lib'
-import {ConstraintType, SortDirection} from '../../../lib'
+import {IModel, ValidationPhase, ConstraintType, SortDirection, WRITE_ACTIONS} from '../../../lib'
+import {Permissions} from '../auth'
 
 export const postModel: IModel = modelContext
   .object()
@@ -24,3 +24,8 @@ export const postModel: IModel = modelContext
     updatedAt: modelContext.updatedAt(),
   })
   .index([['userId'], {property: ['updatedAt'], direction: SortDirection.Descending}])
+  .authorization({
+    actions: WRITE_ACTIONS,
+    permission: Permissions.PostManage,
+    criteria: [['accountId']],
+  })

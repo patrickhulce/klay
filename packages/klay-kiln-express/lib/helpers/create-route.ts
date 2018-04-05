@@ -9,6 +9,7 @@ import {
   IActionRouteOptions,
   IAdditionalMiddleware,
   IAnontatedHandler,
+  IAuthorizationRequired,
   IRoute,
   IRouteInput,
   IRouteParams,
@@ -88,9 +89,13 @@ export function createActionRoute(
   options = {...action.defaultOptions, ...options}
 
   const defaultAuthorization = action.authorization(kilnModel, options)
-  const authorization = options.authorization
-    ? {...defaultAuthorization, ...options.authorization}
-    : undefined
+
+  let authorization: IAuthorizationRequired | undefined
+  if (options.authorization) {
+    authorization = {...defaultAuthorization, ...options.authorization}
+  } else if (defaultAuthorization && defaultAuthorization.permission) {
+    authorization = {...defaultAuthorization}
+  }
 
   return createRoute({
     authorization,

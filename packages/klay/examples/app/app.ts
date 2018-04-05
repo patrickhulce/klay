@@ -46,8 +46,6 @@ const routerMap: IRouterMap = {
   },
   '/v1/accounts': {
     modelName: ModelId.Account,
-    readAuthorization: {permission: Permissions.AccountView, criteria: [['id']]},
-    writeAuthorization: {permission: Permissions.AccountManage, criteria: [['id']]},
     routes: {
       ...CRUD_ROUTES,
       'POST /signup': {
@@ -89,14 +87,10 @@ const routerMap: IRouterMap = {
   },
   '/v1/users': {
     modelName: ModelId.User,
-    readAuthorization: {permission: Permissions.UserView, criteria: [['accountId']]},
-    writeAuthorization: {permission: Permissions.UserManage, criteria: [['accountId'], ['id']]},
     routes: CRUD_ROUTES,
   },
   '/v1/posts': {
     modelName: ModelId.Post,
-    readAuthorization: {permission: Permissions.PostManage, criteria: [['accountId']]},
-    writeAuthorization: {permission: Permissions.PostManage, criteria: [['accountId']]},
     routes: {
       'GET /': {type: ActionType.List},
       'POST /search': {type: ActionType.List, expectQueryIn: ValidateIn.Body},
