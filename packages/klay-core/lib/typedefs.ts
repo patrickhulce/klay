@@ -237,6 +237,8 @@ export enum DateFormat {
   UnixTimestamp = 'unix-timestamp',
 }
 
+export {StringFormat} from './extensions/strings'
+
 export const FALLBACK_FORMAT = '___FALLBACK_FORMAT___'
 export const ALL_FORMATS = '___ALL_FORMATS___'
 export const PHASES = values(ValidationPhase)

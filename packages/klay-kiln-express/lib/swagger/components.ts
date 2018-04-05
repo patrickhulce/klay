@@ -85,6 +85,8 @@ function buildBaseSchema(model: IModel): swagger.BaseSchema {
       break
     case ModelType.String:
       schema.type = 'string'
+      if (model.spec.format) schema.format = model.spec.format
+
       setIfDefined(schema, 'minLength', model.spec.min)
       setIfDefined(schema, 'maxLength', model.spec.max)
       break
@@ -92,7 +94,6 @@ function buildBaseSchema(model: IModel): swagger.BaseSchema {
       schema.type = 'boolean'
       break
     case ModelType.DateTime:
-      // TODO: handle date-only
       schema.type = 'string'
       schema.format = 'date-time'
       break

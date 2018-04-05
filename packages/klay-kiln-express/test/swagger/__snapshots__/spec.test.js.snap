@@ -34,6 +34,7 @@ Object {
           "type": "integer",
         },
         "email": Object {
+          "format": "email",
           "maxLength": 250,
           "type": "string",
         },
@@ -130,6 +131,7 @@ Object {
     },
     "DestroyUsersPayload": Object {
       "items": Object {
+        "format": "uuid",
         "type": "string",
       },
       "type": "array",
@@ -264,6 +266,7 @@ Object {
           "type": "string",
         },
         "email": Object {
+          "format": "email",
           "maxLength": 250,
           "type": "string",
         },
@@ -272,6 +275,7 @@ Object {
           "type": "string",
         },
         "id": Object {
+          "format": "uuid",
           "type": "string",
         },
         "isAdmin": Object {
@@ -315,6 +319,7 @@ Object {
           "type": "string",
         },
         "trackingId": Object {
+          "format": "uuid",
           "type": "string",
         },
       },
@@ -337,6 +342,7 @@ Object {
           "type": "string",
         },
         "email": Object {
+          "format": "email",
           "maxLength": 250,
           "type": "string",
         },
@@ -345,6 +351,7 @@ Object {
           "type": "string",
         },
         "id": Object {
+          "format": "uuid",
           "type": "string",
         },
         "isAdmin": Object {
@@ -394,6 +401,7 @@ Object {
           "type": "string",
         },
         "trackingId": Object {
+          "format": "uuid",
           "type": "string",
         },
       },
@@ -423,6 +431,7 @@ Object {
             "name": "body",
             "required": true,
             "schema": Object {
+              "format": "uuid",
               "type": "string",
             },
           },
@@ -471,12 +480,14 @@ Object {
             "type": "string",
           },
           Object {
+            "format": "uuid",
             "in": "query",
             "name": "id[$eq]",
             "required": false,
             "type": "string",
           },
           Object {
+            "format": "uuid",
             "in": "query",
             "name": "id[$ne]",
             "required": false,
@@ -489,12 +500,14 @@ Object {
             "type": "string",
           },
           Object {
+            "format": "uuid",
             "in": "query",
             "name": "id[$in][]",
             "required": false,
             "type": "string",
           },
           Object {
+            "format": "uuid",
             "in": "query",
             "name": "id[$nin][]",
             "required": false,
@@ -553,12 +566,14 @@ Object {
             "type": "boolean",
           },
           Object {
+            "format": "email",
             "in": "query",
             "name": "email[$eq]",
             "required": false,
             "type": "string",
           },
           Object {
+            "format": "email",
             "in": "query",
             "name": "email[$ne]",
             "required": false,
@@ -571,12 +586,14 @@ Object {
             "type": "string",
           },
           Object {
+            "format": "email",
             "in": "query",
             "name": "email[$in][]",
             "required": false,
             "type": "string",
           },
           Object {
+            "format": "email",
             "in": "query",
             "name": "email[$nin][]",
             "required": false,
@@ -851,6 +868,7 @@ Object {
       "delete": Object {
         "parameters": Array [
           Object {
+            "format": "uuid",
             "in": "params",
             "name": "id",
             "required": true,
@@ -871,6 +889,7 @@ Object {
       "get": Object {
         "parameters": Array [
           Object {
+            "format": "uuid",
             "in": "params",
             "name": "id",
             "required": true,
@@ -893,6 +912,7 @@ Object {
       "put": Object {
         "parameters": Array [
           Object {
+            "format": "uuid",
             "in": "params",
             "name": "id",
             "required": true,
