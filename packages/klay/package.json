@@ -2,8 +2,8 @@
   "name": "klay",
   "version": "2.4.0",
   "description": "Isomorphic and extensible validation library for JavaScript.",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/lib/index.js",
+  "types": "./dist/lib/index.d.ts",
   "scripts": {
     "start": "node dist/examples/app/run.js",
     "build": "tsc",
