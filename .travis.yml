@@ -32,3 +32,4 @@ script:
 after_success:
   - cat coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
   - yarn build:docs
+  - test $TRAVIS_BRANCH = "master" && lerna publish --canary --npm-tag=next --yes
