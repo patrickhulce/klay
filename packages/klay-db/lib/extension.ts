@@ -1,3 +1,4 @@
+import {createHmac} from 'crypto'
 import {
   IKlayExtension,
   IModel,
@@ -16,6 +17,7 @@ import {
   IDatabaseSetterOptions,
   IDatabaseSpecification,
   IIndexPropertyInput,
+  IPasswordOptions,
   SupplyWithPreset,
 } from './typedefs'
 
@@ -112,5 +114,21 @@ export class DatabaseExtension implements IKlayExtension {
           phase: ValidationPhase.Parse,
           supplyWith: SupplyWithPreset.Date,
         })
+    context.password = (options: IPasswordOptions) => {
+      const algorithm = options.algorithm || 'sha1'
+      const length = algorithm === 'sha1' ? 40 : 56
+
+      return context
+        .string()
+        .max(length)
+        .coerce(result => {
+          const password = result.value
+          if (/^[a-f0-9]+$/.test(password) && password.length === length) return result
+          if (options.model) options.model.validate(password, {failLoudly: true})
+
+          const hash = createHmac(algorithm, options.salt).update(password)
+          return result.setValue(hash.digest('hex'))
+        }, ValidationPhase.ValidateChildren)
+    }
   }
 }

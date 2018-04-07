@@ -9,7 +9,7 @@ module.exports = state => {
         accountId: state.account.id,
         role: 'user',
         email: 'foo@bar.com',
-        password: 'password',
+        password: 'password1',
         firstName: 'Foo',
         lastName: 'Bar',
       }
@@ -38,7 +38,7 @@ module.exports = state => {
     })
 
     it('should check authorization', async () => {
-      const login = {grant_type: 'password', username: 'foo@bar.com', password: 'password'}
+      const login = {grant_type: 'password', username: 'foo@bar.com', password: 'password1'}
       const loginResponse = await fetch(`${state.baseURL}/v1/oauth/token`, {
         method: 'POST',
         body: JSON.stringify(login),

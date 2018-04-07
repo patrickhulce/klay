@@ -11,7 +11,7 @@ module.exports = state => {
         accountId: state.account.id,
         role: 'user',
         email: 'unset@bar.com',
-        password: 'password',
+        password: 'password2',
         firstName: 'Foo',
         lastName: 'Bar',
       }

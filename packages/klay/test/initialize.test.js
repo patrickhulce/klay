@@ -27,6 +27,6 @@ describe('e2e', () => {
   describe('teardown', () => {
     it('should power down the server', done => {
       state.server.close(done)
-    })
+    }, 300)
   })
 })

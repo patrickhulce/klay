@@ -2,6 +2,24 @@ const fetch = require('isomorphic-fetch')
 
 module.exports = state => {
   describe('account', () => {
+    it('should reject bad passwords', async () => {
+      const signup = {
+        name: 'CSN Bay Area',
+        firstName: 'Klay',
+        lastName: 'Thompson',
+        email: 'klay@example.com',
+        password: 'password',
+      }
+
+      const response = await fetch(`${state.baseURL}/v1/accounts/signup`, {
+        method: 'POST',
+        body: JSON.stringify(signup),
+        headers: {'content-type': 'application/json'},
+      })
+
+      expect(response.status).toBe(400)
+    })
+
     it('should create an account', async () => {
       const signup = {
         name: 'CSN Bay Area',
@@ -24,6 +42,7 @@ module.exports = state => {
 
       expect(account).toHaveProperty('slug', 'csn-bay-area')
       expect(user.password).toMatch(/^[a-f0-9]{40}$/)
+      console.log(user)
     })
 
     it('should login', async () => {

@@ -1,6 +1,6 @@
 import {modelContext} from '../model-context'
 import {createHmac} from 'crypto'
-import {IModel, ValidationPhase, READ_ACTIONS, WRITE_ACTIONS} from '../../../lib'
+import {assert, IModel, ValidationPhase, READ_ACTIONS, WRITE_ACTIONS} from '../../../lib'
 import {ConstraintType, SortDirection} from '../../../lib'
 import {AuthRoles, Permissions} from '../auth'
 
@@ -18,6 +18,11 @@ export interface IUser {
   updatedAt?: Date
 }
 
+const passwordModel = modelContext.string().max(32).validations(result => {
+  assert.ok(result.value !== 'password', 'password is too simple')
+  return result
+})
+
 export const userModel: IModel = modelContext
   .object()
   .children({
@@ -31,15 +36,7 @@ export const userModel: IModel = modelContext
       .email()
       .max(250)
       .constrain({type: ConstraintType.Unique}),
-    password: modelContext
-      .string()
-      .max(40)
-      .coerce(value => {
-        if (/^[a-f0-9]{40}$/.test(value.value)) return value
-        const hash = createHmac('sha1', SALT).update(value.value)
-        const hashed = hash.digest('hex')
-        return value.setValue(hashed)
-      }, ValidationPhase.ValidateValue),
+    password: modelContext.password({salt: SALT, model: passwordModel}),
     firstName: modelContext.string().max(100),
     lastName: modelContext.string().max(100),
     createdAt: modelContext.createdAt(),

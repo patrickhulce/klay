@@ -6,6 +6,7 @@ declare module 'klay-core/dist/typedefs' {
     uuidId(): IModel
     createdAt(): IModel
     updatedAt(): IModel
+    password(options: IPasswordOptions): IModel
   }
 
   export interface IModel {
@@ -104,6 +105,12 @@ export enum DatabaseEvent {
   All = '*',
   Create = 'create',
   Update = 'update',
+}
+
+export interface IPasswordOptions {
+  model?: IModel
+  algorithm?: 'sha1'|'sha224'
+  salt: string
 }
 
 export type PropertyPath = string[]

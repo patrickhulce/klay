@@ -53,6 +53,7 @@ const routerMap: IRouterMap = {
           .clone()
           .pick(['name', 'slug'])
           .merge(userModel.clone().pick(['firstName', 'lastName', 'email', 'password'])),
+        // TODO: test that errors thrown here get proper response codes set
         async handler(req: express.Request, res: express.Response) {
           const response = await accountExecutor.transaction(async transaction => {
             const payload = req.validated!.body
