@@ -4,7 +4,8 @@
 		"packages/*"
 	],
 	"scripts": {
-		"build": "lerna run build",
+		"clean": "lerna exec --parallel 'rm -fR dist/'",
+		"build": "npm run clean && lerna run build",
 		"build:watch": "lerna exec --parallel 'tsc -w'",
 		"build:docs": "lerna exec ../../scripts/build-docs.sh",
 		"test": "npm run build && npm run test:lint && npm run test:unit",
