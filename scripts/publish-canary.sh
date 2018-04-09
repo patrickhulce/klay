@@ -14,4 +14,6 @@ author=Patrick Hulce <patrick.hulce@gmail.com>
 EOF
 fi
 
-lerna publish --canary --npm-tag=next --yes
+npm whoami
+npm access ls-packages
+lerna publish --canary --npm-tag=next --yes || exit 1
