@@ -15,5 +15,4 @@ elif [ $? != 0 ]; then
 fi
 
 npm whoami || exit 1
-npm access ls-packages
 lerna publish --canary --npm-tag=next --yes
