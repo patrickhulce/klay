@@ -34,8 +34,6 @@ const userExecutor = kiln.build(ModelId.User, sqlExtension) as IDatabaseExecutor
 
 const routerMap: IRouterMap = {
   '/v1/oauth': {
-    // TODO: remove this line after https://github.com/patrickhulce/klay/issues/86, model is not needed
-    modelName: ModelId.User,
     routes: {
       'POST /token': {
         bodyModel: oauthTokenRequestModel,

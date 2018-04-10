@@ -103,11 +103,15 @@ export function createAndMergeRouters(
     let subRouter = routerOrOptions as IRouter
     if (!Array.isArray(routerOrOptions.routes)) {
       const routerOptions = routerOrOptions as IRouterOptions
-      subRouter = kiln.build<IRouter, IRouterOptions>(
-        routerOptions.modelName!,
-        EXPRESS_ROUTER,
-        routerOptions,
-      )
+      if (routerOptions.modelName) {
+        subRouter = kiln.build<IRouter, IRouterOptions>(
+          routerOptions.modelName!,
+          EXPRESS_ROUTER,
+          routerOptions,
+        )
+      } else {
+        subRouter = createRouter(routerOptions)
+      }
     }
 
     router.use(prefix, subRouter.router)
