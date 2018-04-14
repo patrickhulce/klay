@@ -40,9 +40,9 @@
     "bluebird": "^3.5.1",
     "express": "^4.16.2",
     "jsonwebtoken": "^8.2.0",
-    "klay-core": "^2.4.0",
-    "klay-db": "^2.4.0",
-    "klay-kiln": "^2.4.0",
+    "klay-core": "2.4.0",
+    "klay-db": "2.4.0",
+    "klay-kiln": "2.4.0",
     "lodash": "^4.16.2"
   },
   "devDependencies": {

@@ -24,11 +24,11 @@
   },
   "homepage": "https://github.com/patrickhulce/klay#readme",
   "dependencies": {
-    "klay-core": "^2.4.0",
-    "klay-db": "^2.4.0",
-    "klay-kiln": "^2.4.0",
-    "klay-kiln-express": "^2.4.0",
-    "klay-kiln-sql": "^2.4.0"
+    "klay-core": "2.4.0",
+    "klay-db": "2.4.0",
+    "klay-kiln": "2.4.0",
+    "klay-kiln-express": "2.4.0",
+    "klay-kiln-sql": "2.4.0"
   },
   "devDependencies": {
     "@patrickhulce/lint": "^2.1.1",

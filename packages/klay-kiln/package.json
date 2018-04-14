@@ -42,7 +42,7 @@
     }
   },
   "dependencies": {
-    "klay-core": "^2.4.0",
+    "klay-core": "2.4.0",
     "lodash": "^4.15.0"
   },
   "devDependencies": {
