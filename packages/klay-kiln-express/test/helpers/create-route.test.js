@@ -9,9 +9,23 @@ describe('lib/helpers/create-route.ts', () => {
   })
 
   it('should return the middleware function', () => {
-    const handler = jest.fn()
+    const handler = jest.fn().mockReturnValue(1)
     const route = createRoute({handler})
-    expect(route).toMatchObject({middleware: [handler]})
+    expect(route.middleware[0]({}, {}, jest.fn())).toEqual(1)
+  })
+
+  it('should catch async errors from handler', async () => {
+    const err = new Error('Oops')
+    const handler = jest.fn().mockRejectedValue(err)
+    const next = jest.fn()
+    const route = createRoute({handler})
+    try {
+      await route.middleware[0]({}, {}, next)
+    } catch (err) {
+      // noop, expect it to throw
+    } finally {
+      expect(next).toHaveBeenCalledWith(err)
+    }
   })
 
   it('should add extra middleware', () => {
@@ -19,7 +33,8 @@ describe('lib/helpers/create-route.ts', () => {
     const extra = jest.fn()
     const middleware = {preValidation: extra}
     const route = createRoute({handler, middleware})
-    expect(route).toMatchObject({middleware: [extra, handler]})
+    expect(route.middleware[0]).toEqual(extra)
+    expect(typeof route.middleware[1]).toEqual('function')
   })
 
   it('should add extra middleware as array', () => {
@@ -28,7 +43,8 @@ describe('lib/helpers/create-route.ts', () => {
     const extraB = jest.fn()
     const middleware = {postResponse: [extraA, extraB]}
     const route = createRoute({handler, middleware})
-    expect(route).toMatchObject({middleware: [handler, extraA, extraB]})
+    expect(route.middleware[1]).toEqual(extraA)
+    expect(route.middleware[2]).toEqual(extraB)
   })
 
   it('should add paramHandlers', () => {

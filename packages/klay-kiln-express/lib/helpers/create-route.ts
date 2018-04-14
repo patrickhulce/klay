@@ -16,6 +16,18 @@ import {
   ValidateIn,
 } from '../typedefs'
 
+function wrapAsyncMiddleware(middleware?: IAnontatedHandler): IAnontatedHandler | undefined {
+  if (!middleware || middleware.length >= 4) return middleware
+  return (req: express.Request, res: express.Response, next: express.NextFunction): any => {
+    const result = middleware(req, res, next)
+    if (result && typeof result.catch === 'function') {
+      result.catch(next)
+    }
+
+    return result
+  }
+}
+
 function createParamHandlers(model?: IModel): IRouteParams {
   const handlers: IRouteParams = {}
   forEach(model && (model.spec.children as IModelChild[]), child => {
@@ -67,10 +79,10 @@ export function createRoute(input: IRouteInput): IRoute {
   extendMiddleware(middleware, ValidateIn.Query, models.queryModel)
   extendMiddleware(middleware, ValidateIn.Body, models.bodyModel)
   extendMiddleware(middleware, inputMiddleware.postValidation)
-  extendMiddleware(middleware, input.lookupActionTarget)
+  extendMiddleware(middleware, wrapAsyncMiddleware(input.lookupActionTarget))
   extendMiddleware(middleware, authMiddleware)
   extendMiddleware(middleware, inputMiddleware.preResponse)
-  extendMiddleware(middleware, input.handler)
+  extendMiddleware(middleware, wrapAsyncMiddleware(input.handler))
   extendMiddleware(middleware, inputMiddleware.postResponse)
 
   return {...models, middleware, paramHandlers}
