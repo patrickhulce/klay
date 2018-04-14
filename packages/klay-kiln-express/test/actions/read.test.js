@@ -3,23 +3,23 @@ const uuid = require('uuid').v4
 const utils = require('../utils')
 
 describe('lib/actions/read.ts', () => {
-  let state, kiln, executor, readStub
+  let state, executor, readStub
 
   beforeEach(() => {
     state = utils.state()
-    kiln = state.kiln
+
     executor = state.executor
     readStub = jest.spyOn(executor, 'findByIdOrThrow').mockReturnValue({foo: 'bar'})
   })
 
   it('should build the route', () => {
-    const route = kiln.build('user', 'express-route', {type: 'read'})
+    const route = utils.createRoute({type: 'read'}, state)
     expect(route.paramsModel).toHaveProperty('isKlayModel', true)
     expect(route.middleware.length).toBeGreaterThan(0)
   })
 
   it('should call read', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'read'})
+    const route = utils.createRoute({type: 'read'}, state)
     const id = uuid()
     const req = {params: {id}}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
@@ -31,7 +31,7 @@ describe('lib/actions/read.ts', () => {
   })
 
   it('should validate params', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'read'})
+    const route = utils.createRoute({type: 'read'}, state)
     const req = {params: {id: 'foo'}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
@@ -50,7 +50,7 @@ describe('lib/actions/read.ts', () => {
     })
 
     it('should pass authorization', async () => {
-      const route = kiln.build('user', 'express-route', {type: 'read', authorization})
+      const route = utils.createRoute({type: 'read', authorization}, state)
       const req = {grants, params: {id: uuid()}}
       const {res} = await utils.runMiddleware(route.middleware, req)
 
@@ -59,7 +59,7 @@ describe('lib/actions/read.ts', () => {
     })
 
     it('should fail authorization', async () => {
-      const route = kiln.build('user', 'express-route', {type: 'read', authorization})
+      const route = utils.createRoute({type: 'read', authorization}, state)
       const req = {grants, params: {id: uuid()}}
       readStub.mockReturnValue({lastName: 'Not-Thompson'})
       const {res, err} = await utils.runMiddleware(route.middleware, req)

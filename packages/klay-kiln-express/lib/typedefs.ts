@@ -212,8 +212,6 @@ export * from './swagger/typedefs'
 
 /* Constants */
 export const DEFAULT_DATABASE_EXTENSION = 'sql'
-export const EXPRESS_ROUTE = 'express-route'
-export const EXPRESS_ROUTER = 'express-router'
 export const READ_ACTIONS = [ActionType.List, ActionType.Read]
 export const WRITE_ACTIONS = [
   ActionType.Create,

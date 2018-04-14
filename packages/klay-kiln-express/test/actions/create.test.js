@@ -1,12 +1,11 @@
 const utils = require('../utils')
 
 describe('lib/actions/create.ts', () => {
-  let state, kiln, executor, createStub, createAllStub
-  const buildRoute = opts => kiln.build('user', 'express-route', opts)
+  let state, executor, createStub, createAllStub
+  const buildRoute = opts => utils.createRoute(opts, state)
 
   beforeEach(() => {
     state = utils.state()
-    kiln = state.kiln
     executor = state.executor
     jest.spyOn(executor, 'findOne').mockReturnValue(undefined)
     createStub = jest.spyOn(executor, 'create').mockImplementation(x => x)

@@ -1,11 +1,11 @@
 const utils = require('../utils')
 
 describe('lib/actions/upsert.ts', () => {
-  let state, kiln, executor, upsertStub, upsertAllStub
+  let state, executor, upsertStub, upsertAllStub
 
   beforeEach(() => {
     state = utils.state()
-    kiln = state.kiln
+
     executor = state.executor
     jest.spyOn(executor, 'findOne').mockReturnValue(undefined)
     upsertStub = jest.spyOn(executor, 'upsert').mockImplementation(x => x)
@@ -13,13 +13,13 @@ describe('lib/actions/upsert.ts', () => {
   })
 
   it('should build the route', () => {
-    const route = kiln.build('user', 'express-route', {type: 'upsert'})
+    const route = utils.createRoute({type: 'upsert'}, state)
     expect(route.bodyModel).toHaveProperty('isKlayModel', true)
     expect(route.middleware.length).toBeGreaterThan(0)
   })
 
   it('should call upsert', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'upsert'})
+    const route = utils.createRoute({type: 'upsert'}, state)
     const req = {body: {...utils.defaultUser}}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).toHaveProperty('validated.body')
@@ -30,7 +30,7 @@ describe('lib/actions/upsert.ts', () => {
   })
 
   it('should call upsertAll', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'upsert', byList: true})
+    const route = utils.createRoute({type: 'upsert', byList: true}, state)
     const req = {body: [{...utils.defaultUser}]}
     const {res, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(req).toHaveProperty('validated.body.0.firstName')
@@ -42,7 +42,7 @@ describe('lib/actions/upsert.ts', () => {
   })
 
   it('should validate body', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'upsert'})
+    const route = utils.createRoute({type: 'upsert'}, state)
     const req = {body: {...utils.defaultUser, age: false}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(next.mock.calls[0][0]).toBeInstanceOf(Error)

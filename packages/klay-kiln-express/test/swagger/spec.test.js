@@ -1,21 +1,22 @@
 const buildSpecification = require('../../lib/swagger/spec').buildSpecification
-const CRUD_ROUTES = require('../../lib/extensions/router').CRUD_ROUTES
+const routerModule = require('../../lib/helpers/create-router')
 const utils = require('../utils')
 
 describe('lib/swagger/spec.ts', () => {
-  let kiln
+  let kiln, state
 
   beforeEach(() => {
-    kiln = utils.state().kiln
+    state = utils.state()
+    kiln = state.kiln
   })
 
   describe('#buildSpec', () => {
     it('should build a specification', () => {
       const routerOpts = {
-        routes: CRUD_ROUTES,
+        routes: routerModule.CRUD_ROUTES,
       }
 
-      const router = kiln.build('user', 'express-router', routerOpts)
+      const router = routerModule.createRouter(routerOpts, state.kilnModel, state.executor)
       const spec = buildSpecification(kiln, router)
       expect(spec).toMatchSnapshot()
     })

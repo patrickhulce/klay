@@ -1,6 +1,5 @@
 import {IKiln, Kiln} from '../../lib'
 import {SQLDialect, SQLExtension} from '../../lib'
-import {RouterExtension, RouteExtension, ActionType} from '../../lib'
 
 import {accountModel} from './models/account'
 import {userModel} from './models/user'
@@ -28,9 +27,3 @@ const sqlOptions = {
 
 export const sqlExtension = new SQLExtension(sqlOptions)
 kiln.addExtension({extension: sqlExtension})
-
-const routeExtension = new RouteExtension({})
-kiln.addExtension({extension: routeExtension})
-
-const routerExtension = new RouterExtension({})
-kiln.addExtension({extension: routerExtension})

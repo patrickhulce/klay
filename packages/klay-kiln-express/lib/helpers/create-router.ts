@@ -2,12 +2,13 @@ import * as express from 'express'
 import {modelAssertions} from 'klay-core'
 import {IDatabaseExecutor} from 'klay-db'
 import {IKiln, IKilnModel} from 'klay-kiln'
-import {entries, forEach, isEqual, map} from 'lodash'
+import {entries, forEach, isEqual, keyBy, map} from 'lodash'
 import {Spec as SwaggerSpec} from 'swagger-schema-official'
 import {createSwaggerSpecHandler, createSwaggerUIHandler} from '../middleware'
 import {buildSpecification} from '../swagger/spec'
 import {
-  EXPRESS_ROUTER,
+  ActionType,
+  DEFAULT_DATABASE_EXTENSION,
   HTTPMethod,
   IActionRouteOptions,
   IRoute,
@@ -17,8 +18,27 @@ import {
   IRouterMap,
   IRouterOptions,
   IRouterRoute,
+  IRoutes,
+  ValidateIn,
 } from '../typedefs'
 import {createActionRoute, createRoute} from './create-route'
+
+export const CRUD_ROUTES: IRoutes = {
+  'GET /': {type: ActionType.List},
+  'POST /search': {type: ActionType.List, expectQueryIn: ValidateIn.Body},
+
+  'POST /': {type: ActionType.Create},
+  'PUT /': {type: ActionType.Update, byId: false},
+  'DELETE /': {type: ActionType.Destroy, byId: false},
+
+  'POST /bulk': {type: ActionType.Create, byList: true},
+  'PUT /bulk': {type: ActionType.Update, byId: false, byList: true},
+  'DELETE /bulk': {type: ActionType.Destroy, byId: false, byList: true},
+
+  'GET /:id': {type: ActionType.Read},
+  'PUT /:id': {type: ActionType.Update},
+  'DELETE /:id': {type: ActionType.Destroy},
+}
 
 export function createRouteOrActionRoute(
   inputOrOptions: IRouteInput | IActionRouteOptions,
@@ -97,6 +117,7 @@ export function createAndMergeRouters(
   routerMap: IRouterMap,
   swaggerOverrides?: Partial<SwaggerSpec>,
 ): IRouter {
+  const models = keyBy(kiln.getModels(), kilnModel => kilnModel.name)
   const router = express.Router()
   const routes: IRouterRoute[] = []
   forEach(routerMap, (routerOrOptions, prefix) => {
@@ -104,11 +125,10 @@ export function createAndMergeRouters(
     if (!Array.isArray(routerOrOptions.routes)) {
       const routerOptions = routerOrOptions as IRouterOptions
       if (routerOptions.modelName) {
-        subRouter = kiln.build<IRouter, IRouterOptions>(
-          routerOptions.modelName!,
-          EXPRESS_ROUTER,
-          routerOptions,
-        )
+        const kilnModel = models[routerOptions.modelName]
+        const databaseExtension = routerOptions.databaseExtension || DEFAULT_DATABASE_EXTENSION
+        const executor = kiln.build<IDatabaseExecutor>(routerOptions.modelName, databaseExtension)
+        subRouter = createRouter(routerOptions, kilnModel, executor)
       } else {
         subRouter = createRouter(routerOptions)
       }

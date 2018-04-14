@@ -3,12 +3,12 @@ const uuid = require('uuid').v4
 const utils = require('../utils')
 
 describe('lib/actions/update.ts', () => {
-  let state, kiln, executor, findStub, updateStub, updateAllStub
-  const buildRoute = opts => kiln.build('user', 'express-route', opts)
+  let state, executor, findStub, updateStub, updateAllStub
+  const buildRoute = opts => utils.createRoute(opts, state)
 
   beforeEach(() => {
     state = utils.state()
-    kiln = state.kiln
+
     executor = state.executor
     findStub = jest.spyOn(executor, 'findByIdOrThrow').mockReturnValue({lastName: 'Thompson'})
     updateStub = jest.spyOn(executor, 'update').mockImplementation(x => x)
@@ -16,18 +16,18 @@ describe('lib/actions/update.ts', () => {
   })
 
   it('should build the route', () => {
-    const route = kiln.build('user', 'express-route', {type: 'update'})
+    const route = utils.createRoute({type: 'update'}, state)
     expect(route.bodyModel).toHaveProperty('isKlayModel', true)
     expect(route.middleware.length).toBeGreaterThan(0)
   })
 
   it('should throw if both byId and byList are set', () => {
-    const fn = () => kiln.build('user', 'express-route', {type: 'update', byList: true})
+    const fn = () => utils.createRoute({type: 'update', byList: true}, state)
     expect(fn).toThrowError(/Cannot update.*byId.*byList/)
   })
 
   it('should call update', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'update'})
+    const route = utils.createRoute({type: 'update'}, state)
     const id = uuid()
     const payload = {
       id,
@@ -46,7 +46,7 @@ describe('lib/actions/update.ts', () => {
   })
 
   it('should call updateAll', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'update', byId: false, byList: true})
+    const route = utils.createRoute({type: 'update', byId: false, byList: true}, state)
     const id = uuid()
     const payload = {
       id,
@@ -66,7 +66,7 @@ describe('lib/actions/update.ts', () => {
   })
 
   it('should validate params', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'update'})
+    const route = utils.createRoute({type: 'update'}, state)
     const req = {params: {id: 'foo'}, body: {...utils.defaultUser, id: uuid()}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
@@ -77,7 +77,7 @@ describe('lib/actions/update.ts', () => {
   })
 
   it('should validate body', async () => {
-    const route = kiln.build('user', 'express-route', {type: 'update'})
+    const route = utils.createRoute({type: 'update'}, state)
     const req = {params: {id: uuid()}, body: {...utils.defaultUser, age: false}}
     const {res, next, nextCalledAll} = await utils.runMiddleware(route.middleware, req)
     expect(next.mock.calls[1][0]).toBeInstanceOf(Error)

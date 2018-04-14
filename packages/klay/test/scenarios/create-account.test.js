@@ -42,7 +42,6 @@ module.exports = state => {
 
       expect(account).toHaveProperty('slug', 'csn-bay-area')
       expect(user.password).toMatch(/^[a-f0-9]{40}$/)
-      console.log(user)
     })
 
     it('should login', async () => {

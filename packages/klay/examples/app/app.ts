@@ -8,7 +8,6 @@ import {
   IValidationError,
   ValidateIn,
   CRUD_ROUTES,
-  EXPRESS_ROUTER,
   IRouter,
   IRouterOptions,
   ActionType,

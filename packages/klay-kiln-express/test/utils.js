@@ -1,8 +1,7 @@
 const Kiln = require('klay-kiln').Kiln
 const ModelContext = require('klay-core').ModelContext
 const {DatabaseExtension, DatabaseExecutor} = require('klay-db')
-const RouteExtension = require('../lib/extensions/route').ActionRouteExtension
-const RouterExtension = require('../lib/extensions/router').RouterExtension
+const createRouteOrActionRoute = require('../lib/helpers/create-router').createRouteOrActionRoute
 const Grants = require('../lib/auth/grants').Grants
 
 function createModel(context) {
@@ -62,9 +61,8 @@ function state() {
 
   kiln.addModel({name: 'user', model})
   kiln.addExtension({extension})
-  kiln.addExtension({extension: new RouteExtension({databaseExtension: 'db'})})
-  kiln.addExtension({extension: new RouterExtension({databaseExtension: 'db'})})
-  return {kiln, model, extension, executor}
+  const kilnModel = kiln.getModels()[0]
+  return {kiln, model, kilnModel, extension, executor}
 }
 
 async function runMiddleware(middleware, req) {
@@ -87,9 +85,14 @@ async function runMiddleware(middleware, req) {
   return {req, res, next, nextCalledAll, err}
 }
 
+function createRoute(options, state) {
+  return createRouteOrActionRoute(options, {defaults: {}}, state.kilnModel, state.executor)
+}
+
 module.exports = {
   state,
   runMiddleware,
+  createRoute,
   Grants,
   auth: {
     roles: {

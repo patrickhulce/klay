@@ -2,12 +2,12 @@ const uuid = require('uuid').v4
 const utils = require('../utils')
 
 describe('lib/actions/destroy.ts', () => {
-  let state, kiln, executor, findStub, destroyStub, transactionStub
-  const buildRoute = opts => kiln.build('user', 'express-route', opts)
+  let state, executor, findStub, destroyStub, transactionStub
+  const buildRoute = opts => utils.createRoute(opts, state)
 
   beforeEach(() => {
     state = utils.state()
-    kiln = state.kiln
+
     executor = state.executor
     findStub = jest.spyOn(executor, 'findByIdOrThrow').mockReturnValue({lastName: 'Thompson'})
     destroyStub = jest.spyOn(executor, 'destroyById').mockReturnValue(Promise.resolve())
