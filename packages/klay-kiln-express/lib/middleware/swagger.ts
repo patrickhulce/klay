@@ -49,15 +49,14 @@ export function createSwaggerSpecHandler(
   const {autofillBasePath = true, autofillHost = true} = options || {}
 
   return function(req: Request, res: Response): void {
-    let spec = rootSpec
+    const spec = {...rootSpec}
 
-    if (autofillBasePath) {
-      spec = {...rootSpec, basePath: req.originalUrl.replace(/\/[^\/]+$/i, '')}
+    if (autofillBasePath && req.parsedURL) {
+      spec.basePath = req.parsedURL.pathname.replace(/\/[^\/]+$/i, '')
     }
 
-    const host = req.get('host')
-    if (autofillHost && host) {
-      spec = {...rootSpec, host}
+    if (autofillHost && req.parsedURL) {
+      spec.host = req.parsedURL.host
     }
 
     res.json(spec)

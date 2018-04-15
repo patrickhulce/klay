@@ -32,6 +32,7 @@ declare module 'express-serve-static-core' {
   }
 
   export interface Request {
+    parsedURL?: URL
     grants?: IGrants
     validated?: ValidatedPayloads
     actionTarget?: any

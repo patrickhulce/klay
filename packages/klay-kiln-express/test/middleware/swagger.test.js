@@ -1,3 +1,4 @@
+const URL = require('url').URL
 const middlewareModule = require('../../lib/middleware/swagger')
 
 describe('lib/middleware/swagger.ts', () => {
@@ -8,7 +9,7 @@ describe('lib/middleware/swagger.ts', () => {
     beforeEach(() => {
       getHeader = jest.fn()
       json = jest.fn()
-      req = {get: getHeader, originalUrl: ''}
+      req = {get: getHeader, parsedURL: new URL('http://foo.com/path')}
       res = {json}
     })
 
@@ -22,7 +23,7 @@ describe('lib/middleware/swagger.ts', () => {
     it('should override base path', () => {
       const spec = {info: {title: 'Hello', version: 'v1'}}
       const handler = createHandler(spec)
-      req.originalUrl = '/v1/swagger-spec_v1.json?foo=bar'
+      req.parsedURL = new URL('http://foo.com/v1/swagger-spec_v1.json?foo=bar')
       handler(req, res)
       expect(json.mock.calls[0][0]).toMatchObject({basePath: '/v1'})
     })
