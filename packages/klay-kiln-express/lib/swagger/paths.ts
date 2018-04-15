@@ -61,7 +61,8 @@ export function buildPaths(router: IRouter, cache?: ISwaggerSchemaCache): IKeyed
       path[route.method] = buildOperation(route, cache)
     }
 
-    paths[routePath] = path
+    const modifiedRoutePath = routePath.replace(/(.)\/$/, '$1')
+    paths[modifiedRoutePath] = path
   }
 
   return paths

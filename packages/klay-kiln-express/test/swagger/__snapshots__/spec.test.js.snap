@@ -1013,6 +1013,30 @@ Object {
         ],
       },
     },
+    "/extras": Object {
+      "post": Object {
+        "parameters": Array [
+          Object {
+            "in": "body",
+            "name": "body",
+            "required": false,
+            "schema": Object {
+              "type": "boolean",
+            },
+          },
+        ],
+        "responses": Object {
+          "204": Object {
+            "description": "Build Extras was successful",
+            "schema": undefined,
+          },
+        },
+        "summary": "Build Extras",
+        "tags": Array [
+          "user",
+        ],
+      },
+    },
     "/search": Object {
       "post": Object {
         "parameters": Array [
