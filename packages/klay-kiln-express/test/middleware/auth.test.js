@@ -98,7 +98,9 @@ describe('lib/middleware/auth.ts', () => {
     })
 
     it('should handle errors', async () => {
-      const getUserContext = () => { throw new Error('oops') }
+      const getUserContext = () => {
+        throw new Error('oops')
+      }
       const middleware = createMiddleware({roles, permissions, getUserContext})
       const req = {}
 

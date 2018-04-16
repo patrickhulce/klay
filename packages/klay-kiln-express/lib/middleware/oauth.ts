@@ -73,6 +73,7 @@ export function createOAuthTokenHandler(options: IOAuthOptions): IAnontatedHandl
     const expiresIn = 14 * 24 * 60 * 60
     const token = jwt.sign(userContext, options.secret, {expiresIn})
 
+    // tslint:disable-next-line
     if (typeof res.cookie === 'function') {
       res.cookie('token', token, {
         path: '/',
