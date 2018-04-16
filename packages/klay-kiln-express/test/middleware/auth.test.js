@@ -96,6 +96,17 @@ describe('lib/middleware/auth.ts', () => {
       expect(req.grants.has('write', {orgId: 2})).toBe(false)
       expect(req.grants.has('read', {orgId: 2})).toBe(true)
     })
+
+    it('should handle errors', async () => {
+      const getUserContext = () => { throw new Error('oops') }
+      const middleware = createMiddleware({roles, permissions, getUserContext})
+      const req = {}
+
+      await middleware(req, {}, next)
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
+      expect(next.mock.calls[0][0].message).toEqual('oops')
+    })
   })
 
   describe('#createGrantValidationMiddleware', () => {

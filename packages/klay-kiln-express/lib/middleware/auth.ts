@@ -55,11 +55,15 @@ export function createGrantCreationMiddleware(authConf: IAuthConfiguration): IAn
   const getRoles = authConf.getRoles || defaultGetRoles
 
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const userContext = await getUserContext(req)
-    const roles = await getRoles(userContext, req) // tslint:disable-line
-    const grants = new Grants(roles, userContext, authConf)
-    req.grants = grants
-    next()
+    try {
+      const userContext = await getUserContext(req)
+      const roles = await getRoles(userContext, req) // tslint:disable-line
+      const grants = new Grants(roles, userContext, authConf)
+      req.grants = grants
+      next()
+    } catch (err) {
+      next(err)
+    }
   }
 }
 
