@@ -73,6 +73,14 @@ export function createOAuthTokenHandler(options: IOAuthOptions): IAnontatedHandl
     const expiresIn = 14 * 24 * 60 * 60
     const token = jwt.sign(userContext, options.secret, {expiresIn})
 
+    if (typeof res.cookie === 'function') {
+      res.cookie('token', token, {
+        path: '/',
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 365,
+      })
+    }
+
     res.json({
       access_token: token,
       token_type: 'bearer',

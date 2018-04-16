@@ -42,5 +42,15 @@ describe('lib/middleware/oauth.ts', () => {
       expect(payload).toMatchObject({id: 6})
       expect(typeof response.expires_in).toBe('number')
     })
+
+    it('should set cookie', async () => {
+      const handler = createHandler({secret: 'secret', kiln, databaseExtension: 'db'})
+      const body = {username: 'klay', password: 'rocko'}
+      const cookie = jest.fn()
+      jest.spyOn(executor, 'findOne').mockReturnValue({})
+
+      await handler({body}, {json, cookie}, next)
+      expect(cookie).toHaveBeenCalled()
+    })
   })
 })
