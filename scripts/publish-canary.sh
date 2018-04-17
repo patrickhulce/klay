@@ -17,6 +17,9 @@ fi
 # Double-check that we're logged in to npm
 npm whoami || exit 1
 
+# Fetch tags to make sure we can check the latest
+git fetch --tags
+
 # Get the last real release
 LAST_GIT_TAG=$(git describe --abbrev=0 --tags)
 TIMESTAMP_OF_LAST_TAG=$(git show -s --format="%ct" $LAST_GIT_TAG)
