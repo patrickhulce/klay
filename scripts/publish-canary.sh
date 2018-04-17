@@ -1,5 +1,12 @@
 #!/bin/bash
 
+echo "$TRAVIS_NODE_VERSION"
+
+if [[ "$TRAVIS_BRANCH" != "master" ]]; then
+  echo "Can only publish from master"
+  exit 1
+fi
+
 # Check for token existence without leaking it to stdout
 grep Token ~/.npmrc > /dev/null || grep Token .npmrc > /dev/null
 
