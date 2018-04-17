@@ -17,6 +17,7 @@ fi
 # Double-check that we're logged in to npm
 npm whoami || exit 1
 
+##### BEGIN OLD ATTEMPT #####
 # Get the current real release
 CURRENT_RELEASE=$(node -pe "require('./packages/klay/package.json').version")
 BASELINE_TIMESTAMP=1523000000
@@ -26,5 +27,7 @@ BUILD_VERSION=$((TIMESTAMP_DIFF/60))
 
 NEXT_NPM_PREMINOR=$(npx semver -i preminor --preid alpha $CURRENT_RELEASE)
 NEXT_VERSION=$(echo $NEXT_NPM_PREMINOR | sed s/alpha.0/alpha.$BUILD_VERSION/)
+###### END OLD ATTEMPT ######
+
 # TODO: remove the --exact flag when moving back ^ dependencies
-lerna publish --exact --repo-version "$NEXT_VERSION" --npm-tag=next --yes
+lerna publish --exact --canary --npm-tag=next --yes
