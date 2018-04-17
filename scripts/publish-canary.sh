@@ -17,18 +17,14 @@ fi
 # Double-check that we're logged in to npm
 npm whoami || exit 1
 
-# Fetch the full repo + tags to make sure we can check the latest
-git fetch origin
-git fetch --tags
-
-# Get the last real release
-LAST_GIT_TAG=$(git describe --abbrev=0 --tags)
-TIMESTAMP_OF_LAST_TAG=$(git show -s --format="%ct" $LAST_GIT_TAG)
+# Get the current real release
+CURRENT_RELEASE=$(node -pe "require('./packages/klay/package.json').version")
+BASELINE_TIMESTAMP=1523000000
 UNIX_TIMESTAMP=$(date +%s)
-TIMESTAMP_DIFF=$(($UNIX_TIMESTAMP-$TIMESTAMP_OF_LAST_TAG))
+TIMESTAMP_DIFF=$(($UNIX_TIMESTAMP-$BASELINE_TIMESTAMP))
 BUILD_VERSION=$((TIMESTAMP_DIFF/60))
 
-NEXT_NPM_PREMINOR=$(npx semver -i preminor --preid alpha $LAST_GIT_TAG)
+NEXT_NPM_PREMINOR=$(npx semver -i preminor --preid alpha $CURRENT_RELEASE)
 NEXT_VERSION=$(echo $NEXT_NPM_PREMINOR | sed s/alpha.0/alpha.$BUILD_VERSION/)
 # TODO: remove the --exact flag when moving back ^ dependencies
 lerna publish --exact --repo-version "$NEXT_VERSION" --npm-tag=next --yes
