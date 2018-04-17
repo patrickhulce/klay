@@ -17,7 +17,8 @@ fi
 # Double-check that we're logged in to npm
 npm whoami || exit 1
 
-# Fetch tags to make sure we can check the latest
+# Fetch the full repo + tags to make sure we can check the latest
+git fetch origin
 git fetch --tags
 
 # Get the last real release
