@@ -4,3 +4,6 @@ export * from './helpers/create-route'
 export * from './helpers/create-router'
 export * from './middleware'
 export * from './typedefs'
+
+export * from './auth/authentication-error'
+export * from './auth/authorization-error'
