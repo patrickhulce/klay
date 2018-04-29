@@ -54,7 +54,7 @@ function serializeCriteriaValues(criteriaValues: IAuthCriteriaPropertyValues): s
     .join(',')
 }
 
-export class Grants implements IGrants {
+export class Grants<T = any> implements IGrants<T> {
   public readonly roles: string[]
   public readonly userContext?: any
   private readonly _grants: Set<string>

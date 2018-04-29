@@ -1,6 +1,6 @@
 import * as express from 'express'
 import {IKiln} from 'klay-kiln'
-import { ActionType } from '..'
+import {ActionType} from '../typedefs'
 
 export type AuthCriteriaProperty = string
 
@@ -35,8 +35,9 @@ export interface IAuthCriteriaPropertyValues {
   [criteriaProperty: string]: AuthCriteriaValue
 }
 
-export interface IGrants {
+export interface IGrants<T = any> {
   roles: string[]
+  userContext?: T
   has(permission: string, criteria?: IAuthCriteriaPropertyValues): boolean
 }
 
