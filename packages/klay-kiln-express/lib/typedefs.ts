@@ -183,9 +183,6 @@ export interface IRouterOptions {
   modelName?: string
   databaseExtension?: string
   defaults?: IActionRouteOptions & IRouteInput
-  // FIXME: https://github.com/patrickhulce/klay/issues/74
-  readAuthorization?: IAuthorizationRequired
-  writeAuthorization?: IAuthorizationRequired
   routes?: IRoutes
 }
 
