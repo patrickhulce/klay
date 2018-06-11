@@ -120,11 +120,13 @@ describe('lib/actions/update.ts', () => {
     })
 
     it('should fail authorization for existing', async () => {
+      findStub.mockReset()
+      findStub.mockReturnValue({...utils.defaultUser, lastName: 'Non-Thompson'})
+
       const route = buildRoute({type: 'update', byId: false, authorization})
       const body = {
         id: uuid(),
         ...utils.defaultUser,
-        lastName: 'Not-Thompson',
       }
       const req = {grants, body}
       const {res, err} = await utils.runMiddleware(route.middleware, req)

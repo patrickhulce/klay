@@ -12,7 +12,12 @@ import {
   IAuthorizationRequired,
 } from '../typedefs'
 
-const actionTypesWithTarget = new Set([ActionType.Read, ActionType.Update, ActionType.Destroy])
+const actionTypesWithTarget = new Set([
+  ActionType.Read,
+  ActionType.Update,
+  ActionType.Destroy,
+  ActionType.Patch,
+])
 
 export const defaultAction = {
   defaultOptions: {},
@@ -67,6 +72,7 @@ export const defaultAction = {
 
     const pkField = options.idParamName || getPrimaryKeyField(kilnModel.model)
     const getPkFromItem = (item: any) => (typeof item === 'object' ? item[pkField] : item)
+
     return async function(
       req: express.Request,
       res: express.Response,

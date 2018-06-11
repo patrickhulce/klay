@@ -56,6 +56,7 @@ export enum ActionType {
   Create = 'create',
   Read = 'read',
   Update = 'update',
+  Patch = 'patch',
   Destroy = 'destroy',
   List = 'list',
   Upsert = 'upsert',
@@ -141,6 +142,7 @@ export interface IActionOptions extends IQuerifyOptions, IParamifyOptions {
   byId?: boolean
   byList?: boolean
   expectQueryIn?: ValidateIn
+  patchProperties?: string[]
   authorization?: IAuthorizationRequired
 }
 

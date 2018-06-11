@@ -97,14 +97,16 @@ module.exports = {
   auth: {
     roles: {
       user: [
+        // Grant admin permission to people with same lastName
         {permission: 'users:admin', criteria: 'lastName=<%= lastName %>'},
-        {permission: 'write', criteria: 'userId=<%= id %>'},
+        // Grant write permission to posts owned by the user
+        {permission: 'posts:write', criteria: 'userId=<%= id %>'},
       ],
     },
     permissions: {
       'users:admin': [],
-      write: ['read'],
-      read: [],
+      'posts:write': ['posts:read'],
+      'posts:read': [],
     },
   },
   defaultUser: {
