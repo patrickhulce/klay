@@ -18,10 +18,13 @@ export interface IUser {
   updatedAt?: Date
 }
 
-const passwordModel = modelContext.string().max(32).validations(result => {
-  assert.ok(result.value !== 'password', 'password is too simple')
-  return result
-})
+const passwordModel = modelContext
+  .string()
+  .max(32)
+  .validations(result => {
+    assert.ok(result.value !== 'password', 'password is too simple')
+    return result
+  })
 
 export const userModel: IModel = modelContext
   .object()
@@ -52,5 +55,6 @@ export const userModel: IModel = modelContext
   .authorization({
     actions: WRITE_ACTIONS,
     permission: Permissions.UserManage,
+    // Allow users who have been granted UserManage to the individual user or the entire account
     criteria: [['id'], ['accountId']],
   })

@@ -85,8 +85,8 @@ module.exports = state => {
       })
       const users = await response.json()
       expect(users).toEqual({
-        data: [state.user, state.userA, state.userB],
-        total: 3,
+        data: [state.user, state.rootUser, state.userA, state.userB],
+        total: 4,
         limit: 10,
         offset: 0,
       })
@@ -99,17 +99,29 @@ module.exports = state => {
       expect(user).toEqual(state.user)
     })
 
-    it('should update a user', async () => {
-      const response = await fetch(`${state.baseURL}/v1/users/${state.user.id}`, {
+    it('should update a user profile', async () => {
+      const response = await fetch(`${state.baseURL}/v1/users/${state.user.id}/profile`, {
         method: 'PUT',
-        body: JSON.stringify({...state.user, firstName: 'Changed', password: 'other'}),
+        body: JSON.stringify({firstName: 'Changed', lastName: 'Different'}),
         headers: {'content-type': 'application/json', cookie: state.userCookie},
       })
 
       expect(response.status).toBe(200)
       const updatedUser = await response.json()
-      expect(updatedUser).toMatchObject({firstName: 'Changed'})
+      expect(updatedUser).toMatchObject({firstName: 'Changed', lastName: 'Different'})
+    })
+
+    it('should update a user password', async () => {
+      const response = await fetch(`${state.baseURL}/v1/users/${state.user.id}/password`, {
+        method: 'PUT',
+        body: JSON.stringify({password: 'new-password'}),
+        headers: {'content-type': 'application/json', cookie: state.userCookie},
+      })
+
+      expect(response.status).toBe(200)
+      const updatedUser = await response.json()
       expect(updatedUser.password).toMatch(/^[a-f0-9]{40}$/)
+      expect(updatedUser.password).not.toBe(state.user.password)
     })
 
     it('should delete a user', async () => {

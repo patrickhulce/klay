@@ -38,8 +38,8 @@ const routerMap: IRouterMap = {
         bodyModel: oauthTokenRequestModel,
         responseModel: oauthTokenResponseModel,
         handler: createOAuthTokenHandler({secret: SECRET, kiln}),
-      }
-    }
+      },
+    },
   },
   '/v1/accounts': {
     modelName: ModelId.Account,
@@ -85,7 +85,61 @@ const routerMap: IRouterMap = {
   },
   '/v1/users': {
     modelName: ModelId.User,
-    routes: CRUD_ROUTES,
+    routes: {
+      'POST /': {
+        type: ActionType.Create,
+        authorization: {
+          permission: Permissions.UserCreate,
+          criteria: [['id'], ['accountId']],
+        },
+      },
+      'POST /bulk': {
+        type: ActionType.Create,
+        byList: true,
+        authorization: {
+          permission: Permissions.UserCreate,
+          criteria: [['id'], ['accountId']],
+        },
+      },
+      'PUT /:id/profile': {
+        type: ActionType.Patch,
+        authorization: {
+          permission: Permissions.UserProfile,
+          criteria: [['id'], ['accountId']],
+        },
+        patchProperties: ['firstName', 'lastName'],
+      },
+      'PUT /:id/password': {
+        type: ActionType.Patch,
+        authorization: {
+          permission: Permissions.UserPassword,
+          criteria: [['id'], ['accountId']],
+        },
+        patchProperties: ['password'],
+      },
+      'GET /': {type: ActionType.List},
+      'POST /search': {type: ActionType.List, expectQueryIn: ValidateIn.Body},
+
+      'GET /:id': {type: ActionType.Read},
+      'PUT /:id': {type: ActionType.Update},
+      'PUT /bulk': {type: ActionType.Update, byId: false, byList: true},
+      'DELETE /:id': {
+        type: ActionType.Destroy,
+        authorization: {
+          permission: Permissions.UserCreate,
+          criteria: [['id'], ['accountId']],
+        },
+      },
+      'DELETE /bulk': {
+        type: ActionType.Destroy,
+        byId: false,
+        byList: true,
+        authorization: {
+          permission: Permissions.UserCreate,
+          criteria: [['id'], ['accountId']],
+        },
+      },
+    },
   },
   '/v1/posts': {
     modelName: ModelId.Post,

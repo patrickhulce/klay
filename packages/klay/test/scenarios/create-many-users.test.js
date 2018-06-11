@@ -61,6 +61,7 @@ module.exports = state => {
       const responseBody = await response.json()
       expect(responseBody.data).toEqual([
         {id: state.user.id},
+        {id: state.rootUser.id},
         {id: state.userA.id},
         {id: state.users[0].id},
         {id: state.users[1].id},
@@ -89,7 +90,7 @@ module.exports = state => {
       const response = await fetch(`${state.baseURL}/v1/users/bulk`, {
         method: 'PUT',
         body: JSON.stringify(users),
-        headers: {'content-type': 'application/json', cookie: state.userCookie},
+        headers: {'content-type': 'application/json', cookie: state.rootCookie},
       })
 
       expect(response.status).toBe(200)

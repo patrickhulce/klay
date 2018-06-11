@@ -1,3 +1,4 @@
+const {kiln, sqlExtension} = require('../../examples/app/kiln')
 const fetch = require('isomorphic-fetch')
 
 module.exports = state => {
@@ -107,6 +108,38 @@ module.exports = state => {
       expect(response.status).toBe(200)
       const updatedAccount = await response.json()
       expect(updatedAccount).toMatchObject({name: 'Changed', slug: 'special-slug'})
+    })
+
+    it('should create a root user', async () => {
+      const userExecutor = kiln.build('user', sqlExtension)
+      state.rootUser = await userExecutor.create({
+        firstName: 'Root',
+        lastName: 'User',
+        accountId: state.account.id,
+        role: 'admin',
+        email: 'root@example.com',
+        password: 'password12',
+      })
+
+      await sqlExtension.sequelize.query(
+        `UPDATE example_users SET role = 'root' WHERE id = ${state.rootUser.id}`,
+      )
+
+      Object.assign(state.rootUser, {
+        role: 'root',
+        createdAt: state.rootUser.createdAt.toJSON(),
+        updatedAt: state.rootUser.updatedAt.toJSON(),
+      })
+
+      const login = {grant_type: 'password', username: 'root@example.com', password: 'password12'}
+      const loginResponse = await fetch(`${state.baseURL}/v1/oauth/token`, {
+        method: 'POST',
+        body: JSON.stringify(login),
+        headers: {'content-type': 'application/json'},
+      })
+
+      const token = (await loginResponse.json()).access_token
+      state.rootCookie = `token=${token}`
     })
   })
 }
