@@ -2,17 +2,17 @@ import * as express from 'express'
 import {IKiln} from 'klay-kiln'
 import {ActionType} from '../typedefs'
 
-export type AuthCriteriaProperty = string
-
-export type AuthCriteriaPropertySet = AuthCriteriaProperty[]
-
 export type AuthCriteriaValue = string | number | boolean
 
 export type ChildPermissions = string
 
 export interface IGrantTemplate {
   permission: string
-  criteria: AuthCriteriaPropertySet | string
+  criteria: string | ICriteriaDefinition
+}
+
+export interface ICriteriaDefinition {
+  [propertyToMatch: string]: AuthCriteriaValue
 }
 
 export interface IAuthRoles {
@@ -39,6 +39,7 @@ export interface IGrants<T = any> {
   roles: string[]
   userContext?: T
   has(permission: string, criteria?: IAuthCriteriaPropertyValues): boolean
+  getPropertyValuesForPermission(permission: string): string[][]
 }
 
 export interface IOAuthOptions {
@@ -55,12 +56,10 @@ export type GetCriteriaValues = (
 
 export interface IAuthorizationRequired {
   permission: string
-  criteria: AuthCriteriaPropertySet[]
   getAffectedCriteriaValues?: GetCriteriaValues
 }
 
 export interface IAuthModelOptions {
   actions: ActionType[]
   permission: string
-  criteria: AuthCriteriaPropertySet[]
 }

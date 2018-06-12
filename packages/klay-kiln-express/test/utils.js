@@ -98,9 +98,9 @@ module.exports = {
     roles: {
       user: [
         // Grant admin permission to people with same lastName
-        {permission: 'users:admin', criteria: 'lastName=<%= lastName %>'},
+        {permission: 'users:admin', criteria: {lastName: '<%= lastName %>'}},
         // Grant write permission to posts owned by the user
-        {permission: 'posts:write', criteria: 'userId=<%= id %>'},
+        {permission: 'posts:write', criteria: {userId: '<%= id %>'}},
       ],
     },
     permissions: {

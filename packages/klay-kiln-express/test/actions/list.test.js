@@ -55,7 +55,7 @@ describe('lib/actions/list.ts', () => {
     let authorization, grants
 
     beforeEach(() => {
-      authorization = {permission: 'users:admin', criteria: [['lastName']]}
+      authorization = {permission: 'users:admin'}
       grants = new utils.Grants(['user'], {id: 1, lastName: 'Thompson'}, utils.auth)
     })
 

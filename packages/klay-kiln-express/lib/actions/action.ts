@@ -5,7 +5,6 @@ import {IKilnModel} from 'klay-kiln'
 import {includes} from 'lodash'
 import {
   ActionType,
-  AuthCriteriaPropertySet,
   IAction,
   IActionOptions,
   IAnontatedHandler,
@@ -31,7 +30,6 @@ export const defaultAction = {
     }
 
     let permission = ''
-    let criteria: AuthCriteriaPropertySet[] = []
     if (kilnModel.model.spec.authorization) {
       const auth = kilnModel.model.spec.authorization.find(entry =>
         includes(entry.actions, action.type),
@@ -39,11 +37,10 @@ export const defaultAction = {
 
       if (auth) {
         permission = auth.permission
-        criteria = auth.criteria
       }
     }
 
-    return {permission, criteria, getAffectedCriteriaValues}
+    return {permission, getAffectedCriteriaValues}
   },
   queryModel(model: IKilnModel, options: IActionOptions): undefined {
     return undefined

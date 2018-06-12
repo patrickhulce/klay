@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lib/auth/grants.ts #computeAllGrants should create grants with criteria properties 1`] = `
+Set {
+  "accounts:admin![[\\"accountId\\",2]]",
+  "accounts:read![[\\"accountId\\",2]]",
+  "users:admin![[\\"accountId\\",2]]",
+  "posts:admin![[\\"accountId\\",2]]",
+  "users:read![[\\"accountId\\",2]]",
+  "posts:read![[\\"accountId\\",2]]",
+  "posts:admin![[\\"accountId\\",2],[\\"userId\\",1]]",
+  "posts:read![[\\"accountId\\",2],[\\"userId\\",1]]",
+  "posts:read![[\\"private\\",false]]",
+}
+`;
+
+exports[`lib/auth/grants.ts #computeAllGrants should create permission property map 1`] = `
+Map {
+  "accounts:admin" => Array [],
+  "accounts:read" => Array [],
+  "users:admin" => Array [],
+  "posts:admin" => Array [],
+  "users:read" => Array [],
+  "posts:read" => Array [],
+}
+`;
+
+exports[`lib/auth/grants.ts #computeAllGrants should create permission property map with criteria properties 1`] = `
+Map {
+  "accounts:admin" => Array [
+    Array [
+      "accountId",
+    ],
+  ],
+  "accounts:read" => Array [
+    Array [
+      "accountId",
+    ],
+  ],
+  "users:admin" => Array [
+    Array [
+      "accountId",
+    ],
+  ],
+  "posts:admin" => Array [
+    Array [
+      "accountId",
+    ],
+    Array [
+      "accountId",
+      "userId",
+    ],
+  ],
+  "users:read" => Array [
+    Array [
+      "accountId",
+    ],
+  ],
+  "posts:read" => Array [
+    Array [
+      "accountId",
+    ],
+    Array [
+      "accountId",
+      "userId",
+    ],
+    Array [
+      "private",
+    ],
+  ],
+}
+`;

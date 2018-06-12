@@ -66,7 +66,7 @@ describe('lib/actions/patch.ts', () => {
     let authorization, grants
 
     beforeEach(() => {
-      authorization = {permission: 'users:admin', criteria: [['lastName']]}
+      authorization = {permission: 'users:admin'}
       grants = new utils.Grants(['user'], {id: 'unused', lastName: 'Thompson'}, utils.auth)
     })
 

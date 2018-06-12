@@ -1,21 +1,23 @@
 const auth = require('../../lib/auth/grants')
 
 describe('lib/auth/grants.ts', () => {
+  const accountIdCriteria = {accountId: '<%= accountId %>'}
+  const userIdCriteria = {userId: '<%= id %>'}
   const conf = {
     roles: {
-      root: [{permission: 'accounts:admin', criteria: ['*']}],
+      root: [{permission: 'accounts:admin', criteria: '*'}],
       owner: [
-        {permission: 'accounts:admin', criteria: ['accountId=<%= accountId %>']},
-        {permission: 'posts:admin', criteria: ['accountId=<%= accountId %>', 'userId=<%= id %>']},
-        {permission: 'posts:read', criteria: ['private=false']},
+        {permission: 'accounts:admin', criteria: accountIdCriteria},
+        {permission: 'posts:admin', criteria: {...accountIdCriteria, ...userIdCriteria}},
+        {permission: 'posts:read', criteria: {private: false}},
       ],
       user: [
-        {permission: 'accounts:read', criteria: ['accountId=<%= accountId %>']},
-        {permission: 'users:read', criteria: ['accountId=<%= accountId %>']},
-        {permission: 'users:admin', criteria: ['id=<%= id %>']},
-        {permission: 'posts:admin', criteria: ['accountId=<%= accountId %>', 'userId=<%= id %>']},
-        {permission: 'posts:read', criteria: ['accountId=<%= accountId %>']},
-        {permission: 'posts:read', criteria: ['private=false']},
+        {permission: 'accounts:read', criteria: accountIdCriteria},
+        {permission: 'users:read', criteria: accountIdCriteria},
+        {permission: 'users:admin', criteria: {id: '<%= id %>'}},
+        {permission: 'posts:admin', criteria: {...accountIdCriteria, ...userIdCriteria}},
+        {permission: 'posts:read', criteria: accountIdCriteria},
+        {permission: 'posts:read', criteria: {private: false}},
       ],
     },
     permissions: {
@@ -53,38 +55,38 @@ describe('lib/auth/grants.ts', () => {
   })
 
   describe('#computeAllGrants', () => {
-    const computeAsArray = (...args) => Array.from(auth.computeAllGrants(...args))
-
     it('should return set of grants', () => {
-      const grants = auth.computeAllGrants('root', {}, conf)
+      const [grants, permissionsMap] = auth.computeAllGrants('root', {}, conf)
       expect(grants).toBeInstanceOf(Set)
       expect(grants).toHaveProperty('size', 6)
+      expect(permissionsMap).toBeInstanceOf(Map)
+      expect(permissionsMap).toHaveProperty('size', 6)
     })
 
-    it('should replace domain properties', () => {
-      const grants = computeAsArray('owner', {id: 1, accountId: 2}, conf)
-      expect(grants).toEqual([
-        'accounts:admin!accountId=2',
-        'accounts:read!accountId=2',
-        'users:admin!accountId=2',
-        'posts:admin!accountId=2',
-        'users:read!accountId=2',
-        'posts:read!accountId=2',
-        'posts:admin!accountId=2,userId=1',
-        'posts:read!accountId=2,userId=1',
-        'posts:read!private=false',
-      ])
+    it('should create permission property map', () => {
+      const permissionsMap = auth.computeAllGrants('root', {}, conf)[1]
+      expect(permissionsMap).toMatchSnapshot()
+    })
+
+    it('should create grants with criteria properties', () => {
+      const grants = auth.computeAllGrants('owner', {id: 1, accountId: 2}, conf)[0]
+      expect(grants).toMatchSnapshot()
+    })
+
+    it('should create permission property map with criteria properties', () => {
+      const permissionsMap = auth.computeAllGrants('owner', {id: 1, accountId: 2}, conf)[1]
+      expect(permissionsMap).toMatchSnapshot()
     })
 
     it('should throw on invalid permission', () => {
-      const roles = {...conf.roles, foo: [{permission: 'account:admin', criteria: ['*']}]}
-      const fn = () => computeAsArray('foo', {}, {...conf, roles})
+      const roles = {...conf.roles, foo: [{permission: 'account:admin', criteria: '*'}]}
+      const fn = () => auth.computeAllGrants('foo', {}, {...conf, roles})
       expect(fn).toThrowError(/invalid permission/)
     })
 
     it('should throw on invalid criteria', () => {
       const roles = {...conf.roles, foo: [{permission: 'accounts:admin', criteria: ['id']}]}
-      const fn = () => computeAsArray('foo', {id: 1}, {...conf, roles})
+      const fn = () => auth.computeAllGrants('foo', {id: 1}, {...conf, roles})
       expect(fn).toThrowError(/invalid criteria/)
     })
   })
@@ -96,9 +98,9 @@ describe('lib/auth/grants.ts', () => {
       roles = {
         root: [{permission: 'write', criteria: '*'}, {permission: 'read:public', criteria: '*'}],
         user: [
-          {permission: 'write', criteria: ['userId=<%= id %>', 'orgId=<%= orgId %>']},
-          {permission: 'read', criteria: ['orgId=<%= orgId %>']},
-          {permission: 'read:public', criteria: []},
+          {permission: 'write', criteria: {userId: '<%= id %>', orgId: '<%= orgId %>'}},
+          {permission: 'read', criteria: {orgId: '<%= orgId %>'}},
+          {permission: 'read:public', criteria: '*'},
         ],
       }
 

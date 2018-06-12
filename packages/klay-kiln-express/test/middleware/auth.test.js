@@ -15,8 +15,8 @@ describe('lib/middleware/auth.ts', () => {
 
     beforeEach(() => {
       roles = {
-        admin: [{permission: 'write', criteria: ['orgId=<%= orgId %>']}],
-        user: [{permission: 'read', criteria: ['orgId=<%= orgId %>']}],
+        admin: [{permission: 'write', criteria: {orgId: '<%= orgId %>'}}],
+        user: [{permission: 'read', criteria: {orgId: '<%= orgId %>'}}],
       }
       permissions = {write: ['read'], read: []}
       getStub = jest.fn()
@@ -119,9 +119,10 @@ describe('lib/middleware/auth.ts', () => {
       roles = {
         root: [{permission: 'write', criteria: '*'}],
         user: [
-          {permission: 'write', criteria: ['orgId=<%= orgId %>', 'userId=<%= id %>']},
-          {permission: 'read', criteria: ['orgId=<%= orgId %>']},
+          {permission: 'write', criteria: {orgId: '<%= orgId %>', userId: '<%= id %>'}},
+          {permission: 'read', criteria: {orgId: '<%= orgId %>'}},
         ],
+        guest: [{permission: 'read', criteria: {public: true}}],
       }
 
       permissions = {write: ['read'], read: []}
@@ -130,16 +131,16 @@ describe('lib/middleware/auth.ts', () => {
     })
 
     it('should throw when getAffectedCriteriaValues not set', () => {
-      const fn = () => createMiddleware({permission: 'read', criteria: [['orgId']]})
+      const fn = () => createMiddleware({permission: 'read'})
       expect(fn).toThrowError(/getAffectedCriteriaValues/)
     })
 
     it('should fail request if grants property not set', () => {
       const middleware = createMiddleware({
         permission: 'read',
-        criteria: [['orgId']],
         getAffectedCriteriaValues,
       })
+
       middleware({}, {}, next)
       expect(next).toHaveBeenCalledTimes(1)
       expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
@@ -150,7 +151,6 @@ describe('lib/middleware/auth.ts', () => {
 
       const middleware = createMiddleware({
         permission: 'read',
-        criteria: [['orgId']],
         getAffectedCriteriaValues,
       })
 
@@ -162,7 +162,6 @@ describe('lib/middleware/auth.ts', () => {
     it('should pass request if matches the criteria', () => {
       const middleware = createMiddleware({
         permission: 'read',
-        criteria: [['orgId']],
         getAffectedCriteriaValues,
       })
 
@@ -174,7 +173,6 @@ describe('lib/middleware/auth.ts', () => {
     it('should pass request if matches multi-criteria', () => {
       const middleware = createMiddleware({
         permission: 'write',
-        criteria: [['userId', 'orgId']],
         getAffectedCriteriaValues,
       })
 
@@ -186,7 +184,6 @@ describe('lib/middleware/auth.ts', () => {
     it('should pass request if matches one the criteria', () => {
       const middleware = createMiddleware({
         permission: 'read',
-        criteria: [['userId'], ['orgId']],
         getAffectedCriteriaValues,
       })
 
@@ -198,7 +195,6 @@ describe('lib/middleware/auth.ts', () => {
     it('should fail request if not matches the criteria', () => {
       const middleware = createMiddleware({
         permission: 'read',
-        criteria: [['orgId']],
         getAffectedCriteriaValues,
       })
 
@@ -207,10 +203,9 @@ describe('lib/middleware/auth.ts', () => {
       expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
     })
 
-    it('should fail request if not matches all criteria properties', () => {
+    it('should fail request if not matches multi-criteria', () => {
       const middleware = createMiddleware({
-        permission: 'read',
-        criteria: [['userId', 'orgId']],
+        permission: 'write',
         getAffectedCriteriaValues,
       })
 

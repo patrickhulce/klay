@@ -78,7 +78,7 @@ export function createGrantValidationMiddleware(auth: IAuthorizationRequired): I
     const grants = req.grants
     if (grants.has(auth.permission)) return next()
 
-    for (const criteriaProperties of auth.criteria) {
+    for (const criteriaProperties of grants.getPropertyValuesForPermission(auth.permission)) {
       const requiredPropertyValues: IAuthCriteriaPropertyValues[] = []
       // Loop through all criteria properties to build our criteria value objects
       for (const property of criteriaProperties) {

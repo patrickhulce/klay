@@ -90,7 +90,6 @@ const routerMap: IRouterMap = {
         type: ActionType.Create,
         authorization: {
           permission: Permissions.UserCreate,
-          criteria: [['id'], ['accountId']],
         },
       },
       'POST /bulk': {
@@ -98,14 +97,12 @@ const routerMap: IRouterMap = {
         byList: true,
         authorization: {
           permission: Permissions.UserCreate,
-          criteria: [['id'], ['accountId']],
         },
       },
       'PUT /:id/profile': {
         type: ActionType.Patch,
         authorization: {
           permission: Permissions.UserProfile,
-          criteria: [['id'], ['accountId']],
         },
         patchProperties: ['firstName', 'lastName'],
       },
@@ -113,7 +110,6 @@ const routerMap: IRouterMap = {
         type: ActionType.Patch,
         authorization: {
           permission: Permissions.UserPassword,
-          criteria: [['id'], ['accountId']],
         },
         patchProperties: ['password'],
       },
@@ -127,7 +123,6 @@ const routerMap: IRouterMap = {
         type: ActionType.Destroy,
         authorization: {
           permission: Permissions.UserCreate,
-          criteria: [['id'], ['accountId']],
         },
       },
       'DELETE /bulk': {
@@ -136,7 +131,6 @@ const routerMap: IRouterMap = {
         byList: true,
         authorization: {
           permission: Permissions.UserCreate,
-          criteria: [['id'], ['accountId']],
         },
       },
     },
