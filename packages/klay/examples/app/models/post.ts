@@ -24,8 +24,4 @@ export const postModel: IModel = modelContext
     updatedAt: modelContext.updatedAt(),
   })
   .index([['userId'], {property: ['updatedAt'], direction: SortDirection.Descending}])
-  .authorization({
-    actions: WRITE_ACTIONS,
-    permission: Permissions.PostManage,
-    criteria: [['accountId']],
-  })
+  .authorization({actions: WRITE_ACTIONS, permission: Permissions.PostManage})

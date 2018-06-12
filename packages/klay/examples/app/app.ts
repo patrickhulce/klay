@@ -88,29 +88,21 @@ const routerMap: IRouterMap = {
     routes: {
       'POST /': {
         type: ActionType.Create,
-        authorization: {
-          permission: Permissions.UserCreate,
-        },
+        authorization: {permission: Permissions.UserCreate},
       },
       'POST /bulk': {
         type: ActionType.Create,
         byList: true,
-        authorization: {
-          permission: Permissions.UserCreate,
-        },
+        authorization: {permission: Permissions.UserCreate},
       },
       'PUT /:id/profile': {
         type: ActionType.Patch,
-        authorization: {
-          permission: Permissions.UserProfile,
-        },
+        authorization: {permission: Permissions.UserProfile},
         patchProperties: ['firstName', 'lastName'],
       },
       'PUT /:id/password': {
         type: ActionType.Patch,
-        authorization: {
-          permission: Permissions.UserPassword,
-        },
+        authorization: {permission: Permissions.UserPassword},
         patchProperties: ['password'],
       },
       'GET /': {type: ActionType.List},
@@ -121,17 +113,13 @@ const routerMap: IRouterMap = {
       'PUT /bulk': {type: ActionType.Update, byId: false, byList: true},
       'DELETE /:id': {
         type: ActionType.Destroy,
-        authorization: {
-          permission: Permissions.UserCreate,
-        },
+        authorization: {permission: Permissions.UserCreate},
       },
       'DELETE /bulk': {
         type: ActionType.Destroy,
         byId: false,
         byList: true,
-        authorization: {
-          permission: Permissions.UserCreate,
-        },
+        authorization: {permission: Permissions.UserCreate},
       },
     },
   },
