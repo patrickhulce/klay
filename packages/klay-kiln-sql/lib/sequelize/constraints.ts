@@ -1,8 +1,10 @@
-import {assert, IModel} from 'klay-core'
-import {ConstraintType, getPrimaryKeyField, SupplyWithPreset} from 'klay-db'
+import {IModel, assert} from 'klay-core'
+import {ConstraintType, SupplyWithPreset, getPrimaryKeyField} from 'klay-db'
 import {IKiln} from 'klay-kiln'
 import * as Sequelize from 'sequelize'
+
 import {ISQLExecutor, SQL_EXECUTOR} from '../typedefs'
+
 import {getFlattenedPath} from './serialization'
 
 export function addPrimaryKey(modelInProgress: Sequelize.DefineAttributes, model: IModel): void {

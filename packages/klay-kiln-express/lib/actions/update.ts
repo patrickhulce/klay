@@ -1,7 +1,8 @@
 import {NextFunction, Request, Response} from 'express'
-import {defaultModelContext, IModel} from 'klay-core'
+import {IModel, defaultModelContext} from 'klay-core'
 import {IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
+
 import {paramifyModel, updateifyModel} from '../helpers/transform-model'
 import {
   ActionType,
@@ -11,6 +12,7 @@ import {
   IActionOptions,
   IAnontatedHandler,
 } from '../typedefs'
+
 import {defaultAction} from './action'
 
 export const updateAction: IAction = {

@@ -1,7 +1,9 @@
 import {IModel} from 'klay-core'
 import {entries, groupBy, startCase} from 'lodash'
 import * as swagger from 'swagger-schema-official'
+
 import {ActionType, IActionRouteOptions, IRouter, IRouterRoute, ValidateIn} from '../typedefs'
+
 import {getParameters, getSchema} from './components'
 import {IKeyedPaths, ISwaggerSchemaCache} from './typedefs'
 

@@ -1,8 +1,9 @@
 /* tslint:disable no-unsafe-any */
 import {NextFunction, Request, Response} from 'express'
 import * as jwt from 'jsonwebtoken'
-import {defaultModelContext, IModel, IModelChild} from 'klay-core'
+import {IModel, IModelChild, defaultModelContext} from 'klay-core'
 import {IDatabaseExecutor} from 'klay-db'
+
 import {AuthenticationError} from '../auth/authentication-error'
 import {DEFAULT_DATABASE_EXTENSION, IAnontatedHandler, IOAuthOptions} from '../typedefs'
 

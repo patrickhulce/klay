@@ -1,5 +1,6 @@
 import * as express from 'express'
 import {IKiln} from 'klay-kiln'
+
 import {ActionType} from '../typedefs'
 
 export type AuthCriteriaValue = string | number | boolean

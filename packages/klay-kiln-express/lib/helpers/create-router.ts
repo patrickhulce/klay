@@ -4,6 +4,7 @@ import {IDatabaseExecutor} from 'klay-db'
 import {IKiln, IKilnModel} from 'klay-kiln'
 import {entries, forEach, isEqual, keyBy, map} from 'lodash'
 import {Spec as SwaggerSpec} from 'swagger-schema-official'
+
 import {createSwaggerSpecHandler, createSwaggerUIHandler} from '../middleware'
 import {buildSpecification} from '../swagger/spec'
 import {
@@ -21,6 +22,7 @@ import {
   IRoutes,
   ValidateIn,
 } from '../typedefs'
+
 import {createActionRoute, createRoute} from './create-route'
 
 export const CRUD_ROUTES: IRoutes = {

@@ -1,8 +1,9 @@
-import {sqlExtension} from './kiln'
 import {app} from './app'
+import {sqlExtension} from './kiln'
 
-;(async () => {
+async function run() {
   await sqlExtension.sync({force: true})
   app.listen(process.env.PORT || 3000)
-})()
+}
 
+run()

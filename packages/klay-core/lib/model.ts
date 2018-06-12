@@ -1,8 +1,6 @@
 import {cloneDeep, forEach, uniq} from 'lodash'
-import {assertions} from './errors/model-error'
-import {Validator} from './validator'
-import {ValidatorOptions} from './validator-options'
 
+import {assertions} from './errors/model-error'
 import {
   ICoerceFunction,
   IModel,
@@ -23,6 +21,8 @@ import {
   PHASES,
   ValidationPhase,
 } from './typedefs'
+import {Validator} from './validator'
+import {ValidatorOptions} from './validator-options'
 
 export class Model {
   public spec: IModelSpecification

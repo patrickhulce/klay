@@ -1,6 +1,7 @@
 import {IModel} from 'klay-core'
 import {isEqual} from 'lodash'
 import {Schema} from 'swagger-schema-official'
+
 import {IKeyedSchema, ISwaggerSchemaCache} from './typedefs'
 
 export class SwaggerSchemaCache implements ISwaggerSchemaCache {

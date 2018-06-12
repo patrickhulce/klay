@@ -1,8 +1,9 @@
 import * as express from 'express'
-import {defaultModelContext, IModel} from 'klay-core'
-import {getPrimaryKeyField, IDatabaseExecutor} from 'klay-db'
+import {IModel, defaultModelContext} from 'klay-core'
+import {IDatabaseExecutor, getPrimaryKeyField} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import {includes} from 'lodash'
+
 import {
   ActionType,
   IAction,

@@ -1,4 +1,9 @@
 import {camelCase, forEach} from 'lodash'
+
+import * as core from './extensions/core'
+import * as dates from './extensions/dates'
+import * as numbers from './extensions/numbers'
+import * as strings from './extensions/strings'
 import {Model} from './model'
 import {
   IKlayExtension,
@@ -8,11 +13,6 @@ import {
   IValidatorOptions,
 } from './typedefs'
 import {ValidatorOptions} from './validator-options'
-
-import * as core from './extensions/core'
-import * as dates from './extensions/dates'
-import * as numbers from './extensions/numbers'
-import * as strings from './extensions/strings'
 
 export class ModelContext {
   private _options: IValidatorOptions

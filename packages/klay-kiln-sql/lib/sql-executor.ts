@@ -2,16 +2,17 @@
 import {
   ConstraintError,
   ConstraintType,
-  getPrimaryKey,
   IDatabaseExecutorMinimal,
   IQuery,
   IQueryExtras,
   IQueryOrderItem,
   IQueryTransaction,
+  getPrimaryKey,
 } from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
 import * as Sequelize from 'sequelize'
-import {getFlattenedPath, JSONToSQL, SQLToJSON} from './sequelize'
+
+import {JSONToSQL, SQLToJSON, getFlattenedPath} from './sequelize'
 
 interface ISequelizeQueryExtras {
   transaction?: Sequelize.Transaction

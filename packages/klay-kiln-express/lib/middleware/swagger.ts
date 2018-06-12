@@ -1,6 +1,7 @@
 import {Request, Response} from 'express'
-import {defaultModelContext, IModel} from 'klay-core'
+import {IModel, defaultModelContext} from 'klay-core'
 import {Spec as SwaggerSpec} from 'swagger-schema-official'
+
 import {
   IAnontatedHandler,
   ISwaggerSpecMiddlewareOptions,

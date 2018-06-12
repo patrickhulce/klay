@@ -1,4 +1,5 @@
 import {IKlayExtension, IModel, IValidatorMethods} from 'klay-core'
+
 import {IAuthModelOptions, ISwaggerModelOptions} from '../typedefs'
 
 export class ExpressExtension implements IKlayExtension {

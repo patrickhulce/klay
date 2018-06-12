@@ -2,8 +2,8 @@ import {IKiln, Kiln} from '../../lib'
 import {SQLDialect, SQLExtension} from '../../lib'
 
 import {accountModel} from './models/account'
-import {userModel} from './models/user'
 import {postModel} from './models/post'
+import {userModel} from './models/user'
 
 export const kiln: IKiln = new Kiln()
 

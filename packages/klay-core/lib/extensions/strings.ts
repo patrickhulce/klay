@@ -1,4 +1,5 @@
 import {forEach, values} from 'lodash'
+
 import {AssertionError, assertions} from '../errors/assertion-error'
 import {IValidationResult, IValidatorFormats, IValidatorValidations, ModelType} from '../typedefs'
 

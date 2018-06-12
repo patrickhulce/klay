@@ -21,19 +21,6 @@
     "url": "https://github.com/patrickhulce/klay/issues"
   },
   "homepage": "https://github.com/patrickhulce/klay#readme",
-  "config": {
-    "tslint": {
-      "rules": {
-        "no-implicit-dependencies": false,
-        "no-parameter-reassignment": false,
-        "no-unsafe-any": false,
-        "return-undefined": false
-      }
-    },
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
   "dependencies": {
     "@types/express": "^4.11.1",
     "@types/swagger-schema-official": "^2.0.9",

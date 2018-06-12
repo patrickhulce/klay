@@ -1,4 +1,5 @@
 import * as Sequelize from 'sequelize'
+
 import {ISQLOptions} from '../typedefs'
 
 export function getConnection(options: ISQLOptions): Sequelize.Sequelize {

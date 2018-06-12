@@ -1,4 +1,4 @@
-import {ModelContext, IModelContext} from '../../lib'
+import {IModelContext, ModelContext} from '../../lib'
 import {DatabaseExtension} from '../../lib'
 import {ExpressExtension} from '../../lib'
 

@@ -1,5 +1,7 @@
 import {assign} from 'lodash'
+
 import {IValidationResult, IValidationResultError} from '../typedefs'
+
 import {Assertions} from './assertions'
 
 export class AssertionError extends Error {

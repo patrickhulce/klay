@@ -1,32 +1,28 @@
-import * as express from 'express'
-import * as logger from 'morgan'
 import {json} from 'body-parser'
 import * as cookies from 'cookie-parser'
+import * as express from 'express'
+import {pick} from 'lodash'
+import * as logger from 'morgan'
 
-import {kiln, ModelId, sqlExtension} from './kiln'
 import {
-  IValidationError,
-  ValidateIn,
-  CRUD_ROUTES,
-  IRouter,
-  IRouterOptions,
   ActionType,
-  createGrantCreationMiddleware as authenticate,
+  CRUD_ROUTES,
   IDatabaseExecutor,
   IRouterMap,
+  IValidationError,
+  ValidateIn,
   createAndMergeRouters,
-  createSwaggerSpecHandler,
-  createSwaggerUIHandler,
-  buildSwaggerSpecification,
-  oauthTokenResponseModel,
-  oauthTokenRequestModel,
+  createGrantCreationMiddleware as authenticate,
   createOAuthTokenHandler,
+  oauthTokenRequestModel,
+  oauthTokenResponseModel,
 } from '../../lib'
-import {Permissions, configuration as authConf, AuthRoles, SECRET} from './auth'
+
+import {AuthRoles, Permissions, SECRET, configuration as authConf} from './auth'
+import {ModelId, kiln, sqlExtension} from './kiln'
 import {modelContext} from './model-context'
-import {accountModel, AccountPlan, IAccount} from './models/account'
-import {userModel, IUser} from './models/user'
-import {omit, pick} from 'lodash'
+import {AccountPlan, IAccount, accountModel} from './models/account'
+import {IUser, userModel} from './models/user'
 
 const accountExecutor = kiln.build(ModelId.Account, sqlExtension) as IDatabaseExecutor<IAccount>
 const userExecutor = kiln.build(ModelId.User, sqlExtension) as IDatabaseExecutor<IUser>

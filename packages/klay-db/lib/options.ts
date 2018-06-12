@@ -1,10 +1,11 @@
 import {
   IValidationResult,
-  modelAssertions as assertions,
   ValidationPhase,
+  modelAssertions as assertions,
 } from 'klay-core'
 import {cloneDeep, isEqual, last, uniqWith, values} from 'lodash'
 import {v4 as uuid} from 'uuid'
+
 import {
   ConstraintType,
   DatabaseEvent,

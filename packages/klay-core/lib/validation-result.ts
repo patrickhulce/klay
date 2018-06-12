@@ -1,4 +1,5 @@
 import {assign, cloneDeep, difference, every, flatten, omit, pick} from 'lodash'
+
 import {AssertionError, assertions} from './errors/assertion-error'
 import {assertions as modelAssertions} from './errors/model-error'
 import {ValidationError} from './errors/validation-error'

@@ -1,4 +1,5 @@
 import {cloneDeep, forEach, isArray, mergeWith, uniq} from 'lodash'
+
 import {assertions} from './errors/model-error'
 import {
   ALL_FORMATS,

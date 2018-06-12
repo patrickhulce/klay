@@ -1,6 +1,7 @@
-import {defaultModelContext, IModel, IModelChild, IValidationResult, ModelType} from 'klay-core'
+import {IModel, IModelChild, IValidationResult, ModelType, defaultModelContext} from 'klay-core'
 import {ConstraintType, DatabaseEvent, eventMatches, findModel, getPrimaryKeyField} from 'klay-db'
 import {flatten, forEach, includes, isEqual, pick, startCase} from 'lodash'
+
 import {IParamifyOptions, IQuerifyOptions} from '../typedefs'
 
 const ALLOWED_QUERY_TYPES = [

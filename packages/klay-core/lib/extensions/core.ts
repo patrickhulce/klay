@@ -1,4 +1,5 @@
 import {difference, size, values} from 'lodash'
+
 import {assertions} from '../errors/assertion-error'
 import {
   ALL_FORMATS,

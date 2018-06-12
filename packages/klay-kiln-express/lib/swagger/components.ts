@@ -1,7 +1,9 @@
-import {defaultModelContext, IModel, IModelChild, ModelType, NumberFormat} from 'klay-core'
+import {IModel, IModelChild, ModelType, NumberFormat, defaultModelContext} from 'klay-core'
 import {startCase} from 'lodash'
 import * as swagger from 'swagger-schema-official'
+
 import {ValidateIn} from '../typedefs'
+
 import {ISwaggerSchemaCache, SwaggerContext} from './typedefs'
 
 function transformSpecialCases(model: IModel, context: SwaggerContext): IModel {

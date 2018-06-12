@@ -1,4 +1,5 @@
-import {assert, IModel} from 'klay-core'
+import {IModel, assert} from 'klay-core'
+
 import {
   evaluateCustomConstraints,
   evaluateImmutableConstraints,

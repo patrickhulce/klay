@@ -1,6 +1,6 @@
-import {modelContext} from '../model-context'
-import {IModel, ValidationPhase, ConstraintType, SortDirection, WRITE_ACTIONS} from '../../../lib'
+import {ConstraintType, IModel, SortDirection, WRITE_ACTIONS} from '../../../lib'
 import {Permissions} from '../auth'
+import {modelContext} from '../model-context'
 
 export const postModel: IModel = modelContext
   .object()

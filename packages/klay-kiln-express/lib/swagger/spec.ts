@@ -2,7 +2,9 @@ import {defaultModelContext} from 'klay-core'
 import {IKiln} from 'klay-kiln'
 import {startCase} from 'lodash'
 import {Spec} from 'swagger-schema-official'
+
 import {IRouter} from '../typedefs'
+
 import {SwaggerSchemaCache} from './cache'
 import {getSchema} from './components'
 import {buildPaths} from './paths'

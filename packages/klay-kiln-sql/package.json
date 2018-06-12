@@ -25,38 +25,6 @@
     "url": "https://github.com/patrickhulce/klay/issues"
   },
   "homepage": "https://github.com/patrickhulce/klay/tree/master/packages/klay-kiln-sql#readme",
-  "config": {
-    "tslint": {
-      "rules": {
-        "curly": false,
-        "whitespace": false,
-        "max-line-length": [
-          true,
-          {
-            "limit": 100,
-            "ignore-pattern": "//"
-          }
-        ],
-        "newline-per-chained-call": false,
-        "only-arrow-functions": false,
-        "no-void-expression": false,
-        "no-unsafe-any": false,
-        "no-any": false
-      }
-    },
-    "eslint": {
-      "globals": [
-        "describesql",
-        "defineTest"
-      ],
-      "rules": {
-        "camelcase": 0
-      }
-    },
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
   "dependencies": {
     "@types/sequelize": "^4.27.7",
     "bluebird": "^3.5.1",

@@ -1,8 +1,7 @@
+import {DatabaseExecutor} from 'klay-db'
 import {IKiln, IKilnExtension, IKilnModel} from 'klay-kiln'
-
 import * as Sequelize from 'sequelize'
 
-import {DatabaseExecutor} from 'klay-db'
 import {getConnection, getModel} from './sequelize'
 import {SQLExecutor} from './sql-executor'
 import {IExecutorOptions, ISQLExecutor, ISQLOptions, ISyncOptions, SQL_EXECUTOR} from './typedefs'

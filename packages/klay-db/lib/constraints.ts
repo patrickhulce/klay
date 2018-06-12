@@ -1,5 +1,7 @@
-import {assert, IModel} from 'klay-core'
+import {IModel, assert} from 'klay-core'
 import {get, isEqual} from 'lodash'
+
+import {assertions as constraintAssert} from './constraint-error'
 import {QueryBuilder} from './query-builder'
 import {
   ConstraintType,
@@ -9,8 +11,6 @@ import {
   IQueryExtras,
   PrimaryKey,
 } from './typedefs'
-
-import {assertions as constraintAssert} from './constraint-error'
 
 export function getPrimaryKeyField(model: IModel): string {
   const pkConstraint = model.spec.db!.constrain.find(

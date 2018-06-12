@@ -1,4 +1,5 @@
 import * as express from 'express'
+
 import {IAuthConfiguration} from '../../lib'
 
 export enum AuthRoles {

@@ -1,4 +1,5 @@
 import {cloneDeep, get, omit, set} from 'lodash'
+
 import {AssertionError, assertions} from './errors/assertion-error'
 import {
   ALL_FORMATS,

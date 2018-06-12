@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from 'express'
 import {IModel} from 'klay-core'
 import {IDatabaseExecutor} from 'klay-db'
 import {IKilnModel} from 'klay-kiln'
+
 import {paramifyModel} from '../helpers/transform-model'
 import {
   ActionType,
@@ -11,6 +12,7 @@ import {
   IActionOptions,
   IAnontatedHandler,
 } from '../typedefs'
+
 import {defaultAction} from './action'
 
 export const readAction: IAction = {

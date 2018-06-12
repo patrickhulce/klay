@@ -1,12 +1,13 @@
 import {
-  assert,
   ICoerceFunction,
   IModel,
   IModelChild,
-  modelAssertions,
   ValidationPhase,
+  assert,
+  modelAssertions,
 } from 'klay-core'
 import {cloneDeep, forEach} from 'lodash'
+
 import {DatabaseOptions} from './options'
 import {DatabaseEvent, IDatabaseSpecification} from './typedefs'
 

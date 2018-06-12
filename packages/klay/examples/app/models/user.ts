@@ -1,8 +1,9 @@
-import {modelContext} from '../model-context'
 import {createHmac} from 'crypto'
-import {assert, IModel, ValidationPhase, READ_ACTIONS, WRITE_ACTIONS} from '../../../lib'
+
+import {IModel, READ_ACTIONS, WRITE_ACTIONS, assert} from '../../../lib'
 import {ConstraintType, SortDirection} from '../../../lib'
 import {AuthRoles, Permissions} from '../auth'
+import {modelContext} from '../model-context'
 
 const SALT = 'super-secret-salt'
 
