@@ -1,4 +1,4 @@
-import {ICoerceFunction, IModel, ValidationPhase} from 'klay-core'
+import {ICoerceFunction, IModel, IValidationResult, ValidationPhase} from 'klay-core'
 
 declare module 'klay-core/dist/typedefs' {
   export interface IModelContext {
@@ -34,7 +34,7 @@ declare module 'klay-core/dist/errors/assertions' {
   }
 }
 
-(ValidationPhase as any).Database = 'database'
+;(ValidationPhase as any).Database = 'database'
 
 export interface IDatabaseSetterOptions {
   shouldMerge: boolean
@@ -107,10 +107,12 @@ export enum DatabaseEvent {
   Update = 'update',
 }
 
+export type SaltFunction = (validationResult: IValidationResult) => string
+
 export interface IPasswordOptions {
   model?: IModel
-  algorithm?: 'sha1'|'sha224'
-  salt: string
+  algorithm?: 'sha1' | 'sha224'
+  salt: string | SaltFunction
 }
 
 export type PropertyPath = string[]
@@ -133,13 +135,13 @@ export enum ConstraintType {
 }
 
 export interface ICustomConstraintPayload {
-  record: object,
-  existing?: object,
-  model: IModel,
-  executor: IDatabaseExecutor,
-  event: DatabaseEvent,
-  constraint: IConstraint,
-  extras?: IQueryExtras,
+  record: object
+  existing?: object
+  model: IModel
+  executor: IDatabaseExecutor
+  event: DatabaseEvent
+  constraint: IConstraint
+  extras?: IQueryExtras
 }
 
 export enum SortDirection {
@@ -197,7 +199,7 @@ export interface IDatabaseExecutorMinimal<TRecord extends object = object> {
   destroyById(id: PrimaryKey, extras?: IQueryExtras): Promise<void>
 }
 
-export interface IDatabaseExecutor<TRecord extends object = object>  {
+export interface IDatabaseExecutor<TRecord extends object = object> {
   transaction<T>(func: (t: IQueryTransaction) => Promise<T>): Promise<T>
 
   count(query: IQuery, extras?: IQueryExtras): Promise<number>

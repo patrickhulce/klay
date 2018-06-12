@@ -7,7 +7,6 @@
   "rules": {
     // Personal configuration from eslint
     "max-line-length": [true, {"limit": 100, "ignore-pattern": "^import |//"}],
-    "semicolon": [true, "never"],
     "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
     "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
     "quotemark": [true, "single", "jsx-double", "avoid-escape"],
@@ -66,6 +65,8 @@
 
     // Disabled because they're managed by prettier
     "curly": false,
+    "object-literal-key-quotes": false,
+    "semicolon": false,
     "align": false,
     "whitespace": false,
     "newline-per-chained-call": false,

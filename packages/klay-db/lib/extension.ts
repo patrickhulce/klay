@@ -28,7 +28,7 @@ export class DatabaseExtension implements IKlayExtension {
 
   public constructor() {
     this.hooks = {
-      'construction': [],
+      construction: [],
       'set-children': [
         model => {
           if (Array.isArray(model.spec.children)) {
@@ -127,7 +127,9 @@ export class DatabaseExtension implements IKlayExtension {
           if (/^[a-f0-9]+$/.test(password) && password.length === length) return result
           if (options.model) options.model.validate(password, {failLoudly: true})
 
-          const hash = createHmac(algorithm, options.salt).update(password)
+          let salt = options.salt as string
+          if (typeof options.salt === 'function') salt = options.salt(result)
+          const hash = createHmac(algorithm, salt).update(password)
           return result.setValue(hash.digest('hex'))
         }, ValidationPhase.ValidateChildren)
     }

@@ -1,13 +1,7 @@
 import {createHmac} from 'crypto'
 import {kebabCase, values} from 'lodash'
 
-import {
-  ConstraintType,
-  IModel,
-  READ_ACTIONS,
-  SortDirection,
-  WRITE_ACTIONS,
-} from '../../../lib'
+import {ConstraintType, IModel, READ_ACTIONS, SortDirection, WRITE_ACTIONS} from '../../../lib'
 import {Permissions} from '../auth'
 import {modelContext} from '../model-context'
 
