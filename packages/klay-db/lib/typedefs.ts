@@ -6,7 +6,7 @@ declare module 'klay-core/dist/typedefs' {
     uuidId(): IModel
     createdAt(): IModel
     updatedAt(): IModel
-    password(options: IPasswordOptions): IModel
+    password(options?: Partial<IPasswordOptions>): IModel
   }
 
   export interface IModel {
@@ -17,6 +17,7 @@ declare module 'klay-core/dist/typedefs' {
     constrain(constraint: IConstraintInput): IModel
     index(properties: IIndexPropertyInput[]): IModel
     autoIncrement(): IModel
+    password(options: IPasswordOptions): IModel
   }
 
   export interface IModelSpecification {
@@ -53,12 +54,14 @@ export interface IDatabaseSpecificationUnsafe {
   automanage?: IAutomanageProperty[]
   constrain?: IConstraint[]
   index?: IIndexProperty[][]
+  password?: IPasswordOptions
 }
 
 export interface IDatabaseSpecification {
   automanage: IAutomanageProperty[]
   constrain: IConstraint[]
   index: IIndexProperty[][]
+  password?: IPasswordOptions
 }
 
 export interface IAutomanagePropertyInput {
@@ -110,9 +113,17 @@ export enum DatabaseEvent {
 export type SaltFunction = (validationResult: IValidationResult) => string
 
 export interface IPasswordOptions {
-  model?: IModel
-  algorithm?: 'sha1' | 'sha224'
-  salt: string | SaltFunction
+  model: IModel
+  algorithm: PasswordAlgorithm
+  hashedPasswordLength: number
+  saltLength: number
+  iterations: number
+  secret: string
+}
+
+export enum PasswordAlgorithm {
+  SHA1 = 'sha1',
+  SHA2 = 'sha224',
 }
 
 export type PropertyPath = string[]

@@ -1,5 +1,6 @@
 export {DatabaseExtension} from './extension'
 export {DatabaseExecutor} from './executor'
+export {doPasswordsMatch} from './password'
 export * from './constraints'
 export * from './typedefs'
 export * from './query-builder'

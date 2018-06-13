@@ -1,6 +1,7 @@
 const ModelContext = require('klay-core').ModelContext
 const DatabaseExtension = require('../lib/extension').DatabaseExtension
 const DatabaseOptions = require('../lib/options').DatabaseOptions
+const doPasswordsMatch = require('../lib/password').doPasswordsMatch
 
 describe('lib/extension.ts', () => {
   let modelContext
@@ -54,6 +55,59 @@ describe('lib/extension.ts', () => {
     it('should add updatedAt', () => {
       const model = modelContext.updatedAt()
       expect(model.spec.db.automanage).toHaveLength(1)
+    })
+
+    describe('#password', () => {
+      it('should create a string model', () => {
+        const model = modelContext.password()
+        expect(model.spec.type).toBe('string')
+      })
+
+      it('should hash the password with a salt', () => {
+        const model = modelContext.password()
+        const [hashA, saltA] = model.validate('password').value.split('!')
+        const [hashB, saltB] = model.validate('password').value.split('!')
+
+        expect(hashA).toHaveLength(32)
+        expect(hashB).toHaveLength(32)
+        expect(saltA).toHaveLength(32)
+        expect(saltB).toHaveLength(32)
+        expect(hashA).not.toBe(hashB)
+        expect(saltA).not.toBe(saltB)
+      })
+
+      it('should leave existing hashes untouched', () => {
+        const model = modelContext.password()
+        const valueA = model.validate('password').value
+        const valueB = model.validate(valueA).value
+        expect(valueA).toEqual(valueB)
+      })
+
+      it('should set max of model appropriately', () => {
+        const model = modelContext.password()
+        const {value} = model.validate('password')
+        expect(model.spec.max).toEqual(value.length)
+      })
+
+      it('should use the right algorithm', () => {
+        const model = modelContext.password({algorithm: 'sha224'})
+        const [hash] = model.validate('password').value.split('!')
+        expect(hash).toHaveLength(32)
+      })
+
+      it('should use the right salt length', () => {
+        const model = modelContext.password({saltLength: 64})
+        const [hash, salt] = model.validate('password').value.split('!')
+        expect(hash).toHaveLength(32)
+        expect(salt).toHaveLength(64)
+      })
+
+      it('should be verifyable', async () => {
+        const model = modelContext.password({saltLength: 64})
+        const hashedPassword = model.validate('password1').value
+        const options = model.spec.db.password
+        expect(await doPasswordsMatch('password1', hashedPassword, options)).toBe(true)
+      })
     })
   })
 

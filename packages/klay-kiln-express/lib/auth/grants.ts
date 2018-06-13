@@ -1,11 +1,7 @@
 import {assert} from 'klay-core'
 import {includes, map, sortBy, template} from 'lodash'
 
-import {
-  IAuthConfiguration,
-  IAuthCriteriaPropertyValues,
-  IGrants,
-} from '../typedefs'
+import {IAuthConfiguration, IAuthCriteriaPropertyValues, IGrants} from '../typedefs'
 
 import {ICriteriaDefinition} from './typedefs'
 

@@ -1,11 +1,17 @@
 import {createHmac} from 'crypto'
-
-import {IModel, READ_ACTIONS, WRITE_ACTIONS, assert} from '../../../lib'
+import {
+  assert,
+  IModel,
+  ValidationPhase,
+  READ_ACTIONS,
+  WRITE_ACTIONS,
+  PasswordAlgorithm,
+} from '../../../lib'
 import {ConstraintType, SortDirection} from '../../../lib'
 import {AuthRoles, Permissions} from '../auth'
 import {modelContext} from '../model-context'
 
-const SALT = 'super-secret-salt'
+const PEPPER = 'super-secret-pepper'
 
 export interface IUser {
   id?: number
@@ -40,7 +46,10 @@ export const userModel: IModel = modelContext
       .email()
       .max(250)
       .constrain({type: ConstraintType.Unique}),
-    password: modelContext.password({salt: SALT, model: passwordModel}),
+    password: modelContext.password({
+      secret: PEPPER,
+      model: passwordModel,
+    }),
     firstName: modelContext.string().max(100),
     lastName: modelContext.string().max(100),
     createdAt: modelContext.createdAt(),

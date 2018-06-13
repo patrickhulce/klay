@@ -33,7 +33,7 @@ Array [
           "type": "object",
         },
         "password": Object {
-          "maxLength": 32,
+          "maxLength": 65,
           "type": "string",
         },
         "tracking": Object {
@@ -263,7 +263,7 @@ Object {
         "type": "object",
       },
       "password": Object {
-        "maxLength": 32,
+        "maxLength": 65,
         "type": "string",
       },
       "tracking": Object {
@@ -341,7 +341,7 @@ Object {
       "type": "object",
     },
     "password": Object {
-      "maxLength": 32,
+      "maxLength": 65,
       "type": "string",
     },
     "tracking": Object {

@@ -21,10 +21,7 @@ function createModel(context) {
       .email()
       .max(250)
       .constrain({type: 'unique'}),
-    password: context
-      .string()
-      .max(32)
-      .coerce(vr => vr.setValue(`hashed:${vr.value}`)),
+    password: context.password(),
     firstName: context.string().max(100),
     lastName: context.string().max(100),
     metadata: context

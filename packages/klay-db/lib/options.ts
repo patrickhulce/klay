@@ -1,8 +1,4 @@
-import {
-  IValidationResult,
-  ValidationPhase,
-  modelAssertions as assertions,
-} from 'klay-core'
+import {IValidationResult, ValidationPhase, modelAssertions as assertions} from 'klay-core'
 import {cloneDeep, isEqual, last, uniqWith, values} from 'lodash'
 import {v4 as uuid} from 'uuid'
 
@@ -19,6 +15,7 @@ import {
   IDatabaseSpecificationUnsafe,
   IIndexProperty,
   IIndexPropertyInput,
+  IPasswordOptions,
   ISupplyWithFunction,
   SortDirection,
   SupplyWithPreset,
@@ -83,6 +80,11 @@ export class DatabaseOptions implements IDatabaseOptions {
     return this
   }
 
+  public password(options: IPasswordOptions): IDatabaseOptions {
+    this.spec.password = options
+    return this
+  }
+
   public reset(): IDatabaseOptions {
     this.spec = DatabaseOptions.empty()
     return this
@@ -143,6 +145,11 @@ export class DatabaseOptions implements IDatabaseOptions {
     const automanage = concat(specA.automanage, specToMerge.automanage)
     const constrain = concat(specA.constrain, specToMerge.constrain)
     const index = concat(specA.index, specToMerge.index)
-    return {automanage, constrain, index}
+    const password = specB.password || specA.password
+    if (specA.password && specB.password) {
+      throw new Error('Cannot merge multiple passwords')
+    }
+
+    return {automanage, constrain, index, password}
   }
 }

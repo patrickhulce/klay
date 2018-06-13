@@ -1,4 +1,3 @@
-import {createHmac} from 'crypto'
 import {
   IKlayExtension,
   IModel,
@@ -10,6 +9,11 @@ import {
 
 import * as helpers from './helpers'
 import {DatabaseOptions} from './options'
+import {
+  createPasswordCoerceFn,
+  fillDefaultPasswordOptions,
+  getTotalPasswordLength,
+} from './password'
 import {
   ConstraintType,
   DatabaseEvent,
@@ -71,6 +75,10 @@ export class DatabaseExtension implements IKlayExtension {
 
         return model.db(database.spec, {shouldMerge: true})
       },
+      password(model: IModel, options: IPasswordOptions): IModel {
+        const database = new DatabaseOptions().password(options)
+        return model.db(database.spec, {shouldMerge: true})
+      },
       toDatabaseEventModel(model: IModel, event: DatabaseEvent): IModel {
         return helpers.getModelForEvent(model, event)
       },
@@ -115,23 +123,14 @@ export class DatabaseExtension implements IKlayExtension {
           phase: ValidationPhase.Parse,
           supplyWith: SupplyWithPreset.Date,
         })
-    context.password = (options: IPasswordOptions) => {
-      const algorithm = options.algorithm || 'sha1'
-      const length = algorithm === 'sha1' ? 40 : 56
+    context.password = (partialOptions: Partial<IPasswordOptions> = {}) => {
+      const options = fillDefaultPasswordOptions(context, partialOptions)
 
       return context
         .string()
-        .max(length)
-        .coerce(result => {
-          const password = result.value
-          if (/^[a-f0-9]+$/.test(password) && password.length === length) return result
-          if (options.model) options.model.validate(password, {failLoudly: true})
-
-          let salt = options.salt as string
-          if (typeof options.salt === 'function') salt = options.salt(result)
-          const hash = createHmac(algorithm, salt).update(password)
-          return result.setValue(hash.digest('hex'))
-        }, ValidationPhase.ValidateChildren)
+        .max(getTotalPasswordLength(options))
+        .password(options)
+        .coerce(createPasswordCoerceFn(options), ValidationPhase.ValidateChildren)
     }
   }
 }

@@ -1,8 +1,9 @@
 /* tslint:disable no-unsafe-any */
 import {NextFunction, Request, Response} from 'express'
 import * as jwt from 'jsonwebtoken'
+
 import {IModel, IModelChild, defaultModelContext} from 'klay-core'
-import {IDatabaseExecutor} from 'klay-db'
+import {IDatabaseExecutor, doPasswordsMatch} from 'klay-db'
 
 import {AuthenticationError} from '../auth/authentication-error'
 import {DEFAULT_DATABASE_EXTENSION, IAnontatedHandler, IOAuthOptions} from '../typedefs'
@@ -32,12 +33,18 @@ function createDefaultLookupByPassword(
     throw new Error('Unable to find username and password fields')
 
   const passwordModel = userModelChildren.find(model => model.path === passwordField)!.model
+  const passwordOptions = passwordModel.spec.db && passwordModel.spec.db.password
+  if (!passwordOptions) throw new Error('Unable to find password options')
+
   const executorExtension = databaseExtension || DEFAULT_DATABASE_EXTENSION
-  const executor = kiln.build<IDatabaseExecutor>(userKilnModel.name, executorExtension)
-  return (username: string, password: string) => {
-    const hashedPassword = passwordModel.validate(password).value
+  const executor = kiln.build<IDatabaseExecutor<any>>(userKilnModel.name, executorExtension)
+  return async (username: string, password: string) => {
+    const user = await executor.findOne({where: {[usernameField]: username}})
+    if (!user) return undefined
+    const passwordsMatch = await doPasswordsMatch(password, user[passwordField], passwordOptions)
+    if (!passwordsMatch) return undefined
     // TODO: limit returned user fields to just those used by auth grants
-    return executor.findOne({where: {[usernameField]: username, [passwordField]: hashedPassword}})
+    return user
   }
 }
 

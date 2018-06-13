@@ -34,7 +34,7 @@ module.exports = state => {
 
       expect(response.status).toBe(200)
       state.userA = await response.json()
-      expect(state.userA.password).toMatch(/^[a-f0-9]{40}$/)
+      expect(state.userA.password).toMatch(/^[a-f0-9]{32}![a-f0-9]{32}$/)
     })
 
     it('should check authorization', async () => {
@@ -65,7 +65,7 @@ module.exports = state => {
 
       expect(response.status).toBe(200)
       state.userB = await response.json()
-      expect(state.userB.password).toMatch(/^[a-f0-9]{40}$/)
+      expect(state.userB.password).toMatch(/^[a-f0-9]{32}![a-f0-9]{32}$/)
     })
 
     it('should prevent duplicate user', async () => {
@@ -120,7 +120,7 @@ module.exports = state => {
 
       expect(response.status).toBe(200)
       const updatedUser = await response.json()
-      expect(updatedUser.password).toMatch(/^[a-f0-9]{40}$/)
+      expect(updatedUser.password).toMatch(/^[a-f0-9]{32}![a-f0-9]{32}$/)
       expect(updatedUser.password).not.toBe(state.user.password)
     })
 
