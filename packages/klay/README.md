@@ -1,9 +1,8 @@
 # klay
+
 [![NPM Package](https://badge.fury.io/js/klay.svg)](https://www.npmjs.com/package/klay)
 [![Build Status](https://travis-ci.org/patrickhulce/klay.svg?branch=master)](https://travis-ci.org/patrickhulce/klay)
 [![Coverage Status](https://coveralls.io/repos/github/patrickhulce/klay/badge.svg?branch=master)](https://coveralls.io/github/patrickhulce/klay?branch=master)
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-[![Dependencies](https://david-dm.org/patrickhulce/klay.svg)](https://david-dm.org/patrickhulce/klay)
 
 Isomorphic and extensible validation library for JavaScript.
 
@@ -13,12 +12,12 @@ Isomorphic and extensible validation library for JavaScript.
 
 ### Install
 
-`npm install --save klay-core`
+`npm install --save klay`
 
 ### Validate
 
 ```js
-const klay = require('klay-core').defaultModelContext
+const klay = require('klay').defaultModelContext
 
 const myModel = klay
   .object()
@@ -57,20 +56,18 @@ console.log(results.toJSON())
 ### Extend
 
 ```js
-const klay = require('klay-core').defaultModelContext
+const {ModelContext} = require('klay')
 
-klay.use({
+const klay = ModelContext.create().use({
   types: ['custom-type'],
-  defaults: {required: true, strict: true}
+  defaults: {required: true, strict: true},
 })
 
-const myModel = klay
-  .object()
-  .children({
-    firstName: klay.string(), // required by default
-    lastName: klay.string(), // required by default
-    email: klay.email(), // required by default
-    age: klay.integer().optional(),
-    custom: klay.customType(),
-  })
+const myModel = klay.object().children({
+  firstName: klay.string(), // required by default
+  lastName: klay.string(), // required by default
+  email: klay.email(), // required by default
+  age: klay.integer().optional(),
+  custom: klay.customType(),
+})
 ```
