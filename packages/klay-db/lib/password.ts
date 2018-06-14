@@ -8,6 +8,13 @@ const pbkdf2Async = promisify(crypto.pbkdf2)
 
 const SALT_DELIMITER = '!'
 
+function getHashPasswordSaltRegex(options: IPasswordOptions): RegExp {
+  const hexPattern = '[a-f0-9]'
+  const passwordPattern = `${hexPattern}{${options.hashedPasswordLength}}`
+  const saltPattern = `${hexPattern}{${options.saltLength}}`
+  return new RegExp(`^${passwordPattern}${SALT_DELIMITER}${saltPattern}$`)
+}
+
 export function getTotalPasswordLength({
   hashedPasswordLength,
   saltLength,
@@ -87,9 +94,11 @@ export function createNewPasswordHashSalt(password: string, options: IPasswordOp
 }
 
 export function createPasswordCoerceFn(options: IPasswordOptions): ICoerceFunction {
+  const hashedRegex = getHashPasswordSaltRegex(options)
+
   return (result: IValidationResult): IValidationResult => {
     // We don't need to update the password return early
-    if (result.value.length === getTotalPasswordLength(options)) return result
+    if (result.value.match(hashedRegex)) return result
     // We're accepting a user password, create a new hash/salt and set the value
     return result.setValue(createNewPasswordHashSalt(result.value, options))
   }
