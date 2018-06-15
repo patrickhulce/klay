@@ -1,7 +1,7 @@
 import {IModel, assert} from 'klay-core'
 import {get, isEqual} from 'lodash'
 
-import {assertions as constraintAssert} from './constraint-error'
+import {constraintAssertions} from './constraint-error'
 import {QueryBuilder} from './query-builder'
 import {
   ConstraintType,
@@ -92,7 +92,7 @@ export async function fetchByUniqueConstraints(
 
   const existing = matches[0]
   matches.forEach(item =>
-    constraintAssert.ok(isEqual(item, existing), 'conflicting unique constraints'),
+    constraintAssertions.ok(isEqual(item, existing), 'conflicting unique constraints'),
   )
   return existing
 }
@@ -109,7 +109,7 @@ export async function evaluateUniqueConstraints(
     model,
     record,
     async (existing, constraint) => {
-      constraintAssert.ok(
+      constraintAssertions.ok(
         !existing || primaryKey === getPrimaryKey(model, existing),
         `constraint ${constraint.name} violated`,
         {
@@ -138,7 +138,7 @@ export async function evaluateImmutableConstraints(
       const previous = get(existing, propertyPath)
       const next = get(record, propertyPath)
       const name = propertyPath.join('.')
-      constraintAssert.ok(isEqual(previous, next), `immutable constraint ${name} violated`, {
+      constraintAssertions.ok(isEqual(previous, next), `immutable constraint ${name} violated`, {
         path: propertyPath.join('.'),
         type: ConstraintType.Immutable,
       })

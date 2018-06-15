@@ -1,6 +1,6 @@
 import {cloneDeep, forEach, uniq} from 'lodash'
 
-import {assertions} from './errors/model-error'
+import {modelAssertions} from './errors/model-error'
 import {
   ICoerceFunction,
   IModel,
@@ -66,38 +66,38 @@ export class Model {
   }
 
   public type(type: string): IModel {
-    assertions.oneOf(type, this._options.types, 'type')
+    modelAssertions.oneOf(type, this._options.types, 'type')
     this.spec.type = type
     return this
   }
 
   public format(format: string): IModel {
-    assertions.ok(this.spec.type, 'type must be set before format')
-    assertions.oneOf(format, this._options.formats[this.spec.type!], 'format')
+    modelAssertions.ok(this.spec.type, 'type must be set before format')
+    modelAssertions.oneOf(format, this._options.formats[this.spec.type!], 'format')
     this.spec.format = format
     return this
   }
 
   public required(required: boolean = true): IModel {
-    assertions.typeof(required, 'boolean', 'required')
+    modelAssertions.typeof(required, 'boolean', 'required')
     this.spec.required = required
     return this
   }
 
   public optional(optional: boolean = true): IModel {
-    assertions.typeof(optional, 'boolean', 'optional')
+    modelAssertions.typeof(optional, 'boolean', 'optional')
     this.spec.required = !optional
     return this
   }
 
   public nullable(nullable: boolean = true): IModel {
-    assertions.typeof(nullable, 'boolean', 'nullable')
+    modelAssertions.typeof(nullable, 'boolean', 'nullable')
     this.spec.nullable = nullable
     return this
   }
 
   public strict(strict: boolean = true): IModel {
-    assertions.typeof(strict, 'boolean', 'strict')
+    modelAssertions.typeof(strict, 'boolean', 'strict')
     this.spec.strict = strict
     return this
   }
@@ -113,7 +113,7 @@ export class Model {
       valueAsNumber = value.getTime()
     }
 
-    assertions.typeof(valueAsNumber, 'number', 'min')
+    modelAssertions.typeof(valueAsNumber, 'number', 'min')
     this.spec.min = valueAsNumber
     return this
   }
@@ -124,28 +124,28 @@ export class Model {
       valueAsNumber = value.getTime()
     }
 
-    assertions.typeof(valueAsNumber, 'number', 'max')
+    modelAssertions.typeof(valueAsNumber, 'number', 'max')
     this.spec.max = valueAsNumber
     return this
   }
 
   public size(value: number): IModel {
-    assertions.ok(this.spec.type !== 'number', 'cannot call size on number model')
-    assertions.typeof(value, 'number', 'size')
+    modelAssertions.ok(this.spec.type !== 'number', 'cannot call size on number model')
+    modelAssertions.typeof(value, 'number', 'size')
     this.spec.min = value
     this.spec.max = value
     return this
   }
 
   public enum(options: IModelEnumOption[]): IModel {
-    assertions.typeof(options, 'array', 'enum')
+    modelAssertions.typeof(options, 'array', 'enum')
     const nextOptions = this.spec.enum || []
 
     const type = typeof options[0]
     options.forEach((option, index) => {
-      assertions.typeof(option, type, `enum.${index}`)
+      modelAssertions.typeof(option, type, `enum.${index}`)
       if (typeof option === 'object') {
-        assertions.ok(option && option.isKlayModel, 'expected enum to be a model')
+        modelAssertions.ok(option && option.isKlayModel, 'expected enum to be a model')
       }
 
       nextOptions.push(option)
@@ -157,7 +157,7 @@ export class Model {
 
   public applies(applies?: IModelAppliesFunction): IModel {
     if (typeof applies !== 'undefined') {
-      assertions.typeof(applies, 'function', 'applies')
+      modelAssertions.typeof(applies, 'function', 'applies')
     }
 
     this.spec.applies = applies
@@ -166,7 +166,7 @@ export class Model {
 
   public children(children: IModelChildrenInput): IModel {
     if ((children as IModel).isKlayModel) {
-      assertions.ok(
+      modelAssertions.ok(
         this.spec.type === ModelType.Array,
         'model type must be array when children is a model',
       )
@@ -176,8 +176,8 @@ export class Model {
     }
 
     // tslint:disable-next-line
-    assertions.ok(children && typeof children === 'object', 'children must be an object')
-    assertions.ok(
+    modelAssertions.ok(children && typeof children === 'object', 'children must be an object')
+    modelAssertions.ok(
       this.spec.type === ModelType.Object,
       'model type must be object for named children',
     )
@@ -194,8 +194,8 @@ export class Model {
     }
 
     modelChildren.forEach((child, i) => {
-      assertions.typeof(child.path, 'string', `children.${i}`)
-      assertions.ok(child.model.isKlayModel, `expected children.${i} to have a model`)
+      modelAssertions.typeof(child.path, 'string', `children.${i}`)
+      modelAssertions.ok(child.model.isKlayModel, `expected children.${i} to have a model`)
     })
 
     this.spec.children = modelChildren
@@ -204,9 +204,9 @@ export class Model {
   }
 
   public pick(paths: string[]): IModel {
-    assertions.typeof(paths, 'array', 'pick')
-    assertions.ok(this.spec.children, 'must have children to pick')
-    assertions.typeof(this.spec.children, 'array', 'children')
+    modelAssertions.typeof(paths, 'array', 'pick')
+    modelAssertions.ok(this.spec.children, 'must have children to pick')
+    modelAssertions.typeof(this.spec.children, 'array', 'children')
     this.spec.children = (this.spec.children as IModelChild[]).filter(
       child => paths.indexOf(child.path) >= 0,
     )
@@ -214,9 +214,9 @@ export class Model {
   }
 
   public omit(paths: string[]): IModel {
-    assertions.typeof(paths, 'array', 'omit')
-    assertions.ok(this.spec.children, 'must have children to omit')
-    assertions.typeof(this.spec.children, 'array', 'children')
+    modelAssertions.typeof(paths, 'array', 'omit')
+    modelAssertions.ok(this.spec.children, 'must have children to omit')
+    modelAssertions.typeof(this.spec.children, 'array', 'children')
     this.spec.children = (this.spec.children as IModelChild[]).filter(
       child => paths.indexOf(child.path) === -1,
     )
@@ -224,15 +224,15 @@ export class Model {
   }
 
   public merge(model: IModel): IModel {
-    assertions.ok(model.isKlayModel, 'can only merge with another model')
-    assertions.equal(model.spec.type, ModelType.Object, 'type')
-    assertions.equal(this.spec.type, ModelType.Object, 'type')
+    modelAssertions.ok(model.isKlayModel, 'can only merge with another model')
+    modelAssertions.equal(model.spec.type, ModelType.Object, 'type')
+    modelAssertions.equal(this.spec.type, ModelType.Object, 'type')
     if (model.spec.children) {
-      assertions.typeof(model.spec.children, 'array', 'children')
+      modelAssertions.typeof(model.spec.children, 'array', 'children')
     }
 
     if (this.spec.children) {
-      assertions.typeof(this.spec.children, 'array', 'children')
+      modelAssertions.typeof(this.spec.children, 'array', 'children')
     }
 
     const thisChildren = (this.spec.children as IModelChild[]) || []
@@ -240,7 +240,7 @@ export class Model {
     const merged = thisChildren.concat(otherChildren)
     const unique = uniq(merged.map(item => item.path))
 
-    assertions.ok(unique.length === merged.length, 'cannot merge conflicting models')
+    modelAssertions.ok(unique.length === merged.length, 'cannot merge conflicting models')
     return this.children(merged)
   }
 
@@ -257,8 +257,8 @@ export class Model {
       return this
     }
 
-    assertions.typeof(coerce, 'function', 'coerce')
-    assertions.oneOf(phase, PHASES, 'coerce.phase')
+    modelAssertions.typeof(coerce, 'function', 'coerce')
+    modelAssertions.oneOf(phase, PHASES, 'coerce.phase')
     this.spec.coerce = this.spec.coerce || {}
     this.spec.coerce[phase!] = coerce as ICoerceFunction
     return this
@@ -277,9 +277,9 @@ export class Model {
       if (typeof validation === 'object') {
         const ctor: any = validation && validation.constructor
         // tslint:disable-next-line
-        assertions.ok(ctor && ctor.name === 'RegExp', `${label} must be a function or RegExp`)
+        modelAssertions.ok(ctor && ctor.name === 'RegExp', `${label} must be a function or RegExp`)
       } else {
-        assertions.typeof(validation, 'function', label)
+        modelAssertions.typeof(validation, 'function', label)
       }
     })
 

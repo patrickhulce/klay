@@ -13,4 +13,4 @@ export class ConstraintError extends Error {
   }
 }
 
-export const assertions = new Assertions(msg => new ConstraintError(msg))
+export const constraintAssertions = new Assertions(msg => new ConstraintError(msg))

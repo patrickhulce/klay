@@ -1,6 +1,6 @@
 import {forEach, values} from 'lodash'
 
-import {AssertionError, assertions} from '../errors/assertion-error'
+import {AssertionError, assert} from '../errors/assertion-error'
 import {IValidationResult, IValidatorFormats, IValidatorValidations, ModelType} from '../typedefs'
 
 function composeRegexes(regexes: RegExp[]): RegExp {
@@ -58,7 +58,7 @@ forEach(validations[ModelType.String], (regexes, format) => {
   const regex = regexes[0] as RegExp
   regexes[0] = (result: IValidationResult) => {
     if (!regex.test(result.value)) {
-      const repr = assertions.getRepresentation(result.value)
+      const repr = assert.getRepresentation(result.value)
       throw new AssertionError(`expected value (${repr}) to be ${format}`)
     }
 

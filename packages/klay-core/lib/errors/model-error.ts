@@ -7,4 +7,4 @@ export class ModelError extends Error {
   }
 }
 
-export const assertions = new Assertions(msg => new ModelError(msg))
+export const modelAssertions = new Assertions(msg => new ModelError(msg))

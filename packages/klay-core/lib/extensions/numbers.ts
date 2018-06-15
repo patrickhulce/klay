@@ -1,12 +1,7 @@
 import {values} from 'lodash'
 
-import {assertions} from '../errors/assertion-error'
-import {
-  IValidatorFormats,
-  IValidatorValidations,
-  ModelType,
-  NumberFormat,
-} from '../typedefs'
+import {assert} from '../errors/assertion-error'
+import {IValidatorFormats, IValidatorValidations, ModelType, NumberFormat} from '../typedefs'
 
 export const types = [ModelType.Number]
 
@@ -17,12 +12,10 @@ export const formats: IValidatorFormats = {
 export const validations: IValidatorValidations = {
   [ModelType.Number]: {
     [NumberFormat.Integer]: [
-      result =>
-        assertions.ok(Number.isInteger(result.value), 'expected value to be an integer'),
+      result => assert.ok(Number.isInteger(result.value), 'expected value to be an integer'),
     ],
     [NumberFormat.Finite]: [
-      result =>
-        assertions.ok(Number.isFinite(result.value), 'expected value to be finite'),
+      result => assert.ok(Number.isFinite(result.value), 'expected value to be finite'),
     ],
   },
 }

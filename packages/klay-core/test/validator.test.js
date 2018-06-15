@@ -3,7 +3,7 @@ const Model = require('../lib/model').Model
 const Validator = require('../lib/validator').Validator
 const assertionErrorModule = require('../lib/errors/assertion-error')
 
-const assert = assertionErrorModule.assertions
+const assert = assertionErrorModule.assert
 const AssertionError = assertionErrorModule.AssertionError
 
 describe('lib/validator.ts', () => {

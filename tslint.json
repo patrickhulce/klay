@@ -7,7 +7,6 @@
   "rules": {
     // Personal configuration from eslint
     "max-line-length": [true, {"limit": 100, "ignore-pattern": "^import |//"}],
-    "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
     "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
     "quotemark": [true, "single", "jsx-double", "avoid-escape"],
 
@@ -58,6 +57,7 @@
     "one-variable-per-declaration": false,
 
     // Disabled because they're broken or generate incompat code
+    "trailing-comma": false, // https://github.com/prettier/prettier/issues/4213#issuecomment-376680365
     "no-unnecessary-type-assertion": false,
     "only-arrow-functions": false,
     "promise-function-async": false,

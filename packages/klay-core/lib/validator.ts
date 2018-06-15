@@ -1,6 +1,6 @@
 import {cloneDeep, get, omit, set} from 'lodash'
 
-import {AssertionError, assertions} from './errors/assertion-error'
+import {AssertionError, assert} from './errors/assertion-error'
 import {
   ALL_FORMATS,
   FALLBACK_FORMAT,
@@ -83,7 +83,7 @@ export class Validator {
     const {value} = validationResult
 
     if (this._spec.required) {
-      assertions.defined(value)
+      assert.defined(value)
     }
 
     const defaultValue = this._spec.default
@@ -93,7 +93,7 @@ export class Validator {
     validationResult.setValue(finalValue)
 
     if (!this._spec.nullable) {
-      assertions.nonNull(finalValue)
+      assert.nonNull(finalValue)
     }
 
     return validationResult
@@ -108,7 +108,7 @@ export class Validator {
 
     const type = typeof this._spec.enum[0]
     if (type === 'string' || type === 'number') {
-      assertions.oneOf(validationResult.value, this._spec.enum)
+      assert.oneOf(validationResult.value, this._spec.enum)
       return validationResult
     }
 
@@ -206,8 +206,8 @@ export class Validator {
       if (typeof validation === 'function') {
         validation(validationResult, this._spec)
       } else {
-        assertions.typeof(validationResult.value, 'string')
-        assertions.match(validationResult.value, validation)
+        assert.typeof(validationResult.value, 'string')
+        assert.match(validationResult.value, validation)
       }
     })
 

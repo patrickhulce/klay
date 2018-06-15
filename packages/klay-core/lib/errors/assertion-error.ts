@@ -30,4 +30,4 @@ export class AssertionError extends Error {
   }
 }
 
-export const assertions = new Assertions(msg => new AssertionError(msg))
+export const assert = new Assertions(msg => new AssertionError(msg))

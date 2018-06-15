@@ -1,6 +1,6 @@
 import {cloneDeep, forEach, isArray, mergeWith, uniq} from 'lodash'
 
-import {assertions} from './errors/model-error'
+import {modelAssertions} from './errors/model-error'
 import {
   ALL_FORMATS,
   FALLBACK_FORMAT,
@@ -31,58 +31,58 @@ export class ValidatorOptions implements IValidatorOptions {
     const validations = cloneDeep(options.validations || {})
     const methods = cloneDeep(options.methods || {})
     const defaults = cloneDeep(options.defaults || {})
-    const hooks = cloneDeep(options.hooks || {} as IModelHooks) // tslint:disable-line
+    const hooks = cloneDeep(options.hooks || ({} as IModelHooks)) // tslint:disable-line
 
-    assertions.typeof(types, 'array')
-    forEach(types, type => assertions.typeof(type, 'string'))
+    modelAssertions.typeof(types, 'array')
+    forEach(types, type => modelAssertions.typeof(type, 'string'))
 
-    assertions.typeof(formats, 'object')
+    modelAssertions.typeof(formats, 'object')
     ValidatorOptions._fillWithKeys(formats, types, () => [])
     forEach(formats, (formats, type) => {
-      assertions.oneOf(type, types)
-      assertions.typeof(formats, 'array')
-      forEach(formats, format => assertions.typeof(format, 'string'))
+      modelAssertions.oneOf(type, types)
+      modelAssertions.typeof(formats, 'array')
+      forEach(formats, format => modelAssertions.typeof(format, 'string'))
     })
 
-    assertions.typeof(coerce, 'object')
+    modelAssertions.typeof(coerce, 'object')
     ValidatorOptions._fillWithKeys(coerce, types)
     forEach(coerce, (coerceForType, type) => {
-      assertions.oneOf(type, types)
-      assertions.typeof(coerceForType, 'object')
+      modelAssertions.oneOf(type, types)
+      modelAssertions.typeof(coerceForType, 'object')
       const formatsForType = formats[type].concat(ALL_FORMATS, FALLBACK_FORMAT)
       ValidatorOptions._fillWithKeys(coerceForType, formatsForType)
       forEach(coerceForType, (coercionMap, format) => {
-        assertions.oneOf(format, formatsForType)
+        modelAssertions.oneOf(format, formatsForType)
         forEach(coercionMap, (fn, phase) => {
-          assertions.oneOf(phase, PHASES)
+          modelAssertions.oneOf(phase, PHASES)
         })
       })
     })
 
-    assertions.typeof(validations, 'object')
+    modelAssertions.typeof(validations, 'object')
     ValidatorOptions._fillWithKeys(validations, types)
     forEach(validations, (validationsForType, type) => {
-      assertions.oneOf(type, types)
-      assertions.typeof(validationsForType, 'object')
+      modelAssertions.oneOf(type, types)
+      modelAssertions.typeof(validationsForType, 'object')
       const formatsForType = formats[type].concat(ALL_FORMATS, FALLBACK_FORMAT)
       ValidatorOptions._fillWithKeys(validationsForType, formatsForType, () => [])
       forEach(validationsForType, (validationsArray, format) => {
-        assertions.oneOf(format, formatsForType)
+        modelAssertions.oneOf(format, formatsForType)
         if (!Array.isArray(validationsArray)) {
           validationsForType[format] = [validationsArray]
         }
       })
     })
 
-    assertions.typeof(methods, 'object')
+    modelAssertions.typeof(methods, 'object')
     forEach(methods, func => {
-      assertions.typeof(func, 'function')
+      modelAssertions.typeof(func, 'function')
     })
 
-    assertions.typeof(hooks, 'object')
+    modelAssertions.typeof(hooks, 'object')
     forEach(hooks, funcs => {
-      assertions.typeof(funcs, 'array')
-      forEach(funcs, func => assertions.typeof(func, 'function'))
+      modelAssertions.typeof(funcs, 'array')
+      forEach(funcs, func => modelAssertions.typeof(func, 'function'))
     })
 
     this.types = types
@@ -114,7 +114,7 @@ export class ValidatorOptions implements IValidatorOptions {
   public static merge(
     optionsUnsafeA: IValidatorOptionsUnsafe,
     optionsUnsafeB: IValidatorOptionsUnsafe,
-    ...others: IValidatorOptionsUnsafe[],
+    ...others: IValidatorOptionsUnsafe[]
   ): IValidatorOptions {
     let optionsToMerge = optionsUnsafeB
     if (others.length) {

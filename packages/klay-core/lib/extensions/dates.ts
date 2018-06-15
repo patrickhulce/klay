@@ -1,6 +1,6 @@
 import {values} from 'lodash'
 
-import {assertions} from '../errors/assertion-error'
+import {assert} from '../errors/assertion-error'
 import {
   DateFormat,
   FALLBACK_FORMAT,
@@ -53,7 +53,7 @@ export const coerce: IValidatorCoerce = {
           value = getDateFromNumber(value)
         }
 
-        assertions.ok(value instanceof Date, 'expected value to be a date')
+        assert.ok(value instanceof Date, 'expected value to be a date')
         return result.setValue(value)
       },
     },
@@ -72,7 +72,7 @@ export const coerce: IValidatorCoerce = {
           }
         }
 
-        assertions.ok(value instanceof Date, 'expected value to be a date')
+        assert.ok(value instanceof Date, 'expected value to be a date')
         return result.setValue(value)
       },
     },

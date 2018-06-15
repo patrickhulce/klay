@@ -3,8 +3,8 @@ import {IModelContext} from './typedefs' // tslint:disable-line
 
 export * from './typedefs'
 export {Assertions} from './errors/assertions'
-export {assertions as assert, AssertionError} from './errors/assertion-error'
-export {assertions as modelAssertions, ModelError} from './errors/model-error'
+export {assert, AssertionError} from './errors/assertion-error'
+export {modelAssertions, ModelError} from './errors/model-error'
 
 const defaultModelContext = ModelContext.create()
 export {ModelContext, defaultModelContext}

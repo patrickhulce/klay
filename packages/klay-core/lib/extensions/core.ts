@@ -1,6 +1,6 @@
 import {difference, size, values} from 'lodash'
 
-import {assertions} from '../errors/assertion-error'
+import {assert} from '../errors/assertion-error'
 import {
   ALL_FORMATS,
   IModelSpecification,
@@ -15,11 +15,11 @@ import {
 function validateMinMax(getValue: (value: any) => number): IValidationFunction {
   return (result: IValidationResult, spec: IModelSpecification) => {
     if (typeof spec.min === 'number') {
-      assertions.ok(getValue(result.value) >= spec.min, `expected value to be at least ${spec.min}`)
+      assert.ok(getValue(result.value) >= spec.min, `expected value to be at least ${spec.min}`)
     }
 
     if (typeof spec.max === 'number') {
-      assertions.ok(getValue(result.value) <= spec.max, `expected value to be at most ${spec.max}`)
+      assert.ok(getValue(result.value) <= spec.max, `expected value to be at most ${spec.max}`)
     }
   }
 }
@@ -30,7 +30,7 @@ export const coerce: IValidatorCoerce = {
   [ModelType.Undefined]: {
     [ALL_FORMATS]: {
       [ValidationPhase.CoerceType]: validationResult => {
-        assertions.typeof(validationResult.value, 'undefined')
+        assert.typeof(validationResult.value, 'undefined')
         return validationResult
       },
     },
@@ -47,7 +47,7 @@ export const coerce: IValidatorCoerce = {
           }
         }
 
-        assertions.typeof(value, 'boolean')
+        assert.typeof(value, 'boolean')
         return validationResult.setValue(value)
       },
     },
@@ -63,7 +63,7 @@ export const coerce: IValidatorCoerce = {
           }
         }
 
-        assertions.typeof(value, 'number')
+        assert.typeof(value, 'number')
         return validationResult.setValue(value)
       },
     },
@@ -76,7 +76,7 @@ export const coerce: IValidatorCoerce = {
           value = String(value)
         }
 
-        assertions.typeof(value, 'string')
+        assert.typeof(value, 'string')
         return validationResult.setValue(value)
       },
     },
@@ -91,7 +91,7 @@ export const coerce: IValidatorCoerce = {
           } catch (e) {}
         }
 
-        assertions.typeof(value, 'object')
+        assert.typeof(value, 'object')
         return validationResult.setValue(value)
       },
     },
@@ -106,7 +106,7 @@ export const coerce: IValidatorCoerce = {
           } catch (e) {}
         }
 
-        assertions.typeof(value, 'array')
+        assert.typeof(value, 'array')
         return validationResult.setValue(value)
       },
     },
@@ -131,7 +131,7 @@ export const validations: IValidatorValidations = {
         const expectedKeys = spec.children.map(child => child.path)
         const actualKeys = Object.keys(result.value)
         const extraKeys = difference(actualKeys, expectedKeys)
-        assertions.ok(extraKeys.length === 0, `unexpected properties: ${extraKeys.join(', ')}`)
+        assert.ok(extraKeys.length === 0, `unexpected properties: ${extraKeys.join(', ')}`)
       },
     ],
   },
