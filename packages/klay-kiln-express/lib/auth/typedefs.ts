@@ -1,5 +1,7 @@
 import * as express from 'express'
-import {IKiln} from 'klay-kiln'
+import {IModel} from 'klay-core'
+import {IDatabaseExecutor, IPasswordOptions} from 'klay-db'
+import {IKiln, IKilnModel} from 'klay-kiln'
 
 import {ActionType} from '../typedefs'
 
@@ -46,7 +48,7 @@ export interface IGrants<T = any> {
 export interface IOAuthOptions {
   secret: string
   kiln?: IKiln
-  databaseExtension?: string
+  databaseExtensionName?: string
   lookupUserContextByPassword?(username: string, password: string): Promise<object | undefined>
 }
 
@@ -63,4 +65,17 @@ export interface IAuthorizationRequired {
 export interface IAuthModelOptions {
   actions: ActionType[]
   permission: string
+}
+
+export interface IKilnUserAuthMetadata {
+  kiln: IKiln
+  databaseExtensionName: string
+
+  usernameField: string
+  passwordField: string
+  passwordModel: IModel
+  passwordOptions: IPasswordOptions
+
+  userKilnModel: IKilnModel
+  userExecutor: IDatabaseExecutor
 }
