@@ -114,7 +114,7 @@ export class Grants<T = any> implements IGrants<T> {
     return this._grants.has(`${permission}!*`) || this._grants.has(`${permission}!${criteria}`)
   }
 
-  public getPropertyValuesForPermission(permission: string): string[][] {
+  public getPropertyNamesForPermission(permission: string): string[][] {
     return this._permissionProperties.get(permission) || []
   }
 }

@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lib/middleware/auth.ts #createPasswordValidationMiddleware should fail when given wrong password 1`] = `"current password invalid"`;
+
+exports[`lib/middleware/auth.ts #createPasswordValidationMiddleware should fail when not given current password 1`] = `"did not send current password"`;

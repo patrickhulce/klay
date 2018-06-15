@@ -1,16 +1,19 @@
 /* tslint:disable no-unsafe-any */
 import {NextFunction, Request, Response} from 'express'
 import * as jwt from 'jsonwebtoken'
-import {IModel, IModelChild, ModelType, defaultModelContext} from 'klay-core'
+import {assert} from 'klay-core'
+import {doPasswordsMatch} from 'klay-db'
 
 import {AuthenticationError} from '../auth/authentication-error'
 import {AuthorizationError} from '../auth/authorization-error'
 import {Grants} from '../auth/grants'
+import {getKilnUserAuthMetadata} from '../auth/utils'
 import {
   IAnontatedHandler,
   IAuthConfiguration,
   IAuthCriteriaPropertyValues,
   IAuthorizationRequired,
+  IKilnUserAuthMetadata,
 } from '../typedefs'
 
 const AUTH_BEARER_PATTERN = /^bearer (.*)/i
@@ -51,6 +54,13 @@ function defaultGetRoles(userContext: any): string[] | undefined {
   if (typeof role === 'string') return [role]
 }
 
+function defaultGetCurrentPassword(req: Request): string | undefined {
+  const body = req.body || ({} as any)
+  const passwordInHeader = req.get('x-current-password') || req.get('x-password')
+  const passwordInBody = body.currentPassword || body.password
+  return passwordInHeader || passwordInBody
+}
+
 export function createGrantCreationMiddleware(authConf: IAuthConfiguration): IAnontatedHandler {
   const getUserContext = authConf.getUserContext || createDefaultGetUserContext(authConf)
   const getRoles = authConf.getRoles || defaultGetRoles
@@ -61,6 +71,33 @@ export function createGrantCreationMiddleware(authConf: IAuthConfiguration): IAn
       const roles = await getRoles(userContext, req) // tslint:disable-line
       const grants = new Grants(roles, userContext, authConf)
       req.grants = grants
+      next()
+    } catch (err) {
+      next(err)
+    }
+  }
+}
+
+export function createPasswordValidationMiddleware(
+  auth: Partial<IKilnUserAuthMetadata>,
+): IAnontatedHandler {
+  const {passwordField, passwordOptions} = getKilnUserAuthMetadata(auth)
+
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    if (!req.grants) return next(new Error('Cannot validate grants without grant middleware'))
+    if (!req.grants.userContext) return next(new AuthenticationError())
+
+    try {
+      const currentPassword = defaultGetCurrentPassword(req)
+      assert.ok(currentPassword, 'did not send current password')
+
+      const isValid = await doPasswordsMatch(
+        currentPassword!,
+        req.grants.userContext[passwordField],
+        passwordOptions,
+      )
+
+      assert.ok(isValid, 'current password invalid')
       next()
     } catch (err) {
       next(err)
@@ -79,7 +116,7 @@ export function createGrantValidationMiddleware(auth: IAuthorizationRequired): I
     const grants = req.grants
     if (grants.has(auth.permission)) return next()
 
-    for (const criteriaProperties of grants.getPropertyValuesForPermission(auth.permission)) {
+    for (const criteriaProperties of grants.getPropertyNamesForPermission(auth.permission)) {
       const requiredPropertyValues: IAuthCriteriaPropertyValues[] = []
       // Loop through all criteria properties to build our criteria value objects
       for (const property of criteriaProperties) {

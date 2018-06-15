@@ -1,12 +1,15 @@
 const jwt = require('jsonwebtoken')
+const createNewPasswordHashSalt = require('klay-db/lib/password').createNewPasswordHashSalt
 const middlewareModule = require('../../lib/middleware/auth')
 const Grants = require('../../lib/auth/grants').Grants
+const utils = require('../utils')
 
 describe('lib/middleware/auth.ts', () => {
-  let next
+  let next, state
 
   beforeEach(() => {
     next = jest.fn()
+    state = utils.state()
   })
 
   describe('#createGrantCreationMiddleware', () => {
@@ -108,6 +111,55 @@ describe('lib/middleware/auth.ts', () => {
       expect(next).toHaveBeenCalledTimes(1)
       expect(next.mock.calls[0][0]).toBeInstanceOf(Error)
       expect(next.mock.calls[0][0].message).toEqual('oops')
+    })
+  })
+
+  describe('#createPasswordValidationMiddleware', () => {
+    let req, grants, kiln, passwordOptions
+    const createMiddleware = middlewareModule.createPasswordValidationMiddleware
+
+    beforeEach(() => {
+      kiln = state.kiln
+      grants = {userContext: {}}
+      req = {grants, get: jest.fn()}
+      passwordOptions = state.model.spec.children.find(child => child.path === 'password').model
+        .spec.db.password
+    })
+
+    it('should throw without kiln', () => {
+      expect(() => createMiddleware({})).toThrowError()
+    })
+
+    it('should pass when given current password', async () => {
+      const hashedPassword = await createNewPasswordHashSalt('password', passwordOptions)
+      const middleware = createMiddleware({kiln, databaseExtensionName: 'db'})
+      req.grants.userContext.password = hashedPassword
+      req.get.mockReturnValue('password')
+
+      const {next} = await utils.runMiddleware([middleware], req)
+      expect(next).toHaveBeenCalled()
+      expect(next.mock.calls[0]).toEqual([])
+    })
+
+    it('should fail when not given current password', async () => {
+      const hashedPassword = await createNewPasswordHashSalt('password', passwordOptions)
+      const middleware = createMiddleware({kiln, databaseExtensionName: 'db'})
+      req.grants.userContext.password = hashedPassword
+
+      const {next, err} = await utils.runMiddleware([middleware], req)
+      expect(next).toHaveBeenCalled()
+      expect(err.message).toMatchSnapshot()
+    })
+
+    it('should fail when given wrong password', async () => {
+      const hashedPassword = await createNewPasswordHashSalt('password', passwordOptions)
+      const middleware = createMiddleware({kiln, databaseExtensionName: 'db'})
+      req.grants.userContext.password = hashedPassword
+      req.body = {currentPassword: 'foo', password: 'password'}
+
+      const {next, err} = await utils.runMiddleware([middleware], req)
+      expect(next).toHaveBeenCalled()
+      expect(err.message).toMatchSnapshot()
     })
   })
 

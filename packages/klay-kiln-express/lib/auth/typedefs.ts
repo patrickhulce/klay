@@ -42,7 +42,7 @@ export interface IGrants<T = any> {
   roles: string[]
   userContext?: T
   has(permission: string, criteria?: IAuthCriteriaPropertyValues): boolean
-  getPropertyValuesForPermission(permission: string): string[][]
+  getPropertyNamesForPermission(permission: string): string[][]
 }
 
 export interface IOAuthOptions {

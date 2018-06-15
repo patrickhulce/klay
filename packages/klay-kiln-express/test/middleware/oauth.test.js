@@ -19,7 +19,7 @@ describe('lib/middleware/oauth.ts', () => {
     const createHandler = middlewareModule.createOAuthTokenHandler
 
     it('should throw auth error when no user returned', async () => {
-      const handler = createHandler({secret: 'secret', kiln, databaseExtension: 'db'})
+      const handler = createHandler({secret: 'secret', kiln, databaseExtensionName: 'db'})
       const body = {username: 'klay', password: 'rocko'}
       const findStub = jest.spyOn(executor, 'findOne').mockReturnValue()
       await handler({body}, {json}, next)
@@ -32,7 +32,7 @@ describe('lib/middleware/oauth.ts', () => {
     })
 
     it('should return token when user returned', async () => {
-      const handler = createHandler({secret: 'secret', kiln, databaseExtension: 'db'})
+      const handler = createHandler({secret: 'secret', kiln, databaseExtensionName: 'db'})
       const body = {username: 'klay', password: 'rocko'}
       const hashedPassword = createNewPasswordHashSalt('rocko', passwordModel.spec.db.password)
       jest.spyOn(executor, 'findOne').mockReturnValue({id: 6, password: hashedPassword})
@@ -48,7 +48,7 @@ describe('lib/middleware/oauth.ts', () => {
     })
 
     it('should set cookie', async () => {
-      const handler = createHandler({secret: 'secret', kiln, databaseExtension: 'db'})
+      const handler = createHandler({secret: 'secret', kiln, databaseExtensionName: 'db'})
       const body = {username: 'klay', password: 'rocko'}
       const hashedPassword = createNewPasswordHashSalt('rocko', passwordModel.spec.db.password)
       const cookie = jest.fn()
