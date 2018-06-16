@@ -13,6 +13,8 @@ import {
   ValidateIn,
   createAndMergeRouters,
   createGrantCreationMiddleware as authenticate,
+  createHandleErrorMiddleware,
+  createHandlePromiseMiddleware,
   createOAuthTokenHandler,
   oauthTokenRequestModel,
   oauthTokenResponseModel,
@@ -139,48 +141,5 @@ app.use(json({strict: false}))
 app.use(cookies())
 app.use(authenticate(authConf))
 app.use(createAndMergeRouters(kiln, routerMap).router)
-app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (!res.promise) return next()
-
-  try {
-    const result = await res.promise
-
-    if (typeof result === 'undefined') {
-      res.status(204)
-      res.end()
-    } else {
-      res.json(result)
-    }
-  } catch (err) {
-    next(err)
-  }
-})
-
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  let status = 500
-  let body
-  switch (err.name) {
-    case 'ValidationError':
-      status = 400
-      body = ((err as any) as IValidationError).toJSON()
-      break
-    case 'ConstraintError':
-      status = 400
-      // TODO: convert ConstraintError to same JSON format
-      body = pick(err, ['name', 'message', 'propertyPath', 'type'])
-      break
-    case 'AuthenticationError':
-      status = 401
-      break
-    case 'AuthorizationError':
-      status = 403
-      body = {roles: req.grants!.roles, grants: Array.from((req.grants as any)._grants)}
-      break
-    default:
-      body = {message: err.message, stack: err.stack!.split('\n').slice(0, 5)}
-  }
-
-  res.status(status)
-  if (body) res.json(body)
-  res.end()
-})
+app.use(createHandlePromiseMiddleware())
+app.use(createHandleErrorMiddleware())

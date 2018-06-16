@@ -1,4 +1,5 @@
 export * from './auth'
+export * from './handlers'
 export * from './oauth'
 export * from './swagger'
 export * from './validation'

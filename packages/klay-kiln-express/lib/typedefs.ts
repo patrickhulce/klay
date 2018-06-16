@@ -41,6 +41,7 @@ declare module 'express-serve-static-core' {
 
   export interface Response {
     promise?: Promise<any>
+    body?: any
   }
   /* tslint:enable */
 }
