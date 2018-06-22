@@ -218,4 +218,22 @@ describe('lib/kiln.ts', () => {
       expect(value2).toEqual({busted: true})
     })
   })
+
+  describe('.clearCache', () => {
+    beforeEach(() => addModels(kiln))
+
+    it('should clear the cache', () => {
+      const value1 = kiln.build('user', 'A')
+      expect(value1).toEqual({resultA: 'foo'})
+
+      kiln.clearCache()
+
+      extensionA.build.mockRestore()
+      jest.spyOn(extensionA, 'build').mockReturnValue({busted: true})
+
+      const value2 = kiln.build('user', 'A')
+      expect(value2).not.toBe(value1)
+      expect(value2).toEqual({busted: true})
+    })
+  })
 })

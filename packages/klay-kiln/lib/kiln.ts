@@ -11,6 +11,8 @@ export interface IKiln {
     options?: TOptions,
   ): TResult
   buildAll(modelName?: string): Array<IKilnResult<any>>
+  reset(): IKiln
+  clearCache(): IKiln
 }
 
 export interface IKilnModelInput {
@@ -50,9 +52,13 @@ export interface IKilnExtension<TResult, TOptions = object> {
   build(kilnModel: IKilnModel, options: TOptions, kiln: IKiln): TResult
 }
 
+export type _KilnModelName = string
+
+export type _KilnExtensionName = string
+
 export class Kiln implements IKiln {
-  private _models: Map<string, IKilnModel>
-  private _cache: Map<string, Map<string, IKilnResult<any>>>
+  private _models: Map<_KilnModelName, IKilnModel>
+  private _cache: Map<_KilnModelName, Map<_KilnExtensionName, IKilnResult<any>>>
 
   public constructor() {
     this._models = new Map()
@@ -87,7 +93,8 @@ export class Kiln implements IKiln {
     extensionName: string,
     options?: object,
   ): IKilnResult<any> {
-    const modelCache: Map<string, IKilnResult<any>> = this._cache.get(modelName) || new Map()
+    const modelCache: Map<_KilnExtensionName, IKilnResult<any>> =
+      this._cache.get(modelName) || new Map()
     if (modelCache.has(extensionName) && !options) {
       return modelCache.get(extensionName)!
     }
@@ -107,6 +114,11 @@ export class Kiln implements IKiln {
 
   public getModels(): IKilnModel[] {
     return Array.from(this._models.values())
+  }
+
+  public clearCache(): IKiln {
+    this._cache = new Map()
+    return this
   }
 
   public reset(): IKiln {
