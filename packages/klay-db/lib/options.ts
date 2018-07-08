@@ -133,7 +133,7 @@ export class DatabaseOptions implements IDatabaseOptions {
   public static merge(
     specA: IDatabaseSpecificationUnsafe,
     specB: IDatabaseSpecificationUnsafe,
-    ...others: IDatabaseSpecificationUnsafe[],
+    ...others: IDatabaseSpecificationUnsafe[]
   ): IDatabaseSpecification {
     let specToMerge = specB
     if (others.length) {
