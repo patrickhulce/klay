@@ -47,9 +47,12 @@ export function SQLToJSON(model: IModel, record: object, fields?: string[]): any
 
   forEachColumn(model, (childModel, path, column) => {
     const storedValue = get(record, column)
-    const value = PRIMITIVE_COLUMN_TYPES.has(childModel.spec.type!)
-      ? storedValue
-      : JSON.parse(storedValue)
+    let value = storedValue
+    // Deserialize JSON-stringified values
+    if (!PRIMITIVE_COLUMN_TYPES.has(childModel.spec.type!)) value = JSON.parse(storedValue)
+    // Correct for undefined values that were coerced to null
+    if (value === null && !childModel.spec.nullable) value = undefined
+
     set(outgoing, path, value)
   })
 
