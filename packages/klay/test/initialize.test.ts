@@ -25,10 +25,10 @@ describe('e2e', () => {
     })
   })
 
-  require('./scenarios/create-account.test.js')(state)
-  require('./scenarios/create-user.test.js')(state)
-  require('./scenarios/create-many-users.test.js')(state)
-  require('./scenarios/create-posts.test.js')(state)
+  require('./scenarios/create-account.test.ts')(state)
+  require('./scenarios/create-user.test.ts')(state)
+  require('./scenarios/create-many-users.test.ts')(state)
+  require('./scenarios/create-posts.test.ts')(state)
 
   describe('teardown', () => {
     it('should power down the server', done => {

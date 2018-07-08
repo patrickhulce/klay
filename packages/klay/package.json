@@ -8,15 +8,13 @@
     "start": "node dist/examples/app/run.js",
     "build": "tsc",
     "test": "npm run test:unit",
-    "test:unit": "jest --bail --forceExit test/initialize.test.js"
+    "test:unit": "jest --bail --forceExit test/initialize.test.ts"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/patrickhulce/klay.git"
   },
-  "keywords": [
-    "validation"
-  ],
+  "keywords": ["validation"],
   "author": "Patrick Hulce <patrick.hulce@gmail.com>",
   "license": "MIT",
   "bugs": {

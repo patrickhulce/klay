@@ -8,11 +8,11 @@ module.exports = {
   transform: {
     '\\.ts$': 'ts-jest',
   },
-  moduleFileExtensions: ['ts', 'js'],
+  moduleFileExtensions: ['ts', 'js', 'json'],
   testPathIgnorePatterns: [
     '/node_modules/',
     '/test/scenarios/',
     '/test/integration/',
   ],
-  testMatch: ['**/*.test.js'],
+  testMatch: ['**/*.test.ts'],
 }
