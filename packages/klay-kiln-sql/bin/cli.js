@@ -18,8 +18,7 @@ const options = yargs
     modelName: {alias: 'm'},
     kilnFile: {alias: 'k', required: true, describe: 'path to file exporting kiln instance'},
   })
-  .demandCommand(1)
-  .argv
+  .demandCommand(1).argv
 
 function getUmzug() {
   const sequelize = getConnection({connectionURL: options.url})
@@ -51,7 +50,16 @@ async function migrationBootstrap() {
   }
 
   const fileContent = createNewMigrationFile(kiln)
-  const datePart = new Date().toLocaleString().replace(/[^0-9]+/g, '').slice(0, 12)
+  const datePart = new Date()
+    .toLocaleString(undefined, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+    .replace(/[^\d]+/g, '')
+
   const fileName = `migrations/${datePart}-migration.js`
   fs.writeFileSync(fileName, fileContent)
   console.log(colors.green('Wrote migration file '), fileName)
