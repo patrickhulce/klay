@@ -1,11 +1,7 @@
 import {Request, Response} from 'express'
-import {IModel, defaultModelContext} from 'klay-core'
 import {Spec as SwaggerSpec} from 'swagger-schema-official'
 
-import {
-  IAnontatedHandler,
-  ISwaggerSpecMiddlewareOptions,
-} from '../typedefs'
+import {IAnontatedHandler, ISwaggerSpecMiddlewareOptions} from '../typedefs'
 
 export function createSwaggerUIHandler(spec: SwaggerSpec, swaggerPath: string): IAnontatedHandler {
   return function(req: Request, res: Response): void {

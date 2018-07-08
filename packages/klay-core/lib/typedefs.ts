@@ -100,10 +100,7 @@ export type ICoerceFunction = (
   spec: IModelSpecification,
 ) => IIntermediateValidationResult
 
-export type IValidationFunction = (
-  value: IValidationResult,
-  spec: IModelSpecification,
-) => void
+export type IValidationFunction = (value: IValidationResult, spec: IModelSpecification) => void
 
 export interface IValidationResultError {
   message: string
@@ -186,11 +183,15 @@ export interface IValidatorValidations {
   [typeName: string]: {[formatName: string]: IModelValidationInput[]}
 }
 
+export interface IValidatorValidationsUnsafe {
+  [typeName: string]: {[formatName: string]: IModelValidationInput | IModelValidationInput[]}
+}
+
 export interface IValidatorOptionsUnsafe {
   types?: string[]
   formats?: IValidatorFormats
   coerce?: IValidatorCoerce
-  validations?: IValidatorValidations
+  validations?: IValidatorValidationsUnsafe
   methods?: IValidatorMethods
   defaults?: IModelSpecification
   hooks?: IModelHooks
@@ -220,9 +221,7 @@ export type IModelHook = (model: IModel) => void
 
 export type IModelMethod = (model: IModel, ...args: any[]) => IModel
 
-export type IModelHooks = {
-  [phase in ModelHookPhase]: IModelHook[]
-}
+export type IModelHooks = {[phase in ModelHookPhase]: IModelHook[]}
 
 export interface IValidatorMethods {
   [methodName: string]: IModelMethod

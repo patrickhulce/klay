@@ -1,9 +1,13 @@
 /* eslint-disable max-nested-callbacks */
-const extension = require('../../lib/extensions/core')
+import * as extension from '../../lib/extensions/core'
+import {IModelSpecification, IModelChild} from '../../lib'
+
 const vr = require('../utils').createValidationResult
 
 const coercions = extension.coerce
 const validations = extension.validations
+
+type LikeAValidationFunction = (vr: {value: any}, spec: IModelSpecification) => any
 
 describe('lib/extensions/core.ts', () => {
   describe('coerce', () => {
@@ -163,11 +167,11 @@ describe('lib/extensions/core.ts', () => {
   })
 
   describe('validations', () => {
-    let validate
+    let validate: LikeAValidationFunction
 
     describe('number', () => {
       beforeEach(() => {
-        validate = validations.number.___ALL_FORMATS___[0]
+        validate = validations.number.___ALL_FORMATS___[0] as LikeAValidationFunction
       })
 
       it('should validate min', () => {
@@ -192,7 +196,7 @@ describe('lib/extensions/core.ts', () => {
 
     describe('string', () => {
       beforeEach(() => {
-        validate = validations.string.___ALL_FORMATS___[0]
+        validate = validations.string.___ALL_FORMATS___[0] as LikeAValidationFunction
       })
 
       it('should validate min', () => {
@@ -209,8 +213,8 @@ describe('lib/extensions/core.ts', () => {
     })
 
     describe('object', () => {
-      const validateMinMax = validations.object.___ALL_FORMATS___[0]
-      const validateKeys = validations.object.___ALL_FORMATS___[1]
+      const validateMinMax = validations.object.___ALL_FORMATS___[0] as LikeAValidationFunction
+      const validateKeys = validations.object.___ALL_FORMATS___[1] as LikeAValidationFunction
 
       it('should validate min', () => {
         expect(() => validateMinMax({value: {}}, {min: 2})).toThrowError()
@@ -230,7 +234,7 @@ describe('lib/extensions/core.ts', () => {
       })
 
       it('should validate keys when strict is true and children exist', () => {
-        const children = [{path: 'x'}, {path: 'y'}, {path: 'z'}]
+        const children = [{path: 'x'}, {path: 'y'}, {path: 'z'}] as IModelChild[]
         const options = {strict: true, children}
         expect(() => validateKeys({value: {x: 1}}, options)).not.toThrowError()
         expect(() => validateKeys({value: {x: 1, y: 2, z: 3}}, options)).not.toThrowError()
@@ -241,7 +245,7 @@ describe('lib/extensions/core.ts', () => {
 
     describe('array', () => {
       beforeEach(() => {
-        validate = validations.array.___ALL_FORMATS___[0]
+        validate = validations.array.___ALL_FORMATS___[0] as LikeAValidationFunction
       })
 
       it('should validate min', () => {
@@ -259,7 +263,7 @@ describe('lib/extensions/core.ts', () => {
 
     describe('date', () => {
       beforeEach(() => {
-        validate = validations['date-time'].___ALL_FORMATS___[0]
+        validate = validations['date-time'].___ALL_FORMATS___[0] as LikeAValidationFunction
       })
 
       it('should validate min', () => {

@@ -1,16 +1,16 @@
 const Assertions = require('../../lib/errors/assertions').Assertions
 
 describe('lib/errors/assertions.ts', () => {
-  const assertions = new Assertions(msg => new Error(msg))
+  const assertions = new Assertions((msg: string) => new Error(msg))
 
   describe('#constructor', () => {
     it('should construct an assertions', () => {
-      const assertions = new Assertions(msg => new Error(msg))
+      const assertions = new Assertions((msg: string) => new Error(msg))
       expect(() => assertions.ok(false)).toThrowError(Error)
     })
 
     it('should use createError function', () => {
-      const assertions = new Assertions(msg => new TypeError(msg))
+      const assertions = new Assertions((msg: string) => new TypeError(msg))
       expect(() => assertions.ok(false)).toThrowError(TypeError)
     })
   })

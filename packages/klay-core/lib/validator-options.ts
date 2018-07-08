@@ -88,7 +88,7 @@ export class ValidatorOptions implements IValidatorOptions {
     this.types = types
     this.formats = formats
     this.coerce = coerce
-    this.validations = validations
+    this.validations = validations as IValidatorValidations
     this.methods = methods
     this.defaults = defaults
     this.hooks = hooks

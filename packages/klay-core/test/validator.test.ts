@@ -1,32 +1,39 @@
-const _ = require('lodash')
-const Model = require('../lib/model').Model
-const Validator = require('../lib/validator').Validator
-const assertionErrorModule = require('../lib/errors/assertion-error')
+import * as _ from 'lodash'
+
+import {
+  IModel,
+  IValidateOptions,
+  IValidationResult,
+  IValidatorOptionsUnsafe,
+  ValidationPhase,
+} from '../lib'
+import * as assertionErrorModule from '../lib/errors/assertion-error'
+import {Model} from '../lib/model'
+import {Validator} from '../lib/validator'
 
 const assert = assertionErrorModule.assert
 const AssertionError = assertionErrorModule.AssertionError
 
 describe('lib/validator.ts', () => {
-  const defaultOptions = {
+  const defaultOptions: IValidatorOptionsUnsafe = {
     types: ['number', 'string', 'object', 'array'],
     validations: {
-      number: {___ALL_FORMATS___: v => assert.typeof(v.value, 'number')},
-      string: {___ALL_FORMATS___: v => assert.typeof(v.value, 'string')},
-      object: {___ALL_FORMATS___: v => assert.typeof(v.value, 'object')},
+      number: {___ALL_FORMATS___: (v: IValidationResult) => assert.typeof(v.value, 'number')},
+      string: {___ALL_FORMATS___: (v: IValidationResult) => assert.typeof(v.value, 'string')},
+      object: {___ALL_FORMATS___: (v: IValidationResult) => assert.typeof(v.value, 'object')},
     },
   }
 
   describe('.validate', () => {
-    let model, validatorOptions
+    let model: IModel, validatorOptions: IValidatorOptionsUnsafe
 
     beforeEach(() => {
       model = new Model({}, defaultOptions)
       validatorOptions = defaultOptions
     })
 
-    const validate = (value, opts) => {
-      return new Validator(model.spec, validatorOptions).validate(value, opts).toJSON()
-    }
+    const validate = (value: any, opts?: IValidateOptions) =>
+      new Validator(model.spec, validatorOptions).validate(value, opts).toJSON()
 
     it('should work with no type', () => {
       expect(validate({})).toEqual({
@@ -263,7 +270,7 @@ describe('lib/validator.ts', () => {
     })
 
     describe('children', () => {
-      let mkModel
+      let mkModel: () => IModel
 
       beforeEach(() => {
         mkModel = () => new Model({}, validatorOptions)
@@ -336,7 +343,7 @@ describe('lib/validator.ts', () => {
 
       it('should update nested root values as it goes', () => {
         let calledRootValue
-        const stub = vr => {
+        const stub = (vr: IValidationResult) => {
           calledRootValue = _.cloneDeep(vr.rootValue)
           return vr.setValue(vr.rootValue.z.zz.xxx + vr.rootValue.z.zz.yyy)
         }
@@ -393,7 +400,7 @@ describe('lib/validator.ts', () => {
 
     describe('coerce', () => {
       it('should use coerce before checking definedness', () => {
-        const parser = val => val.setValue('something')
+        const parser = (val: IValidationResult) => val.setValue('something')
         model = model
           .type('string')
           .required()
@@ -407,7 +414,7 @@ describe('lib/validator.ts', () => {
       })
 
       it('should still check definedness', () => {
-        const parser = val => val.setValue(undefined)
+        const parser = (val: IValidationResult) => val.setValue(undefined)
         model = model
           .type('string')
           .required()
@@ -421,7 +428,7 @@ describe('lib/validator.ts', () => {
       })
 
       it('should short-circuit', () => {
-        const parser = val => val.setValue('something').setIsFinished(true)
+        const parser = (val: IValidationResult) => val.setValue('something').setIsFinished(true)
         model = model
           .type('string')
           .required()
@@ -436,11 +443,11 @@ describe('lib/validator.ts', () => {
       })
 
       it('should use the correct phase', () => {
-        const parser = val => val.setValue('something')
+        const parser = (val: IValidationResult) => val.setValue('something')
         model = model
           .type('string')
           .required()
-          .coerce(parser, 'validate-value')
+          .coerce(parser, ValidationPhase.ValidateValue)
           .validations(/skrilla/)
 
         expect(validate('skrilla')).toEqual({
@@ -455,7 +462,7 @@ describe('lib/validator.ts', () => {
         model = model
           .type('string')
           .required()
-          .coerce(parser)
+          .coerce(parser as any)
 
         expect(() => validate('Hello, World')).toThrowError(/must return.*ValidationResult/)
       })
