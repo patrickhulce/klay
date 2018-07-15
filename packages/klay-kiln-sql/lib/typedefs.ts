@@ -1,5 +1,5 @@
-import { IDatabaseExecutor } from 'klay-db'
-import { IKilnModel } from 'klay-kiln'
+import {IDatabaseExecutor} from 'klay-db'
+import {IKilnModel} from 'klay-kiln'
 import * as Sequelize from 'sequelize'
 
 export const SQL_EXECUTOR = 'sql'
@@ -24,9 +24,7 @@ export interface ISyncOptions {
 }
 
 // tslint:disable-next-line
-export interface IExecutorOptions {
-
-}
+export interface IExecutorOptions {}
 
 export interface ISQLExecutor extends IDatabaseExecutor {
   sequelize: Sequelize.Sequelize

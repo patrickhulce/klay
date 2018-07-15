@@ -124,10 +124,7 @@ function flattenQueryModel(model: IModel, path: string[] = []): IModelChild[] {
 
   if (!Array.isArray(children)) {
     const childPath = `${pathToQueryName(path)}[]`
-    const childModel = transformSpecialCases(
-      model.spec.children as IModel,
-      SwaggerContext.Query,
-    )
+    const childModel = transformSpecialCases(model.spec.children as IModel, SwaggerContext.Query)
     return [{path: childPath, model: childModel}]
   }
 

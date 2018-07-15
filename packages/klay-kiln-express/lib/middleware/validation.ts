@@ -2,11 +2,7 @@
 import {NextFunction, Request, Response} from 'express'
 import {IModel, defaultModelContext} from 'klay-core'
 
-import {
-  IAnontatedHandler,
-  IValidationMiddlewareOptions,
-  ValidateIn,
-} from '../typedefs'
+import {IAnontatedHandler, IValidationMiddlewareOptions, ValidateIn} from '../typedefs'
 
 export function createValidationMiddleware(
   model: IModel,

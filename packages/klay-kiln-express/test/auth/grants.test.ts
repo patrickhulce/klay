@@ -104,7 +104,7 @@ describe('lib/auth/grants.ts', () => {
         ],
       }
 
-      permissions = {'write': ['read'], 'read': [], 'read:public': []}
+      permissions = {write: ['read'], read: [], 'read:public': []}
 
       grants = new auth.Grants(['user'], {id: 1, orgId: 2}, {roles, permissions})
     })

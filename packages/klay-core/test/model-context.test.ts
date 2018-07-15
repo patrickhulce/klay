@@ -56,7 +56,7 @@ describe('lib/model-context.ts', () => {
 
   describe('.reset', () => {
     let context
-    beforeEach(() => context = ModelContext.create())
+    beforeEach(() => (context = ModelContext.create()))
 
     it('resets options', () => {
       context = context.use({types: ['my-type']})

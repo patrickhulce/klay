@@ -52,7 +52,7 @@ describe('lib/model.ts', () => {
     })
 
     it('should run hooks', () => {
-      const hooks = {construction: [model => model.spec.foo = 'bar']}
+      const hooks = {construction: [model => (model.spec.foo = 'bar')]}
       const options = {...defaultOptions, hooks}
       const model = new Model({}, options)
       expect(model.spec.foo).toEqual('bar')
@@ -265,7 +265,7 @@ describe('lib/model.ts', () => {
 
     it('should run hooks when array', () => {
       const childModel = new Model({}, defaultOptions).type('string')
-      const hooks = {'set-children': [model => model.spec.foo = 'bar']}
+      const hooks = {'set-children': [model => (model.spec.foo = 'bar')]}
       const options = {...defaultOptions, hooks}
 
       let model = new Model({}, options).type('array')
@@ -276,7 +276,7 @@ describe('lib/model.ts', () => {
 
     it('should run hooks when object', () => {
       const childModel = new Model({}, defaultOptions).type('string')
-      const hooks = {'set-children': [model => model.spec.foo = 'bar']}
+      const hooks = {'set-children': [model => (model.spec.foo = 'bar')]}
       const options = {...defaultOptions, hooks}
 
       let model = new Model({}, options).type('object')
@@ -413,7 +413,7 @@ describe('lib/model.ts', () => {
       const model = new Model({}, defaultOptions).coerce(coerce, 'parse')
       expect(model.spec.coerce).toEqual({parse: coerce})
       model.coerce(coerce, 'coerce-type')
-      expect(model.spec.coerce).toEqual({'parse': coerce, 'coerce-type': coerce})
+      expect(model.spec.coerce).toEqual({parse: coerce, 'coerce-type': coerce})
       model.coerce({'coerce-type': coerce})
       expect(model.spec.coerce).toEqual({'coerce-type': coerce})
       model.coerce({})

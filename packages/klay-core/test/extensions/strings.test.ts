@@ -3,9 +3,9 @@ const extension = require('../../lib/extensions/strings')
 const testValues = shouldPass => (values, funcs) => {
   for (const value of values) {
     for (const func of funcs) {
-      shouldPass ?
-        expect(() => func({value})).not.toThrowError() :
-        expect(() => func({value})).toThrowError()
+      shouldPass
+        ? expect(() => func({value})).not.toThrowError()
+        : expect(() => func({value})).toThrowError()
     }
   }
 }
@@ -297,25 +297,11 @@ describe('lib/extensions/strings.ts', () => {
       const validate = extension.validations.string.date
 
       it('should pass valid values', () => {
-        testPassingValues([
-          '1993-02-13',
-          '1993.2.1',
-          '2014.12.27',
-          '2014/12/27',
-        ], validate)
+        testPassingValues(['1993-02-13', '1993.2.1', '2014.12.27', '2014/12/27'], validate)
       })
 
       it('should fail invalid values', () => {
-        testFailingValues(
-          [
-            '1993-22-3',
-            '1-2-3',
-            '2005 12 3',
-            '2005-03-43',
-            '2005-23-9',
-          ],
-          validate,
-        )
+        testFailingValues(['1993-22-3', '1-2-3', '2005 12 3', '2005-03-43', '2005-23-9'], validate)
       })
     })
 
@@ -349,14 +335,7 @@ describe('lib/extensions/strings.ts', () => {
       })
 
       it('should fail invalid values', () => {
-        testFailingValues(
-          [
-            '123456789',
-            '12345 1234',
-            ' 12345-1234 ',
-          ],
-          validate,
-        )
+        testFailingValues(['123456789', '12345 1234', ' 12345-1234 '], validate)
       })
     })
   })

@@ -56,12 +56,12 @@ describe('complex constraints', () => {
 
     it('should create a Thompson user', () => {
       const user = _.assign({}, defaultUser, {age: 50})
-      return state.models.user.create(user).then(record => state.userA = record)
+      return state.models.user.create(user).then(record => (state.userA = record))
     })
 
     it('should create a non-Thompson user', () => {
       const user = _.assign({}, defaultUser, {email: 'a@b.com', lastName: 'Johnson', age: 49})
-      return state.models.user.create(user).then(record => state.userB = record)
+      return state.models.user.create(user).then(record => (state.userB = record))
     })
 
     it('should fail to create an older user', () => {
@@ -71,7 +71,7 @@ describe('complex constraints', () => {
 
     it('should create another Thompson user', () => {
       const user = _.assign({}, defaultUser, {email: 'c@d.com', firstName: 'Kim', age: 42})
-      return state.models.user.create(user).then(record => state.userC = record)
+      return state.models.user.create(user).then(record => (state.userC = record))
     })
 
     it('should fail to create another Thompson user', () => {
@@ -79,7 +79,7 @@ describe('complex constraints', () => {
       return expect(state.models.user.create(user)).rejects.toThrow(lastNameError)
     })
 
-    it('should update a Thompson user\'s firstName and age', () => {
+    it("should update a Thompson user's firstName and age", () => {
       const user = _.assign({}, state.userA, {firstName: 'Bill', age: 55})
       return state.models.user.update(user)
     })

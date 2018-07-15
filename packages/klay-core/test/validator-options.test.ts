@@ -142,7 +142,7 @@ describe('lib/validator-options.ts', () => {
       const inputC = {hooks: {'set-children': [hookB]}}
       const options = Options.merge(inputA, inputB, inputC)
       expect(options.hooks).toEqual({
-        'construction': [hookA, hookB],
+        construction: [hookA, hookB],
         'set-children': [hookB],
       })
     })
