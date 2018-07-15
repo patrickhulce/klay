@@ -32,4 +32,5 @@ script:
 after_success:
   - cat coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
   - yarn build:docs
-  # - hulk npm-publish --lerna --yes --prerelease
+  - git fetch --tags
+  - hulk npm-publish --lerna --yes --prerelease
