@@ -20,7 +20,7 @@ node_js:
   - v9
   - v8
 before_install:
-  - npm install -g yarn lerna coveralls
+  - npm install -g yarn lerna coveralls @patrickhulce/scripts
 install:
   - yarn install
 before_script:
@@ -32,4 +32,4 @@ script:
 after_success:
   - cat coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
   - yarn build:docs
-  - ./scripts/publish-canary.sh
+  - hulk npm-publish --lerna --yes --prerelease
