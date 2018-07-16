@@ -1,3 +1,5 @@
+require('iconv-lite').encodingExists('foo')
+
 const _ = require('lodash')
 const Kiln = require('klay-kiln').Kiln
 const SQLExtension = require('../dist/extension').SQLExtension

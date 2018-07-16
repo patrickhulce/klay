@@ -15,7 +15,10 @@ const options = yargs
   .command('migrate', 'run all pending migrations', {url: {required: true}})
   .command('migrate:revert', 'undo last migration', {url: {required: true}})
   .command('migration:bootstrap', 'create a migration file', {
-    modelName: {alias: 'm'},
+    kilnFile: {alias: 'k', required: true, describe: 'path to file exporting kiln instance'},
+  })
+  .command('migration:incremental', 'create an incremental migration file', {
+    url: {required: true, describe: 'SQL connection URL if we need to diff'},
     kilnFile: {alias: 'k', required: true, describe: 'path to file exporting kiln instance'},
   })
   .demandCommand(1).argv
@@ -42,14 +45,15 @@ async function migrateRevert() {
   console.log(colors.green('Migration revert successful'))
 }
 
-async function migrationBootstrap() {
+async function migrationBootstrap(connectionURL) {
   const kilnFileExports = require(path.resolve(process.cwd(), options.kilnFile))
   const kiln = kilnFileExports.kiln || kilnFileExports
   if (typeof kiln.getModels !== 'function') {
     throw new TypeError('Did not export a kiln')
   }
 
-  const fileContent = createNewMigrationFile(kiln)
+  const connection = connectionURL && getConnection({connectionURL})
+  const fileContent = await createNewMigrationFile(kiln, connection)
   const datePart = new Date()
     .toLocaleString(undefined, {
       year: 'numeric',
@@ -73,6 +77,8 @@ function run() {
       return migrateRevert()
     case 'migration:bootstrap':
       return migrationBootstrap()
+    case 'migration:incremental':
+      return migrationBootstrap(options.url)
     default:
       throw new Error(`Unrecognized command: ${options._[0]}`)
   }

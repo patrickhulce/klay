@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@patrickhulce/lint": "^3.0.2",
-    "@types/jest": "^23.1.4",
+    "@types/jest": "^23.1.6",
     "jest": "^22.4.3",
     "lerna": "^2.9.1",
     "semver": "^5.5.0",
