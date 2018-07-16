@@ -1,6 +1,6 @@
 {
   "name": "klay-kiln",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Library for using klay models together and generating useful objects with them.",
   "main": "./dist/kiln.js",
   "types": "./dist/kiln.d.ts",
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/patrickhulce/klay/tree/master/packages/klay-kiln#readme",
   "dependencies": {
-    "klay-core": "2.4.0",
+    "klay-core": "2.5.0",
     "lodash": "^4.15.0"
   },
   "devDependencies": {

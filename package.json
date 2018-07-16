@@ -4,6 +4,7 @@
     "packages/*"
   ],
   "scripts": {
+    "lerna:update-version": "./scripts/update-lerna-version.sh",
     "clean": "lerna exec --parallel 'rm -fR dist/'",
     "build": "npm run clean && lerna run build",
     "build:watch": "lerna exec --parallel 'tsc -w'",

@@ -1,6 +1,6 @@
 {
   "name": "klay",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Isomorphic and extensible validation library for JavaScript.",
   "main": "./dist/lib/index.js",
   "types": "./dist/lib/index.d.ts",
@@ -24,11 +24,11 @@
   },
   "homepage": "https://github.com/patrickhulce/klay#readme",
   "dependencies": {
-    "klay-core": "2.4.0",
-    "klay-db": "2.4.0",
-    "klay-kiln": "2.4.0",
-    "klay-kiln-express": "2.4.0",
-    "klay-kiln-sql": "2.4.0"
+    "klay-core": "2.5.0",
+    "klay-db": "2.5.0",
+    "klay-kiln": "2.5.0",
+    "klay-kiln-express": "2.5.0",
+    "klay-kiln-sql": "2.5.0"
   },
   "devDependencies": {
     "@types/body-parser": "^1.16.8",

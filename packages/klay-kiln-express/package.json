@@ -1,6 +1,6 @@
 {
   "name": "klay-kiln-express",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Kiln extension to generate express middleware from klay models.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -27,9 +27,9 @@
     "bluebird": "^3.5.1",
     "express": "^4.16.2",
     "jsonwebtoken": "^8.2.0",
-    "klay-core": "2.4.0",
-    "klay-db": "2.4.0",
-    "klay-kiln": "2.4.0",
+    "klay-core": "2.5.0",
+    "klay-db": "2.5.0",
+    "klay-kiln": "2.5.0",
     "lodash": "^4.16.2"
   },
   "devDependencies": {
