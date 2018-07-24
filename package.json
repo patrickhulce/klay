@@ -9,7 +9,7 @@
     "build": "npm run clean && lerna run build",
     "build:watch": "lerna exec --parallel 'tsc -w'",
     "build:docs": "lerna exec ../../scripts/build-docs.sh",
-    "test": "npm run build && npm run test:lint && npm run test:unit",
+    "test": "npm run build && npm run test:lint && npm run test:unit && node -e \"require('klay')\"",
     "test:lint": "lint",
     "test:unit": "jest --forceExit",
     "test:watch": "npm run test:unit -- --watch"
