@@ -41,6 +41,14 @@ describe('lib/constraints.ts', () => {
       expect(await fetchByUniqueConstraints(executor, model, {x: 1})).toEqual(undefined)
     })
 
+    it('should return nothing for NULL values', async () => {
+      executorData = [{id: 1, x: null}, {id: 2, x: 2}]
+      const constraint = {type: 'unique', properties: [['x']]}
+      const model = {spec: {db: {constrain: [constraint]}}}
+      const result = await fetchByUniqueConstraints(executor, model, {x: null})
+      expect(result).toEqual(undefined)
+    })
+
     it('should find the matching record', async () => {
       executorData = [{id: 1, x: 1}, {id: 2, x: 2}]
       const constraint = {type: 'unique', properties: [['x']]}

@@ -1,5 +1,5 @@
 import {IModel, assert} from 'klay-core'
-import {get, isEqual} from 'lodash'
+import {get, isEqual, isNil} from 'lodash'
 
 import {constraintAssertions} from './constraint-error'
 import {QueryBuilder} from './query-builder'
@@ -35,6 +35,12 @@ export async function fetchByUniqueConstraint(
   extras?: IQueryExtras,
 ): Promise<object | undefined> {
   const queryBuilder = new QueryBuilder()
+
+  // Unique constraints don't apply to records with `NULL` entry
+  if (constraint.properties.length === 1 && isNil(get(record, constraint.properties[0]))) {
+    return undefined
+  }
+
   constraint.properties.forEach(propertyPath =>
     queryBuilder.where(propertyPath.join('.'), get(record, propertyPath)),
   )
