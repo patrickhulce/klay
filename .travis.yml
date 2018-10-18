@@ -20,7 +20,7 @@ node_js:
   - v9
   - v8
 before_install:
-  - npm install -g yarn lerna coveralls @patrickhulce/scripts
+  - npm install -g yarn lerna@3.x coveralls @patrickhulce/scripts
 install:
   - yarn install
 before_script:
